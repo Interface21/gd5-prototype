@@ -209,7 +209,7 @@
 
           <q-input dense standout="bg-white text-primary" v-model="search" placeholder="ค้นหา GiveDeeFive" class="search-input">
             <template v-slot:prepend>
-              <q-icon name="search" color="grey-6"></q-icon>
+              <q-icon name="bi-search" color="grey-6"></q-icon>
             </template>
           </q-input>
 
@@ -219,12 +219,12 @@
             <q-btn round flat icon="notifications_none" color="grey-8" size="md">
               <q-badge color="red" floating label="3"></q-badge>
             </q-btn>
-            <q-btn round flat icon="chat_bubble_outline" color="grey-8" size="md">
+            <q-btn round flat icon="bi-chat" color="grey-8" size="md">
               <q-badge color="red" floating label="7"></q-badge>
             </q-btn>
             <q-btn flat color="grey-8" size="sm">
               <q-icon name="language" class="q-mr-xs"></q-icon> ไทย
-              <q-icon name="expand_more" size="16px"></q-icon>
+              <q-icon name="bi-chevron-down" size="16px"></q-icon>
             </q-btn>
             <q-btn round flat icon="dark_mode" color="grey-8" size="md"></q-btn>
 
@@ -236,7 +236,7 @@
               <q-avatar size="36px">
                 <img src="https://cdn.quasar.dev/img/avatar.png">
               </q-avatar>
-              <q-icon name="expand_more" color="grey-6" size="16px" class="q-ml-xs"></q-icon>
+              <q-icon name="bi-chevron-down" color="grey-6" size="16px" class="q-ml-xs"></q-icon>
             </div>
           </div>
         </q-toolbar>
@@ -251,15 +251,15 @@
         </div>
         <div class="q-mt-sm">
           <div class="drawer-item active"><q-icon name="dashboard" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="grid_view" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-grid" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="show_chart" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="north_east" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="trending_up" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-arrow-up-right" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-graph-up-arrow" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="co_present" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="save_alt" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="menu_book" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-book" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="bar_chart" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="schedule" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-clock" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="tag" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="group" size="22px"></q-icon></div>
           <div class="drawer-item" style="margin-top: 8px;"><q-icon name="keyboard_arrow_down" size="22px"></q-icon></div>
@@ -287,7 +287,7 @@
                 <div class="text-weight-bold" style="font-size: 16px; color: var(--v-main-text-head);">Piyawat Takaew</div>
                 <div class="text-caption" style="color: var(--wee-text-muted);">SA Staff</div>
                 <div class="row items-center justify-center q-mt-xs q-gutter-x-md" style="font-size: 12px; color: var(--wee-text-muted);">
-                  <span><q-icon name="visibility" size="14px"></q-icon> กำลังติดตาม 12</span>
+                  <span><q-icon name="bi-eye" size="14px"></q-icon> กำลังติดตาม 12</span>
                   <span><q-icon name="group" size="14px"></q-icon> ผู้ติดตาม 34</span>
                 </div>
 
@@ -309,15 +309,15 @@
                 <div class="row" style="font-size: 12px;">
                   <div class="col-4 q-mb-sm">
                     <div class="text-grey-6">ความคิดเห็น</div>
-                    <div class="text-weight-bold"><q-icon name="chat_bubble" color="teal"></q-icon> 954</div>
+                    <div class="text-weight-bold"><q-icon name="bi-chat-fill" color="teal"></q-icon> 954</div>
                   </div>
                   <div class="col-4 q-mb-sm">
                     <div class="text-grey-6">ได้รางวัล</div>
-                    <div class="text-weight-bold"><q-icon name="emoji_events" color="amber"></q-icon> 544</div>
+                    <div class="text-weight-bold"><q-icon name="bi-trophy" color="amber"></q-icon> 544</div>
                   </div>
                   <div class="col-4 q-mb-sm">
                     <div class="text-grey-6">ให้รางวัล</div>
-                    <div class="text-weight-bold"><q-icon name="card_giftcard" color="purple"></q-icon> 101</div>
+                    <div class="text-weight-bold"><q-icon name="bi-gift" color="purple"></q-icon> 101</div>
                   </div>
                 </div>
 
@@ -325,45 +325,45 @@
                   <div class="row" style="font-size: 12px;">
                     <div class="col-4 q-mb-sm">
                       <div class="text-grey-6">รับความรู้สึก</div>
-                      <div class="text-weight-bold"><q-icon name="favorite" color="pink"></q-icon> 1.9k</div>
+                      <div class="text-weight-bold"><q-icon name="bi-heart-fill" color="pink"></q-icon> 1.9k</div>
                     </div>
                     <div class="col-4 q-mb-sm">
                       <div class="text-grey-6">แสดงความรู้สึก</div>
-                      <div class="text-weight-bold"><q-icon name="thumb_up" color="blue"></q-icon> 1.1k</div>
+                      <div class="text-weight-bold"><q-icon name="bi-hand-thumbs-up" color="blue"></q-icon> 1.1k</div>
                     </div>
                     <div class="col-4 q-mb-sm">
                       <div class="text-grey-6">ได้เรียนรู้</div>
-                      <div class="text-weight-bold"><q-icon name="school" color="teal"></q-icon> 103</div>
+                      <div class="text-weight-bold"><q-icon name="bi-mortarboard" color="teal"></q-icon> 103</div>
                     </div>
                   </div>
 
                   <div class="row" style="font-size: 12px;">
                     <div class="col-4 q-mb-sm">
                       <div class="text-grey-6">ปันความรู้</div>
-                      <div class="text-weight-bold"><q-icon name="share" color="indigo"></q-icon> 79</div>
+                      <div class="text-weight-bold"><q-icon name="bi-share" color="indigo"></q-icon> 79</div>
                     </div>
                     <div class="col-4 q-mb-sm">
                       <div class="text-grey-6">อ่าน</div>
-                      <div class="text-weight-bold"><q-icon name="visibility" color="cyan"></q-icon> 5.9k</div>
+                      <div class="text-weight-bold"><q-icon name="bi-eye" color="cyan"></q-icon> 5.9k</div>
                     </div>
                     <div class="col-4 q-mb-sm">
                       <div class="text-grey-6">รีโพสต์</div>
-                      <div class="text-weight-bold"><q-icon name="repeat" color="orange"></q-icon> 1</div>
+                      <div class="text-weight-bold"><q-icon name="bi-repeat" color="orange"></q-icon> 1</div>
                     </div>
                   </div>
 
                   <div class="row" style="font-size: 12px;">
                     <div class="col-4 q-mb-sm">
                       <div class="text-grey-6">นำไปใช้</div>
-                      <div class="text-weight-bold"><q-icon name="build" color="deep-purple"></q-icon> 4</div>
+                      <div class="text-weight-bold"><q-icon name="bi-wrench" color="deep-purple"></q-icon> 4</div>
                     </div>
                     <div class="col-4 q-mb-sm">
                       <div class="text-grey-6">สั่งการ</div>
-                      <div class="text-weight-bold"><q-icon name="assignment_turned_in" color="teal"></q-icon> 30</div>
+                      <div class="text-weight-bold"><q-icon name="bi-clipboard-check" color="teal"></q-icon> 30</div>
                     </div>
                     <div class="col-4 q-mb-sm">
                       <div class="text-grey-6">เข้าใช้งาน</div>
-                      <div class="text-weight-bold"><q-icon name="login" color="blue-grey"></q-icon> 1.9k</div>
+                      <div class="text-weight-bold"><q-icon name="bi-box-arrow-in-right" color="blue-grey"></q-icon> 1.9k</div>
                     </div>
                   </div>
                 </div>
@@ -377,9 +377,9 @@
             <!-- Duty Monitor / Tab -->
             <div class="profile-card">
               <q-tabs v-model="dutyTab" dense class="text-grey-7" active-color="primary" indicator-color="primary" align="justify" style="font-size: 13px;">
-                <q-tab name="sent" icon="north_east" label="คำสั่งที่สั่งไป"></q-tab>
-                <q-tab name="received" icon="south_west" label="คำสั่งที่ได้รับ"></q-tab>
-                <q-tab name="wi" icon="menu_book" label="WI"></q-tab>
+                <q-tab name="sent" icon="bi-arrow-up-right" label="คำสั่งที่สั่งไป"></q-tab>
+                <q-tab name="received" icon="bi-arrow-down-left" label="คำสั่งที่ได้รับ"></q-tab>
+                <q-tab name="wi" icon="bi-book" label="WI"></q-tab>
               </q-tabs>
               <q-tab-panels v-model="dutyTab" animated>
                 <q-tab-panel name="sent" class="q-pa-none">
@@ -448,7 +448,7 @@
             <!-- Recent Activity -->
             <div class="profile-card q-mt-md">
               <div class="row items-center q-pa-md q-pb-sm">
-                <q-icon name="schedule" color="teal" size="20px" class="q-mr-sm"></q-icon>
+                <q-icon name="bi-clock" color="teal" size="20px" class="q-mr-sm"></q-icon>
                 <span class="text-weight-bold" style="font-size: 13px;">กิจกรรมล่าสุด</span>
               </div>
               <q-list class="q-px-sm q-pb-sm">
@@ -462,7 +462,7 @@
                     <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">22 มิ.ย. 2026, 9:28 น.</q-item-label>
                   </q-item-section>
                   <q-item-section side top>
-                    <q-icon name="visibility" color="grey-5" size="16px"></q-icon>
+                    <q-icon name="bi-eye" color="grey-5" size="16px"></q-icon>
                   </q-item-section>
                 </q-item>
 
@@ -476,7 +476,7 @@
                     <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">22 มิ.ย. 2026, 9:27 น.</q-item-label>
                   </q-item-section>
                   <q-item-section side top>
-                    <q-icon name="visibility" color="grey-5" size="16px"></q-icon>
+                    <q-icon name="bi-eye" color="grey-5" size="16px"></q-icon>
                   </q-item-section>
                 </q-item>
 
@@ -490,7 +490,7 @@
                     <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">17 มิ.ย. 2026, 11:35 น.</q-item-label>
                   </q-item-section>
                   <q-item-section side top>
-                    <q-icon name="emoji_events" color="amber" size="16px"></q-icon>
+                    <q-icon name="bi-trophy" color="amber" size="16px"></q-icon>
                   </q-item-section>
                 </q-item>
 
@@ -504,7 +504,7 @@
                     <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">15 มิ.ย. 2026, 14:20 น.</q-item-label>
                   </q-item-section>
                   <q-item-section side top>
-                    <q-icon name="visibility" color="grey-5" size="16px"></q-icon>
+                    <q-icon name="bi-eye" color="grey-5" size="16px"></q-icon>
                   </q-item-section>
                 </q-item>
 
@@ -518,14 +518,14 @@
                     <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">14 มิ.ย. 2026, 10:05 น.</q-item-label>
                   </q-item-section>
                   <q-item-section side top>
-                    <q-icon name="chat_bubble" color="teal" size="16px"></q-icon>
+                    <q-icon name="bi-chat-fill" color="teal" size="16px"></q-icon>
                   </q-item-section>
                 </q-item>
               </q-list>
 
               <div class="text-right q-px-md q-pb-md q-pt-sm cursor-pointer" style="font-size: 13px;">
                 <span class="text-teal text-weight-bold">ดูเพิ่ม</span>
-                <q-icon name="expand_more" color="teal" size="18px" class="q-ml-xs"></q-icon>
+                <q-icon name="bi-chevron-down" color="teal" size="18px" class="q-ml-xs"></q-icon>
               </div>
             </div>
           </div>
@@ -578,7 +578,7 @@
                     </q-item-label>
                   </q-item-section>
                   <q-item-section side>
-                    <q-btn flat round color="primary" icon="volunteer_activism"></q-btn>
+                    <q-btn flat round color="primary" icon="bi-suit-heart"></q-btn>
                   </q-item-section>
                 </q-item>
               </q-card-section>
@@ -587,10 +587,10 @@
             <!-- Feed Sort -->
             <div class="row items-center q-mb-sm">
               <span class="text-weight-bold" style="font-size: 15px;">โพสต์ล่าสุด</span>
-              <q-icon name="diamond" color="primary" size="18px" class="q-ml-xs"></q-icon>
+              <q-icon name="bi-gem" color="primary" size="18px" class="q-ml-xs"></q-icon>
               <q-space></q-space>
-              <q-btn flat round dense icon="format_list_bulleted" color="primary"></q-btn>
-              <q-btn flat round dense icon="grid_view" color="grey-5"></q-btn>
+              <q-btn flat round dense icon="bi-list-ul" color="primary"></q-btn>
+              <q-btn flat round dense icon="bi-grid" color="grey-5"></q-btn>
             </div>
 
             <!-- Post 1 -->
@@ -603,13 +603,13 @@
                   <q-item-label class="text-weight-bold">Mr.Test Bekaku <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">25 พ.ค. 2026, 10:46 น.</span></q-item-label>
                   <q-item-label caption>Dev Manager</q-item-label>
                 </q-item-section>
-                <q-item-section side><q-btn flat round dense icon="more_vert" color="grey-6"></q-btn></q-item-section>
+                <q-item-section side><q-btn flat round dense icon="bi-three-dots-vertical" color="grey-6"></q-btn></q-item-section>
               </q-item>
               <div class="q-px-md q-pb-sm">
                 <div class="row q-col-gutter-md">
                   <div class="col-5 relative-position">
                     <img src="https://cdn.quasar.dev/img/mountains.jpg" class="feed-thumb" style="height: 100px;">
-                    <q-icon name="play_circle_filled" color="white" size="32px" class="absolute-center" style="opacity: 0.85;"></q-icon>
+                    <q-icon name="bi-play-circle-fill" color="white" size="32px" class="absolute-center" style="opacity: 0.85;"></q-icon>
                   </div>
                   <div class="col-7">
                     <div class="text-weight-bold" style="font-size: 14px;">ทดสอบโพสต์วิดีโอ</div>
@@ -619,9 +619,9 @@
               </div>
               <q-separator></q-separator>
               <div class="row items-center q-px-md q-py-xs text-grey-6" style="font-size: 12px;">
-                <q-icon name="visibility" size="16px" class="q-mr-xs text-cyan"></q-icon> 11
+                <q-icon name="bi-eye" size="16px" class="q-mr-xs text-cyan"></q-icon> 11
                 <q-space></q-space>
-                <q-icon name="chat_bubble_outline" size="16px" class="q-mr-xs"></q-icon> 2 ความคิดเห็น
+                <q-icon name="bi-chat" size="16px" class="q-mr-xs"></q-icon> 2 ความคิดเห็น
               </div>
             </div>
 
@@ -635,13 +635,13 @@
                   <q-item-label class="text-weight-bold">SA-Tester <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">25 พ.ค. 2026, 9:30 น.</span></q-item-label>
                   <q-item-label caption>SA</q-item-label>
                 </q-item-section>
-                <q-item-section side><q-btn flat round dense icon="more_vert" color="grey-6"></q-btn></q-item-section>
+                <q-item-section side><q-btn flat round dense icon="bi-three-dots-vertical" color="grey-6"></q-btn></q-item-section>
               </q-item>
               <div class="q-px-md q-pb-sm">
                 <div class="row q-col-gutter-md">
                   <div class="col-5 relative-position">
                     <img src="https://cdn.quasar.dev/img/parallax2.jpg" class="feed-thumb" style="height: 100px;">
-                    <q-icon name="play_circle_filled" color="white" size="32px" class="absolute-center" style="opacity: 0.85;"></q-icon>
+                    <q-icon name="bi-play-circle-fill" color="white" size="32px" class="absolute-center" style="opacity: 0.85;"></q-icon>
                   </div>
                   <div class="col-7">
                     <div class="text-weight-bold" style="font-size: 14px;">Never let me go MP4</div>
@@ -651,8 +651,8 @@
               </div>
               <q-separator></q-separator>
               <div class="row items-center q-px-md q-py-xs text-grey-6" style="font-size: 12px;">
-                <q-icon name="thumb_up" size="16px" class="q-mr-xs text-pink"></q-icon> 1
-                <q-icon name="visibility" size="16px" class="q-ml-md q-mr-xs text-cyan"></q-icon> 3
+                <q-icon name="bi-hand-thumbs-up" size="16px" class="q-mr-xs text-pink"></q-icon> 1
+                <q-icon name="bi-eye" size="16px" class="q-ml-md q-mr-xs text-cyan"></q-icon> 3
                 <q-space></q-space>
               </div>
             </div>
@@ -667,7 +667,7 @@
                   <q-item-label class="text-weight-bold">Pinij Ningunha <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">24 พ.ค. 2026, 15:20 น.</span></q-item-label>
                   <q-item-label caption>Network Engineer</q-item-label>
                 </q-item-section>
-                <q-item-section side><q-btn flat round dense icon="more_vert" color="grey-6"></q-btn></q-item-section>
+                <q-item-section side><q-btn flat round dense icon="bi-three-dots-vertical" color="grey-6"></q-btn></q-item-section>
               </q-item>
               <div class="q-px-md q-pb-sm">
                 <div class="row q-col-gutter-md">
@@ -679,11 +679,11 @@
               </div>
               <q-separator></q-separator>
               <div class="row items-center q-px-md q-py-xs text-grey-6" style="font-size: 12px;">
-                <q-icon name="thumb_up" size="16px" class="q-mr-xs text-pink"></q-icon> 15
-                <q-icon name="favorite" size="16px" class="q-ml-md q-mr-xs text-red"></q-icon> 4
-                <q-icon name="visibility" size="16px" class="q-ml-md q-mr-xs text-cyan"></q-icon> 89
+                <q-icon name="bi-hand-thumbs-up" size="16px" class="q-mr-xs text-pink"></q-icon> 15
+                <q-icon name="bi-heart-fill" size="16px" class="q-ml-md q-mr-xs text-red"></q-icon> 4
+                <q-icon name="bi-eye" size="16px" class="q-ml-md q-mr-xs text-cyan"></q-icon> 89
                 <q-space></q-space>
-                <q-icon name="chat_bubble_outline" size="16px" class="q-mr-xs"></q-icon> 6 ความคิดเห็น
+                <q-icon name="bi-chat" size="16px" class="q-mr-xs"></q-icon> 6 ความคิดเห็น
               </div>
             </div>
 
@@ -697,7 +697,7 @@
                   <q-item-label class="text-weight-bold">Tsiramet <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">23 พ.ค. 2026, 11:15 น.</span></q-item-label>
                   <q-item-label caption>Product Owner</q-item-label>
                 </q-item-section>
-                <q-item-section side><q-btn flat round dense icon="more_vert" color="grey-6"></q-btn></q-item-section>
+                <q-item-section side><q-btn flat round dense icon="bi-three-dots-vertical" color="grey-6"></q-btn></q-item-section>
               </q-item>
               <div class="q-px-md q-pb-sm">
                 <div class="row q-col-gutter-md">
@@ -712,10 +712,10 @@
               </div>
               <q-separator></q-separator>
               <div class="row items-center q-px-md q-py-xs text-grey-6" style="font-size: 12px;">
-                <q-icon name="thumb_up" size="16px" class="q-mr-xs text-pink"></q-icon> 42
-                <q-icon name="visibility" size="16px" class="q-ml-md q-mr-xs text-cyan"></q-icon> 150
+                <q-icon name="bi-hand-thumbs-up" size="16px" class="q-mr-xs text-pink"></q-icon> 42
+                <q-icon name="bi-eye" size="16px" class="q-ml-md q-mr-xs text-cyan"></q-icon> 150
                 <q-space></q-space>
-                <q-icon name="chat_bubble_outline" size="16px" class="q-mr-xs"></q-icon> 12 ความคิดเห็น
+                <q-icon name="bi-chat" size="16px" class="q-mr-xs"></q-icon> 12 ความคิดเห็น
               </div>
             </div>
           </div>
@@ -726,7 +726,7 @@
             <!-- ความก้าวหน้าของฉัน (Today Job) -->
             <div class="profile-card q-mb-md q-pa-md">
               <div class="row items-center q-mb-sm">
-                <q-icon name="insights" color="indigo" size="20px" class="q-mr-sm"></q-icon>
+                <q-icon name="bi-graph-up" color="indigo" size="20px" class="q-mr-sm"></q-icon>
                 <span class="text-indigo text-weight-bold" style="font-size: 14px;">Today's Job</span>
                 <q-space></q-space>
                 <span class="text-indigo text-weight-bold" style="font-size: 18px;">47 %</span>
@@ -743,11 +743,11 @@
             <div class="profile-card q-mb-md q-pa-md">
               <div class="row items-center q-mb-md">
                 <q-avatar size="36px" color="cyan-1" text-color="teal-6" class="q-mr-sm">
-                  <q-icon name="people" size="20px"></q-icon>
+                  <q-icon name="bi-people" size="20px"></q-icon>
                 </q-avatar>
                 <span class="text-weight-bold" style="font-size: 14px;">ออนไลน์ขณะนี้</span>
                 <q-space></q-space>
-                <q-btn flat round dense icon="refresh" color="grey" size="sm"></q-btn>
+                <q-btn flat round dense icon="bi-arrow-clockwise" color="grey" size="sm"></q-btn>
               </div>
               <div class="row q-gutter-md justify-start">
                 <div class="text-center" style="width: 72px;">
@@ -785,8 +785,8 @@
                   <div class="text-grey text-caption">กลุ่มของคุณ</div>
                 </div>
                 <q-space></q-space>
-                <q-btn flat round dense icon="group_add" color="grey-6" size="sm" class="q-mr-xs"></q-btn>
-                <q-btn flat round dense icon="add_circle_outline" color="grey-6" size="sm"></q-btn>
+                <q-btn flat round dense icon="bi-person-add" color="grey-6" size="sm" class="q-mr-xs"></q-btn>
+                <q-btn flat round dense icon="bi-plus-circle" color="grey-6" size="sm"></q-btn>
               </div>
 
               <!-- Item 1 -->
@@ -796,9 +796,9 @@
                 </q-avatar>
                 <div class="col">
                   <div class="text-weight-bold" style="font-size: 13px;">VM : AAR GiveDee...</div>
-                  <div class="text-grey" style="font-size: 11px;"><q-icon name="push_pin" color="cyan" size="12px"></q-icon>สมาชิก 18 คน • 20 ยังไม่ได้อ่าน • โพสต์ 136</div>
+                  <div class="text-grey" style="font-size: 11px;"><q-icon name="bi-pin-angle" color="cyan" size="12px"></q-icon>สมาชิก 18 คน • 20 ยังไม่ได้อ่าน • โพสต์ 136</div>
                 </div>
-                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+                <q-icon name="bi-chat" color="grey-6" size="20px"></q-icon>
               </div>
 
               <!-- Item 2 -->
@@ -808,9 +808,9 @@
                 </q-avatar>
                 <div class="col">
                   <div class="text-weight-bold" style="font-size: 13px;">เคล็ดลับการเขียนแ...</div>
-                  <div class="text-grey" style="font-size: 11px;"><q-icon name="push_pin" color="cyan" size="12px"></q-icon>สมาชิก 29 คน • โพสต์ 2</div>
+                  <div class="text-grey" style="font-size: 11px;"><q-icon name="bi-pin-angle" color="cyan" size="12px"></q-icon>สมาชิก 29 คน • โพสต์ 2</div>
                 </div>
-                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+                <q-icon name="bi-chat" color="grey-6" size="20px"></q-icon>
               </div>
 
               <!-- Item 3 -->
@@ -820,9 +820,9 @@
                 </q-avatar>
                 <div class="col">
                   <div class="text-weight-bold" style="font-size: 13px;">AI วันละ 5 นาที</div>
-                  <div class="text-grey" style="font-size: 11px;"><q-icon name="push_pin" color="cyan" size="12px"></q-icon>สมาชิก 17 คน • 7 ยังไม่ได้อ่าน • โพสต์ 22</div>
+                  <div class="text-grey" style="font-size: 11px;"><q-icon name="bi-pin-angle" color="cyan" size="12px"></q-icon>สมาชิก 17 คน • 7 ยังไม่ได้อ่าน • โพสต์ 22</div>
                 </div>
-                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+                <q-icon name="bi-chat" color="grey-6" size="20px"></q-icon>
               </div>
 
               <!-- Item 4 -->
@@ -832,9 +832,9 @@
                 </q-avatar>
                 <div class="col">
                   <div class="text-weight-bold" style="font-size: 13px;">SA-Developer</div>
-                  <div class="text-grey" style="font-size: 11px;"><q-icon name="push_pin" color="cyan" size="12px"></q-icon>สมาชิก 4 คน • โพสต์ 9</div>
+                  <div class="text-grey" style="font-size: 11px;"><q-icon name="bi-pin-angle" color="cyan" size="12px"></q-icon>สมาชิก 4 คน • โพสต์ 9</div>
                 </div>
-                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+                <q-icon name="bi-chat" color="grey-6" size="20px"></q-icon>
               </div>
 
               <!-- Item 5 -->
@@ -846,12 +846,12 @@
                   <div class="text-weight-bold" style="font-size: 13px;">VM : EDR วท.อุดรธานี</div>
                   <div class="text-grey" style="font-size: 11px;">สมาชิก 17 คน • 3 ยังไม่ได้อ่าน • โพสต์ 3</div>
                 </div>
-                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+                <q-icon name="bi-chat" color="grey-6" size="20px"></q-icon>
               </div>
 
               <div class="text-right q-px-md q-pb-md q-pt-sm cursor-pointer" style="font-size: 13px;">
                 <span class="text-teal text-weight-bold">ดูเพิ่ม</span>
-                <q-icon name="expand_more" color="teal" size="18px" class="q-ml-xs"></q-icon>
+                <q-icon name="bi-chevron-down" color="teal" size="18px" class="q-ml-xs"></q-icon>
               </div>
             </div>
 
@@ -917,6 +917,10 @@
       }
     })
     app.mount('#q-app')
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/icon-set/bootstrap-icons.umd.prod.js"></script>
+  <script>
+    Quasar.iconSet.set(Quasar.iconSet.bootstrapIcons);
   </script>
 </body>
 </html>
