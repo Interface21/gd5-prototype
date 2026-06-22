@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>GiveDeeFive - หน้าแรก</title>
+  <meta name="description" content="GiveDeeFive - ระบบจัดการความรู้และการเรียนรู้ในองค์กร">
+
+  <!-- Quasar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/quasar.prod.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet">
+
+  <style>
+    /* ===== CSS Variables จาก app.scss ===== */
+    :root {
+      --wee-main-bg-color: #fafbfc;
+      --wee-main-border-color: #dcdcdc;
+      --wee-main-border-light-color: #ededed;
+      --wee-text-muted: #6b7982;
+      --v-main-text-body: #000000;
+      --v-main-text-head: #1a2d39;
+      --second-bg-color: #fff;
+      --primary: #15a08f;
+    }
+
+    body {
+      font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      background-color: var(--wee-main-bg-color) !important;
+      color: var(--v-main-text-body);
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* ===== Header จาก GD5 Dashboard ===== */
+    .q-header {
+      background: #ffffff !important;
+      border-bottom: 1px solid var(--wee-main-border-color);
+      color: var(--v-main-text-head) !important;
+    }
+
+    .search-input { width: 280px; }
+    .search-input .q-field__control {
+      border-radius: 20px !important;
+      background: #f0f2f5;
+      height: 38px;
+    }
+    .search-input .q-field__control:before { border: none !important; }
+
+    /* ===== Layout จาก IndexPage.vue ===== */
+    .app-feed-page {
+      max-width: 756px !important;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .app-feed-container {
+      max-width: 1380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ===== Border utilities จาก app.scss ===== */
+    .app-border { border: 1px solid var(--wee-main-border-color) !important; }
+    .app-border-light { border: 1px solid var(--wee-main-border-light-color) !important; }
+    .app-border-bottom { border-bottom: 1px solid var(--wee-main-border-color) !important; }
+    .app-border-radius { border-radius: 10px; }
+    .rounded { border-radius: 10px !important; }
+
+    /* ===== FeedStatistic card-style จาก FeedStatistic.vue ===== */
+    .card-style {
+      height: 185px;
+      overflow: hidden;
+      margin-bottom: 5px;
+      border-radius: 10px !important;
+    }
+    .bg-style {
+      background: linear-gradient(to right, #92fe9d, #00c9ff);
+    }
+    .card-style-overlay {
+      background-color: rgba(0, 0, 0, 0.5);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== Profile Card ===== */
+    .profile-card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--wee-main-border-light-color);
+      overflow: hidden;
+    }
+    .profile-banner {
+      height: 90px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .profile-banner-text {
+      color: rgba(255,255,255,0.15);
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ===== Shortcut Card (ทางลัด) จาก Dashboard ===== */
+    .shortcut-card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--wee-main-border-light-color);
+      padding: 16px;
+    }
+    .shortcut-item {
+      text-align: center;
+      cursor: pointer;
+      padding: 12px 8px;
+      border-radius: 10px;
+      transition: background 0.2s;
+    }
+    .shortcut-item:hover { background: #f0f2f5; }
+
+    /* ===== Status Card (คำสั่งที่สั่งไป/ได้รับ) ===== */
+    .status-card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--wee-main-border-light-color);
+      padding: 16px;
+    }
+    .status-row {
+      display: flex;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--wee-main-border-light-color);
+    }
+    .status-row:last-child { border-bottom: none; }
+    .status-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    .status-bar {
+      height: 6px;
+      border-radius: 3px;
+      margin-top: 6px;
+    }
+
+    /* ===== Group/Meeting items จาก FeedRight ===== */
+    .group-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .group-item:hover { background: #f0f2f5; }
+
+    /* ===== Feed Card (Post) ===== */
+    .feed-card {
+      background: white;
+      border: 1px solid var(--wee-main-border-light-color);
+      border-radius: 10px;
+      margin-bottom: 16px;
+    }
+    .feed-thumb {
+      width: 100%;
+      border-radius: 8px;
+      object-fit: cover;
+      height: 90px;
+    }
+
+    /* ===== Left drawer ===== */
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      margin: 0 auto 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: #6b7982;
+    }
+    .drawer-item:hover { background: #e6f7f5; color: #15a08f; }
+    .drawer-item.active { background: #e6f7f5; color: #15a08f; }
+  </style>
+</head>
+<body>
+  <div id="q-app">
+    <q-layout view="hHh LpR fFf">
+
+      <!-- ===== HEADER ===== -->
+      <q-header class="q-px-md q-py-xs" flat>
+        <q-toolbar>
+          <div class="row items-center cursor-pointer q-mr-lg">
+            <img src="image/logo.png" style="height: 36px; object-fit: contain;">
+          </div>
+
+          <q-input dense standout="bg-white text-primary" v-model="search" placeholder="ค้นหา GiveDeeFive" class="search-input">
+            <template v-slot:prepend>
+              <q-icon name="search" color="grey-6"></q-icon>
+            </template>
+          </q-input>
+
+          <q-space></q-space>
+
+          <div class="row items-center q-gutter-x-xs">
+            <q-btn round flat icon="notifications_none" color="grey-8" size="md">
+              <q-badge color="red" floating label="3"></q-badge>
+            </q-btn>
+            <q-btn round flat icon="chat_bubble_outline" color="grey-8" size="md">
+              <q-badge color="red" floating label="7"></q-badge>
+            </q-btn>
+            <q-btn flat color="grey-8" size="sm">
+              <q-icon name="language" class="q-mr-xs"></q-icon> ไทย
+              <q-icon name="expand_more" size="16px"></q-icon>
+            </q-btn>
+            <q-btn round flat icon="dark_mode" color="grey-8" size="md"></q-btn>
+
+            <div class="row items-center q-ml-sm cursor-pointer">
+              <div class="column items-end q-mr-sm" style="line-height: 1.3;">
+                <span class="text-weight-bold text-body2">Piyawat Takaew</span>
+                <span class="text-caption text-grey-6">SA Staff</span>
+              </div>
+              <q-avatar size="36px">
+                <img src="https://cdn.quasar.dev/img/avatar.png">
+              </q-avatar>
+              <q-icon name="expand_more" color="grey-6" size="16px" class="q-ml-xs"></q-icon>
+            </div>
+          </div>
+        </q-toolbar>
+      </q-header>
+
+      <!-- ===== LEFT DRAWER (จาก FeedLayout.vue > FeedDrawer) ===== -->
+      <q-drawer v-model="leftDrawerOpen" show-if-above mini :mini-width="60" class="bg-white" style="border-right: 1px solid #ededed;">
+        <div class="q-pt-md q-pb-sm text-center">
+          <q-avatar size="34px" class="cursor-pointer">
+            <img src="https://cdn.quasar.dev/img/avatar.png">
+          </q-avatar>
+        </div>
+        <div class="q-mt-sm">
+          <div class="drawer-item active"><q-icon name="dashboard" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="grid_view" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="show_chart" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="north_east" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="trending_up" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="co_present" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="save_alt" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="menu_book" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bar_chart" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="schedule" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="tag" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="group" size="22px"></q-icon></div>
+          <div class="drawer-item" style="margin-top: 8px;"><q-icon name="keyboard_arrow_down" size="22px"></q-icon></div>
+        </div>
+      </q-drawer>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <q-page-container>
+        <q-page class="row" style="max-width: 1400px; margin: 0 auto;">
+
+          <!-- ===== คอลัมน์ซ้าย: FeedLeft (Profile + DutyMonitor) ===== -->
+          <div class="col-12 col-md-3 q-pt-md q-pl-md">
+
+            <!-- Profile Card -->
+            <div class="profile-card q-mb-md">
+              <div class="profile-banner">
+                <span class="profile-banner-text">THE LAST SHIP</span>
+              </div>
+              <div class="text-center" style="margin-top: -32px; position: relative;">
+                <q-avatar size="64px" style="border: 3px solid white;">
+                  <img src="https://cdn.quasar.dev/img/avatar.png">
+                </q-avatar>
+              </div>
+              <div class="text-center q-pt-sm q-pb-md q-px-md">
+                <div class="text-weight-bold" style="font-size: 16px; color: var(--v-main-text-head);">Piyawat Takaew</div>
+                <div class="text-caption" style="color: var(--wee-text-muted);">SA Staff</div>
+                <div class="row items-center justify-center q-mt-xs q-gutter-x-md" style="font-size: 12px; color: var(--wee-text-muted);">
+                  <span><q-icon name="visibility" size="14px"></q-icon> กำลังติดตาม 12</span>
+                  <span><q-icon name="group" size="14px"></q-icon> ผู้ติดตาม 34</span>
+                </div>
+
+                <div class="row q-mt-md" style="font-size: 12px;">
+                  <div class="col-4 q-mb-sm">
+                    <div class="text-grey-6">โพสต์</div>
+                    <div class="text-weight-bold"><q-icon name="article" color="teal"></q-icon> 116</div>
+                  </div>
+                  <div class="col-4 q-mb-sm">
+                    <div class="text-grey-6">เก็บความรู้</div>
+                    <div class="text-weight-bold"><q-icon name="bookmark" color="teal"></q-icon> 2</div>
+                  </div>
+                  <div class="col-4 q-mb-sm">
+                    <div class="text-grey-6">ใช้ความรู้</div>
+                    <div class="text-weight-bold"><q-icon name="lightbulb" color="cyan"></q-icon> 7</div>
+                  </div>
+                </div>
+
+                <div class="row" style="font-size: 12px;">
+                  <div class="col-4 q-mb-sm">
+                    <div class="text-grey-6">ความคิดเห็น</div>
+                    <div class="text-weight-bold"><q-icon name="chat_bubble" color="teal"></q-icon> 954</div>
+                  </div>
+                  <div class="col-4 q-mb-sm">
+                    <div class="text-grey-6">ได้รางวัล</div>
+                    <div class="text-weight-bold"><q-icon name="emoji_events" color="amber"></q-icon> 544</div>
+                  </div>
+                  <div class="col-4 q-mb-sm">
+                    <div class="text-grey-6">ให้รางวัล</div>
+                    <div class="text-weight-bold"><q-icon name="card_giftcard" color="purple"></q-icon> 101</div>
+                  </div>
+                </div>
+
+                <div v-if="showMoreStats">
+                  <div class="row" style="font-size: 12px;">
+                    <div class="col-4 q-mb-sm">
+                      <div class="text-grey-6">รับความรู้สึก</div>
+                      <div class="text-weight-bold"><q-icon name="favorite" color="pink"></q-icon> 1.9k</div>
+                    </div>
+                    <div class="col-4 q-mb-sm">
+                      <div class="text-grey-6">แสดงความรู้สึก</div>
+                      <div class="text-weight-bold"><q-icon name="thumb_up" color="blue"></q-icon> 1.1k</div>
+                    </div>
+                    <div class="col-4 q-mb-sm">
+                      <div class="text-grey-6">ได้เรียนรู้</div>
+                      <div class="text-weight-bold"><q-icon name="school" color="teal"></q-icon> 103</div>
+                    </div>
+                  </div>
+
+                  <div class="row" style="font-size: 12px;">
+                    <div class="col-4 q-mb-sm">
+                      <div class="text-grey-6">ปันความรู้</div>
+                      <div class="text-weight-bold"><q-icon name="share" color="indigo"></q-icon> 79</div>
+                    </div>
+                    <div class="col-4 q-mb-sm">
+                      <div class="text-grey-6">อ่าน</div>
+                      <div class="text-weight-bold"><q-icon name="visibility" color="cyan"></q-icon> 5.9k</div>
+                    </div>
+                    <div class="col-4 q-mb-sm">
+                      <div class="text-grey-6">รีโพสต์</div>
+                      <div class="text-weight-bold"><q-icon name="repeat" color="orange"></q-icon> 1</div>
+                    </div>
+                  </div>
+
+                  <div class="row" style="font-size: 12px;">
+                    <div class="col-4 q-mb-sm">
+                      <div class="text-grey-6">นำไปใช้</div>
+                      <div class="text-weight-bold"><q-icon name="build" color="deep-purple"></q-icon> 4</div>
+                    </div>
+                    <div class="col-4 q-mb-sm">
+                      <div class="text-grey-6">สั่งการ</div>
+                      <div class="text-weight-bold"><q-icon name="assignment_turned_in" color="teal"></q-icon> 30</div>
+                    </div>
+                    <div class="col-4 q-mb-sm">
+                      <div class="text-grey-6">เข้าใช้งาน</div>
+                      <div class="text-weight-bold"><q-icon name="login" color="blue-grey"></q-icon> 1.9k</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right q-px-md q-pb-md cursor-pointer text-grey-7" style="font-size: 13px;" @click="showMoreStats = !showMoreStats">
+                {{ showMoreStats ? 'ดูน้อยลง' : 'ดูเพิ่ม' }}
+                <q-icon :name="showMoreStats ? 'expand_less' : 'expand_more'" size="16px" class="q-ml-xs"></q-icon>
+              </div>
+            </div>
+
+            <!-- Duty Monitor / Tab -->
+            <div class="profile-card">
+              <q-tabs v-model="dutyTab" dense class="text-grey-7" active-color="primary" indicator-color="primary" align="justify" style="font-size: 13px;">
+                <q-tab name="sent" icon="north_east" label="คำสั่งที่สั่งไป"></q-tab>
+                <q-tab name="received" icon="south_west" label="คำสั่งที่ได้รับ"></q-tab>
+                <q-tab name="wi" icon="menu_book" label="WI"></q-tab>
+              </q-tabs>
+              <q-tab-panels v-model="dutyTab" animated>
+                <q-tab-panel name="sent" class="q-pa-none">
+                  <q-list class="q-px-sm q-pb-sm">
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="teal-2" text-color="teal-8" rounded>0</q-badge></q-item-section>
+                      <q-item-section><q-item-label>คำสั่งการใหม่</q-item-label></q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="orange-2" text-color="orange-9" rounded>3</q-badge></q-item-section>
+                      <q-item-section><q-item-label>คำสั่งดำเนินการ</q-item-label></q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="amber-2" text-color="amber-9" rounded>6</q-badge></q-item-section>
+                      <q-item-section><q-item-label>มีความก้าวหน้าใหม่</q-item-label></q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="teal-2" text-color="teal-8" rounded>0</q-badge></q-item-section>
+                      <q-item-section><q-item-label>คำขอปิดงาน</q-item-label></q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="teal-2" text-color="teal-8" rounded>0</q-badge></q-item-section>
+                      <q-item-section><q-item-label>ข้อความใหม่</q-item-label></q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-tab-panel>
+                <q-tab-panel name="received" class="q-pa-none">
+                  <q-list class="q-px-sm q-pb-sm">
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="orange-2" text-color="orange-9" rounded>4</q-badge></q-item-section>
+                      <q-item-section><q-item-label>ยังไม่รับทราบ</q-item-label></q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="red-2" text-color="red-8" rounded>31</q-badge></q-item-section>
+                      <q-item-section><q-item-label>กำลังดำเนินการ</q-item-label></q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="orange-2" text-color="orange-9" rounded>7</q-badge></q-item-section>
+                      <q-item-section><q-item-label>ขอปิดงาน</q-item-label></q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="teal-2" text-color="teal-8" rounded>0</q-badge></q-item-section>
+                      <q-item-section><q-item-label>ข้อความใหม่</q-item-label></q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-tab-panel>
+                <q-tab-panel name="wi" class="q-pa-none">
+                  <q-list class="q-px-sm q-pb-sm">
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="light-blue-2" text-color="light-blue-8" rounded>0</q-badge></q-item-section>
+                      <q-item-section><q-item-label>ต้องพิจารณา</q-item-label></q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="light-blue-2" text-color="light-blue-8" rounded>0</q-badge></q-item-section>
+                      <q-item-section><q-item-label>ยังไม่ขออนุมัติ</q-item-label></q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                      <q-item-section avatar><q-badge color="light-blue-2" text-color="light-blue-8" rounded>0</q-badge></q-item-section>
+                      <q-item-section><q-item-label>ส่งกลับมาแก้ไข</q-item-label></q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-tab-panel>
+              </q-tab-panels>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="profile-card q-mt-md">
+              <div class="row items-center q-pa-md q-pb-sm">
+                <q-icon name="schedule" color="teal" size="20px" class="q-mr-sm"></q-icon>
+                <span class="text-weight-bold" style="font-size: 13px;">กิจกรรมล่าสุด</span>
+              </div>
+              <q-list class="q-px-sm q-pb-sm">
+                <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
+                  <q-item-section avatar style="min-width: 42px;">
+                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar2.jpg"></q-avatar>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้อ่านโพสต์ของ Nichagorn Prajansen</q-item-label>
+                    <q-item-label caption style="font-size: 12px; line-height: 1.4;">ขอเพิ่มรายงานข้อมูลการเช็คอิน-เช็คเอาท์ ของบุคลากรใน...</q-item-label>
+                    <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">22 มิ.ย. 2026, 9:28 น.</q-item-label>
+                  </q-item-section>
+                  <q-item-section side top>
+                    <q-icon name="visibility" color="grey-5" size="16px"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
+                  <q-item-section avatar style="min-width: 42px;">
+                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar3.jpg"></q-avatar>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้อ่านโพสต์ของ Chanavee Bekaku</q-item-label>
+                    <q-item-label caption style="font-size: 12px; line-height: 1.4;">แชร์ประสบการณ์การทำเว็บไซต์บริษัทใหม่ Deploy พร้อมใช้ง...</q-item-label>
+                    <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">22 มิ.ย. 2026, 9:27 น.</q-item-label>
+                  </q-item-section>
+                  <q-item-section side top>
+                    <q-icon name="visibility" color="grey-5" size="16px"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
+                  <q-item-section avatar style="min-width: 42px;">
+                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar4.jpg"></q-avatar>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้ให้รางวัลโพสต์ของ Chanavee...</q-item-label>
+                    <q-item-label caption style="font-size: 12px; line-height: 1.4;">แชร์ประสบการณ์การทำเว็บไซต์บริษัทใหม่...</q-item-label>
+                    <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">17 มิ.ย. 2026, 11:35 น.</q-item-label>
+                  </q-item-section>
+                  <q-item-section side top>
+                    <q-icon name="emoji_events" color="amber" size="16px"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
+                  <q-item-section avatar style="min-width: 42px;">
+                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar5.jpg"></q-avatar>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้อ่านโพสต์ของ Sunthan Mongkol</q-item-label>
+                    <q-item-label caption style="font-size: 12px; line-height: 1.4;">ส่งรายงาน PA พัฒนางานประจำ ประจำเดือน...</q-item-label>
+                    <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">15 มิ.ย. 2026, 14:20 น.</q-item-label>
+                  </q-item-section>
+                  <q-item-section side top>
+                    <q-icon name="visibility" color="grey-5" size="16px"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
+                  <q-item-section avatar style="min-width: 42px;">
+                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar2.jpg"></q-avatar>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้แสดงความคิดเห็นโพสต์ของ Pinij</q-item-label>
+                    <q-item-label caption style="font-size: 12px; line-height: 1.4;">โพสปัญหาเชิงโครงสร้างของ EDR...</q-item-label>
+                    <q-item-label caption style="font-size: 11px; color: var(--wee-text-muted);">14 มิ.ย. 2026, 10:05 น.</q-item-label>
+                  </q-item-section>
+                  <q-item-section side top>
+                    <q-icon name="chat_bubble" color="teal" size="16px"></q-icon>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+
+              <div class="text-right q-px-md q-pb-md q-pt-sm cursor-pointer" style="font-size: 13px;">
+                <span class="text-teal text-weight-bold">ดูเพิ่ม</span>
+                <q-icon name="expand_more" color="teal" size="18px" class="q-ml-xs"></q-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== คอลัมน์กลาง: FeedStatistic + FeedPostArea + Posts ===== -->
+          <div class="col-12 col-md-6 q-pa-md app-feed-page">
+
+            <!-- FeedStatistic: 3 cards (จาก FeedStatistic.vue) -->
+            <div class="row q-col-gutter-sm q-mb-md">
+              <div class="col-4">
+                <q-card flat class="card-style text-center text-white" style="background: #15a08f;">
+                  <div class="column flex-center full-height" style="background-color: rgba(0, 0, 0, 0.2);">
+                    <div class="text-h6">แดชบอร์ด</div>
+                    <q-icon name="dashboard" size="42px" class="q-mt-xs"></q-icon>
+                  </div>
+                </q-card>
+              </div>
+              <div class="col-4">
+                <q-card flat class="card-style text-center" style="background: url('https://cdn.quasar.dev/img/avatar.png') center/cover;">
+                  <div class="column flex-center full-height" style="background-color: rgba(0, 0, 0, 0.5);">
+                    <div class="text-caption text-white text-weight-bold q-mb-sm">คุณ</div>
+                    <q-btn rounded unelevated color="negative" size="sm" label="18 Watcher" class="q-mb-xs"></q-btn>
+                    <div class="text-grey-4" style="font-size: 11px;">POST: 0</div>
+                  </div>
+                </q-card>
+              </div>
+              <div class="col-4">
+                <q-card flat class="card-style text-center" style="background: url('https://cdn.quasar.dev/img/mountains.jpg') center/cover;">
+                  <div class="column flex-center full-height" style="background-color: rgba(0, 0, 0, 0.5);">
+                    <div class="text-caption text-white text-weight-bold q-mb-sm">องค์กร</div>
+                    <q-btn rounded unelevated color="negative" size="sm" label="5 Watcher" class="q-mb-xs"></q-btn>
+                    <div class="text-grey-4" style="font-size: 11px;">PRIZE_GIVE: 0</div>
+                  </div>
+                </q-card>
+              </div>
+            </div>
+
+            <!-- FeedPostArea (จาก FeedPostArea.vue) -->
+            <q-card flat bordered class="q-mb-md">
+              <q-card-section class="q-py-sm">
+                <q-item>
+                  <q-item-section avatar>
+                    <q-avatar size="42px">
+                      <img src="https://cdn.quasar.dev/img/avatar.png">
+                    </q-avatar>
+                  </q-item-section>
+                  <q-item-section clickable>
+                    <q-item-label class="cursor-pointer bg-grey-2 q-pa-sm" style="border-radius: 25px; color: var(--wee-text-muted);">
+                      วันนี้คุณทำ D แล้วหรือยัง?
+                    </q-item-label>
+                  </q-item-section>
+                  <q-item-section side>
+                    <q-btn flat round color="primary" icon="volunteer_activism"></q-btn>
+                  </q-item-section>
+                </q-item>
+              </q-card-section>
+            </q-card>
+
+            <!-- Feed Sort -->
+            <div class="row items-center q-mb-sm">
+              <span class="text-weight-bold" style="font-size: 15px;">โพสต์ล่าสุด</span>
+              <q-icon name="diamond" color="primary" size="18px" class="q-ml-xs"></q-icon>
+              <q-space></q-space>
+              <q-btn flat round dense icon="format_list_bulleted" color="primary"></q-btn>
+              <q-btn flat round dense icon="grid_view" color="grey-5"></q-btn>
+            </div>
+
+            <!-- Post 1 -->
+            <div class="feed-card">
+              <q-item class="q-pa-md q-pb-sm">
+                <q-item-section avatar>
+                  <q-avatar size="40px"><img src="https://cdn.quasar.dev/img/avatar2.jpg"></q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">Mr.Test Bekaku <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">25 พ.ค. 2026, 10:46 น.</span></q-item-label>
+                  <q-item-label caption>Dev Manager</q-item-label>
+                </q-item-section>
+                <q-item-section side><q-btn flat round dense icon="more_vert" color="grey-6"></q-btn></q-item-section>
+              </q-item>
+              <div class="q-px-md q-pb-sm">
+                <div class="row q-col-gutter-md">
+                  <div class="col-5 relative-position">
+                    <img src="https://cdn.quasar.dev/img/mountains.jpg" class="feed-thumb" style="height: 100px;">
+                    <q-icon name="play_circle_filled" color="white" size="32px" class="absolute-center" style="opacity: 0.85;"></q-icon>
+                  </div>
+                  <div class="col-7">
+                    <div class="text-weight-bold" style="font-size: 14px;">ทดสอบโพสต์วิดีโอ</div>
+                    <div class="text-grey-7" style="font-size: 13px;">ทดสอบโพสต์วิดีโอ</div>
+                  </div>
+                </div>
+              </div>
+              <q-separator></q-separator>
+              <div class="row items-center q-px-md q-py-xs text-grey-6" style="font-size: 12px;">
+                <q-icon name="visibility" size="16px" class="q-mr-xs text-cyan"></q-icon> 11
+                <q-space></q-space>
+                <q-icon name="chat_bubble_outline" size="16px" class="q-mr-xs"></q-icon> 2 ความคิดเห็น
+              </div>
+            </div>
+
+            <!-- Post 2 -->
+            <div class="feed-card">
+              <q-item class="q-pa-md q-pb-sm">
+                <q-item-section avatar>
+                  <q-avatar size="40px"><img src="https://cdn.quasar.dev/img/avatar3.jpg"></q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">SA-Tester <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">25 พ.ค. 2026, 9:30 น.</span></q-item-label>
+                  <q-item-label caption>SA</q-item-label>
+                </q-item-section>
+                <q-item-section side><q-btn flat round dense icon="more_vert" color="grey-6"></q-btn></q-item-section>
+              </q-item>
+              <div class="q-px-md q-pb-sm">
+                <div class="row q-col-gutter-md">
+                  <div class="col-5 relative-position">
+                    <img src="https://cdn.quasar.dev/img/parallax2.jpg" class="feed-thumb" style="height: 100px;">
+                    <q-icon name="play_circle_filled" color="white" size="32px" class="absolute-center" style="opacity: 0.85;"></q-icon>
+                  </div>
+                  <div class="col-7">
+                    <div class="text-weight-bold" style="font-size: 14px;">Never let me go MP4</div>
+                    <div class="text-grey-7" style="font-size: 13px;">Share MP4 (Never let me go)</div>
+                  </div>
+                </div>
+              </div>
+              <q-separator></q-separator>
+              <div class="row items-center q-px-md q-py-xs text-grey-6" style="font-size: 12px;">
+                <q-icon name="thumb_up" size="16px" class="q-mr-xs text-pink"></q-icon> 1
+                <q-icon name="visibility" size="16px" class="q-ml-md q-mr-xs text-cyan"></q-icon> 3
+                <q-space></q-space>
+              </div>
+            </div>
+
+            <!-- Post 3 -->
+            <div class="feed-card">
+              <q-item class="q-pa-md q-pb-sm">
+                <q-item-section avatar>
+                  <q-avatar size="40px"><img src="https://cdn.quasar.dev/img/avatar6.jpg"></q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">Pinij Ningunha <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">24 พ.ค. 2026, 15:20 น.</span></q-item-label>
+                  <q-item-label caption>Network Engineer</q-item-label>
+                </q-item-section>
+                <q-item-section side><q-btn flat round dense icon="more_vert" color="grey-6"></q-btn></q-item-section>
+              </q-item>
+              <div class="q-px-md q-pb-sm">
+                <div class="row q-col-gutter-md">
+                  <div class="col-12">
+                    <div class="text-weight-bold q-mb-sm" style="font-size: 14px;">อัปเดตระบบ EDR กลางประจำเดือน</div>
+                    <div class="text-grey-8" style="font-size: 13px;">แจ้งบุคลากรทุกท่าน คืนนี้เวลา 22:00 น. จะมีการปรับปรุงเซิร์ฟเวอร์หลักของระบบ EDR อาจทำให้ไม่สามารถใช้งานระบบได้ชั่วคราวเป็นเวลา 2 ชั่วโมง ขออภัยในความไม่สะดวกครับ</div>
+                  </div>
+                </div>
+              </div>
+              <q-separator></q-separator>
+              <div class="row items-center q-px-md q-py-xs text-grey-6" style="font-size: 12px;">
+                <q-icon name="thumb_up" size="16px" class="q-mr-xs text-pink"></q-icon> 15
+                <q-icon name="favorite" size="16px" class="q-ml-md q-mr-xs text-red"></q-icon> 4
+                <q-icon name="visibility" size="16px" class="q-ml-md q-mr-xs text-cyan"></q-icon> 89
+                <q-space></q-space>
+                <q-icon name="chat_bubble_outline" size="16px" class="q-mr-xs"></q-icon> 6 ความคิดเห็น
+              </div>
+            </div>
+
+            <!-- Post 4 -->
+            <div class="feed-card">
+              <q-item class="q-pa-md q-pb-sm">
+                <q-item-section avatar>
+                  <q-avatar size="40px"><img src="https://cdn.quasar.dev/img/avatar4.jpg"></q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">Tsiramet <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">23 พ.ค. 2026, 11:15 น.</span></q-item-label>
+                  <q-item-label caption>Product Owner</q-item-label>
+                </q-item-section>
+                <q-item-section side><q-btn flat round dense icon="more_vert" color="grey-6"></q-btn></q-item-section>
+              </q-item>
+              <div class="q-px-md q-pb-sm">
+                <div class="row q-col-gutter-md">
+                  <div class="col-5 relative-position">
+                    <img src="https://cdn.quasar.dev/img/parallax1.jpg" class="feed-thumb" style="height: 100px;">
+                  </div>
+                  <div class="col-7">
+                    <div class="text-weight-bold" style="font-size: 14px;">ฟีเจอร์ใหม่ GiveDeeFive V.1.2.8</div>
+                    <div class="text-grey-7" style="font-size: 13px;">เปิดตัวระบบ Virtual Meeting แบบใหม่ที่ไฉไลกว่าเดิม! สามารถแชร์หน้าจอและ...</div>
+                  </div>
+                </div>
+              </div>
+              <q-separator></q-separator>
+              <div class="row items-center q-px-md q-py-xs text-grey-6" style="font-size: 12px;">
+                <q-icon name="thumb_up" size="16px" class="q-mr-xs text-pink"></q-icon> 42
+                <q-icon name="visibility" size="16px" class="q-ml-md q-mr-xs text-cyan"></q-icon> 150
+                <q-space></q-space>
+                <q-icon name="chat_bubble_outline" size="16px" class="q-mr-xs"></q-icon> 12 ความคิดเห็น
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== คอลัมน์ขวา: FeedRight ===== -->
+          <div class="col-12 col-md-3 q-pt-md q-pr-md">
+
+            <!-- ความก้าวหน้าของฉัน (Today Job) -->
+            <div class="profile-card q-mb-md q-pa-md">
+              <div class="row items-center q-mb-sm">
+                <q-icon name="insights" color="indigo" size="20px" class="q-mr-sm"></q-icon>
+                <span class="text-indigo text-weight-bold" style="font-size: 14px;">Today's Job</span>
+                <q-space></q-space>
+                <span class="text-indigo text-weight-bold" style="font-size: 18px;">47 %</span>
+              </div>
+              <q-linear-progress size="12px" :value="0.47" color="indigo-13" class="q-mb-md" style="border-radius: 6px;"></q-linear-progress>
+              <div class="row items-center q-gutter-x-sm" style="font-size: 11px;">
+                <span class="text-grey-7">4 รอดำเนินการ</span>
+                <q-badge color="green-1" text-color="green-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 12px;">1 ดำเนินการแล้ว</q-badge>
+                <q-badge color="red-1" text-color="red-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 12px;">2 งานค้าง</q-badge>
+              </div>
+            </div>
+
+            <!-- ออนไลน์ขณะนี้ (จาก SectionUserOnline) -->
+            <div class="profile-card q-mb-md q-pa-md">
+              <div class="row items-center q-mb-md">
+                <q-avatar size="36px" color="cyan-1" text-color="teal-6" class="q-mr-sm">
+                  <q-icon name="people" size="20px"></q-icon>
+                </q-avatar>
+                <span class="text-weight-bold" style="font-size: 14px;">ออนไลน์ขณะนี้</span>
+                <q-space></q-space>
+                <q-btn flat round dense icon="refresh" color="grey" size="sm"></q-btn>
+              </div>
+              <div class="row q-gutter-md justify-start">
+                <div class="text-center" style="width: 72px;">
+                  <q-avatar rounded size="56px" class="q-mb-sm" style="border-radius: 8px;">
+                    <img src="https://cdn.quasar.dev/img/parallax2.jpg">
+                  </q-avatar>
+                  <div class="text-weight-bold ellipsis" style="font-size: 13px; color: var(--v-main-text-head);">Piyawat T...</div>
+                  <div class="text-grey ellipsis" style="font-size: 11px;">SA Staff</div>
+                  <div class="text-grey ellipsis" style="font-size: 11px;">น้อยกว่า 1 ...</div>
+                </div>
+                <div class="text-center" style="width: 72px;">
+                  <q-avatar rounded size="56px" class="q-mb-sm" style="border-radius: 8px;">
+                    <img src="https://cdn.quasar.dev/img/avatar3.jpg">
+                  </q-avatar>
+                  <div class="text-weight-bold ellipsis" style="font-size: 13px; color: var(--v-main-text-head);">Somchai M...</div>
+                  <div class="text-grey ellipsis" style="font-size: 11px;">Developer</div>
+                  <div class="text-grey ellipsis" style="font-size: 11px;">5 นาที</div>
+                </div>
+                <div class="text-center" style="width: 72px;">
+                  <q-avatar rounded size="56px" class="q-mb-sm" style="border-radius: 8px;">
+                    <img src="https://cdn.quasar.dev/img/avatar5.jpg">
+                  </q-avatar>
+                  <div class="text-weight-bold ellipsis" style="font-size: 13px; color: var(--v-main-text-head);">Wandee K...</div>
+                  <div class="text-grey ellipsis" style="font-size: 11px;">QA Engineer</div>
+                  <div class="text-grey ellipsis" style="font-size: 11px;">10 นาที</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Virtual Meeting (จาก MeetingRoomSection) -->
+            <div class="profile-card q-mb-md q-pa-md">
+              <div class="row items-center q-mb-md">
+                <div>
+                  <div class="text-weight-bold" style="font-size: 14px;">Virtual Meeting</div>
+                  <div class="text-grey text-caption">กลุ่มของคุณ</div>
+                </div>
+                <q-space></q-space>
+                <q-btn flat round dense icon="group_add" color="grey-6" size="sm" class="q-mr-xs"></q-btn>
+                <q-btn flat round dense icon="add_circle_outline" color="grey-6" size="sm"></q-btn>
+              </div>
+
+              <!-- Item 1 -->
+              <div class="group-item q-mb-md">
+                <q-avatar rounded size="48px" class="q-mr-sm" style="border-radius: 8px;">
+                  <img src="https://cdn.quasar.dev/img/mountains.jpg" style="object-fit: cover;">
+                </q-avatar>
+                <div class="col">
+                  <div class="text-weight-bold" style="font-size: 13px;">VM : AAR GiveDee...</div>
+                  <div class="text-grey" style="font-size: 11px;"><q-icon name="push_pin" color="cyan" size="12px"></q-icon>สมาชิก 18 คน • 20 ยังไม่ได้อ่าน • โพสต์ 136</div>
+                </div>
+                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+              </div>
+
+              <!-- Item 2 -->
+              <div class="group-item q-mb-md">
+                <q-avatar rounded size="48px" class="q-mr-sm" style="border-radius: 8px;">
+                  <img src="https://cdn.quasar.dev/img/parallax1.jpg" style="object-fit: cover;">
+                </q-avatar>
+                <div class="col">
+                  <div class="text-weight-bold" style="font-size: 13px;">เคล็ดลับการเขียนแ...</div>
+                  <div class="text-grey" style="font-size: 11px;"><q-icon name="push_pin" color="cyan" size="12px"></q-icon>สมาชิก 29 คน • โพสต์ 2</div>
+                </div>
+                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+              </div>
+
+              <!-- Item 3 -->
+              <div class="group-item q-mb-md">
+                <q-avatar rounded size="48px" class="q-mr-sm" style="border-radius: 8px;">
+                  <img src="https://cdn.quasar.dev/img/parallax2.jpg" style="object-fit: cover;">
+                </q-avatar>
+                <div class="col">
+                  <div class="text-weight-bold" style="font-size: 13px;">AI วันละ 5 นาที</div>
+                  <div class="text-grey" style="font-size: 11px;"><q-icon name="push_pin" color="cyan" size="12px"></q-icon>สมาชิก 17 คน • 7 ยังไม่ได้อ่าน • โพสต์ 22</div>
+                </div>
+                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+              </div>
+
+              <!-- Item 4 -->
+              <div class="group-item q-mb-md">
+                <q-avatar rounded size="48px" class="q-mr-sm" style="border-radius: 8px;">
+                  <img src="https://cdn.quasar.dev/img/donuts.png" style="object-fit: cover;">
+                </q-avatar>
+                <div class="col">
+                  <div class="text-weight-bold" style="font-size: 13px;">SA-Developer</div>
+                  <div class="text-grey" style="font-size: 11px;"><q-icon name="push_pin" color="cyan" size="12px"></q-icon>สมาชิก 4 คน • โพสต์ 9</div>
+                </div>
+                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+              </div>
+
+              <!-- Item 5 -->
+              <div class="group-item">
+                <q-avatar rounded size="48px" class="q-mr-sm" style="border-radius: 8px;">
+                  <img src="https://cdn.quasar.dev/img/material.png" style="object-fit: cover;">
+                </q-avatar>
+                <div class="col">
+                  <div class="text-weight-bold" style="font-size: 13px;">VM : EDR วท.อุดรธานี</div>
+                  <div class="text-grey" style="font-size: 11px;">สมาชิก 17 คน • 3 ยังไม่ได้อ่าน • โพสต์ 3</div>
+                </div>
+                <q-icon name="chat_bubble_outline" color="grey-6" size="20px"></q-icon>
+              </div>
+
+              <div class="text-right q-px-md q-pb-md q-pt-sm cursor-pointer" style="font-size: 13px;">
+                <span class="text-teal text-weight-bold">ดูเพิ่ม</span>
+                <q-icon name="expand_more" color="teal" size="18px" class="q-ml-xs"></q-icon>
+              </div>
+            </div>
+
+            <!-- ธีมแนะนำ (จาก SectionRecommendThemes) -->
+            <div class="profile-card q-mb-md q-pa-md">
+              <div class="row items-center q-mb-md">
+                <q-avatar size="36px" color="teal-1" text-color="teal-6" class="q-mr-sm">
+                  <q-icon name="description" size="20px"></q-icon>
+                </q-avatar>
+                <span class="text-weight-bold" style="font-size: 14px;">ธีมแนะนำ</span>
+              </div>
+
+              <div class="group-item q-mb-md">
+                <q-avatar size="38px" class="q-mr-sm"><img src="https://cdn.quasar.dev/img/avatar6.jpg"></q-avatar>
+                <div class="col">
+                  <div class="text-weight-bold" style="font-size: 13px;">พันธกิจที่ 1 : EDR</div>
+                  <div class="text-grey" style="font-size: 11px; line-height: 1.4;"><q-icon name="edit" size="12px"></q-icon> โพสต์ 341<br>Pinij Ningunha</div>
+                </div>
+              </div>
+
+              <div class="group-item">
+                <q-avatar size="38px" color="teal" text-color="white" class="q-mr-sm" icon="pan_tool"></q-avatar>
+                <div class="col">
+                  <div class="text-weight-bold" style="font-size: 13px;">พันธกิจที่ 2 : GiveDeeFive</div>
+                  <div class="text-grey" style="font-size: 11px; line-height: 1.4;"><q-icon name="edit" size="12px"></q-icon> โพสต์ 116</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </q-page>
+      </q-page-container>
+    </q-layout>
+  </div>
+
+  <!-- Vue 3 + Quasar UMD -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/quasar.umd.prod.js"></script>
+  <script>
+    const app = Vue.createApp({
+      setup() {
+        const { ref } = Vue
+        return {
+          leftDrawerOpen: ref(true),
+          search: ref(''),
+          dutyTab: ref('received'),
+          statusText: ref(''),
+          showMoreStats: ref(false)
+        }
+      }
+    })
+    app.use(Quasar, {
+      config: {
+        brand: {
+          primary: '#15a08f',
+          secondary: '#26A69A',
+          accent: '#9C27B0',
+          positive: '#21BA45',
+          negative: '#C10015',
+          info: '#31CCEC',
+          warning: '#F2C037'
+        }
+      }
+    })
+    app.mount('#q-app')
+  </script>
+</body>
+</html>

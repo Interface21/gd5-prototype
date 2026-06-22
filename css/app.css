@@ -1,0 +1,17 @@
+/* Error: Undefined variable.
+ *     ,
+ * 140 |       0 0 $elevation-dark-ambient,
+ *     |           ^^^^^^^^^^^^^^^^^^^^^^^
+ *     '
+ *   css\app.scss 140:11  root stylesheet */
+
+body::before {
+  font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",
+      "Droid Sans Mono", monospace, monospace;
+  white-space: pre;
+  display: block;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-bottom: 2px solid black;
+  content: "Error: Undefined variable.\a     \2577 \a 140 \2502        0 0 $elevation-dark-ambient,\a     \2502            ^^^^^^^^^^^^^^^^^^^^^^^\a     \2575 \a   css\\app.scss 140:11  root stylesheet";
+}
