@@ -1,602 +1,529 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>GiveDeeFive - หน้าแรก</title>
-  <meta name="description" content="GiveDeeFive - ระบบจัดการความรู้และการเรียนรู้ในองค์กร">
-
-  <!-- Quasar CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/quasar.prod.css" rel="stylesheet" type="text/css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-  <style>
-    /* ===== CSS Variables จาก app.scss ===== */
-    :root {
-      --wee-main-bg-color: #fafbfc;
-      --wee-main-border-color: #dcdcdc;
-      --wee-main-border-light-color: #ededed;
-      --wee-text-muted: #6b7982;
-      --v-main-text-body: #000000;
-      --v-main-text-head: #1a2d39;
-      --second-bg-color: #fff;
-      --primary: #15a08f;
-    }
-
-    body {
-      font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
-      background-color: var(--wee-main-bg-color) !important;
-      color: var(--v-main-text-body);
-      font-size: 14px;
-      line-height: 1.5;
-      font-weight: 400;
-    }
-
-    /* ===== Header จาก GD5 Dashboard ===== */
-    .q-header {
-      background: #ffffff !important;
-      border-bottom: 1px solid var(--wee-main-border-color);
-      color: var(--v-main-text-head) !important;
-    }
-
-    .search-input { width: 280px; }
-    .search-input .q-field__control {
-      border-radius: 20px !important;
-      background: #f0f2f5;
-      height: 38px;
-    }
-    .search-input .q-field__control:before { border: none !important; }
-
-    /* ===== Layout จาก IndexPage.vue ===== */
-    .app-feed-page {
-      max-width: 756px !important;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .app-feed-container {
-      max-width: 1380px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* ===== Border utilities จาก app.scss ===== */
-    .app-border { border: 1px solid var(--wee-main-border-color) !important; }
-    .app-border-light { border: 1px solid var(--wee-main-border-light-color) !important; }
-    .app-border-bottom { border-bottom: 1px solid var(--wee-main-border-color) !important; }
-    .app-border-radius { border-radius: 10px; }
-    .rounded { border-radius: 10px !important; }
-
-    /* ===== FeedStatistic card-style จาก FeedStatistic.vue ===== */
-    .card-style {
-      height: 185px;
-      overflow: hidden;
-      margin-bottom: 5px;
-      border-radius: 10px !important;
-    }
-    .bg-style {
-      background: linear-gradient(to right, #92fe9d, #00c9ff);
-    }
-    .card-style-overlay {
-      background-color: rgba(0, 0, 0, 0.5);
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ===== Profile Card ===== */
-    .profile-card {
-      background: white;
-      border-radius: 10px;
-      border: 1px solid var(--wee-main-border-light-color);
-      overflow: hidden;
-    }
-    .profile-banner {
-      height: 90px;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .profile-banner-text {
-      color: rgba(255,255,255,0.15);
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    /* ===== Shortcut Card (ทางลัด) จาก Dashboard ===== */
-    .shortcut-card {
-      background: white;
-      border-radius: 10px;
-      border: 1px solid var(--wee-main-border-light-color);
-      padding: 16px;
-    }
-    .shortcut-item {
-      text-align: center;
-      cursor: pointer;
-      padding: 12px 8px;
-      border-radius: 10px;
-      transition: background 0.2s;
-    }
-    .shortcut-item:hover { background: #f0f2f5; }
-
-    /* ===== Status Card (คำสั่งที่สั่งไป/ได้รับ) ===== */
-    .status-card {
-      background: white;
-      border-radius: 10px;
-      border: 1px solid var(--wee-main-border-light-color);
-      padding: 16px;
-    }
-    .status-row {
-      display: flex;
-      align-items: center;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--wee-main-border-light-color);
-    }
-    .status-row:last-child { border-bottom: none; }
-    .status-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 14px;
-      flex-shrink: 0;
-    }
-    .status-bar {
-      height: 6px;
-      border-radius: 3px;
-      margin-top: 6px;
-    }
-
-    /* ===== Group/Meeting items จาก FeedRight ===== */
-    .group-item {
-      padding: 10px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      transition: background 0.2s;
-    }
-    .group-item:hover { background: #f0f2f5; }
-
-    /* ===== Feed Card (Post) ===== */
-    .feed-card {
-      background: white;
-      border: 1px solid var(--wee-main-border-light-color);
-      border-radius: 10px;
-      margin-bottom: 16px;
-    }
-    .feed-thumb {
-      width: 100%;
-      border-radius: 8px;
-      object-fit: cover;
-      height: 90px;
-    }
-
-    /* ===== Left drawer ===== */
-    .drawer-item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      margin: 0 auto 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-      color: #6b7982;
-    }
-    .drawer-item:hover { background: #e6f7f5; color: #15a08f; }
-    .drawer-item.active { background: #e6f7f5; color: #15a08f; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Job Dashboard — GiveDeeFive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+@keyframes popIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-  <div id="q-app">
-    <q-layout view="hHh LpR fFf">
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const MS = {fontFamily:"'Material Symbols Rounded'"};
 
-      <!-- ===== HEADER ===== -->
-      <q-header class="q-px-md q-py-xs" flat>
-        <q-toolbar>
-          <div class="row items-center cursor-pointer q-mr-lg" onclick="window.location.href='dashboard.html'">
-            <img src="image/logo.png" style="height: 36px; object-fit: contain;">
+const TODAY0 = [
+  {id:'j1',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',priority:'high',due:'31/03/2026',days:'เกิน 5 วัน',daysType:'over',progress:60,status:'yellow',type:'strategic'},
+  {id:'j2',title:'อัพเดทระบบ EDR เป็น jdk8 (ทดสอบเป้าหมายแบบตัวเลข)',commander:'Piyawat',priority:'urgent',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over',progress:30,status:'red',type:'daily'},
+  {id:'j3',title:'จัดทำ WI กระบวนการ Deploy เว็บไซต์ใหม่',commander:'Chanavee',priority:'normal',due:'30/06/2026',days:'เหลือ 1 วัน',daysType:'left',progress:100,status:'green',type:'daily',inProgress:true},
+  {id:'j4',title:'ติดตามการเก็บเงิน ตามสัญญา',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:0,status:'yellow',type:'daily'},
+  {id:'j5',title:'โพสปัญหาเชิงโครงสร้างของ EDR',commander:'Pinij',priority:'normal',due:'30/06/2026',days:'เหลือ 4 วัน',daysType:'left',progress:45,status:'green',type:'daily'},
+  {id:'j6',title:'ส่งรายงาน PA พัฒนางานประจำ',commander:'Sunthan',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:20,status:'red',type:'pa'},
+  {id:'j7',title:'เรียน NuxtJS สำหรับพัฒนา EDR V.3',commander:'Bodin',priority:'normal',due:'05/07/2026',days:'เหลือ 8 วัน',daysType:'left',progress:10,status:'yellow',type:'pa'},
+];
+const MEMBERS0 = [
+  {id:'m1',name:'Bodin Muanprasat',role:'Software Engineer',progress:14,jobs:[
+    {id:'b1',title:'เรียน NuxtJS สำหรับพัฒนา EDR V.3',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:10,status:'yellow',type:'pa'},
+    {id:'b2',title:'แก้บั๊ก dashboard EDR ก่อน demo',commander:'Narate',priority:'urgent',due:'29/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:40,status:'red',type:'daily'},
+    {id:'b3',title:'รีวิวโค้ด Pull Request #214',commander:'Chanavee',priority:'normal',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:0,status:'yellow',type:'daily'},
+  ]},
+  {id:'m2',name:'Narate Boonmee',role:'Software Engineer',progress:46,jobs:[
+    {id:'n1',title:'จัดทำ WI การ Deploy ด้วย Nuxt Content',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:60,status:'green',type:'daily'},
+    {id:'n2',title:'ทดสอบ regression ระบบ EDR',commander:'Piyawat',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:30,status:'yellow',type:'daily'},
+  ]},
+  {id:'m3',name:'Supatta Longna',role:'แผนปฏิบัติการ',progress:9,jobs:[
+    {id:'s1',title:'หาสาเหตุที่แท้จริงของปัญหา',commander:'Piyawat',priority:'normal',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:0,status:'red',type:'daily'},
+    {id:'s2',title:'สรุปยอดเก็บเงินรายเดือน',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:20,status:'yellow',type:'daily'},
+  ]},
+  {id:'m4',name:'Nichagorn Prajansen',role:'Staff',progress:46,jobs:[
+    {id:'g1',title:'สรุปข้อมูลความเห็นโพสต์',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:46,status:'green',type:'daily'},
+    {id:'g2',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:50,status:'green',type:'pa'},
+  ]},
+];
+const POOL0 = [
+  {id:'p1',title:'อบรมลูกค้า / ส่งมอบงานระบบ Grand ATS',commander:'บาส',priority:'urgent',due:'30/06/2026',days:'เกิน 10 วัน',daysType:'over',amount:'฿1,000,000',type:'daily'},
+  {id:'p2',title:'จัดทำรายละเอียดของสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',priority:'urgent',due:'30/06/2026',days:'เกิน 5 วัน',daysType:'over',amount:'฿1,000,000',type:'daily'},
+  {id:'p3',title:'ติดตามการเก็บเงิน ตามสัญญา (เพิ่มเติม)',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over',amount:'฿1,000,000',type:'daily'},
+  {id:'p4',title:'หาสาเหตุที่แท้จริงของปัญหาเชิงโครงสร้าง',commander:'Supatta',priority:'normal',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left',count:'3 งาน',type:'daily'},
+  {id:'p5',title:'ขอให้ใช้ GD5 เป็นส่วนหนึ่งของงานประจำวัน',commander:'ปอนด์',priority:'normal',due:'30/06/2026',days:'อีก 10 วัน',daysType:'left',count:'ดำเนินการแล้วเสร็จ',type:'strategic'},
+  {id:'p6',title:'PA - พัฒนางานประจำ ไตรมาส 3',commander:'Piyawat',priority:'normal',due:'31/12/2026',days:'อีก 5 วัน',daysType:'left',count:'3 งาน',type:'pa'},
+  {id:'p7',title:'โพสบทความเคล็ดลับการเขียน WI',commander:'Khajonsak',priority:'high',due:'30/06/2026',days:'อีก 4 วัน',daysType:'left',count:'2 งาน',type:'strategic'},
+  {id:'p8',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left',count:'3 งาน',type:'pa'},
+  {id:'p9',title:'แชร์ Use Case ของ Nuxt Content บน GD5',commander:'Chanavee',priority:'normal',due:'05/07/2026',days:'อีก 8 วัน',daysType:'left',count:'1 งาน',type:'strategic'},
+  {id:'p10',title:'ทดสอบการรายงานความก้าวหน้าเป็น %',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left',count:'5 งาน',type:'daily'},
+];
+
+const primary='#15a08f', primarySoft='#e3f3f0', primarySoftBorder='#c4e7df';
+const prStyle=(p)=> p==='urgent'?{bg:'#fdeaea',text:'#d83a3a',label:'ด่วนมาก'}:p==='high'?{bg:'#fff2e2',text:'#dd7a16',label:'ด่วน'}:{bg:'#eef1f5',text:'#6b7280',label:'ปกติ'};
+const tyStyle=(t)=> t==='strategic'?{bg:'#fdeee0',text:'#d98223',label:'งานตามแผนธุรกิจ'}:t==='pa'?{bg:'#fef3d4',text:'#b88407',label:'PA'}:{bg:'#e3f3f0',text:'#0e8c7d',label:'งานประจำวัน'};
+const pickColor=(name)=>{const c=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57'];let h=0;const s=name||'?';for(let i=0;i<s.length;i++)h=(h+s.charCodeAt(i))%c.length;return c[h];};
+const barColorFor=(p)=> p>=100?'#22b573':p>=40?primary:p>0?'#f5b301':'#cbd5e1';
+const statsFor=(arr)=>{const total=arr.length,done=arr.filter(j=>j.progress>=100).length,over=arr.filter(j=>j.daysType==='over').length,avg=total?Math.round(arr.reduce((s,j)=>s+j.progress,0)/total):0;return {total,done,over,pending:total-done,avg,avgStyle:avg+'%'};};
+
+function App(){
+  const [view,setView]=useState('dashboard');
+  const [manageMode,setManageMode]=useState('me');
+  const [selectedMember,setSelectedMember]=useState(0);
+  const [reorderOpen,setReorderOpen]=useState(false);
+  const [reorderKind,setReorderKind]=useState('me');
+  const [poolFilter,setPoolFilter]=useState('all');
+  const [poolSearch,setPoolSearch]=useState('');
+  const [todayJobs,setTodayJobs]=useState(TODAY0);
+  const [members,setMembers]=useState(MEMBERS0);
+  const [pool,setPool]=useState(POOL0);
+  const dragRef = React.useRef(null);
+
+  const getList=(kind)=> kind==='team' ? (members[selectedMember]?members[selectedMember].jobs:[]) : todayJobs;
+  const setList=(kind,arr)=>{ if(kind==='team'){ setMembers(ms=>ms.map((m,i)=>i===selectedMember?{...m,jobs:arr}:m)); } else setTodayJobs(arr); };
+  const move=(kind,id,dir)=>{ const arr=[...getList(kind)];const i=arr.findIndex(j=>j.id===id);const ni=i+dir;if(i<0||ni<0||ni>=arr.length)return;const t=arr[i];arr[i]=arr[ni];arr[ni]=t;setList(kind,arr); };
+  const remove=(kind,id)=> setList(kind,getList(kind).filter(j=>j.id!==id));
+  const addProgress=(kind,id)=> setList(kind,getList(kind).map(j=>{if(j.id!==id)return j;const np=Math.min(100,j.progress+25);return {...j,progress:np,status:np>=100?'green':j.status};}));
+  const dropOn=(kind,targetId)=>{const d=dragRef.current;if(!d||d===targetId)return;const arr=[...getList(kind)];const from=arr.findIndex(j=>j.id===d);const to=arr.findIndex(j=>j.id===targetId);if(from<0||to<0)return;const [mv]=arr.splice(from,1);arr.splice(to,0,mv);setList(kind,arr);dragRef.current=null;};
+  const importJob=(id)=>{const p=pool.find(x=>x.id===id);if(!p)return;const kind=manageMode==='team'?'team':'me';const job={id:'imp-'+id+'-'+Date.now(),title:p.title,commander:p.commander,priority:p.priority,due:p.due,days:p.days,daysType:p.daysType||'left',progress:0,status:'yellow',type:p.type||'daily'};setList(kind,[...getList(kind),job]);setPool(pl=>pl.filter(x=>x.id!==id));};
+
+  const mapJob=(job,idx,kind)=>{
+    const pr=prStyle(job.priority),ty=tyStyle(job.type),hi=job.progress>=100||job.inProgress;
+    return {...job,rank:idx+1,widthStyle:job.progress+'%',barColor:barColorFor(job.progress),
+      statusColor:job.status==='red'?'#ef4444':job.status==='green'?'#22b573':'#f5b301',
+      prBg:pr.bg,prText:pr.text,prLabel:pr.label,tyBg:ty.bg,tyText:ty.text,tyLabel:ty.label,
+      daysColor:job.daysType==='over'?'#d83a3a':'#16916f',daysIcon:job.daysType==='over'?'warning':'schedule',
+      rowBg:hi?'#eaf7f0':'#ffffff',rowBorder:hi?'#bfe6d3':'#eef0f4',
+      avatarInitial:(job.commander||'?').trim().charAt(0),avatarColor:pickColor(job.commander),
+      onMoveUp:()=>move(kind,job.id,-1),onMoveDown:()=>move(kind,job.id,1),
+      onRemove:()=>remove(kind,job.id),onAddProgress:()=>addProgress(kind,job.id),
+      onDragStart:(e)=>{dragRef.current=job.id;try{e.dataTransfer.effectAllowed='move';}catch(_){}},
+      onDrop:(e)=>{e.preventDefault();dropOn(kind,job.id);}};
+  };
+
+  const isDashboard=view==='dashboard', isManage=view==='manage', isMember=view==='member';
+  const isTeamMode=manageMode==='team', activeKind=isTeamMode?'team':'me';
+  const todayView=todayJobs.map((j,i)=>mapJob(j,i,'me'));
+  const myStats=statsFor(todayJobs);
+  const teamAll=members.reduce((a,m)=>a.concat(m.jobs),[]);
+  const teamStats=statsFor(teamAll);
+  const teamView=members.map((m,i)=>{const st=statsFor(m.jobs);return {...m,idx:i,total:st.total,done:st.done,over:st.over,pending:st.pending,widthStyle:m.progress+'%',onManage:()=>{setSelectedMember(i);setManageMode('team');setView('member');}};});
+  const manageList=getList(activeKind).map((j,i)=>mapJob(j,i,activeKind));
+  const reorderView=getList(reorderKind).map((j,i)=>mapJob(j,i,reorderKind));
+  const sel=selectedMember, mem=members[sel]||{name:'',role:'',jobs:[]};
+  const memberJobsView=(mem.jobs||[]).map((j,i)=>mapJob(j,i,'team'));
+  const memberStats=statsFor(mem.jobs||[]);
+  const mt=memberStats;
+  const memberStatCards=[
+    {label:'งานที่ได้รับ',count:mt.total,unit:'งาน',icon:'call_received',color:'#4f46e5',softBg:'#ecebfb',pct:100},
+    {label:'ปิดงานแล้ว',count:mt.done,unit:'งาน',icon:'task_alt',color:'#22b573',softBg:'#e4f4ec',pct:mt.total?Math.round(mt.done/mt.total*100):0},
+    {label:'เกินกำหนด',count:mt.over,unit:'งาน',icon:'warning',color:'#ef4444',softBg:'#fdeaea',pct:mt.total?Math.round(mt.over/mt.total*100):0},
+    {label:'ความก้าวหน้าเฉลี่ย',count:mt.avg,unit:'%',icon:'trending_up',color:'#0e8c7d',softBg:'#e3f3f0',pct:mt.avg},
+  ].map(s=>({...s,pctStyle:s.pct+'%'}));
+
+  const flt=poolFilter,q=(poolSearch||'').trim();
+  const poolView=pool.filter(p=>(flt==='all'||p.priority===flt)&&(!q||p.title.indexOf(q)>=0)).map(p=>{const pr=prStyle(p.priority);return {...p,prBg:pr.bg,prText:pr.text,prLabel:pr.label,avatarInitial:(p.commander||'?').trim().charAt(0),avatarColor:pickColor(p.commander),daysColor:p.daysType==='over'?'#d83a3a':'#16916f',metaLeft:p.amount||p.count||'',onImport:()=>importJob(p.id)};});
+  const ft=[{key:'all',label:'ทั้งหมด'},{key:'urgent',label:'ด่วนมาก'},{key:'high',label:'ด่วน'},{key:'normal',label:'ปกติ'}];
+  const filterTabs=ft.map(t=>{const a=flt===t.key;return {...t,onClick:()=>setPoolFilter(t.key),bg:a?primary:'#fff',color:a?'#fff':'#5a6473',border:a?primary:'#e3e7ec'};});
+  const memberTabs=members.map((m,i)=>{const a=i===selectedMember;return {name:m.name,onSelect:()=>setSelectedMember(i),bg:a?primarySoft:'#fff',color:a?primary:'#5a6473',border:a?primary:'#e3e7ec'};});
+  const statCards=[
+    {label:'คำสั่งที่สั่งไป',pct:30,count:20,unit:'กำลังดำเนินการ',icon:'call_made',color:'#0e8c7d',softBg:'#e3f3f0'},
+    {label:'คำสั่งที่ได้รับ',pct:50,count:7,unit:'กำลังดำเนินการ',icon:'call_received',color:'#4f46e5',softBg:'#ecebfb'},
+    {label:'เอกสารปฏิบัติงาน',pct:50,count:2,unit:'งานใหม่',icon:'description',color:'#dd7a16',softBg:'#fdeee0'},
+    {label:'อนุมัติเอกสาร',pct:75,count:1,unit:'รออนุมัติ',icon:'fact_check',color:'#0891b2',softBg:'#e0f2f8'},
+    {label:'แผนธุรกิจที่รับผิดชอบ',pct:20,count:12,unit:'รายการ',icon:'monitoring',color:'#7c3aed',softBg:'#f1ebfb'},
+  ].map(s=>({...s,pctStyle:s.pct+'%'}));
+  const vmGroups=[
+    {name:'VM : AAR GiveDeeFive',members:'สมาชิก 18 คน',posts:'5 โพสใหม่'},
+    {name:'เคล็ดลับการเขียน WI',members:'สมาชิก 29 คน',posts:'8 โพสใหม่'},
+    {name:'AI วันละ 5 นาที',members:'สมาชิก 17 คน',posts:'15 โพสใหม่'},
+    {name:'SA-Developer',members:'สมาชิก 4 คน',posts:'2 โพสใหม่'},
+    {name:'VM : EDR วท.อุดรธานี',members:'สมาชิก 17 คน',posts:'9 โพสใหม่'},
+  ];
+  const openReorder=()=>{ setReorderKind(view==='manage'?activeKind:view==='member'?'team':'me'); setReorderOpen(true); };
+
+  const ms=(name,size,color)=>(<span className="bi" style={{...MS,fontSize:size,color}}>{name}</span>);
+
+  return (
+   <div style={{minHeight:'100vh',background:'#eef1f6'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center',textDecoration:'none'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>3</span></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>7</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'linear-gradient(135deg,#8aa0b8,#5d7088)'}}></div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'linear-gradient(135deg,#8aa0b8,#5d7088)',marginBottom:6}}></div>
+        {[['bi-layout-sidebar',true],['bi-graph-up'],['bi-arrow-down-left'],['bi-arrow-up-right'],['bi-easel'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act],i)=>(
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
+
+      {/* MAIN */}
+      <div style={{flex:1,padding:22,minWidth:0}}>
+
+      {isDashboard && (
+       <div style={{maxWidth:1480,margin:'0 auto',display:'grid',gridTemplateColumns:'1.62fr 1fr',gap:18,alignItems:'start'}}>
+        {/* LEFT */}
+        <div style={{display:'flex',flexDirection:'column',gap:18,minWidth:0}}>
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16,display:'flex',alignItems:'center',gap:15}}>
+            <div style={{width:62,height:62,borderRadius:'50%',background:'linear-gradient(135deg,#8aa0b8,#5d7088)',flex:'none'}}></div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontWeight:700,fontSize:17}}>Piyawat Takaew</div>
+              <div style={{fontSize:13,color:'#8a93a3',marginBottom:6}}>SA Staff</div>
+              <div style={{display:'flex',alignItems:'center',gap:14,fontSize:12,color:'#8a93a3'}}>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}>{ms('visibility',15)}กำลังติดตาม 12</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}>{ms('group',15)}ผู้ติดตาม 34</span>
+              </div>
+            </div>
+            <div style={{display:'flex',gap:6}}><span style={{width:11,height:11,borderRadius:'50%',background:'#f5b301'}}></span><span style={{width:11,height:11,borderRadius:'50%',background:'#ef4444'}}></span><span style={{width:11,height:11,borderRadius:'50%',background:'#22b573'}}></span></div>
           </div>
 
-          <q-input dense standout="bg-white text-primary" v-model="search" placeholder="ค้นหา GiveDeeFive" class="search-input">
-            <template v-slot:prepend>
-              <q-icon name="bi-search" color="grey-6"></q-icon>
-            </template>
-          </q-input>
-
-          <q-space></q-space>
-
-          <div class="row items-center q-gutter-x-xs">
-            <q-btn round flat icon="bi-bell" color="grey-8" size="md">
-              <q-badge color="red" floating label="3"></q-badge>
-            </q-btn>
-            <q-btn round flat icon="bi-chat" color="grey-8" size="md">
-              <q-badge color="red" floating label="7"></q-badge>
-            </q-btn>
-            <q-btn flat color="grey-8" size="sm">
-              <q-icon name="bi-globe" class="q-mr-xs"></q-icon> ไทย
-              <q-icon name="bi-chevron-down" size="16px"></q-icon>
-            </q-btn>
-            <q-btn round flat icon="bi-moon" color="grey-8" size="md"></q-btn>
-
-            <div class="row items-center q-ml-sm cursor-pointer">
-              <div class="column items-end q-mr-sm" style="line-height: 1.3;">
-                <span class="text-weight-bold text-body2">Piyawat Takaew</span>
-                <span class="text-caption text-grey-6">SA Staff</span>
+          {/* Today's Job */}
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
+              {ms('checklist',22,primary)}
+              <div style={{fontWeight:700,fontSize:16}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
+              <div style={{flex:1}}></div>
+              <button onClick={openReorder} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'7px 11px',fontSize:12.5,fontWeight:600}}>{ms('swap_vert',17)}เรียงลำดับ</button>
+              <button onClick={()=>{setManageMode('me');setView('manage');}} style={{display:'inline-flex',alignItems:'center',gap:5,background:primary,border:'none',color:'#fff',borderRadius:9,padding:'7px 12px',fontSize:12.5,fontWeight:600}}>{ms('tune',17)}จัดการ Daily Job</button>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',border:'1px solid #eef1f5',borderRadius:10,padding:'9px 12px',marginBottom:13}}>
+              <div style={{display:'flex',alignItems:'center',gap:13,fontSize:12,color:'#5a6473',flexWrap:'wrap'}}>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#f5b301'}}></span>{myStats.pending} รอดำเนินการ</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#22b573'}}></span>{myStats.done} ปิดงานแล้ว</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#ef4444'}}></span>{myStats.over} เกินกำหนด</span>
               </div>
-              <q-avatar size="36px">
-                <img src="https://cdn.quasar.dev/img/avatar.png">
-              </q-avatar>
-              <q-icon name="bi-chevron-down" color="grey-6" size="16px" class="q-ml-xs"></q-icon>
+              <div style={{flex:1}}></div>
+              <div style={{display:'flex',alignItems:'center',gap:9,minWidth:170}}><div style={{flex:1,height:7,background:'#e7ebf1',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:primary,width:myStats.avgStyle}}></div></div><span style={{fontWeight:700,fontSize:13,color:primary}}>{myStats.avgStyle}</span></div>
+            </div>
+            {todayView.map(job=>(
+              <div key={job.id} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 12px',border:'1px solid '+job.rowBorder,borderRadius:11,background:job.rowBg,marginBottom:8,animation:'popIn .2s ease'}}>
+                <div style={{width:26,textAlign:'center',fontWeight:700,fontSize:20,color:'#4338ca',flex:'none'}}>{job.rank}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:600,fontSize:13.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
+                  <div style={{display:'flex',alignItems:'center',gap:9,marginTop:5,flexWrap:'wrap',fontSize:11.5,color:'#8a93a3'}}>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:18,height:18,borderRadius:'50%',background:job.avatarColor,color:'#fff',fontSize:10,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{job.avatarInitial}</span>{job.commander}</span>
+                    <span style={{padding:'2px 8px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:3}}>{ms('event',14)}{job.due}</span>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:3,color:job.daysColor,fontWeight:600}}>{ms(job.daysIcon,14)}{job.days}</span>
+                    <span style={{padding:'2px 8px',borderRadius:99,fontWeight:600,background:job.tyBg,color:job.tyText}}>{job.tyLabel}</span>
+                  </div>
+                  <div style={{marginTop:7,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden',maxWidth:440}}><div style={{height:'100%',borderRadius:99,background:job.barColor,width:job.widthStyle}}></div></div>
+                </div>
+                <button onClick={job.onAddProgress} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff',border:'1px solid '+primary,color:primary,borderRadius:8,padding:'6px 10px',fontSize:11.5,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{ms('add',15)}เติมความก้าวหน้า</button>
+                <span style={{width:12,height:12,borderRadius:'50%',background:job.statusColor,flex:'none'}}></span>
+              </div>
+            ))}
+          </div>
+
+          {/* Team */}
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:14}}>
+              {ms('groups',22,primary)}
+              <div style={{fontWeight:700,fontSize:16}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>ของลูกทีม</span></div>
+              <div style={{flex:1}}></div>
+              <span style={{fontSize:11.5,color:'#9aa3af'}}>แตะที่สมาชิกเพื่อตรวจสอบ / จัดลำดับงานของลูกทีม</span>
+            </div>
+            <div style={{background:'#eef0f3',borderRadius:13,padding:'14px 16px',marginBottom:13}}>
+              <div style={{display:'flex',alignItems:'center',gap:18}}>
+                <div style={{display:'inline-flex',alignItems:'center',gap:6,color:'#5a6473',fontSize:13,fontWeight:600,whiteSpace:'nowrap'}}>{ms('monitoring',18,primary)}ความก้าวหน้า</div>
+                <div style={{flex:1,height:15,background:'#fff',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:'#3730dc',width:teamStats.avgStyle}}></div></div>
+                <div style={{fontWeight:800,fontSize:19,color:'#3730dc',whiteSpace:'nowrap'}}>{teamStats.avg} %</div>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:9,marginTop:11,flexWrap:'wrap'}}>
+                <span style={{fontSize:12,color:'#8a93a3',fontWeight:500}}>{teamStats.pending} รอดำเนินการ</span>
+                <span style={{background:'#e4f4ec',color:'#1f9d57',fontSize:12,fontWeight:600,borderRadius:99,padding:'3px 11px'}}>{teamStats.done} ดำเนินการแล้ว</span>
+                <span style={{background:'#fdeaea',color:'#d83a3a',fontSize:12,fontWeight:600,borderRadius:99,padding:'3px 11px'}}>{teamStats.over} งานค้าง</span>
+              </div>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:11}}>
+              {teamView.map(m=>(
+                <div key={m.id} onClick={m.onManage} style={{display:'flex',alignItems:'center',gap:15,background:'#f3f4f7',borderRadius:13,padding:'13px 16px',cursor:'pointer'}}>
+                  <div style={{width:48,height:48,borderRadius:'50%',border:'1.5px solid #cfd6e0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:'#9aa3af'}}>{ms('person',30)}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
+                      <div style={{fontWeight:700,fontSize:14.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',flex:1}}>{m.name}</div>
+                      <div style={{fontWeight:800,fontSize:17,color:'#3730dc',whiteSpace:'nowrap'}}>{m.progress} %</div>
+                    </div>
+                    <div style={{height:14,background:'#fff',borderRadius:99,overflow:'hidden',marginBottom:9}}><div style={{height:'100%',borderRadius:99,background:'#3730dc',width:m.widthStyle}}></div></div>
+                    <div style={{display:'flex',alignItems:'center',gap:9,flexWrap:'wrap'}}>
+                      <span style={{fontSize:12,color:'#8a93a3',fontWeight:500}}>{m.pending} รอดำเนินการ</span>
+                      <span style={{background:'#e4f4ec',color:'#1f9d57',fontSize:12,fontWeight:600,borderRadius:99,padding:'3px 11px'}}>{m.done} ดำเนินการแล้ว</span>
+                      {m.over>0 && <span style={{background:'#fdeaea',color:'#d83a3a',fontSize:12,fontWeight:600,borderRadius:99,padding:'3px 11px'}}>{m.over} งานค้าง</span>}
+                      <div style={{flex:1}}></div>
+                      <span style={{fontSize:12,color:'#9aa3af',whiteSpace:'nowrap'}}>{m.total} คำสั่งการ</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </q-toolbar>
-      </q-header>
-
-      <!-- ===== LEFT DRAWER (จาก FeedLayout.vue > FeedDrawer) ===== -->
-      <q-drawer v-model="leftDrawerOpen" show-if-above mini :mini-width="60" class="bg-white" style="border-right: 1px solid #ededed;">
-        <div class="q-pt-md q-pb-sm text-center">
-          <q-avatar size="34px" class="cursor-pointer">
-            <img src="https://cdn.quasar.dev/img/avatar.png">
-          </q-avatar>
         </div>
-        <div class="q-mt-sm">
-          <div class="drawer-item active"><q-icon name="bi-layout-sidebar" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-graph-up" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-arrow-down-left" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-arrow-up-right" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-easel" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-file-earmark-arrow-down" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-book" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-clipboard-data" size="22px"></q-icon></div>
-          <div class="drawer-item" style="margin: 8px auto 0 auto; background: #f0f2f5; border-radius: 50%; width: 36px; height: 36px;"><q-icon name="bi-chevron-down" size="20px"></q-icon></div>
-        </div>
-      </q-drawer>
 
-      <!-- ===== MAIN CONTENT ===== -->
-      <q-page-container>
-        <q-page class="q-pa-md" style="background: var(--wee-main-bg-color);">
-          <div class="app-feed-container">
-
-            <!-- ===== MEMBER DETAIL HEADER ===== -->
-            <div v-if="screen==='member'" class="row items-center q-mb-md">
-              <q-btn round flat icon="bi-arrow-left" color="grey-8" @click="screen='team'"></q-btn>
-              <q-icon name="bi-people-fill" color="primary" size="22px" class="q-ml-xs q-mr-sm"></q-icon>
-              <span class="text-weight-bold" style="font-size:17px; color:var(--v-main-text-head);">Today's Job ของลูกทีม — {{ members[selMember].name }}</span>
-            </div>
-
-            <div class="row q-col-gutter-md">
-              <!-- ===== LEFT MAIN COLUMN ===== -->
-              <div :class="screen==='team' ? 'col-12' : 'col-12 col-md-8'">
-
-                <!-- ===== TAB SWITCH (me / team) ===== -->
-                <div v-if="screen!=='member'" class="row items-center q-mb-md">
-                  <q-btn-toggle v-model="screen" no-caps unelevated toggle-color="primary" color="white" text-color="grey-8"
-                    :options="[{label:'งานของฉัน',value:'me'},{label:'งานของลูกทีม',value:'team'},{label:'จัดการ Daily Job',value:'manage'}]"
-                    style="border:1px solid var(--wee-main-border-color); border-radius:8px;"></q-btn-toggle>
-                  <q-space></q-space>
-                  <q-btn v-if="screen==='me'" outline color="grey-8" no-caps icon="bi-arrow-down-up" label="เรียงลำดับ" size="sm" @click="reorderMode=!reorderMode"
-                    :class="reorderMode ? 'bg-teal-1' : ''"></q-btn>
-                </div>
-
-                <!-- ===== MY / MEMBER TODAY'S JOB ===== -->
-                <div v-if="screen==='me' || screen==='member'" class="profile-card q-pa-md q-mb-md">
-                  <div class="row items-center q-mb-sm">
-                    <q-icon name="bi-list-check" color="primary" size="22px" class="q-mr-sm"></q-icon>
-                    <span class="text-weight-bold" style="font-size:16px;">Today's Job <span class="text-grey-6" style="font-size:13px;">(คำสั่งที่ได้รับ)</span></span>
-                    <q-space></q-space>
-                    <span class="text-indigo text-weight-bold" style="font-size:20px;">{{ curStats.avg }} %</span>
-                  </div>
-                  <q-linear-progress size="11px" :value="curStats.avg/100" color="indigo-13" class="q-mb-md" style="border-radius:6px;"></q-linear-progress>
-
-                  <!-- status filter chips -->
-                  <div class="row items-center q-gutter-x-sm q-mb-md">
-                    <q-chip v-for="c in statusChips" :key="c.key" clickable @click="toggleFilter(c.key)" size="sm" class="text-weight-medium"
-                      :style="(filter===c.key ? ('background:'+c.bg+'; color:'+c.color+'; border:1px solid '+c.color) : 'background:#fff; color:#1a2d39; border:1px solid var(--wee-main-border-light-color)')">
-                      <q-icon :name="c.icon" size="13px" class="q-mr-xs" :style="'color:'+c.color"></q-icon><b>{{ c.count }}</b>&nbsp;{{ c.label }}
-                    </q-chip>
-                    <q-space></q-space>
-                    <q-btn v-if="filter!=='all'" flat dense no-caps size="sm" color="grey-7" icon="bi-x-circle" label="ล้างตัวกรอง" @click="filter='all'"></q-btn>
-                  </div>
-
-                  <!-- job rows -->
-                  <div v-for="(job,idx) in curView" :key="job.id" class="status-card q-mb-sm"
-                    :style="job.over && filter==='all' ? 'background:#fdf4f4; border-color:#f3d6d6;' : (job.progress>=100 ? 'background:#eaf7f0; border-color:#bfe6d3;' : '')">
-                    <div class="row items-center no-wrap">
-                      <div class="text-indigo text-weight-bolder text-center" style="width:28px; font-size:19px; flex:none;">{{ idx+1 }}</div>
-                      <q-icon :name="job.st.icon" :style="'color:'+job.st.color" size="18px" class="q-mx-sm" style="flex:none;"><q-tooltip>{{ job.st.label }}</q-tooltip></q-icon>
-                      <div class="col" style="min-width:0;">
-                        <div class="text-weight-medium ellipsis" style="color:var(--v-main-text-head);">{{ job.title }}</div>
-                        <div class="row items-center q-gutter-x-sm q-mt-xs" style="font-size:11.5px; color:var(--wee-text-muted);">
-                          <span><q-icon name="bi-person-circle" size="13px"></q-icon> {{ job.commander }}</span>
-                          <q-badge :style="'background:'+job.st.bg+'; color:'+job.st.color" class="q-px-sm text-weight-medium" style="border-radius:10px;">{{ job.st.label }}</q-badge>
-                          <span :style="'color:'+(job.over?'#d83a3a':'#0e8c7d')+'; font-weight:600;'"><q-icon :name="job.over?'bi-exclamation-triangle-fill':'bi-calendar-event'" size="12px"></q-icon> {{ job.days }}</span>
-                        </div>
-                        <q-linear-progress :value="job.progress/100" size="6px" :color="job.barColor" class="q-mt-sm" style="border-radius:6px; max-width:440px;"></q-linear-progress>
-                      </div>
-                      <div class="column q-ml-sm" style="flex:none;" v-if="reorderMode && screen==='me'">
-                        <q-btn flat dense size="sm" icon="bi-chevron-up" @click="move('me',idx,-1)"></q-btn>
-                        <q-btn flat dense size="sm" icon="bi-chevron-down" @click="move('me',idx,1)"></q-btn>
-                      </div>
-                      <q-btn v-else outline color="primary" no-caps dense size="sm" icon="bi-plus" label="เติม" class="q-ml-sm" style="flex:none;"
-                        @click="addProgress(screen==='member'?'team':'me', job.id)"></q-btn>
-                    </div>
-                  </div>
-                  <div v-if="curView.length===0" class="text-center text-grey-5 q-py-lg">ไม่มีงานในสถานะนี้</div>
-                </div>
-
-                <!-- ===== TEAM LIST ===== -->
-                <div v-if="screen==='team'">
-                  <div class="profile-card q-pa-md q-mb-md" style="background:#eef0f3; border:none;">
-                    <div class="row items-center">
-                      <span class="text-weight-bold text-grey-8"><q-icon name="bi-graph-up" color="primary" size="18px"></q-icon> ความก้าวหน้า</span>
-                      <q-space></q-space>
-                      <span class="text-indigo text-weight-bolder" style="font-size:19px;">{{ teamStats.avg }} %</span>
-                    </div>
-                    <q-linear-progress :value="teamStats.avg/100" size="13px" color="indigo-13" class="q-mt-sm" style="border-radius:7px;"></q-linear-progress>
-                    <div class="row items-center q-gutter-x-sm q-mt-sm" style="font-size:12px;">
-                      <span class="text-grey-7">{{ teamStats.pending }} รอดำเนินการ</span>
-                      <q-badge color="green-1" text-color="green-9" class="q-px-sm" style="border-radius:12px;">{{ teamStats.done }} ดำเนินการแล้ว</q-badge>
-                      <q-badge color="red-1" text-color="red-9" class="q-px-sm" style="border-radius:12px;">{{ teamStats.over }} งานค้าง</q-badge>
-                    </div>
-                  </div>
-                  <div v-for="(m,mi) in members" :key="m.id" class="profile-card q-pa-md q-mb-sm cursor-pointer hover-effect"
-                    @click="openMember(mi)" style="transition:background .2s;" onmouseover="this.style.background='#f7f9fb'" onmouseout="this.style.background='white'">
-                    <div class="row items-center">
-                      <q-avatar size="44px" color="grey-3" text-color="grey-6" icon="bi-person-fill"></q-avatar>
-                      <div class="col q-ml-md" style="min-width:0;">
-                        <div class="row items-center">
-                          <span class="text-weight-bold ellipsis col">{{ m.name }}</span>
-                          <span class="text-indigo text-weight-bolder" style="font-size:16px;">{{ m.progress }} %</span>
-                        </div>
-                        <div class="text-grey-6" style="font-size:11px;">{{ m.role }}</div>
-                        <q-linear-progress :value="m.progress/100" size="10px" color="indigo-13" class="q-mt-sm" style="border-radius:6px;"></q-linear-progress>
-                        <div class="row items-center q-gutter-x-sm q-mt-xs" style="font-size:11px;">
-                          <span class="text-grey-7">{{ memStats(m).pending }} รอดำเนินการ</span>
-                          <q-badge color="green-1" text-color="green-9" class="q-px-sm" style="border-radius:10px;">{{ memStats(m).done }} ดำเนินการแล้ว</q-badge>
-                          <q-badge v-if="memStats(m).over" color="red-1" text-color="red-9" class="q-px-sm" style="border-radius:10px;">{{ memStats(m).over }} งานค้าง</q-badge>
-                          <q-space></q-space>
-                          <span class="text-grey-6">{{ m.jobs.length }} คำสั่งการ</span>
-                        </div>
-                      </div>
-                      <q-icon name="bi-chevron-right" color="grey-5" size="20px" class="q-ml-sm"></q-icon>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- ===== MANAGE ===== -->
-                <div v-if="screen==='manage'">
-                  <div class="row q-col-gutter-md">
-                    <!-- list -->
-                    <div class="col-12 col-md-6">
-                      <div class="profile-card q-pa-md" style="background:#fcfdfe;">
-                        <div class="row items-center q-mb-sm">
-                          <q-icon name="bi-list-check" color="primary" size="18px" class="q-mr-sm"></q-icon>
-                          <span class="text-weight-bold" style="font-size:14px;">รายการงาน</span>
-                          <q-space></q-space><span class="text-grey-6" style="font-size:11.5px;">{{ jobs.length }} งาน</span>
-                        </div>
-                        <div v-for="(job,idx) in jobs" :key="job.id" class="status-card q-mb-sm">
-                          <div class="row items-center no-wrap">
-                            <div class="text-indigo text-weight-bolder text-center" style="width:24px; font-size:17px;">{{ idx+1 }}</div>
-                            <div class="col q-mx-sm" style="min-width:0;">
-                              <div class="text-weight-medium ellipsis" style="font-size:13px;">{{ job.title }}</div>
-                              <div class="q-mt-xs"><q-badge :style="'background:'+S[job.status].bg+'; color:'+S[job.status].color" class="q-px-sm" style="border-radius:10px;">{{ S[job.status].label }}</q-badge></div>
-                            </div>
-                            <div class="column" style="flex:none;">
-                              <q-btn flat dense size="sm" icon="bi-chevron-up" @click="move('me',idx,-1)"></q-btn>
-                              <q-btn flat dense size="sm" icon="bi-chevron-down" @click="move('me',idx,1)"></q-btn>
-                            </div>
-                            <q-btn flat dense size="sm" color="red" icon="bi-trash" class="q-ml-xs" @click="removeJob(job.id)"></q-btn>
-                          </div>
-                        </div>
-                        <div v-if="jobs.length===0" class="text-center text-grey-5 q-py-md">ยังไม่มีงาน — นำเข้าจากผู้สั่งการ →</div>
-                      </div>
-                    </div>
-                    <!-- import pool -->
-                    <div class="col-12 col-md-6">
-                      <div class="profile-card q-pa-md">
-                        <div class="row items-center q-mb-sm">
-                          <q-icon name="bi-inbox" color="primary" size="18px" class="q-mr-sm"></q-icon>
-                          <span class="text-weight-bold" style="font-size:14px;">ผู้สั่งการ — เลือกนำเข้างาน</span>
-                        </div>
-                        <q-input dense outlined v-model="poolSearch" placeholder="ค้นหาคำสั่งการ" class="q-mb-sm">
-                          <template v-slot:prepend><q-icon name="bi-search" size="16px"></q-icon></template>
-                        </q-input>
-                        <div class="row q-gutter-xs q-mb-sm">
-                          <q-chip v-for="f in ['all','urgent','high','normal']" :key="f" clickable :outline="poolFilter!==f" :color="poolFilter===f?'primary':'white'"
-                            :text-color="poolFilter===f?'white':'grey-8'" size="sm" @click="poolFilter=f" style="border:1px solid var(--wee-main-border-light-color);">{{ prLabel(f) }}</q-chip>
-                        </div>
-                        <div v-for="p in poolView" :key="p.id" class="status-card q-mb-sm">
-                          <div class="row items-center no-wrap">
-                            <div class="col" style="min-width:0;">
-                              <div class="text-weight-medium" style="font-size:13px; line-height:1.35;">{{ p.title }}</div>
-                              <div class="row items-center q-gutter-x-sm q-mt-xs" style="font-size:11px; color:var(--wee-text-muted);">
-                                <span><q-icon name="bi-person-circle" size="12px"></q-icon> {{ p.commander }}</span>
-                                <q-badge :style="'background:'+prStyle(p.priority).bg+'; color:'+prStyle(p.priority).color" class="q-px-sm" style="border-radius:10px;">{{ prStyle(p.priority).label }}</q-badge>
-                                <span :style="'color:'+(p.over?'#d83a3a':'#0e8c7d')+'; font-weight:600;'">{{ p.days }}</span>
-                              </div>
-                            </div>
-                            <q-btn round color="primary" icon="bi-plus" size="sm" class="q-ml-sm" @click="importJob(p.id)"></q-btn>
-                          </div>
-                        </div>
-                        <div v-if="poolView.length===0" class="text-center text-grey-5 q-py-md">ไม่พบคำสั่งการ</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- ===== RIGHT COLUMN (me only) ===== -->
-              <div v-if="screen==='me'" class="col-12 col-md-4">
-                <div class="profile-card q-pa-md q-mb-md">
-                  <div class="row items-center q-mb-sm">
-                    <q-icon name="bi-lightning-charge" color="primary" size="18px" class="q-mr-sm"></q-icon>
-                    <span class="text-weight-bold" style="font-size:14px;">ทางลัด</span>
-                  </div>
-                  <div class="row q-col-gutter-sm">
-                    <div class="col-6" v-for="sc in shortcuts" :key="sc.label">
-                      <div class="shortcut-item" :style="sc.primary ? 'background:#e3f3f0; border:1px solid #c4e7df;' : 'background:#f6f8fa;'" @click="sc.action && sc.action()">
-                        <q-icon :name="sc.icon" :color="sc.primary?'primary':'grey-7'" size="24px"></q-icon>
-                        <div class="q-mt-xs text-weight-medium" :class="sc.primary?'text-primary':'text-grey-8'" style="font-size:11.5px;">{{ sc.label }}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="profile-card q-pa-md">
-                  <div class="row items-center q-mb-sm">
-                    <q-icon name="bi-chat-dots" color="primary" size="18px" class="q-mr-sm"></q-icon>
-                    <span class="text-weight-bold" style="font-size:14px;">กลุ่มที่มีโพสต์ใหม่</span>
-                  </div>
-                  <div v-for="g in vmGroups" :key="g.name" class="group-item">
-                    <q-avatar size="38px" color="grey-3" text-color="grey-6" icon="bi-people"></q-avatar>
-                    <div class="col q-ml-sm" style="min-width:0;">
-                      <div class="text-weight-medium ellipsis" style="font-size:13px;">{{ g.name }}</div>
-                      <div class="text-grey-6" style="font-size:11px;">{{ g.members }}</div>
-                    </div>
-                    <q-badge color="teal-1" text-color="teal-8" class="q-px-sm text-weight-bold" style="border-radius:12px;">{{ g.posts }}</q-badge>
-                  </div>
-                </div>
-              </div>
+        {/* RIGHT */}
+        <div style={{display:'flex',flexDirection:'column',gap:18,minWidth:0}}>
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:13}}>{ms('bolt',21,primary)}<div style={{fontWeight:700,fontSize:15}}>ทางลัด</div></div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10}}>
+              <button onClick={()=>{setManageMode('me');setView('manage');}} style={{background:primarySoft,border:'1px solid '+primarySoftBorder,borderRadius:11,padding:'13px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:7,color:primary}}>{ms('add_task',24)}<span style={{fontSize:11.5,fontWeight:600}}>สั่งการใหม่</span></button>
+              <button style={{background:'#f6f8fa',border:'1px solid #eef1f5',borderRadius:11,padding:'13px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:7,color:'#5a6473'}}>{ms('note_add',24)}<span style={{fontSize:11.5,fontWeight:600}}>เอกสารใหม่</span></button>
+              <button style={{background:'#f6f8fa',border:'1px solid #eef1f5',borderRadius:11,padding:'13px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:7,color:'#5a6473'}}>{ms('insights',24)}<span style={{fontSize:11.5,fontWeight:600}}>วิเคราะห์ข้อมูล</span></button>
+              <button style={{background:'#f6f8fa',border:'1px solid #eef1f5',borderRadius:11,padding:'13px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:7,color:'#5a6473'}}>{ms('leaderboard',24)}<span style={{fontSize:11.5,fontWeight:600}}>คะแนนของฉัน</span></button>
             </div>
           </div>
-        </q-page>
-      </q-page-container>
-    </q-layout>
-  </div>
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'6px 16px'}}>
+            {statCards.map((s,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:13,padding:'13px 0',borderBottom:'1px solid #f1f3f6'}}>
+                <div style={{width:40,height:40,borderRadius:11,background:s.softBg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms(s.icon,22,s.color)}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}><span style={{fontWeight:600,fontSize:13}}>{s.label}</span><span style={{fontSize:11.5,color:s.color,fontWeight:700}}>{s.pctStyle}</span></div>
+                  <div style={{height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:s.color,width:s.pctStyle}}></div></div>
+                </div>
+                <div style={{textAlign:'right',flex:'none'}}><div style={{fontWeight:700,fontSize:21,color:s.color}}>{s.count}</div><div style={{fontSize:10.5,color:'#9aa3af'}}>{s.unit}</div></div>
+              </div>
+            ))}
+          </div>
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:13}}>{ms('forum',21,primary)}<div style={{fontWeight:700,fontSize:15}}>กลุ่มที่มีโพสต์ใหม่</div></div>
+            {vmGroups.map((g,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:11,padding:'9px 0',borderBottom:'1px solid #f1f3f6'}}>
+                <div style={{width:40,height:40,borderRadius:10,background:'repeating-linear-gradient(135deg,#e9edf2,#e9edf2 6px,#eff2f6 6px,#eff2f6 12px)',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:'#aeb6c2'}}>{ms('groups',20)}</div>
+                <div style={{flex:1,minWidth:0}}><div style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{g.name}</div><div style={{fontSize:11,color:'#9aa3af'}}>{g.members}</div></div>
+                <span style={{background:primarySoft,color:primary,fontSize:11,fontWeight:700,borderRadius:99,padding:'3px 9px',whiteSpace:'nowrap'}}>{g.posts}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+       </div>
+      )}
 
-  <!-- Vue 3 + Quasar UMD -->
-  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/quasar.umd.prod.js"></script>
-  <script>
-    const app = Vue.createApp({
-      setup() {
-        const { ref, computed } = Vue
-        const S = {
-          new:    {label:'ยังไม่รับทราบ', icon:'bi-bell',              bg:'#fff4e0', color:'#d98223'},
-          doing:  {label:'กำลังดำเนินการ', icon:'bi-arrow-repeat',      bg:'#e7eafc', color:'#3949c9'},
-          closing:{label:'ขอปิดงาน',       icon:'bi-check2-circle',     bg:'#e3f3f0', color:'#0e8c7d'},
-          done:   {label:'ปิดงานแล้ว',     icon:'bi-check-circle-fill', bg:'#e4f4ec', color:'#1f9d57'},
-        }
-        const params = new URLSearchParams(window.location.search)
-        const initStatus = params.get('status')
-        const screen = ref('me')
-        const filter = ref(['new','doing','closing','done'].includes(initStatus) ? initStatus : 'all')
-        const reorderMode = ref(false)
-        const selMember = ref(0)
-        const poolSearch = ref(''), poolFilter = ref('all')
+      {/* MEMBER */}
+      {isMember && (
+       <div style={{maxWidth:1480,margin:'0 auto',animation:'fadeIn .2s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:16}}>
+          <button onClick={()=>setView('dashboard')} style={{width:36,height:36,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('arrow_back',22)}</button>
+          {ms('groups',22,primary)}
+          <div style={{fontWeight:700,fontSize:17}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>ของลูกทีม — {mem.name}</span></div>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1.62fr 1fr',gap:18,alignItems:'start'}}>
+          <div style={{display:'flex',flexDirection:'column',gap:18,minWidth:0}}>
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16,display:'flex',alignItems:'center',gap:15}}>
+              <div style={{width:62,height:62,borderRadius:'50%',background:pickColor(mem.name),color:'#fff',fontWeight:700,fontSize:24,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{(mem.name||'?').charAt(0)}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:700,fontSize:17}}>{mem.name}</div>
+                <div style={{fontSize:13,color:'#8a93a3',marginBottom:7}}>{mem.role}</div>
+                <div style={{display:'flex',alignItems:'center',gap:9,maxWidth:280}}><div style={{flex:1,height:7,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:primary,width:memberStats.avgStyle}}></div></div><span style={{fontWeight:700,fontSize:13,color:primary}}>{memberStats.avgStyle}</span></div>
+              </div>
+              <div style={{background:primarySoft,color:primary,fontSize:11.5,fontWeight:700,borderRadius:99,padding:'5px 12px',display:'inline-flex',alignItems:'center',gap:5}}>{ms('edit',15)}โหมดผู้จัดการ</div>
+            </div>
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+              <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
+                {ms('checklist',22,primary)}
+                <div style={{fontWeight:700,fontSize:16}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
+                <div style={{flex:1}}></div>
+                <button onClick={openReorder} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'7px 11px',fontSize:12.5,fontWeight:600}}>{ms('swap_vert',17)}เรียงลำดับ</button>
+                <button onClick={()=>{setManageMode('team');setView('manage');}} style={{display:'inline-flex',alignItems:'center',gap:5,background:primary,border:'none',color:'#fff',borderRadius:9,padding:'7px 12px',fontSize:12.5,fontWeight:600}}>{ms('tune',17)}จัดการ Daily Job</button>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:13,background:'#f7f9fb',border:'1px solid #eef1f5',borderRadius:10,padding:'9px 12px',marginBottom:13,fontSize:12,color:'#5a6473'}}>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#f5b301'}}></span>{memberStats.pending} รอดำเนินการ</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#22b573'}}></span>{memberStats.done} ปิดงานแล้ว</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#ef4444'}}></span>{memberStats.over} เกินกำหนด</span>
+              </div>
+              {memberJobsView.map(job=>(
+                <div key={job.id} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 12px',border:'1px solid '+job.rowBorder,borderRadius:11,background:job.rowBg,marginBottom:8,animation:'popIn .2s ease'}}>
+                  <div style={{width:26,textAlign:'center',fontWeight:700,fontSize:20,color:'#4338ca',flex:'none'}}>{job.rank}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:600,fontSize:13.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
+                    <div style={{display:'flex',alignItems:'center',gap:9,marginTop:5,flexWrap:'wrap',fontSize:11.5,color:'#8a93a3'}}>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:18,height:18,borderRadius:'50%',background:job.avatarColor,color:'#fff',fontSize:10,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{job.avatarInitial}</span>{job.commander}</span>
+                      <span style={{padding:'2px 8px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3}}>{ms('event',14)}{job.due}</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3,color:job.daysColor,fontWeight:600}}>{ms(job.daysIcon,14)}{job.days}</span>
+                      <span style={{padding:'2px 8px',borderRadius:99,fontWeight:600,background:job.tyBg,color:job.tyText}}>{job.tyLabel}</span>
+                    </div>
+                    <div style={{marginTop:7,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden',maxWidth:440}}><div style={{height:'100%',borderRadius:99,background:job.barColor,width:job.widthStyle}}></div></div>
+                  </div>
+                  <button onClick={job.onAddProgress} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff',border:'1px solid '+primary,color:primary,borderRadius:8,padding:'6px 10px',fontSize:11.5,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{ms('add',15)}เติมความก้าวหน้า</button>
+                  <span style={{width:12,height:12,borderRadius:'50%',background:job.statusColor,flex:'none'}}></span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:18,minWidth:0}}>
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'6px 16px'}}>
+              {memberStatCards.map((s,i)=>(
+                <div key={i} style={{display:'flex',alignItems:'center',gap:13,padding:'13px 0',borderBottom:'1px solid #f1f3f6'}}>
+                  <div style={{width:40,height:40,borderRadius:11,background:s.softBg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms(s.icon,22,s.color)}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}><span style={{fontWeight:600,fontSize:13}}>{s.label}</span><span style={{fontSize:11.5,color:s.color,fontWeight:700}}>{s.pctStyle}</span></div>
+                    <div style={{height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:s.color,width:s.pctStyle}}></div></div>
+                  </div>
+                  <div style={{textAlign:'right',flex:'none'}}><div style={{fontWeight:700,fontSize:21,color:s.color}}>{s.count}</div><div style={{fontSize:10.5,color:'#9aa3af'}}>{s.unit}</div></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+       </div>
+      )}
 
-        const jobs = ref([
-          {id:'j1',title:'อัพเดทระบบ EDR เป็น jdk8',commander:'Piyawat',status:'doing',progress:30,days:'เกิน 2 วัน',over:true},
-          {id:'j2',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',status:'doing',progress:60,days:'เกิน 5 วัน',over:true},
-          {id:'j3',title:'ติดตามการเก็บเงิน ตามสัญญา',commander:'Nitirud',status:'doing',progress:45,days:'เหลือ 2 วัน',over:false},
-          {id:'j4',title:'โพสปัญหาเชิงโครงสร้างของ EDR',commander:'Pinij',status:'doing',progress:20,days:'เหลือ 4 วัน',over:false},
-          {id:'j5',title:'จัดทำ WI กระบวนการ Deploy เว็บไซต์',commander:'Chanavee',status:'closing',progress:100,days:'เหลือ 1 วัน',over:false},
-          {id:'j6',title:'ส่งรายงาน PA พัฒนางานประจำ',commander:'Sunthan',status:'closing',progress:90,days:'เหลือ 1 วัน',over:false},
-          {id:'j7',title:'รับงาน: ปรับปรุงเอกสารสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',status:'new',progress:0,days:'รอกดรับ',over:false},
-          {id:'j8',title:'รับงาน: อบรมลูกค้า ส่งมอบระบบ Grand ATS',commander:'บาส',status:'new',progress:0,days:'รอกดรับ',over:false},
-        ])
-        const members = ref([
-          {id:'m1',name:'Bodin Muanprasat',role:'Software Engineer',progress:14,jobs:[
-            {id:'b1',title:'เรียน NuxtJS สำหรับพัฒนา EDR V.3',commander:'Piyawat',status:'doing',progress:10,days:'เหลือ 3 วัน',over:false},
-            {id:'b2',title:'แก้บั๊ก dashboard EDR ก่อน demo',commander:'Narate',status:'doing',progress:40,days:'เกิน 1 วัน',over:true},
-            {id:'b3',title:'รีวิวโค้ด Pull Request #214',commander:'Chanavee',status:'new',progress:0,days:'เหลือ 4 วัน',over:false},
-          ]},
-          {id:'m2',name:'Narate Boonmee',role:'Software Engineer',progress:46,jobs:[
-            {id:'n1',title:'จัดทำ WI การ Deploy ด้วย Nuxt Content',commander:'Chanavee',status:'closing',progress:60,days:'เหลือ 2 วัน',over:false},
-            {id:'n2',title:'ทดสอบ regression ระบบ EDR',commander:'Piyawat',status:'doing',progress:30,days:'เหลือ 5 วัน',over:false},
-          ]},
-          {id:'m3',name:'Supatta Longna',role:'แผนปฏิบัติการ',progress:9,jobs:[
-            {id:'s1',title:'หาสาเหตุที่แท้จริงของปัญหา',commander:'Piyawat',status:'doing',progress:0,days:'เกิน 1 วัน',over:true},
-            {id:'s2',title:'สรุปยอดเก็บเงินรายเดือน',commander:'Nitirud',status:'doing',progress:20,days:'เหลือ 2 วัน',over:false},
-          ]},
-          {id:'m4',name:'Nichagorn Prajansen',role:'Staff',progress:46,jobs:[
-            {id:'g1',title:'สรุปข้อมูลความเห็นโพสต์',commander:'Piyawat',status:'doing',progress:46,days:'เหลือ 3 วัน',over:false},
-            {id:'g2',title:'จัดทำเอกสาร Tip การใช้ AI',commander:'Jarunya',status:'closing',progress:90,days:'เหลือ 4 วัน',over:false},
-          ]},
-        ])
-        const pool = ref([
-          {id:'p1',title:'อบรมลูกค้า / ส่งมอบงานระบบ Grand ATS',commander:'บาส',priority:'urgent',days:'เกิน 10 วัน',over:true},
-          {id:'p2',title:'จัดทำรายละเอียดของสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',priority:'urgent',days:'เกิน 5 วัน',over:true},
-          {id:'p3',title:'ติดตามการเก็บเงิน ตามสัญญา (เพิ่มเติม)',commander:'Nitirud',priority:'high',days:'เกิน 2 วัน',over:true},
-          {id:'p4',title:'หาสาเหตุที่แท้จริงของปัญหาเชิงโครงสร้าง',commander:'Supatta',priority:'normal',days:'อีก 5 วัน',over:false},
-          {id:'p5',title:'PA - พัฒนางานประจำ ไตรมาส 3',commander:'Piyawat',priority:'normal',days:'อีก 5 วัน',over:false},
-          {id:'p6',title:'โพสบทความเคล็ดลับการเขียน WI',commander:'Khajonsak',priority:'high',days:'อีก 4 วัน',over:false},
-          {id:'p7',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',days:'อีก 5 วัน',over:false},
-        ])
+      {/* MANAGE */}
+      {isManage && (
+       <div style={{maxWidth:1480,margin:'0 auto',background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:18,animation:'fadeIn .2s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:16}}>
+          <button onClick={()=>setView(manageMode==='team'?'member':'dashboard')} style={{width:36,height:36,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('arrow_back',22)}</button>
+          {ms('tune',22,primary)}
+          <div style={{fontWeight:700,fontSize:17}}>จัดการข้อมูล Daily Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
+          <div style={{flex:1}}></div>
+          <button onClick={openReorder} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'8px 12px',fontSize:12.5,fontWeight:600}}>{ms('drag_indicator',18)}เรียงลำดับแบบลาก</button>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16,flexWrap:'wrap'}}>
+          <div style={{display:'flex',background:'#f1f3f7',borderRadius:10,padding:3}}>
+            <button onClick={()=>setManageMode('me')} style={{border:'none',borderRadius:8,padding:'7px 16px',fontSize:13,fontWeight:600,background:!isTeamMode?'#fff':'transparent',color:!isTeamMode?primary:'#8a93a3'}}>งานของฉัน</button>
+            <button onClick={()=>setManageMode('team')} style={{border:'none',borderRadius:8,padding:'7px 16px',fontSize:13,fontWeight:600,background:isTeamMode?'#fff':'transparent',color:isTeamMode?primary:'#8a93a3'}}>งานของลูกทีม</button>
+          </div>
+          {isTeamMode && (
+            <div style={{display:'flex',alignItems:'center',gap:7,flexWrap:'wrap'}}>
+              <span style={{fontSize:12,color:'#9aa3af'}}>เลือกสมาชิก:</span>
+              {memberTabs.map((mt,i)=>(<button key={i} onClick={mt.onSelect} style={{border:'1px solid '+mt.border,borderRadius:99,padding:'5px 13px',fontSize:12.5,fontWeight:600,background:mt.bg,color:mt.color}}>{mt.name}</button>))}
+            </div>
+          )}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'0.92fr 1.08fr',gap:18,alignItems:'start'}}>
+          <div style={{border:'1px solid #eef0f4',borderRadius:12,padding:13,background:'#fcfdfe'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>{ms('checklist',19,primary)}<div style={{fontWeight:700,fontSize:14}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:12.5}}>(คำสั่งที่ได้รับ)</span></div><div style={{flex:1}}></div><span style={{fontSize:11.5,color:'#9aa3af'}}>{manageList.length} งาน</span></div>
+            {manageList.map(job=>(
+              <div key={job.id} draggable onDragStart={job.onDragStart} onDragOver={(e)=>e.preventDefault()} onDrop={job.onDrop} style={{display:'flex',alignItems:'center',gap:10,padding:10,border:'1px solid '+job.rowBorder,borderRadius:10,background:job.rowBg,marginBottom:8}}>
+                <div style={{width:24,textAlign:'center',fontWeight:700,fontSize:18,color:'#4338ca',flex:'none'}}>{job.rank}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
+                  <div style={{display:'flex',alignItems:'center',gap:8,marginTop:4,fontSize:11,color:'#8a93a3',flexWrap:'wrap'}}>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:16,height:16,borderRadius:'50%',background:job.avatarColor,color:'#fff',fontSize:9,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{job.avatarInitial}</span>{job.commander}</span>
+                    <span style={{padding:'1px 7px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:3}}>{ms('event',13)}{job.due}</span>
+                    <span style={{color:job.daysColor,fontWeight:600}}>{job.days}</span>
+                  </div>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',border:'1px solid #dde2e8',borderRadius:8,overflow:'hidden',flex:'none'}}>
+                  <button onClick={job.onMoveUp} style={{border:'none',background:'#fff',padding:'2px 6px',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('keyboard_arrow_up',18)}</button>
+                  <button onClick={job.onMoveDown} style={{border:'none',borderTop:'1px solid #eef0f4',background:'#fff',padding:'2px 6px',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('keyboard_arrow_down',18)}</button>
+                </div>
+                <button onClick={job.onRemove} style={{width:32,height:32,borderRadius:8,border:'none',background:'#fdeaea',color:'#d83a3a',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('delete',18)}</button>
+              </div>
+            ))}
+            {manageList.length===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:13,padding:'30px 0'}}>ยังไม่มีงานในรายการ — นำเข้าจากผู้สั่งการทางขวา</div>}
+          </div>
+          <div style={{border:'1px solid #eef0f4',borderRadius:12,padding:13,background:'#fff'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:11}}>{ms('inbox',19,primary)}<div style={{fontWeight:700,fontSize:14}}>ผู้สั่งการ <span style={{color:'#8a93a3',fontWeight:500,fontSize:12.5}}>— เลือกนำเข้างาน</span></div></div>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:11,flexWrap:'wrap'}}>
+              <div style={{display:'flex',alignItems:'center',gap:7,background:'#f4f6f9',border:'1px solid #e7eaef',borderRadius:9,padding:'7px 11px',flex:1,minWidth:160}}>
+                {ms('search',17,'#9aa3af')}
+                <input value={poolSearch} onChange={(e)=>setPoolSearch(e.target.value)} placeholder="ค้นหาคำสั่งการ" style={{border:'none',background:'transparent',outline:'none',fontSize:13,width:'100%',color:'#1f2733'}}/>
+              </div>
+              <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
+                {filterTabs.map((f,i)=>(<button key={i} onClick={f.onClick} style={{border:'1px solid '+f.border,borderRadius:99,padding:'6px 12px',fontSize:12,fontWeight:600,background:f.bg,color:f.color}}>{f.label}</button>))}
+              </div>
+              <button onClick={()=>{setPoolFilter('all');setPoolSearch('');}} style={{display:'inline-flex',alignItems:'center',gap:4,border:'1px solid #e7eaef',background:'#fff',borderRadius:9,padding:'6px 11px',fontSize:12,color:'#8a93a3',fontWeight:600}}>{ms('filter_alt_off',16)}เคลียร์</button>
+            </div>
+            <div style={{maxHeight:560,overflowY:'auto',paddingRight:3}}>
+              {poolView.map(p=>(
+                <div key={p.id} style={{display:'flex',alignItems:'center',gap:11,padding:10,border:'1px solid #eef0f4',borderRadius:10,marginBottom:8}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:'flex',alignItems:'flex-start',gap:7}}>
+                      <span style={{width:18,height:18,borderRadius:'50%',background:p.avatarColor,color:'#fff',fontSize:10,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',flex:'none',marginTop:1}}>{p.avatarInitial}</span>
+                      <div style={{fontWeight:600,fontSize:13,lineHeight:1.35}}>{p.title}</div>
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',gap:9,marginTop:6,flexWrap:'wrap',fontSize:11,color:'#8a93a3',paddingLeft:25}}>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3,color:primary,fontWeight:600}}>{p.metaLeft}</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3}}>{ms('event',13)}{p.due}</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3,color:p.daysColor,fontWeight:600}}>{p.days}</span>
+                      <span style={{padding:'1px 8px',borderRadius:99,fontWeight:600,background:p.prBg,color:p.prText}}>{p.prLabel}</span>
+                    </div>
+                  </div>
+                  <button onClick={p.onImport} style={{width:38,height:38,borderRadius:'50%',border:'none',background:primary,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('add',22)}</button>
+                </div>
+              ))}
+              {poolView.length===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:13,padding:'30px 0'}}>ไม่พบคำสั่งการตามตัวกรอง</div>}
+            </div>
+          </div>
+        </div>
+       </div>
+      )}
+      </div>
+    </div>
 
-        const prStyle = (p)=> p==='urgent'?{bg:'#fdeaea',color:'#d83a3a',label:'ด่วนมาก'}:p==='high'?{bg:'#fff2e2',color:'#dd7a16',label:'ด่วน'}:{bg:'#eef1f5',color:'#6b7280',label:'ปกติ'}
-        const prLabel = (f)=> f==='all'?'ทั้งหมด':prStyle(f).label
-        const barColorFor = (p)=> p>=100?'green-13':p>=40?'indigo-13':p>0?'orange':'grey-5'
-        const statsFor = (arr)=>{ const total=arr.length,done=arr.filter(j=>j.progress>=100).length,over=arr.filter(j=>j.over).length,avg=total?Math.round(arr.reduce((s,j)=>s+j.progress,0)/total):0; return {total,done,over,pending:total-done,avg} }
-        const count = (k)=> jobs.value.filter(j=>j.status===k).length
-
-        const activeArr = computed(()=> screen.value==='member' ? members.value[selMember.value].jobs : jobs.value)
-        const curStats = computed(()=>{ const active=activeArr.value.filter(j=>j.status==='doing'||j.status==='closing'); return statsFor(filter.value==='all'?active:activeArr.value.filter(j=>j.status===filter.value)) })
-        const curView = computed(()=>{ let l=activeArr.value; if(filter.value!=='all') l=l.filter(j=>j.status===filter.value); return l.map(j=>({...j, st:S[j.status], barColor:barColorFor(j.progress)})) })
-        const teamStats = computed(()=> statsFor(members.value.reduce((a,m)=>a.concat(m.jobs),[])))
-        const memStats = (m)=> statsFor(m.jobs)
-        const poolView = computed(()=> pool.value.filter(p=>(poolFilter.value==='all'||p.priority===poolFilter.value)&&(!poolSearch.value||p.title.includes(poolSearch.value))))
-
-        const statusChips = [
-          {key:'new',label:'ยังไม่รับทราบ',icon:S.new.icon,bg:S.new.bg,color:S.new.color,count:4},
-          {key:'doing',label:'กำลังดำเนินการ',icon:S.doing.icon,bg:S.doing.bg,color:S.doing.color,count:31},
-          {key:'closing',label:'ขอปิดงาน',icon:S.closing.icon,bg:S.closing.bg,color:S.closing.color,count:7},
-          {key:'done',label:'ปิดงานแล้ว',icon:S.done.icon,bg:S.done.bg,color:S.done.color,count:0},
-        ]
-        const toggleFilter = (k)=> filter.value = filter.value===k ? 'all' : k
-        const listFor = (kind)=> kind==='team' ? members.value[selMember.value].jobs : jobs.value
-        const move = (kind,idx,dir)=>{ const arr=listFor(kind); const ni=idx+dir; if(ni<0||ni>=arr.length)return; const t=arr[idx];arr[idx]=arr[ni];arr[ni]=t }
-        const removeJob = (id)=>{ jobs.value = jobs.value.filter(j=>j.id!==id) }
-        const addProgress = (kind,id)=>{ const arr=listFor(kind); const j=arr.find(x=>x.id===id); if(!j)return; j.progress=Math.min(100,j.progress+25); if(j.progress>=100)j.status='closing' }
-        const importJob = (id)=>{ const p=pool.value.find(x=>x.id===id); if(!p)return; jobs.value.push({id:'imp-'+id,title:p.title,commander:p.commander,status:'new',progress:0,days:p.days,over:p.over}); pool.value=pool.value.filter(x=>x.id!==id) }
-        const openMember = (i)=>{ selMember.value=i; filter.value='all'; screen.value='member' }
-
-        const shortcuts = [
-          {label:'สั่งการใหม่',icon:'bi-plus-square',primary:true,action:()=>{screen.value='manage'}},
-          {label:'เอกสารใหม่',icon:'bi-file-earmark-plus'},
-          {label:'วิเคราะห์ข้อมูล',icon:'bi-bar-chart-line'},
-          {label:'คะแนนของฉัน',icon:'bi-trophy'},
-        ]
-        const vmGroups = [
-          {name:'VM : AAR GiveDeeFive',members:'สมาชิก 18 คน',posts:'5 โพสใหม่'},
-          {name:'เคล็ดลับการเขียน WI',members:'สมาชิก 29 คน',posts:'8 โพสใหม่'},
-          {name:'AI วันละ 5 นาที',members:'สมาชิก 17 คน',posts:'15 โพสใหม่'},
-          {name:'SA-Developer',members:'สมาชิก 4 คน',posts:'2 โพสใหม่'},
-        ]
-
-        return { leftDrawerOpen:ref(true), search:ref(''),
-          S, screen, filter, reorderMode, selMember, poolSearch, poolFilter,
-          jobs, members, pool, prStyle, prLabel, count, curStats, curView, teamStats, memStats, poolView,
-          statusChips, toggleFilter, move, removeJob, addProgress, importJob, openMember, shortcuts, vmGroups }
-      }
-    })
-    app.use(Quasar, {
-      config: {
-        brand: {
-          primary: '#15a08f',
-          secondary: '#26A69A',
-          accent: '#9C27B0',
-          positive: '#21BA45',
-          negative: '#C10015',
-          info: '#31CCEC',
-          warning: '#F2C037'
-        }
-      }
-    })
-    app.mount('#q-app')
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/icon-set/bootstrap-icons.umd.prod.js"></script>
-  <script>
-    Quasar.iconSet.set(Quasar.iconSet.bootstrapIcons);
-  </script>
+    {/* REORDER MODAL */}
+    {reorderOpen && (
+     <div onClick={()=>setReorderOpen(false)} style={{position:'fixed',inset:0,background:'rgba(20,28,38,.42)',zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',animation:'fadeIn .15s ease',padding:20}}>
+      <div onClick={(e)=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,width:580,maxWidth:'100%',maxHeight:'86vh',display:'flex',flexDirection:'column',boxShadow:'0 24px 60px rgba(16,24,40,.28)',animation:'popIn .2s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:9,padding:'17px 18px',borderBottom:'1px solid #eef0f4'}}>
+          {ms('low_priority',22,primary)}
+          <div style={{fontWeight:700,fontSize:16}}>เรียงลำดับงานใหม่</div>
+          <div style={{flex:1}}></div>
+          <button onClick={()=>setReorderOpen(false)} style={{width:32,height:32,borderRadius:8,border:'none',background:'#f1f3f7',color:'#5a6473',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('close',20)}</button>
+        </div>
+        <div style={{padding:'8px 18px',fontSize:11.5,color:'#9aa3af',display:'flex',alignItems:'center',gap:5}}>{ms('drag_indicator',15)}ลากการ์ดเพื่อจัดลำดับความสำคัญ</div>
+        <div style={{padding:'6px 18px 18px',overflowY:'auto'}}>
+          {reorderView.map(job=>(
+            <div key={job.id} draggable onDragStart={job.onDragStart} onDragOver={(e)=>e.preventDefault()} onDrop={job.onDrop} style={{display:'flex',alignItems:'center',gap:11,padding:'11px 12px',border:'1px solid #e7ebf1',borderRadius:11,background:'#fcfdfe',marginBottom:8,cursor:'grab'}}>
+              <div style={{width:24,textAlign:'center',fontWeight:700,fontSize:18,color:'#4338ca',flex:'none'}}>{job.rank}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
+                <div style={{display:'flex',alignItems:'center',gap:8,marginTop:4,fontSize:11,color:'#8a93a3',flexWrap:'wrap'}}>
+                  <span style={{padding:'1px 7px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:3}}>{ms('event',13)}{job.due}</span>
+                  <span style={{color:job.daysColor,fontWeight:600}}>{job.days}</span>
+                </div>
+              </div>
+              {ms('drag_indicator',22,'#b8c0cc')}
+            </div>
+          ))}
+        </div>
+        <div style={{padding:'14px 18px',borderTop:'1px solid #eef0f4',display:'flex',justifyContent:'flex-end',gap:10}}>
+          <button onClick={()=>setReorderOpen(false)} style={{background:primary,border:'none',color:'#fff',borderRadius:9,padding:'9px 22px',fontSize:13.5,fontWeight:600}}>เสร็จสิ้น</button>
+        </div>
+      </div>
+     </div>
+    )}
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
 </body>
 </html>
