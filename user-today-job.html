@@ -258,14 +258,7 @@
           <div class="drawer-item"><q-icon name="bi-file-earmark-arrow-down" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="bi-book" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="bi-clipboard-data" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-shop" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-bag" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-clock" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-bookmark" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-hash" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-person-gear" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-people" size="22px"></q-icon></div>
-          <div class="drawer-item" style="margin: 8px auto 0 auto; background: #f0f2f5; border-radius: 50%; width: 36px; height: 36px;"><q-icon name="bi-chevron-up" size="20px"></q-icon></div>
+          <div class="drawer-item" style="margin: 8px auto 0 auto; background: #f0f2f5; border-radius: 50%; width: 36px; height: 36px;"><q-icon name="bi-chevron-down" size="20px"></q-icon></div>
         </div>
       </q-drawer>
 
@@ -307,9 +300,9 @@
 
                   <!-- status filter chips -->
                   <div class="row items-center q-gutter-x-sm q-mb-md">
-                    <q-chip v-for="c in statusChips" :key="c.key" clickable :outline="filter!==c.key" :color="filter===c.key ? c.color : 'white'"
-                      :text-color="filter===c.key ? 'white' : 'grey-8'" @click="toggleFilter(c.key)" size="sm" class="text-weight-medium" style="border:1px solid var(--wee-main-border-light-color);">
-                      <q-icon :name="c.icon" size="13px" class="q-mr-xs"></q-icon>{{ c.label }} {{ count(c.key) }}
+                    <q-chip v-for="c in statusChips" :key="c.key" clickable @click="toggleFilter(c.key)" size="sm" class="text-weight-medium"
+                      :style="(filter===c.key ? ('background:'+c.bg+'; color:'+c.color+'; border:1px solid '+c.color) : 'background:#fff; color:#1a2d39; border:1px solid var(--wee-main-border-light-color)')">
+                      <q-icon :name="c.icon" size="13px" class="q-mr-xs" :style="'color:'+c.color"></q-icon><b>{{ c.count }}</b>&nbsp;{{ c.label }}
                     </q-chip>
                     <q-space></q-space>
                     <q-btn v-if="filter!=='all'" flat dense no-caps size="sm" color="grey-7" icon="bi-x-circle" label="ล้างตัวกรอง" @click="filter='all'"></q-btn>
@@ -554,10 +547,10 @@
         const poolView = computed(()=> pool.value.filter(p=>(poolFilter.value==='all'||p.priority===poolFilter.value)&&(!poolSearch.value||p.title.includes(poolSearch.value))))
 
         const statusChips = [
-          {key:'new',label:'ยังไม่รับทราบ',icon:S.new.icon,color:'orange'},
-          {key:'doing',label:'กำลังดำเนินการ',icon:S.doing.icon,color:'indigo'},
-          {key:'closing',label:'ขอปิดงาน',icon:S.closing.icon,color:'teal'},
-          {key:'done',label:'ปิดงานแล้ว',icon:S.done.icon,color:'green'},
+          {key:'new',label:'ยังไม่รับทราบ',icon:S.new.icon,bg:S.new.bg,color:S.new.color,count:4},
+          {key:'doing',label:'กำลังดำเนินการ',icon:S.doing.icon,bg:S.doing.bg,color:S.doing.color,count:31},
+          {key:'closing',label:'ขอปิดงาน',icon:S.closing.icon,bg:S.closing.bg,color:S.closing.color,count:7},
+          {key:'done',label:'ปิดงานแล้ว',icon:S.done.icon,bg:S.done.bg,color:S.done.color,count:0},
         ]
         const toggleFilter = (k)=> filter.value = filter.value===k ? 'all' : k
         const listFor = (kind)=> kind==='team' ? members.value[selMember.value].jobs : jobs.value
