@@ -377,6 +377,24 @@
               </div>
             </div>
 
+            <!-- ความก้าวหน้าของฉัน (Today Job) -->
+            <a href="user-today-job.html" style="text-decoration: none; color: inherit; display: block;">
+              <div class="profile-card q-mb-md q-pa-md hover-effect" style="transition: background 0.3s; cursor: pointer;" onmouseover="this.style.background='#f0f2f5'" onmouseout="this.style.background='white'" onclick="window.location.href='user-today-job.html'">
+              <div class="row items-center q-mb-sm">
+                <q-icon name="bi-graph-up" color="indigo" size="20px" class="q-mr-sm"></q-icon>
+                <span class="text-indigo text-weight-bold" style="font-size: 14px;">Today's Job</span>
+                <q-space></q-space>
+                <span class="text-indigo text-weight-bold" style="font-size: 18px;">47 %</span>
+              </div>
+              <q-linear-progress size="12px" :value="0.47" color="indigo-13" class="q-mb-md" style="border-radius: 6px;"></q-linear-progress>
+              <div class="row items-center q-gutter-x-sm" style="font-size: 11px;">
+                <span class="text-grey-7">4 รอดำเนินการ</span>
+                <q-badge color="green-1" text-color="green-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 12px;">1 ดำเนินการแล้ว</q-badge>
+                <q-badge color="red-1" text-color="red-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 12px;">2 งานค้าง</q-badge>
+              </div>
+            </div>
+            </a>
+
             <!-- Duty Monitor / Tab -->
             <div class="profile-card">
               <q-tabs v-model="dutyTab" dense class="text-grey-7" active-color="primary" indicator-color="primary" align="justify" style="font-size: 13px;">
@@ -411,17 +429,20 @@
                 </q-tab-panel>
                 <q-tab-panel name="received" class="q-pa-none">
                   <q-list class="q-px-sm q-pb-sm">
-                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                    <q-item clickable v-ripple @click="goToJobs('new')" class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
                       <q-item-section avatar><q-badge color="orange-2" text-color="orange-9" rounded>4</q-badge></q-item-section>
                       <q-item-section><q-item-label>ยังไม่รับทราบ</q-item-label></q-item-section>
+                      <q-item-section side><q-icon name="bi-chevron-right" color="grey-5" size="14px"></q-icon></q-item-section>
                     </q-item>
-                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                    <q-item clickable v-ripple @click="goToJobs('doing')" class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
                       <q-item-section avatar><q-badge color="red-2" text-color="red-8" rounded>31</q-badge></q-item-section>
                       <q-item-section><q-item-label>กำลังดำเนินการ</q-item-label></q-item-section>
+                      <q-item-section side><q-icon name="bi-chevron-right" color="grey-5" size="14px"></q-icon></q-item-section>
                     </q-item>
-                    <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
+                    <q-item clickable v-ripple @click="goToJobs('closing')" class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
                       <q-item-section avatar><q-badge color="orange-2" text-color="orange-9" rounded>7</q-badge></q-item-section>
                       <q-item-section><q-item-label>ขอปิดงาน</q-item-label></q-item-section>
+                      <q-item-section side><q-icon name="bi-chevron-right" color="grey-5" size="14px"></q-icon></q-item-section>
                     </q-item>
                     <q-item clickable v-ripple class="q-mb-xs bg-grey-1" style="border-radius: 6px;">
                       <q-item-section avatar><q-badge color="teal-2" text-color="teal-8" rounded>0</q-badge></q-item-section>
@@ -726,24 +747,6 @@
           <!-- ===== คอลัมน์ขวา: FeedRight ===== -->
           <div class="col-12 col-md-3 q-pt-md q-pr-md">
 
-            <!-- ความก้าวหน้าของฉัน (Today Job) -->
-            <a href="user-today-job.html" style="text-decoration: none; color: inherit; display: block;">
-              <div class="profile-card q-mb-md q-pa-md hover-effect" style="transition: background 0.3s; cursor: pointer;" onmouseover="this.style.background='#f0f2f5'" onmouseout="this.style.background='white'" onclick="window.location.href='user-today-job.html'">
-              <div class="row items-center q-mb-sm">
-                <q-icon name="bi-graph-up" color="indigo" size="20px" class="q-mr-sm"></q-icon>
-                <span class="text-indigo text-weight-bold" style="font-size: 14px;">Today's Job</span>
-                <q-space></q-space>
-                <span class="text-indigo text-weight-bold" style="font-size: 18px;">47 %</span>
-              </div>
-              <q-linear-progress size="12px" :value="0.47" color="indigo-13" class="q-mb-md" style="border-radius: 6px;"></q-linear-progress>
-              <div class="row items-center q-gutter-x-sm" style="font-size: 11px;">
-                <span class="text-grey-7">4 รอดำเนินการ</span>
-                <q-badge color="green-1" text-color="green-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 12px;">1 ดำเนินการแล้ว</q-badge>
-                <q-badge color="red-1" text-color="red-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 12px;">2 งานค้าง</q-badge>
-              </div>
-            </div>
-            </a>
-
             <!-- ออนไลน์ขณะนี้ (จาก SectionUserOnline) -->
             <div class="profile-card q-mb-md q-pa-md">
               <div class="row items-center q-mb-md">
@@ -864,7 +867,7 @@
             <div class="profile-card q-mb-md q-pa-md">
               <div class="row items-center q-mb-md">
                 <q-avatar size="36px" color="teal-1" text-color="teal-6" class="q-mr-sm">
-                  <q-icon name="description" size="20px"></q-icon>
+                  <q-icon name="bi-file-earmark-text" size="20px"></q-icon>
                 </q-avatar>
                 <span class="text-weight-bold" style="font-size: 14px;">ธีมแนะนำ</span>
               </div>
@@ -873,15 +876,15 @@
                 <q-avatar size="38px" class="q-mr-sm"><img src="https://cdn.quasar.dev/img/avatar6.jpg"></q-avatar>
                 <div class="col">
                   <div class="text-weight-bold" style="font-size: 13px;">พันธกิจที่ 1 : EDR</div>
-                  <div class="text-grey" style="font-size: 11px; line-height: 1.4;"><q-icon name="edit" size="12px"></q-icon> โพสต์ 341<br>Pinij Ningunha</div>
+                  <div class="text-grey" style="font-size: 11px; line-height: 1.4;"><q-icon name="bi-pencil" size="12px"></q-icon> โพสต์ 341<br>Pinij Ningunha</div>
                 </div>
               </div>
 
               <div class="group-item">
-                <q-avatar size="38px" color="teal" text-color="white" class="q-mr-sm" icon="pan_tool"></q-avatar>
+                <q-avatar size="38px" color="teal" text-color="white" class="q-mr-sm" icon="bi-hand-index-thumb-fill"></q-avatar>
                 <div class="col">
                   <div class="text-weight-bold" style="font-size: 13px;">พันธกิจที่ 2 : GiveDeeFive</div>
-                  <div class="text-grey" style="font-size: 11px; line-height: 1.4;"><q-icon name="edit" size="12px"></q-icon> โพสต์ 116</div>
+                  <div class="text-grey" style="font-size: 11px; line-height: 1.4;"><q-icon name="bi-pencil" size="12px"></q-icon> โพสต์ 116</div>
                 </div>
               </div>
             </div>
@@ -899,12 +902,14 @@
     const app = Vue.createApp({
       setup() {
         const { ref } = Vue
+        const goToJobs = (status) => { window.location.href = 'user-today-job.html?status=' + status }
         return {
           leftDrawerOpen: ref(true),
           search: ref(''),
           dutyTab: ref('received'),
           statusText: ref(''),
-          showMoreStats: ref(false)
+          showMoreStats: ref(false),
+          goToJobs
         }
       }
     })
@@ -923,7 +928,7 @@
     })
     app.mount('#q-app')
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/icon-set/bootstrap-icons.umd.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/icon-set/bootstrap-icons.umd.prod.js"></script>
   <script>
     Quasar.iconSet.set(Quasar.iconSet.bootstrapIcons);
   </script>
