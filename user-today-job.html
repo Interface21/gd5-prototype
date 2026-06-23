@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>GiveDeeFive - หน้าแรก</title>
+  <meta name="description" content="GiveDeeFive - ระบบจัดการความรู้และการเรียนรู้ในองค์กร">
+
+  <!-- Quasar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/quasar.prod.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    /* ===== CSS Variables จาก app.scss ===== */
+    :root {
+      --wee-main-bg-color: #fafbfc;
+      --wee-main-border-color: #dcdcdc;
+      --wee-main-border-light-color: #ededed;
+      --wee-text-muted: #6b7982;
+      --v-main-text-body: #000000;
+      --v-main-text-head: #1a2d39;
+      --second-bg-color: #fff;
+      --primary: #15a08f;
+    }
+
+    body {
+      font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      background-color: var(--wee-main-bg-color) !important;
+      color: var(--v-main-text-body);
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* ===== Header จาก GD5 Dashboard ===== */
+    .q-header {
+      background: #ffffff !important;
+      border-bottom: 1px solid var(--wee-main-border-color);
+      color: var(--v-main-text-head) !important;
+    }
+
+    .search-input { width: 280px; }
+    .search-input .q-field__control {
+      border-radius: 20px !important;
+      background: #f0f2f5;
+      height: 38px;
+    }
+    .search-input .q-field__control:before { border: none !important; }
+
+    /* ===== Layout จาก IndexPage.vue ===== */
+    .app-feed-page {
+      max-width: 756px !important;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .app-feed-container {
+      max-width: 1380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ===== Border utilities จาก app.scss ===== */
+    .app-border { border: 1px solid var(--wee-main-border-color) !important; }
+    .app-border-light { border: 1px solid var(--wee-main-border-light-color) !important; }
+    .app-border-bottom { border-bottom: 1px solid var(--wee-main-border-color) !important; }
+    .app-border-radius { border-radius: 10px; }
+    .rounded { border-radius: 10px !important; }
+
+    /* ===== FeedStatistic card-style จาก FeedStatistic.vue ===== */
+    .card-style {
+      height: 185px;
+      overflow: hidden;
+      margin-bottom: 5px;
+      border-radius: 10px !important;
+    }
+    .bg-style {
+      background: linear-gradient(to right, #92fe9d, #00c9ff);
+    }
+    .card-style-overlay {
+      background-color: rgba(0, 0, 0, 0.5);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== Profile Card ===== */
+    .profile-card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--wee-main-border-light-color);
+      overflow: hidden;
+    }
+    .profile-banner {
+      height: 90px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .profile-banner-text {
+      color: rgba(255,255,255,0.15);
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ===== Shortcut Card (ทางลัด) จาก Dashboard ===== */
+    .shortcut-card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--wee-main-border-light-color);
+      padding: 16px;
+    }
+    .shortcut-item {
+      text-align: center;
+      cursor: pointer;
+      padding: 12px 8px;
+      border-radius: 10px;
+      transition: background 0.2s;
+    }
+    .shortcut-item:hover { background: #f0f2f5; }
+
+    /* ===== Status Card (คำสั่งที่สั่งไป/ได้รับ) ===== */
+    .status-card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--wee-main-border-light-color);
+      padding: 16px;
+    }
+    .status-row {
+      display: flex;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--wee-main-border-light-color);
+    }
+    .status-row:last-child { border-bottom: none; }
+    .status-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    .status-bar {
+      height: 6px;
+      border-radius: 3px;
+      margin-top: 6px;
+    }
+
+    /* ===== Group/Meeting items จาก FeedRight ===== */
+    .group-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .group-item:hover { background: #f0f2f5; }
+
+    /* ===== Feed Card (Post) ===== */
+    .feed-card {
+      background: white;
+      border: 1px solid var(--wee-main-border-light-color);
+      border-radius: 10px;
+      margin-bottom: 16px;
+    }
+    .feed-thumb {
+      width: 100%;
+      border-radius: 8px;
+      object-fit: cover;
+      height: 90px;
+    }
+
+    /* ===== Left drawer ===== */
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      margin: 0 auto 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: #6b7982;
+    }
+    .drawer-item:hover { background: #e6f7f5; color: #15a08f; }
+    .drawer-item.active { background: #e6f7f5; color: #15a08f; }
+  </style>
+</head>
+<body>
+  <div id="q-app">
+    <q-layout view="hHh LpR fFf">
+
+      <!-- ===== HEADER ===== -->
+      <q-header class="q-px-md q-py-xs" flat>
+        <q-toolbar>
+          <div class="row items-center cursor-pointer q-mr-lg">
+            <img src="image/logo.png" style="height: 36px; object-fit: contain;">
+          </div>
+
+          <q-input dense standout="bg-white text-primary" v-model="search" placeholder="ค้นหา GiveDeeFive" class="search-input">
+            <template v-slot:prepend>
+              <q-icon name="bi-search" color="grey-6"></q-icon>
+            </template>
+          </q-input>
+
+          <q-space></q-space>
+
+          <div class="row items-center q-gutter-x-xs">
+            <q-btn round flat icon="bi-bell" color="grey-8" size="md">
+              <q-badge color="red" floating label="3"></q-badge>
+            </q-btn>
+            <q-btn round flat icon="bi-chat" color="grey-8" size="md">
+              <q-badge color="red" floating label="7"></q-badge>
+            </q-btn>
+            <q-btn flat color="grey-8" size="sm">
+              <q-icon name="bi-globe" class="q-mr-xs"></q-icon> ไทย
+              <q-icon name="bi-chevron-down" size="16px"></q-icon>
+            </q-btn>
+            <q-btn round flat icon="bi-moon" color="grey-8" size="md"></q-btn>
+
+            <div class="row items-center q-ml-sm cursor-pointer">
+              <div class="column items-end q-mr-sm" style="line-height: 1.3;">
+                <span class="text-weight-bold text-body2">Piyawat Takaew</span>
+                <span class="text-caption text-grey-6">SA Staff</span>
+              </div>
+              <q-avatar size="36px">
+                <img src="https://cdn.quasar.dev/img/avatar.png">
+              </q-avatar>
+              <q-icon name="bi-chevron-down" color="grey-6" size="16px" class="q-ml-xs"></q-icon>
+            </div>
+          </div>
+        </q-toolbar>
+      </q-header>
+
+      <!-- ===== LEFT DRAWER (จาก FeedLayout.vue > FeedDrawer) ===== -->
+      <q-drawer v-model="leftDrawerOpen" show-if-above mini :mini-width="60" class="bg-white" style="border-right: 1px solid #ededed;">
+        <div class="q-pt-md q-pb-sm text-center">
+          <q-avatar size="34px" class="cursor-pointer">
+            <img src="https://cdn.quasar.dev/img/avatar.png">
+          </q-avatar>
+        </div>
+        <div class="q-mt-sm">
+          <div class="drawer-item active"><q-icon name="bi-speedometer2" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-grid" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-graph-up" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-arrow-up-right" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-graph-up-arrow" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-person-video3" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-download" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-book" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-bar-chart" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-clock" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-tags" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-people" size="22px"></q-icon></div>
+          <div class="drawer-item" style="margin-top: 8px;"><q-icon name="bi-chevron-down" size="22px"></q-icon></div>
+        </div>
+      </q-drawer>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <q-page-container>
+        <q-page class='row' style='margin:0;padding:0;overflow:hidden;'><iframe src='user-today-job-inner.html' style='width:100%;height:calc(100vh - 58px);border:none;'></iframe></q-page>
+      </q-page-container>
+    </q-layout>
+  </div>
+
+  <!-- Vue 3 + Quasar UMD -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/quasar.umd.prod.js"></script>
+  <script>
+    const app = Vue.createApp({
+      setup() {
+        const { ref } = Vue
+        return {
+          leftDrawerOpen: ref(true),
+          search: ref(''),
+          dutyTab: ref('received'),
+          statusText: ref(''),
+          showMoreStats: ref(false)
+        }
+      }
+    })
+    app.use(Quasar, {
+      config: {
+        brand: {
+          primary: '#15a08f',
+          secondary: '#26A69A',
+          accent: '#9C27B0',
+          positive: '#21BA45',
+          negative: '#C10015',
+          info: '#31CCEC',
+          warning: '#F2C037'
+        }
+      }
+    })
+    app.mount('#q-app')
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/icon-set/bootstrap-icons.umd.prod.js"></script>
+  <script>
+    Quasar.iconSet.set(Quasar.iconSet.bootstrapIcons);
+  </script>
+</body>
+</html>
