@@ -265,14 +265,217 @@
           <div class="drawer-item"><q-icon name="bi-hash" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="bi-person-gear" size="22px"></q-icon></div>
           <div class="drawer-item"><q-icon name="bi-people" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-bookmark" size="22px"></q-icon></div>
           <div class="drawer-item" style="margin: 8px auto 0 auto; background: #f0f2f5; border-radius: 50%; width: 36px; height: 36px;"><q-icon name="bi-chevron-up" size="20px"></q-icon></div>
         </div>
       </q-drawer>
 
       <!-- ===== MAIN CONTENT ===== -->
       <q-page-container>
-        <q-page class='row' style='margin:0;padding:0;overflow:hidden;'><iframe src='user-today-job-inner.html' style='width:100%;height:calc(100vh - 58px);border:none;'></iframe></q-page>
+        <q-page class="q-pa-md" style="background: var(--wee-main-bg-color);">
+          <div class="app-feed-container">
+
+            <!-- ===== MEMBER DETAIL HEADER ===== -->
+            <div v-if="screen==='member'" class="row items-center q-mb-md">
+              <q-btn round flat icon="bi-arrow-left" color="grey-8" @click="screen='team'"></q-btn>
+              <q-icon name="bi-people-fill" color="primary" size="22px" class="q-ml-xs q-mr-sm"></q-icon>
+              <span class="text-weight-bold" style="font-size:17px; color:var(--v-main-text-head);">Today's Job ของลูกทีม — {{ members[selMember].name }}</span>
+            </div>
+
+            <div class="row q-col-gutter-md">
+              <!-- ===== LEFT MAIN COLUMN ===== -->
+              <div :class="screen==='team' ? 'col-12' : 'col-12 col-md-8'">
+
+                <!-- ===== TAB SWITCH (me / team) ===== -->
+                <div v-if="screen!=='member'" class="row items-center q-mb-md">
+                  <q-btn-toggle v-model="screen" no-caps unelevated toggle-color="primary" color="white" text-color="grey-8"
+                    :options="[{label:'งานของฉัน',value:'me'},{label:'งานของลูกทีม',value:'team'},{label:'จัดการ Daily Job',value:'manage'}]"
+                    style="border:1px solid var(--wee-main-border-color); border-radius:8px;"></q-btn-toggle>
+                  <q-space></q-space>
+                  <q-btn v-if="screen==='me'" outline color="grey-8" no-caps icon="bi-arrow-down-up" label="เรียงลำดับ" size="sm" @click="reorderMode=!reorderMode"
+                    :class="reorderMode ? 'bg-teal-1' : ''"></q-btn>
+                </div>
+
+                <!-- ===== MY / MEMBER TODAY'S JOB ===== -->
+                <div v-if="screen==='me' || screen==='member'" class="profile-card q-pa-md q-mb-md">
+                  <div class="row items-center q-mb-sm">
+                    <q-icon name="bi-list-check" color="primary" size="22px" class="q-mr-sm"></q-icon>
+                    <span class="text-weight-bold" style="font-size:16px;">Today's Job <span class="text-grey-6" style="font-size:13px;">(คำสั่งที่ได้รับ)</span></span>
+                    <q-space></q-space>
+                    <span class="text-indigo text-weight-bold" style="font-size:20px;">{{ curStats.avg }} %</span>
+                  </div>
+                  <q-linear-progress size="11px" :value="curStats.avg/100" color="indigo-13" class="q-mb-md" style="border-radius:6px;"></q-linear-progress>
+
+                  <!-- status filter chips -->
+                  <div class="row items-center q-gutter-x-sm q-mb-md">
+                    <q-chip v-for="c in statusChips" :key="c.key" clickable :outline="filter!==c.key" :color="filter===c.key ? c.color : 'white'"
+                      :text-color="filter===c.key ? 'white' : 'grey-8'" @click="toggleFilter(c.key)" size="sm" class="text-weight-medium" style="border:1px solid var(--wee-main-border-light-color);">
+                      <q-icon :name="c.icon" size="13px" class="q-mr-xs"></q-icon>{{ c.label }} {{ count(c.key) }}
+                    </q-chip>
+                    <q-space></q-space>
+                    <q-btn v-if="filter!=='all'" flat dense no-caps size="sm" color="grey-7" icon="bi-x-circle" label="ล้างตัวกรอง" @click="filter='all'"></q-btn>
+                  </div>
+
+                  <!-- job rows -->
+                  <div v-for="(job,idx) in curView" :key="job.id" class="status-card q-mb-sm"
+                    :style="job.over && filter==='all' ? 'background:#fdf4f4; border-color:#f3d6d6;' : (job.progress>=100 ? 'background:#eaf7f0; border-color:#bfe6d3;' : '')">
+                    <div class="row items-center no-wrap">
+                      <div class="text-indigo text-weight-bolder text-center" style="width:28px; font-size:19px; flex:none;">{{ idx+1 }}</div>
+                      <q-icon :name="job.st.icon" :style="'color:'+job.st.color" size="18px" class="q-mx-sm" style="flex:none;"><q-tooltip>{{ job.st.label }}</q-tooltip></q-icon>
+                      <div class="col" style="min-width:0;">
+                        <div class="text-weight-medium ellipsis" style="color:var(--v-main-text-head);">{{ job.title }}</div>
+                        <div class="row items-center q-gutter-x-sm q-mt-xs" style="font-size:11.5px; color:var(--wee-text-muted);">
+                          <span><q-icon name="bi-person-circle" size="13px"></q-icon> {{ job.commander }}</span>
+                          <q-badge :style="'background:'+job.st.bg+'; color:'+job.st.color" class="q-px-sm text-weight-medium" style="border-radius:10px;">{{ job.st.label }}</q-badge>
+                          <span :style="'color:'+(job.over?'#d83a3a':'#0e8c7d')+'; font-weight:600;'"><q-icon :name="job.over?'bi-exclamation-triangle-fill':'bi-calendar-event'" size="12px"></q-icon> {{ job.days }}</span>
+                        </div>
+                        <q-linear-progress :value="job.progress/100" size="6px" :color="job.barColor" class="q-mt-sm" style="border-radius:6px; max-width:440px;"></q-linear-progress>
+                      </div>
+                      <div class="column q-ml-sm" style="flex:none;" v-if="reorderMode && screen==='me'">
+                        <q-btn flat dense size="sm" icon="bi-chevron-up" @click="move('me',idx,-1)"></q-btn>
+                        <q-btn flat dense size="sm" icon="bi-chevron-down" @click="move('me',idx,1)"></q-btn>
+                      </div>
+                      <q-btn v-else outline color="primary" no-caps dense size="sm" icon="bi-plus" label="เติม" class="q-ml-sm" style="flex:none;"
+                        @click="addProgress(screen==='member'?'team':'me', job.id)"></q-btn>
+                    </div>
+                  </div>
+                  <div v-if="curView.length===0" class="text-center text-grey-5 q-py-lg">ไม่มีงานในสถานะนี้</div>
+                </div>
+
+                <!-- ===== TEAM LIST ===== -->
+                <div v-if="screen==='team'">
+                  <div class="profile-card q-pa-md q-mb-md" style="background:#eef0f3; border:none;">
+                    <div class="row items-center">
+                      <span class="text-weight-bold text-grey-8"><q-icon name="bi-graph-up" color="primary" size="18px"></q-icon> ความก้าวหน้า</span>
+                      <q-space></q-space>
+                      <span class="text-indigo text-weight-bolder" style="font-size:19px;">{{ teamStats.avg }} %</span>
+                    </div>
+                    <q-linear-progress :value="teamStats.avg/100" size="13px" color="indigo-13" class="q-mt-sm" style="border-radius:7px;"></q-linear-progress>
+                    <div class="row items-center q-gutter-x-sm q-mt-sm" style="font-size:12px;">
+                      <span class="text-grey-7">{{ teamStats.pending }} รอดำเนินการ</span>
+                      <q-badge color="green-1" text-color="green-9" class="q-px-sm" style="border-radius:12px;">{{ teamStats.done }} ดำเนินการแล้ว</q-badge>
+                      <q-badge color="red-1" text-color="red-9" class="q-px-sm" style="border-radius:12px;">{{ teamStats.over }} งานค้าง</q-badge>
+                    </div>
+                  </div>
+                  <div v-for="(m,mi) in members" :key="m.id" class="profile-card q-pa-md q-mb-sm cursor-pointer hover-effect"
+                    @click="openMember(mi)" style="transition:background .2s;" onmouseover="this.style.background='#f7f9fb'" onmouseout="this.style.background='white'">
+                    <div class="row items-center">
+                      <q-avatar size="44px" color="grey-3" text-color="grey-6" icon="bi-person-fill"></q-avatar>
+                      <div class="col q-ml-md" style="min-width:0;">
+                        <div class="row items-center">
+                          <span class="text-weight-bold ellipsis col">{{ m.name }}</span>
+                          <span class="text-indigo text-weight-bolder" style="font-size:16px;">{{ m.progress }} %</span>
+                        </div>
+                        <div class="text-grey-6" style="font-size:11px;">{{ m.role }}</div>
+                        <q-linear-progress :value="m.progress/100" size="10px" color="indigo-13" class="q-mt-sm" style="border-radius:6px;"></q-linear-progress>
+                        <div class="row items-center q-gutter-x-sm q-mt-xs" style="font-size:11px;">
+                          <span class="text-grey-7">{{ memStats(m).pending }} รอดำเนินการ</span>
+                          <q-badge color="green-1" text-color="green-9" class="q-px-sm" style="border-radius:10px;">{{ memStats(m).done }} ดำเนินการแล้ว</q-badge>
+                          <q-badge v-if="memStats(m).over" color="red-1" text-color="red-9" class="q-px-sm" style="border-radius:10px;">{{ memStats(m).over }} งานค้าง</q-badge>
+                          <q-space></q-space>
+                          <span class="text-grey-6">{{ m.jobs.length }} คำสั่งการ</span>
+                        </div>
+                      </div>
+                      <q-icon name="bi-chevron-right" color="grey-5" size="20px" class="q-ml-sm"></q-icon>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ===== MANAGE ===== -->
+                <div v-if="screen==='manage'">
+                  <div class="row q-col-gutter-md">
+                    <!-- list -->
+                    <div class="col-12 col-md-6">
+                      <div class="profile-card q-pa-md" style="background:#fcfdfe;">
+                        <div class="row items-center q-mb-sm">
+                          <q-icon name="bi-list-check" color="primary" size="18px" class="q-mr-sm"></q-icon>
+                          <span class="text-weight-bold" style="font-size:14px;">รายการงาน</span>
+                          <q-space></q-space><span class="text-grey-6" style="font-size:11.5px;">{{ jobs.length }} งาน</span>
+                        </div>
+                        <div v-for="(job,idx) in jobs" :key="job.id" class="status-card q-mb-sm">
+                          <div class="row items-center no-wrap">
+                            <div class="text-indigo text-weight-bolder text-center" style="width:24px; font-size:17px;">{{ idx+1 }}</div>
+                            <div class="col q-mx-sm" style="min-width:0;">
+                              <div class="text-weight-medium ellipsis" style="font-size:13px;">{{ job.title }}</div>
+                              <div class="q-mt-xs"><q-badge :style="'background:'+S[job.status].bg+'; color:'+S[job.status].color" class="q-px-sm" style="border-radius:10px;">{{ S[job.status].label }}</q-badge></div>
+                            </div>
+                            <div class="column" style="flex:none;">
+                              <q-btn flat dense size="sm" icon="bi-chevron-up" @click="move('me',idx,-1)"></q-btn>
+                              <q-btn flat dense size="sm" icon="bi-chevron-down" @click="move('me',idx,1)"></q-btn>
+                            </div>
+                            <q-btn flat dense size="sm" color="red" icon="bi-trash" class="q-ml-xs" @click="removeJob(job.id)"></q-btn>
+                          </div>
+                        </div>
+                        <div v-if="jobs.length===0" class="text-center text-grey-5 q-py-md">ยังไม่มีงาน — นำเข้าจากผู้สั่งการ →</div>
+                      </div>
+                    </div>
+                    <!-- import pool -->
+                    <div class="col-12 col-md-6">
+                      <div class="profile-card q-pa-md">
+                        <div class="row items-center q-mb-sm">
+                          <q-icon name="bi-inbox" color="primary" size="18px" class="q-mr-sm"></q-icon>
+                          <span class="text-weight-bold" style="font-size:14px;">ผู้สั่งการ — เลือกนำเข้างาน</span>
+                        </div>
+                        <q-input dense outlined v-model="poolSearch" placeholder="ค้นหาคำสั่งการ" class="q-mb-sm">
+                          <template v-slot:prepend><q-icon name="bi-search" size="16px"></q-icon></template>
+                        </q-input>
+                        <div class="row q-gutter-xs q-mb-sm">
+                          <q-chip v-for="f in ['all','urgent','high','normal']" :key="f" clickable :outline="poolFilter!==f" :color="poolFilter===f?'primary':'white'"
+                            :text-color="poolFilter===f?'white':'grey-8'" size="sm" @click="poolFilter=f" style="border:1px solid var(--wee-main-border-light-color);">{{ prLabel(f) }}</q-chip>
+                        </div>
+                        <div v-for="p in poolView" :key="p.id" class="status-card q-mb-sm">
+                          <div class="row items-center no-wrap">
+                            <div class="col" style="min-width:0;">
+                              <div class="text-weight-medium" style="font-size:13px; line-height:1.35;">{{ p.title }}</div>
+                              <div class="row items-center q-gutter-x-sm q-mt-xs" style="font-size:11px; color:var(--wee-text-muted);">
+                                <span><q-icon name="bi-person-circle" size="12px"></q-icon> {{ p.commander }}</span>
+                                <q-badge :style="'background:'+prStyle(p.priority).bg+'; color:'+prStyle(p.priority).color" class="q-px-sm" style="border-radius:10px;">{{ prStyle(p.priority).label }}</q-badge>
+                                <span :style="'color:'+(p.over?'#d83a3a':'#0e8c7d')+'; font-weight:600;'">{{ p.days }}</span>
+                              </div>
+                            </div>
+                            <q-btn round color="primary" icon="bi-plus" size="sm" class="q-ml-sm" @click="importJob(p.id)"></q-btn>
+                          </div>
+                        </div>
+                        <div v-if="poolView.length===0" class="text-center text-grey-5 q-py-md">ไม่พบคำสั่งการ</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ===== RIGHT COLUMN (me only) ===== -->
+              <div v-if="screen==='me'" class="col-12 col-md-4">
+                <div class="profile-card q-pa-md q-mb-md">
+                  <div class="row items-center q-mb-sm">
+                    <q-icon name="bi-lightning-charge" color="primary" size="18px" class="q-mr-sm"></q-icon>
+                    <span class="text-weight-bold" style="font-size:14px;">ทางลัด</span>
+                  </div>
+                  <div class="row q-col-gutter-sm">
+                    <div class="col-6" v-for="sc in shortcuts" :key="sc.label">
+                      <div class="shortcut-item" :style="sc.primary ? 'background:#e3f3f0; border:1px solid #c4e7df;' : 'background:#f6f8fa;'" @click="sc.action && sc.action()">
+                        <q-icon :name="sc.icon" :color="sc.primary?'primary':'grey-7'" size="24px"></q-icon>
+                        <div class="q-mt-xs text-weight-medium" :class="sc.primary?'text-primary':'text-grey-8'" style="font-size:11.5px;">{{ sc.label }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="profile-card q-pa-md">
+                  <div class="row items-center q-mb-sm">
+                    <q-icon name="bi-chat-dots" color="primary" size="18px" class="q-mr-sm"></q-icon>
+                    <span class="text-weight-bold" style="font-size:14px;">กลุ่มที่มีโพสต์ใหม่</span>
+                  </div>
+                  <div v-for="g in vmGroups" :key="g.name" class="group-item">
+                    <q-avatar size="38px" color="grey-3" text-color="grey-6" icon="bi-people"></q-avatar>
+                    <div class="col q-ml-sm" style="min-width:0;">
+                      <div class="text-weight-medium ellipsis" style="font-size:13px;">{{ g.name }}</div>
+                      <div class="text-grey-6" style="font-size:11px;">{{ g.members }}</div>
+                    </div>
+                    <q-badge color="teal-1" text-color="teal-8" class="q-px-sm text-weight-bold" style="border-radius:12px;">{{ g.posts }}</q-badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-page>
       </q-page-container>
     </q-layout>
   </div>
@@ -283,14 +486,104 @@
   <script>
     const app = Vue.createApp({
       setup() {
-        const { ref } = Vue
-        return {
-          leftDrawerOpen: ref(true),
-          search: ref(''),
-          dutyTab: ref('received'),
-          statusText: ref(''),
-          showMoreStats: ref(false)
+        const { ref, computed } = Vue
+        const S = {
+          new:    {label:'ยังไม่รับทราบ', icon:'bi-bell',              bg:'#fff4e0', color:'#d98223'},
+          doing:  {label:'กำลังดำเนินการ', icon:'bi-arrow-repeat',      bg:'#e7eafc', color:'#3949c9'},
+          closing:{label:'ขอปิดงาน',       icon:'bi-check2-circle',     bg:'#e3f3f0', color:'#0e8c7d'},
+          done:   {label:'ปิดงานแล้ว',     icon:'bi-check-circle-fill', bg:'#e4f4ec', color:'#1f9d57'},
         }
+        const params = new URLSearchParams(window.location.search)
+        const initStatus = params.get('status')
+        const screen = ref('me')
+        const filter = ref(['new','doing','closing','done'].includes(initStatus) ? initStatus : 'all')
+        const reorderMode = ref(false)
+        const selMember = ref(0)
+        const poolSearch = ref(''), poolFilter = ref('all')
+
+        const jobs = ref([
+          {id:'j1',title:'อัพเดทระบบ EDR เป็น jdk8',commander:'Piyawat',status:'doing',progress:30,days:'เกิน 2 วัน',over:true},
+          {id:'j2',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',status:'doing',progress:60,days:'เกิน 5 วัน',over:true},
+          {id:'j3',title:'ติดตามการเก็บเงิน ตามสัญญา',commander:'Nitirud',status:'doing',progress:45,days:'เหลือ 2 วัน',over:false},
+          {id:'j4',title:'โพสปัญหาเชิงโครงสร้างของ EDR',commander:'Pinij',status:'doing',progress:20,days:'เหลือ 4 วัน',over:false},
+          {id:'j5',title:'จัดทำ WI กระบวนการ Deploy เว็บไซต์',commander:'Chanavee',status:'closing',progress:100,days:'เหลือ 1 วัน',over:false},
+          {id:'j6',title:'ส่งรายงาน PA พัฒนางานประจำ',commander:'Sunthan',status:'closing',progress:90,days:'เหลือ 1 วัน',over:false},
+          {id:'j7',title:'รับงาน: ปรับปรุงเอกสารสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',status:'new',progress:0,days:'รอกดรับ',over:false},
+          {id:'j8',title:'รับงาน: อบรมลูกค้า ส่งมอบระบบ Grand ATS',commander:'บาส',status:'new',progress:0,days:'รอกดรับ',over:false},
+        ])
+        const members = ref([
+          {id:'m1',name:'Bodin Muanprasat',role:'Software Engineer',progress:14,jobs:[
+            {id:'b1',title:'เรียน NuxtJS สำหรับพัฒนา EDR V.3',commander:'Piyawat',status:'doing',progress:10,days:'เหลือ 3 วัน',over:false},
+            {id:'b2',title:'แก้บั๊ก dashboard EDR ก่อน demo',commander:'Narate',status:'doing',progress:40,days:'เกิน 1 วัน',over:true},
+            {id:'b3',title:'รีวิวโค้ด Pull Request #214',commander:'Chanavee',status:'new',progress:0,days:'เหลือ 4 วัน',over:false},
+          ]},
+          {id:'m2',name:'Narate Boonmee',role:'Software Engineer',progress:46,jobs:[
+            {id:'n1',title:'จัดทำ WI การ Deploy ด้วย Nuxt Content',commander:'Chanavee',status:'closing',progress:60,days:'เหลือ 2 วัน',over:false},
+            {id:'n2',title:'ทดสอบ regression ระบบ EDR',commander:'Piyawat',status:'doing',progress:30,days:'เหลือ 5 วัน',over:false},
+          ]},
+          {id:'m3',name:'Supatta Longna',role:'แผนปฏิบัติการ',progress:9,jobs:[
+            {id:'s1',title:'หาสาเหตุที่แท้จริงของปัญหา',commander:'Piyawat',status:'doing',progress:0,days:'เกิน 1 วัน',over:true},
+            {id:'s2',title:'สรุปยอดเก็บเงินรายเดือน',commander:'Nitirud',status:'doing',progress:20,days:'เหลือ 2 วัน',over:false},
+          ]},
+          {id:'m4',name:'Nichagorn Prajansen',role:'Staff',progress:46,jobs:[
+            {id:'g1',title:'สรุปข้อมูลความเห็นโพสต์',commander:'Piyawat',status:'doing',progress:46,days:'เหลือ 3 วัน',over:false},
+            {id:'g2',title:'จัดทำเอกสาร Tip การใช้ AI',commander:'Jarunya',status:'closing',progress:90,days:'เหลือ 4 วัน',over:false},
+          ]},
+        ])
+        const pool = ref([
+          {id:'p1',title:'อบรมลูกค้า / ส่งมอบงานระบบ Grand ATS',commander:'บาส',priority:'urgent',days:'เกิน 10 วัน',over:true},
+          {id:'p2',title:'จัดทำรายละเอียดของสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',priority:'urgent',days:'เกิน 5 วัน',over:true},
+          {id:'p3',title:'ติดตามการเก็บเงิน ตามสัญญา (เพิ่มเติม)',commander:'Nitirud',priority:'high',days:'เกิน 2 วัน',over:true},
+          {id:'p4',title:'หาสาเหตุที่แท้จริงของปัญหาเชิงโครงสร้าง',commander:'Supatta',priority:'normal',days:'อีก 5 วัน',over:false},
+          {id:'p5',title:'PA - พัฒนางานประจำ ไตรมาส 3',commander:'Piyawat',priority:'normal',days:'อีก 5 วัน',over:false},
+          {id:'p6',title:'โพสบทความเคล็ดลับการเขียน WI',commander:'Khajonsak',priority:'high',days:'อีก 4 วัน',over:false},
+          {id:'p7',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',days:'อีก 5 วัน',over:false},
+        ])
+
+        const prStyle = (p)=> p==='urgent'?{bg:'#fdeaea',color:'#d83a3a',label:'ด่วนมาก'}:p==='high'?{bg:'#fff2e2',color:'#dd7a16',label:'ด่วน'}:{bg:'#eef1f5',color:'#6b7280',label:'ปกติ'}
+        const prLabel = (f)=> f==='all'?'ทั้งหมด':prStyle(f).label
+        const barColorFor = (p)=> p>=100?'green-13':p>=40?'indigo-13':p>0?'orange':'grey-5'
+        const statsFor = (arr)=>{ const total=arr.length,done=arr.filter(j=>j.progress>=100).length,over=arr.filter(j=>j.over).length,avg=total?Math.round(arr.reduce((s,j)=>s+j.progress,0)/total):0; return {total,done,over,pending:total-done,avg} }
+        const count = (k)=> jobs.value.filter(j=>j.status===k).length
+
+        const activeArr = computed(()=> screen.value==='member' ? members.value[selMember.value].jobs : jobs.value)
+        const curStats = computed(()=>{ const active=activeArr.value.filter(j=>j.status==='doing'||j.status==='closing'); return statsFor(filter.value==='all'?active:activeArr.value.filter(j=>j.status===filter.value)) })
+        const curView = computed(()=>{ let l=activeArr.value; if(filter.value!=='all') l=l.filter(j=>j.status===filter.value); return l.map(j=>({...j, st:S[j.status], barColor:barColorFor(j.progress)})) })
+        const teamStats = computed(()=> statsFor(members.value.reduce((a,m)=>a.concat(m.jobs),[])))
+        const memStats = (m)=> statsFor(m.jobs)
+        const poolView = computed(()=> pool.value.filter(p=>(poolFilter.value==='all'||p.priority===poolFilter.value)&&(!poolSearch.value||p.title.includes(poolSearch.value))))
+
+        const statusChips = [
+          {key:'new',label:'ยังไม่รับทราบ',icon:S.new.icon,color:'orange'},
+          {key:'doing',label:'กำลังดำเนินการ',icon:S.doing.icon,color:'indigo'},
+          {key:'closing',label:'ขอปิดงาน',icon:S.closing.icon,color:'teal'},
+          {key:'done',label:'ปิดงานแล้ว',icon:S.done.icon,color:'green'},
+        ]
+        const toggleFilter = (k)=> filter.value = filter.value===k ? 'all' : k
+        const listFor = (kind)=> kind==='team' ? members.value[selMember.value].jobs : jobs.value
+        const move = (kind,idx,dir)=>{ const arr=listFor(kind); const ni=idx+dir; if(ni<0||ni>=arr.length)return; const t=arr[idx];arr[idx]=arr[ni];arr[ni]=t }
+        const removeJob = (id)=>{ jobs.value = jobs.value.filter(j=>j.id!==id) }
+        const addProgress = (kind,id)=>{ const arr=listFor(kind); const j=arr.find(x=>x.id===id); if(!j)return; j.progress=Math.min(100,j.progress+25); if(j.progress>=100)j.status='closing' }
+        const importJob = (id)=>{ const p=pool.value.find(x=>x.id===id); if(!p)return; jobs.value.push({id:'imp-'+id,title:p.title,commander:p.commander,status:'new',progress:0,days:p.days,over:p.over}); pool.value=pool.value.filter(x=>x.id!==id) }
+        const openMember = (i)=>{ selMember.value=i; filter.value='all'; screen.value='member' }
+
+        const shortcuts = [
+          {label:'สั่งการใหม่',icon:'bi-plus-square',primary:true,action:()=>{screen.value='manage'}},
+          {label:'เอกสารใหม่',icon:'bi-file-earmark-plus'},
+          {label:'วิเคราะห์ข้อมูล',icon:'bi-bar-chart-line'},
+          {label:'คะแนนของฉัน',icon:'bi-trophy'},
+        ]
+        const vmGroups = [
+          {name:'VM : AAR GiveDeeFive',members:'สมาชิก 18 คน',posts:'5 โพสใหม่'},
+          {name:'เคล็ดลับการเขียน WI',members:'สมาชิก 29 คน',posts:'8 โพสใหม่'},
+          {name:'AI วันละ 5 นาที',members:'สมาชิก 17 คน',posts:'15 โพสใหม่'},
+          {name:'SA-Developer',members:'สมาชิก 4 คน',posts:'2 โพสใหม่'},
+        ]
+
+        return { leftDrawerOpen:ref(true), search:ref(''),
+          S, screen, filter, reorderMode, selMember, poolSearch, poolFilter,
+          jobs, members, pool, prStyle, prLabel, count, curStats, curView, teamStats, memStats, poolView,
+          statusChips, toggleFilter, move, removeJob, addProgress, importJob, openMember, shortcuts, vmGroups }
       }
     })
     app.use(Quasar, {
@@ -308,7 +601,7 @@
     })
     app.mount('#q-app')
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/icon-set/bootstrap-icons.umd.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/icon-set/bootstrap-icons.umd.prod.js"></script>
   <script>
     Quasar.iconSet.set(Quasar.iconSet.bootstrapIcons);
   </script>
