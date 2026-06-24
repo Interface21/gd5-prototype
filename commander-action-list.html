@@ -158,65 +158,29 @@ function App(){
         {/* LIST */}
         <div style={{borderTop:'1px solid #eef0f4'}}>
           {ROWS.map((r)=>(
-            <a key={r.id} href="#" className="job-row">
-              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: 12}}>
-                <div style={{fontWeight:600, fontSize:15, color:'#2b3440'}}>{r.title}</div>
-                <div style={{display:'flex', alignItems:'center', gap: 14}}>
-                  {/* Type Pill */}
-                  {r.type === 'daily' && <span style={{background:'#e4f4ec', color:'#1f9d57', padding:'2px 10px', borderRadius:99, fontSize:11.5, fontWeight:600}}>งานประจำวัน (Day to day)</span>}
-                  {r.type === 'pa' && <span style={{background:'#fdeee0', color:'#d98223', padding:'2px 10px', borderRadius:99, fontSize:11.5, fontWeight:600}}>PA</span>}
-                  
-                  {/* Due date if PA */}
-                  {r.due && <span style={{display:'inline-flex', alignItems:'center', gap:4, border:'1px solid #fdeaea', background:'#fff', color:'#ef4444', padding:'1px 8px', borderRadius:99, fontSize:11.5, fontWeight:600}}>{ms('event',14,'#ef4444')} {r.due}</span>}
-                  
-                  {/* Progress */}
-                  <span style={{fontSize:13, fontWeight:700, color: r.progress===100?'#1f9d57':r.progress>0?'#ef4444':'#0891b2', background: r.progress===0?'#e0f2f8':'transparent', padding: r.progress===0?'2px 8px':'0', borderRadius: r.progress===0?99:0}}>{r.progress}%</span>
-                  
-                  {/* Status Dot */}
-                  <span style={{width:10, height:10, borderRadius:'50%', background:'#ef4444'}}></span>
-                  
-                  {/* More menu */}
-                  <i className="bi bi-three-dots-vertical" style={{color:'#aab2bd', fontSize:16, cursor:'pointer'}}></i>
+            <a key={r.id} href="#" className="job-row" style={{display:'flex',alignItems:'flex-start',gap:13,padding:'14px 24px',borderBottom:'1px solid #f3f5f8',flexWrap:'wrap'}}>
+              <div style={{width:36,height:36,borderRadius:'50%',background:'#eef1f5',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',marginTop:2}}>{ms('person',22,'#aab2bd')}</div>
+              <div style={{flex:'1 1 320px',minWidth:240}}>
+                <div style={{fontWeight:600,fontSize:14,marginBottom:7,lineHeight:1.45,color:'#2b3440'}}>{r.title}</div>
+                <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',fontSize:12.5,color:'#9aa3af'}}>
+                  {ms('person',16,'#bcc3cd')}
+                  <span>ผู้รับคำสั่ง {r.assignees} คน</span>
+                  {r.closed > 0 && <span style={{color:'#b3bac4'}}>· ปิดงาน {r.closed} คน</span>}
+                  {r.inprogress > 0 && <span style={{color:'#b3bac4'}}>· กำลังดำเนินการ {r.inprogress} คน</span>}
+                  {r.newProg > 0 && <span style={{color:'#b3bac4'}}>· ก้าวหน้าใหม่ {r.newProg} รายการ</span>}
                 </div>
               </div>
-
-              <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-                <div style={{display:'flex', alignItems:'center', gap: 10, fontSize:12}}>
-                  <span style={{display:'inline-flex', alignItems:'center', gap:5, border:'1px solid #eef1f5', padding:'3px 9px', borderRadius:6, color:'#5a6473', fontWeight:500}}>{ms('event',14,'#8a93a3')} {r.date}</span>
-                  
-                  <span style={{display:'inline-flex', alignItems:'center', gap:6, background:'#e3f3f0', color:'#0e8c7d', padding:'3px 10px 3px 3px', borderRadius:99, fontWeight:600}}>
-                    <span style={{background:'#0e8c7d', color:'#fff', width:20, height:20, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11.5}}>{r.assignees}</span> ผู้รับคำสั่ง
-                  </span>
-
-                  {r.closed > 0 && <span style={{display:'inline-flex', alignItems:'center', gap:6, background:'#e4f4ec', color:'#1f9d57', padding:'3px 10px 3px 3px', borderRadius:99, fontWeight:600}}>
-                    <span style={{background:'#1f9d57', color:'#fff', width:20, height:20, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11.5}}>{r.closed}</span> ปิดงาน
-                  </span>}
-
-                  {r.inprogress > 0 && <span style={{display:'inline-flex', alignItems:'center', gap:6, background:'#eaf1fe', color:'#3b82f6', padding:'3px 10px 3px 3px', borderRadius:99, fontWeight:600}}>
-                    <span style={{background:'#3b82f6', color:'#fff', width:20, height:20, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11.5}}>{r.inprogress}</span> กำลังดำเนินการ
-                  </span>}
-
-                  {r.newProg > 0 && <span style={{display:'inline-flex', alignItems:'center', gap:6, background:'#fef3e6', color:'#d98223', padding:'3px 10px 3px 3px', borderRadius:99, fontWeight:600}}>
-                    <span style={{background:'#f5b301', color:'#fff', width:20, height:20, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11.5}}>{r.newProg}</span> มีความก้าวหน้าใหม่
-                  </span>}
+              <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:6,flex:'0 1 auto',minWidth:0,marginLeft:'auto'}}>
+                <div style={{display:'flex',alignItems:'center',gap:13,flexWrap:'wrap',justifyContent:'flex-end'}}>
+                  <span style={{fontSize:11.5,color:'#aab2bd'}}>{r.type === 'daily' ? 'งานประจำวัน' : 'PA'}</span>
+                  {r.due && <span style={{color:'#ef4444',fontSize:11.5,fontWeight:600,display:'flex',alignItems:'center',gap:4}}>{ms('event',14,'#ef4444')}กำหนด {r.due}</span>}
+                  <span style={{fontSize:11.5,fontWeight:700,color: r.progress===100?'#1f9d57':r.progress>0?'#ef4444':'#0891b2'}}>{r.progress}%</span>
+                  <span style={{width:10,height:10,borderRadius:'50%',background:r.status==='red'?'#ef4444':'#22b573',flex:'none'}}></span>
+                  <i className="bi bi-three-dots-vertical" style={{color:'#aab2bd', fontSize:16}}></i>
                 </div>
-
-                <div style={{display:'flex', alignItems:'center', gap: 12, fontSize:12, color:'#5a6473'}}>
-                  <div style={{display:'flex', alignItems:'center', gap:8}}>
-                    <span style={{display:'inline-flex', alignItems:'center', gap:4, color:'#3b82f6', fontWeight:600}}>{ms('person',16,'#3b82f6')} ผู้รับคำสั่ง</span>
-                    <div style={{display:'flex', alignItems:'center'}}>
-                      {r.avatars.map((a,i)=>(
-                        <img key={i} src={`https://i.pravatar.cc/100?img=${a+10}`} style={{width:24, height:24, borderRadius:'50%', border:'2px solid #fff', marginLeft: i>0?-10:0, objectFit:'cover', position:'relative', zIndex: 10-i}}/>
-                      ))}
-                      {r.avatarMore && <span style={{width:24, height:24, borderRadius:'50%', border:'2px solid #fff', marginLeft:-10, background:'#e7eaef', color:'#5a6473', fontSize:10, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', position:'relative', zIndex: 0}}>{r.avatarMore}</span>}
-                    </div>
-                  </div>
-                  
-                  <div style={{width:1, height:16, background:'#e7eaef'}}></div>
-                  
-                  <div style={{display:'flex', alignItems:'center', gap:5, fontWeight:600, color:'#2b3440'}}>
-                    {r.src} {r.isLink && <i className="bi bi-link-45deg" style={{fontSize:18, color:'#aab2bd'}}></i>}
-                  </div>
+                <div style={{display:'flex',alignItems:'center',gap:6,fontSize:11.5,color:'#aab2bd'}}>
+                  <span>วันที่สั่ง {r.date}</span>
+                  {r.src && <span>· <span style={r.isLink ? {color:primary,fontWeight:600} : {}}>{r.src}</span> {r.isLink && <i className="bi bi-link-45deg" style={{fontSize:14}}></i>}</span>}
                 </div>
               </div>
             </a>
