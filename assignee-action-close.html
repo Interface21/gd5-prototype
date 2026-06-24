@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>คำสั่งที่ได้รับ — GiveDeeFive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+a{color:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+@keyframes popIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const MS = {fontFamily:"'Material Symbols Rounded'"};
+const primary='#15a08f', primarySoft='#e3f3f0', primarySoftBorder='#c4e7df';
+const ms=(name,size,color,fill)=>(<span className="bi" style={{...MS,fontSize:size,color,...(fill?{fontVariationSettings:"'FILL' 1"}:{})}}>{name}</span>);
+
+const ASSIGNEES = ['#4f46e5','#dd7a16','#0e8c7d','#d83a3a','#7c3aed'];
+
+function App(){
+  const [tab,setTab]=useState('progress');
+  const tabs=[
+    {key:'progress',label:'รายงานความก้าวหน้า',count:1},
+    {key:'notify',label:'การแจ้งเตือนจากผู้สั่งการ',count:0},
+    {key:'reject',label:'ปฏิเสธคำขอปิดงาน',count:0},
+    {key:'chat',label:'แชท',count:0},
+  ];
+
+  const Row=({icon,iconColor,title,sub,children})=>(
+    <div style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 0'}}>
+      <div style={{flex:'none',marginTop:1}}>{ms(icon,20,iconColor||'#7b8595')}</div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontWeight:600,fontSize:13.5}}>{title}{children}</div>
+        {sub && <div style={{fontSize:12,color:'#8a93a3',marginTop:3,lineHeight:1.5}}>{sub}</div>}
+      </div>
+    </div>
+  );
+
+  return (
+   <div style={{minHeight:'100vh',background:'#eef1f6'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center',textDecoration:'none'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>7</span></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>10</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'linear-gradient(135deg,#8aa0b8,#5d7088)'}}></div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'linear-gradient(135deg,#8aa0b8,#5d7088)',marginBottom:6}}></div>
+        {[['bi-layout-sidebar'],['bi-graph-up'],['bi-arrow-down-left',true],['bi-arrow-up-right'],['bi-easel'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act],i)=>(
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
+
+      {/* MAIN */}
+      <div style={{flex:1,padding:22,minWidth:0}}>
+       <div style={{maxWidth:1280,margin:'0 auto',background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'22px 26px'}}>
+
+        {/* HEADER */}
+        <div style={{display:'flex',alignItems:'center',gap:13,marginBottom:18}}>
+          <a href="user-today-job.html" style={{textDecoration:'none',width:38,height:38,borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',color:'#3a4452'}}>{ms('arrow_back',26)}</a>
+          <div style={{fontWeight:700,fontSize:21}}>คำสั่งที่ได้รับ</div>
+          <div style={{flex:1}}></div>
+          <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'none',color:'#5a6473',fontSize:13.5,fontWeight:600}}>{ms('visibility',19,'#5a6473')}ภาพรวมคำสั่งการ</button>
+        </div>
+
+        <div style={{display:'grid',gridTemplateColumns:'1fr 380px',gap:26,alignItems:'start'}}>
+          {/* LEFT COLUMN */}
+          <div style={{minWidth:0}}>
+            <div style={{fontWeight:700,fontSize:18,lineHeight:1.45,marginBottom:18,textWrap:'pretty'}}>อยากให้ทุกคนในบริษัท แชร์ประสบการณ์การใช้ AI เข้ามาช่วยในงานประจำ</div>
+
+            {/* รายละเอียด */}
+            <div style={{display:'flex',gap:13,marginBottom:18}}>
+              <div style={{flex:'none',marginTop:2}}>{ms('format_list_bulleted',22,'#9aa3af')}</div>
+              <div style={{flex:1,minWidth:0,fontSize:13.5,color:'#3a4452',lineHeight:1.7}}>
+                <div style={{fontWeight:600,color:'#1f2733',marginBottom:6}}>รายละเอียด</div>
+                <p style={{margin:'0 0 12px'}}>เพื่อเป็นการขับเคลื่อนนโยบายสนับสนุนการใช้ AI เข้ามาช่วยในงานประจำ จึงอยากขอรบกวนให้ทุกคน ประยุกต์ใช้ AI 3 ตัว ที่ได้รับความนิยมและน่าเชื่อถือในท้องตลาด (ChatGPT, Gemini, Claude) กับงานประจำของตัวเอง และแชร์ประสบการณ์ ผ่าน Post บน GiveDeeFive โดยอยากให้มีการแชร์อย่างน้อยคนละ 2 โพสต์ครับ ก่อนสิ้นปีครับ</p>
+                <p style={{margin:'0 0 12px'}}>ส่วนใครที่ถนัดหรือใช้ AI ยี่ห้ออื่นอยู่ สามารถแชร์ได้เช่นกันครับ</p>
+                <p style={{margin:0}}>ในการรายงานความก้าวหน้า ให้นำลิงก์ของโพสต์ที่แชร์ มาแปะให้ด้วยนะครับ</p>
+              </div>
+            </div>
+
+            {/* แผนธุรกิจ */}
+            <div style={{display:'flex',gap:13,marginBottom:18,paddingBottom:18}}>
+              <div style={{flex:'none',marginTop:2}}>{ms('insert_chart',22,'#9aa3af')}</div>
+              <div style={{flex:1,minWidth:0,fontSize:13.5,color:'#3a4452',lineHeight:1.7}}>
+                <div style={{fontWeight:600,color:'#1f2733',marginBottom:6}}>คำสั่งการนี้สนับสนุนงานแผนธุรกิจ</div>
+                <p style={{margin:0}}>4.3.2.3 ให้ทุกคนในบริษัทฯ ประยุกต์ใช้ AI ที่มีอยู่อย่างน้อย 3 ยี่ห้อในตลาด เพื่อเปรียบเทียบ จุดเด่น จุดด้อยของ AI เพื่อคัดเลือกตัวที่เหมาะสมที่สุดมาใช้งาน ในบริษัทฯ</p>
+              </div>
+            </div>
+
+            {/* CLOSED BANNER */}
+            <div style={{display:'flex',alignItems:'center',gap:11,background:'#fbe69a',border:'1px solid #f3d873',borderRadius:11,padding:'14px 18px',marginBottom:20}}>
+              <div style={{width:26,height:26,borderRadius:'50%',background:'#22b573',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('check',18,'#fff')}</div>
+              <div style={{fontSize:13.5,color:'#5a4b15',fontWeight:500}}>งานนี้ถูกปิดแล้ว เมื่อ <b style={{color:'#3f3a12'}}>05/01/2026 08:46:52</b> &nbsp;เหตุผล : ขอบคุณทุกคนครับ</div>
+            </div>
+
+            {/* TABS */}
+            <div style={{display:'flex',alignItems:'center',gap:24,borderBottom:'1px solid #eceef2',marginBottom:18}}>
+              {tabs.map(t=>{const a=tab===t.key;return (
+                <button key={t.key} onClick={()=>setTab(t.key)} style={{border:'none',background:'transparent',padding:'0 0 11px',display:'inline-flex',alignItems:'center',gap:7,fontSize:13.5,fontWeight:600,color:a?primary:'#8a93a3',borderBottom:'2.5px solid '+(a?primary:'transparent'),marginBottom:-1}}>
+                  <span style={{minWidth:19,height:19,borderRadius:99,background:a?primary:'#e4e8ee',color:a?'#fff':'#8a93a3',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{t.count}</span>
+                  {t.label}
+                </button>
+              );})}
+            </div>
+
+            {/* TAB BODY */}
+            {tab==='progress' && (
+             <div style={{animation:'fadeIn .2s ease'}}>
+              <div style={{border:'1px solid #eceef2',borderRadius:12,padding:'16px 18px'}}>
+                <div style={{display:'flex',alignItems:'flex-start',gap:10,flexWrap:'wrap'}}>
+                  <div>
+                    <div style={{fontWeight:700,fontSize:14.5}}>13/11/2025 10:53:24</div>
+                    <div style={{fontSize:12.5,color:'#8a93a3',marginTop:3}}>ความก้าวหน้า <b style={{color:'#3a4452'}}>1/2 (Post)</b></div>
+                  </div>
+                  <div style={{flex:1}}></div>
+                  <div style={{textAlign:'right'}}>
+                    <div style={{fontSize:12.5,color:primary,fontWeight:600}}>ผู้สั่งการรับทราบเมื่อ 13/11/2025 10:54</div>
+                    <button style={{marginTop:7,display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'none',color:'#5a6473',fontSize:12.5,fontWeight:600}}>{ms('visibility',17,primary)}ดูข้อมูล</button>
+                  </div>
+                </div>
+
+                <div style={{height:1,background:'#f1f3f6',margin:'14px 0'}}></div>
+
+                <div style={{display:'flex',gap:11,marginBottom:14}}>
+                  <div style={{width:30,height:30,borderRadius:'50%',background:'#4f46e5',color:'#fff',fontWeight:700,fontSize:12,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>B</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:12,color:'#8a93a3',marginBottom:3}}>สิ่งที่ได้ดำเนินการ</div>
+                    <div style={{fontSize:13.5,color:'#1f2733',fontWeight:500}}>แนะนำการสมัครใช้ Gemini Pro ฟรี 1 ปี</div>
+                    <a href="#" onClick={(e)=>e.preventDefault()} style={{fontSize:12.5,color:'#2563eb',textDecoration:'none',wordBreak:'break-all'}}>https://app.givedeefive.com/post/view/019a3342-5a40-70c9-b931-3b7249206167</a>
+                  </div>
+                </div>
+
+                <div style={{display:'flex',gap:11}}>
+                  <div style={{width:30,height:30,borderRadius:'50%',background:'#dd7a16',color:'#fff',fontWeight:700,fontSize:12,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>P</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:12,color:'#8a93a3',marginBottom:3}}>ความเห็นของผู้สั่ง/เรื่องที่ขอให้ปรับปรุง</div>
+                    <div style={{fontSize:13.5,color:'#1f2733',fontWeight:500}}>เป็นประโยชน์มากครับ</div>
+                    <div style={{fontSize:12,color:'#9aa3af',marginTop:3}}>13/11/2025 10:57:55</div>
+                  </div>
+                </div>
+              </div>
+             </div>
+            )}
+            {tab!=='progress' && (
+             <div style={{animation:'fadeIn .2s ease',textAlign:'center',color:'#aeb6c2',fontSize:13.5,padding:'46px 0',border:'1px dashed #e4e8ee',borderRadius:12}}>
+               {ms('inbox',34,'#cfd6e0')}
+               <div style={{marginTop:8}}>ยังไม่มีรายการในส่วนนี้</div>
+             </div>
+            )}
+          </div>
+
+          {/* RIGHT SIDEBAR */}
+          <div style={{minWidth:0}}>
+            <div style={{background:'linear-gradient(135deg,#1b9c8c,#15a08f)',borderRadius:13,padding:'17px 18px',display:'flex',alignItems:'center',gap:13,marginBottom:6,color:'#fff'}}>
+              <div style={{width:46,height:46,borderRadius:11,background:'rgba(255,255,255,.18)',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('person',28,'#fff')}</div>
+              <div style={{minWidth:0}}>
+                <div style={{fontWeight:700,fontSize:16}}>งานรายบุคคล</div>
+                <div style={{fontSize:11.5,opacity:.92,lineHeight:1.45,marginTop:2}}>ให้ผู้รับผิดชอบแต่ละคน ดำเนินการในส่วนของตนเองให้แล้วเสร็จ</div>
+              </div>
+            </div>
+
+            <div style={{display:'flex',alignItems:'center',gap:12,padding:'14px 0',borderBottom:'1px solid #f1f3f6'}}>
+              <div style={{width:42,height:42,borderRadius:'50%',background:'#4f46e5',color:'#fff',fontWeight:700,fontSize:16,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>B</div>
+              <div><div style={{fontWeight:700,fontSize:14.5}}>Bodin Muanprasat</div><div style={{fontSize:12.5,color:'#8a93a3'}}>Software Engineer</div></div>
+            </div>
+
+            <Row icon="north_east" title="คำสั่งตรง"/>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none'}}>{ms('title',20,'#7b8595')}</div>
+              <span style={{background:'#fdeee0',color:'#d98223',fontSize:12.5,fontWeight:600,borderRadius:8,padding:'5px 12px'}}>งานตามแผนธุรกิจ (Strategic)</span>
+            </div>
+
+            <Row icon="event" title="วันที่สั่ง"><span style={{fontWeight:500,color:'#3a4452',marginLeft:8}}>29/08/2025</span></Row>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none'}}>{ms('groups',20,'#7b8595')}</div>
+              <div style={{fontWeight:600,fontSize:13.5}}>ผู้รับคำสั่งนี้</div>
+              <div style={{display:'flex',alignItems:'center',marginLeft:6}}>
+                {ASSIGNEES.map((c,i)=>(<div key={i} style={{width:24,height:24,borderRadius:'50%',background:c,border:'2px solid #fff',marginLeft:i?-8:0}}></div>))}
+                <span style={{marginLeft:7,fontSize:12.5,color:'#8a93a3',fontWeight:600}}>+28</span>
+              </div>
+            </div>
+
+            <Row icon="date_range" title="ช่วงเวลาดำเนินการ"><span style={{fontWeight:500,color:'#3a4452',marginLeft:8}}>01/09/2025 - 31/12/2025</span></Row>
+            <Row icon="event_available" title="วันที่เริ่มดำเนินการ"><span style={{fontWeight:500,color:'#3a4452',marginLeft:8}}>01/09/2025</span></Row>
+
+            <div style={{height:1,background:'#f1f3f6',margin:'6px 0'}}></div>
+
+            <Row icon="send" title="รายงานผลงานสะสม" sub="ผลงานรวมความคืบหน้าสะสมทั้งหมด ตั้งแต่เริ่มต้นจนถึงปัจจุบัน"/>
+            <Row icon="mark_email_read" title="รายงานความก้าวหน้า ครั้งเดียวเมื่อส่งงาน"/>
+            <Row icon="target" title="เป้าหมายที่ได้รับ"><span style={{fontWeight:700,color:primary,marginLeft:8}}>2 Post</span></Row>
+
+            <div style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none',marginTop:1}}>{ms('trending_up',20,'#7b8595')}</div>
+              <div>
+                <span style={{background:'#fdeaea',color:'#d83a3a',fontSize:12,fontWeight:700,borderRadius:99,padding:'2px 9px'}}>50%</span>
+                <div style={{fontWeight:600,fontSize:13.5,marginTop:6}}>ดำเนินการสำเร็จ <span style={{color:primary}}>1/2 Post</span></div>
+              </div>
+            </div>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none'}}>{ms('monitoring',20,'#7b8595')}</div>
+              <span style={{background:'#22b573',color:'#fff',fontSize:12.5,fontWeight:700,borderRadius:8,padding:'5px 13px',display:'inline-flex',alignItems:'center',gap:5}}>{ms('check_circle',16,'#fff',true)}ปิดงาน</span>
+            </div>
+
+            <div style={{height:1,background:'#f1f3f6',margin:'6px 0'}}></div>
+
+            <div style={{display:'flex',alignItems:'flex-start',gap:11,padding:'13px 0'}}>
+              <div style={{width:30,height:30,borderRadius:'50%',background:'repeating-linear-gradient(135deg,#e9edf2,#e9edf2 5px,#eff2f6 5px,#eff2f6 10px)',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('public',18,'#aeb6c2')}</div>
+              <div>
+                <div style={{fontWeight:600,fontSize:13.5}}>รางวัลจากผู้สั่งการ <span style={{color:'#d98223',fontWeight:700}}>2 Prize</span></div>
+                <div style={{fontSize:12.5,color:'#8a93a3',marginTop:3}}>เหตุผล : ขอบคุณครับ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+       </div>
+      </div>
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

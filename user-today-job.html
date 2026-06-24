@@ -225,7 +225,7 @@ function App(){
               <div style={{display:'flex',alignItems:'center',gap:9,minWidth:170}}><div style={{flex:1,height:7,background:'#e7ebf1',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:primary,width:myStats.avgStyle}}></div></div><span style={{fontWeight:700,fontSize:13,color:primary}}>{myStats.avgStyle}</span></div>
             </div>
             {todayView.map(job=>(
-              <div key={job.id} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 12px',border:'1px solid '+job.rowBorder,borderRadius:11,background:job.rowBg,marginBottom:8,animation:'popIn .2s ease'}}>
+              <div key={job.id} onClick={() => window.location.href = job.progress >= 100 ? 'assignee-action-close.html' : 'assignee-action-inprogress.html'} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 12px',border:'1px solid '+job.rowBorder,borderRadius:11,background:job.rowBg,marginBottom:8,animation:'popIn .2s ease',cursor:'pointer'}}>
                 <div style={{width:26,textAlign:'center',fontWeight:700,fontSize:20,color:'#4338ca',flex:'none'}}>{job.rank}</div>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontWeight:600,fontSize:13.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
@@ -238,7 +238,7 @@ function App(){
                   </div>
                   <div style={{marginTop:7,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden',maxWidth:440}}><div style={{height:'100%',borderRadius:99,background:job.barColor,width:job.widthStyle}}></div></div>
                 </div>
-                <button onClick={job.onAddProgress} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff',border:'1px solid '+primary,color:primary,borderRadius:8,padding:'6px 10px',fontSize:11.5,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{ms('add',15)}เติมความก้าวหน้า</button>
+                <button onClick={(e) => { e.stopPropagation(); job.onAddProgress(); }} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff',border:'1px solid '+primary,color:primary,borderRadius:8,padding:'6px 10px',fontSize:11.5,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{ms('add',15)}เพิ่มความก้าวหน้า</button>
                 <span style={{width:12,height:12,borderRadius:'50%',background:job.statusColor,flex:'none'}}></span>
               </div>
             ))}
@@ -358,7 +358,7 @@ function App(){
                 <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#ef4444'}}></span>{memberStats.over} เกินกำหนด</span>
               </div>
               {memberJobsView.map(job=>(
-                <div key={job.id} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 12px',border:'1px solid '+job.rowBorder,borderRadius:11,background:job.rowBg,marginBottom:8,animation:'popIn .2s ease'}}>
+                <div key={job.id} onClick={() => window.location.href = job.progress >= 100 ? 'assignee-action-close.html' : 'assignee-action-inprogress.html'} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 12px',border:'1px solid '+job.rowBorder,borderRadius:11,background:job.rowBg,marginBottom:8,animation:'popIn .2s ease',cursor:'pointer'}}>
                   <div style={{width:26,textAlign:'center',fontWeight:700,fontSize:20,color:'#4338ca',flex:'none'}}>{job.rank}</div>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontWeight:600,fontSize:13.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
@@ -371,7 +371,7 @@ function App(){
                     </div>
                     <div style={{marginTop:7,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden',maxWidth:440}}><div style={{height:'100%',borderRadius:99,background:job.barColor,width:job.widthStyle}}></div></div>
                   </div>
-                  <button onClick={job.onAddProgress} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff',border:'1px solid '+primary,color:primary,borderRadius:8,padding:'6px 10px',fontSize:11.5,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{ms('add',15)}เติมความก้าวหน้า</button>
+                  <button onClick={(e) => { e.stopPropagation(); job.onAddProgress(); }} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff',border:'1px solid '+primary,color:primary,borderRadius:8,padding:'6px 10px',fontSize:11.5,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{ms('add',15)}เพิ่มความก้าวหน้า</button>
                   <span style={{width:12,height:12,borderRadius:'50%',background:job.statusColor,flex:'none'}}></span>
                 </div>
               ))}
