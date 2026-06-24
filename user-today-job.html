@@ -300,21 +300,19 @@ function App(){
             </div>
             <div style={{display:'flex',flexDirection:'column',gap:11}}>
               {teamView.map(m=>(
-                <div key={m.id} onClick={m.onManage} style={{display:'flex',alignItems:'center',gap:15,background:'#f3f4f7',borderRadius:13,padding:'13px 16px',cursor:'pointer'}}>
-                  <div style={{width:48,height:48,borderRadius:'50%',border:'1.5px solid #cfd6e0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:'#9aa3af'}}>{ms('person',30)}</div>
+                <div key={m.id} onClick={m.onManage} style={{display:'flex',alignItems:'center',gap:13,background:'#f3f4f7',borderRadius:13,padding:'12px 15px',cursor:'pointer'}}>
+                  <div style={{width:42,height:42,borderRadius:'50%',border:'1.5px solid #cfd6e0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:'#9aa3af'}}>{ms('person',26)}</div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
-                      <div style={{fontWeight:700,fontSize:14.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',flex:1}}>{m.name}</div>
-                      <div style={{fontWeight:800,fontSize:17,color:'#3730dc',whiteSpace:'nowrap'}}>{m.progress} %</div>
+                    <div style={{fontWeight:700,fontSize:14,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',marginBottom:5}}>{m.name}</div>
+                    <div style={{display:'flex',alignItems:'center',gap:14,flexWrap:'wrap',fontSize:12,color:'#7b8595'}}>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:8,height:8,borderRadius:'50%',background:'#f5b301'}}></span>{m.pending} รอดำเนินการ</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:8,height:8,borderRadius:'50%',background:'#22b573'}}></span>{m.done} ปิดงานแล้ว</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:8,height:8,borderRadius:'50%',background:'#ef4444'}}></span>{m.over} เกินกำหนด</span>
                     </div>
-                    <div style={{height:14,background:'#fff',borderRadius:99,overflow:'hidden',marginBottom:9}}><div style={{height:'100%',borderRadius:99,background:'#3730dc',width:m.widthStyle}}></div></div>
-                    <div style={{display:'flex',alignItems:'center',gap:9,flexWrap:'wrap'}}>
-                      <span style={{fontSize:12,color:'#8a93a3',fontWeight:500}}>{m.pending} รอดำเนินการ</span>
-                      <span style={{background:'#e4f4ec',color:'#1f9d57',fontSize:12,fontWeight:600,borderRadius:99,padding:'3px 11px'}}>{m.done} ดำเนินการแล้ว</span>
-                      {m.over>0 && <span style={{background:'#fdeaea',color:'#d83a3a',fontSize:12,fontWeight:600,borderRadius:99,padding:'3px 11px'}}>{m.over} งานค้าง</span>}
-                      <div style={{flex:1}}></div>
-                      <span style={{fontSize:12,color:'#9aa3af',whiteSpace:'nowrap'}}>{m.total} คำสั่งการ</span>
-                    </div>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:10,flex:'none'}}>
+                    <div style={{width:118,height:7,background:'#e3e7ee',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:primary,width:m.widthStyle}}></div></div>
+                    <span style={{fontWeight:700,fontSize:14,color:primary,minWidth:38,textAlign:'right'}}>{m.progress}%</span>
                   </div>
                 </div>
               ))}

@@ -37,6 +37,12 @@ const ASSIGNEES = ['#4f46e5','#dd7a16','#0e8c7d','#d83a3a','#7c3aed'];
 
 function App(){
   const [tab,setTab]=useState('progress');
+  const TKEY='gd5_today_jobs';
+  const jobId=(typeof location!=='undefined' && new URLSearchParams(location.search).get('id'))||'order-ai';
+  const loadAdded=()=>{try{return JSON.parse(localStorage.getItem(TKEY)||'[]');}catch(_){return [];}};
+  const [added,setAdded]=useState(loadAdded);
+  const inToday=added.indexOf(jobId)>=0;
+  const toggleToday=()=>setAdded(prev=>{const next=prev.indexOf(jobId)>=0?prev.filter(x=>x!==jobId):prev.concat([jobId]);try{localStorage.setItem(TKEY,JSON.stringify(next));}catch(_){}return next;});
   const tabs=[
     {key:'progress',label:'รายงานความก้าวหน้า',count:1},
     {key:'notify',label:'การแจ้งเตือนจากผู้สั่งการ',count:0},
@@ -96,6 +102,7 @@ function App(){
           <div style={{fontWeight:700,fontSize:21}}>คำสั่งที่ได้รับ</div>
           <div style={{flex:1}}></div>
           <div style={{display:'flex',alignItems:'center',gap:4}}>
+            <button onClick={toggleToday} style={{display:'inline-flex',alignItems:'center',gap:6,borderRadius:8,padding:'6px 13px',fontSize:13.5,fontWeight:600,marginRight:6,border:'1px solid '+(inToday?'#bfe6db':primary),background:inToday?'#e4f3ef':primary,color:inToday?'#0e8c7d':'#fff',cursor:'pointer'}}>{ms(inToday?'check':'playlist_add',19,inToday?'#0e8c7d':'#fff')}{inToday?"อยู่ใน Today's Job":"เพิ่มลง Today's Job"}</button>
             <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'none',color:'#5a6473',fontSize:13.5,fontWeight:600,padding:'7px 11px'}}>{ms('reply',19,'#3b82f6')}<span style={{transform:'scaleX(-1)',display:'none'}}></span>สั่งการต่อ</button>
             <button style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'none',color:'#5a6473',fontSize:13.5,fontWeight:600,padding:'7px 11px'}}>{ms('add',20,'#5a6473')}เพิ่มความก้าวหน้า</button>
             <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'none',color:'#5a6473',fontSize:13.5,fontWeight:600,padding:'7px 11px'}}>{ms('power_settings_new',19,'#3b82f6')}ส่งคำขอปิดงาน</button>
