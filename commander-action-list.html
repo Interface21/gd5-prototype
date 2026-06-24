@@ -41,13 +41,30 @@ const ROWS = [
   {id:1, title:'ทดสอบการใช้งานการแจ้งเตือน Karuphan-69 ใน Telegram', date:'09/09/2023', assignees:8, closed:8, type:'daily', progress:12.5, status:'red', avatars:[1,2,3], avatarMore:'+5', src:'โพสต์ของ Piyawat Takaew', isLink:true},
   {id:2, title:'นำเอกสาร SA เข้าระบบ GD5', date:'27/08/2023', assignees:1, closed:1, type:'daily', progress:100, status:'red', avatars:[4], src:'คำสั่งตรง'},
   {id:3, title:'ข้อมูล FDR จาก Trello เดือน มค. - เมษ. 2023', date:'26/02/2023', assignees:1, closed:1, type:'daily', progress:0, status:'red', avatars:[5], src:'คำสั่งตรง'},
-  {id:4, title:'PA เขียน Test case ทุกฟังก์ชันที่ได้พัฒนา', date:'25/01/2023', assignees:1, inprogress:1, type:'pa', due:'25/12/2023', progress:0, status:'red', avatars:[6], src:'คำสั่งตรง'},
-  {id:5, title:'PA ศึกษาการเขียน โปรแกรม Desktop ด้วย Tauri', date:'25/01/2023', assignees:1, inprogress:1, type:'pa', due:'25/12/2023', progress:0, status:'red', avatars:[7], src:'คำสั่งตรง'},
-  {id:6, title:'PA ใช้ GD5 เพื่อให้ได้ประโยชน์', date:'25/01/2023', assignees:1, inprogress:1, type:'pa', due:'31/12/2023', progress:0, status:'red', avatars:[8], src:'คำสั่งตรง'},
+  {id:4, title:'PA เขียน Test case ทุกฟังก์ชันที่ได้พัฒนา', date:'25/01/2023', assignees:1, inprogress:1, type:'pa', days:2, progress:0, status:'red', avatars:[6], src:'คำสั่งตรง'},
+  {id:5, title:'PA ศึกษาการเขียน โปรแกรม Desktop ด้วย Tauri', date:'25/01/2023', assignees:1, inprogress:1, type:'pa', days:-1, progress:0, status:'red', avatars:[7], src:'คำสั่งตรง'},
+  {id:6, title:'PA ใช้ GD5 เพื่อให้ได้ประโยชน์', date:'25/01/2023', assignees:1, inprogress:1, type:'pa', days:0, progress:0, status:'red', avatars:[8], src:'คำสั่งตรง'},
   {id:7, title:'ส่งรายงาน PA', date:'11/11/2024', assignees:4, closed:4, newProg:4, type:'daily', progress:100, status:'red', avatars:[9,10,11], avatarMore:'-1', src:'โพสต์ของ Sunthan1 (ธุรกิจสัมพันธ์และองค์กร)', isLink:true},
   {id:8, title:'ขอข้อมูลเพิ่มเติม การประเมินหลักสูตรสถานศึกษา (MOU)', date:'24/10/2024', assignees:1, closed:1, type:'daily', progress:0, status:'red', avatars:[12], src:'โพสต์ของ Piyawat Takaew', isLink:true},
   {id:9, title:'PA สร้าง WI ในขบวนการปฏิบัติงานที่สำคัญของพนักงานบริษัท...', date:'30/04/2024', assignees:1, closed:1, newProg:2, type:'pa', progress:31.25, status:'red', avatars:[13], src:'คำสั่งตรง'},
 ];
+
+function Bar({pct}){
+  const n=parseFloat(pct)||0;
+  return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:7,flex:'none',marginLeft:6}}>
+      <span style={{width:92,height:5,background:'#eaedf1',borderRadius:99,overflow:'hidden'}}><span style={{display:'block',height:'100%',borderRadius:99,background:n>=100?'#22b573':primary,width:pct}}></span></span>
+      <span style={{fontSize:11.5,fontWeight:600,color:'#9aa3af'}}>{pct}</span>
+    </span>
+  );
+}
+function DaysPill({d,closed}){
+  if(closed || d==null) return null;
+  const over=d<0,today=d===0,n=Math.abs(d);
+  const c=over?{t:'#d8513a',i:'error'}:today?{t:'#c77d1a',i:'schedule'}:{t:'#1f9d57',i:'schedule'};
+  const txt=over?'เกิน '+n+' วัน':today?'ครบกำหนดวันนี้':'เหลือ '+n+' วัน';
+  return <span style={{display:'inline-flex',alignItems:'center',gap:4,color:c.t,fontSize:12,fontWeight:600}}>{ms(c.i,15,c.t)}{txt}</span>;
+}
 
 function App(){
   const navTop=[
@@ -164,17 +181,17 @@ function App(){
                 <div style={{fontWeight:600,fontSize:14,marginBottom:7,lineHeight:1.45,color:'#2b3440'}}>{r.title}</div>
                 <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',fontSize:12.5,color:'#9aa3af'}}>
                   {ms('person',16,'#bcc3cd')}
-                  <span>ผู้รับคำสั่ง {r.assignees} คน</span>
-                  {r.closed > 0 && <span style={{color:'#b3bac4'}}>· ปิดงาน {r.closed} คน</span>}
-                  {r.inprogress > 0 && <span style={{color:'#b3bac4'}}>· กำลังดำเนินการ {r.inprogress} คน</span>}
-                  {r.newProg > 0 && <span style={{color:'#b3bac4'}}>· ก้าวหน้าใหม่ {r.newProg} รายการ</span>}
+                  <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#e3f3f0',color:'#0e8c7d',padding:'1px 8px 1px 2px',borderRadius:99,fontWeight:600}}><span style={{background:'#0e8c7d',color:'#fff',width:16,height:16,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10}}>{r.assignees}</span> ผู้รับคำสั่ง</span>
+                  {r.closed > 0 && <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#e4f4ec',color:'#1f9d57',padding:'1px 8px 1px 2px',borderRadius:99,fontWeight:600}}><span style={{background:'#1f9d57',color:'#fff',width:16,height:16,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10}}>{r.closed}</span> ปิดงาน</span>}
+                  {r.inprogress > 0 && <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#eaf1fe',color:'#3b82f6',padding:'1px 8px 1px 2px',borderRadius:99,fontWeight:600}}><span style={{background:'#3b82f6',color:'#fff',width:16,height:16,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10}}>{r.inprogress}</span> กำลังดำเนินการ</span>}
+                  {r.newProg > 0 && <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fef3e6',color:'#d98223',padding:'1px 8px 1px 2px',borderRadius:99,fontWeight:600}}><span style={{background:'#f5b301',color:'#fff',width:16,height:16,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10}}>{r.newProg}</span> ก้าวหน้าใหม่</span>}
+                  <Bar pct={r.progress+'%'}/>
                 </div>
               </div>
               <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:6,flex:'0 1 auto',minWidth:0,marginLeft:'auto'}}>
                 <div style={{display:'flex',alignItems:'center',gap:13,flexWrap:'wrap',justifyContent:'flex-end'}}>
                   <span style={{fontSize:11.5,color:'#aab2bd'}}>{r.type === 'daily' ? 'งานประจำวัน' : 'PA'}</span>
-                  {r.due && <span style={{color:'#ef4444',fontSize:11.5,fontWeight:600,display:'flex',alignItems:'center',gap:4}}>{ms('event',14,'#ef4444')}กำหนด {r.due}</span>}
-                  <span style={{fontSize:11.5,fontWeight:700,color: r.progress===100?'#1f9d57':r.progress>0?'#ef4444':'#0891b2'}}>{r.progress}%</span>
+                  <DaysPill d={r.days} closed={r.closed===r.assignees}/>
                   <span style={{width:10,height:10,borderRadius:'50%',background:r.status==='red'?'#ef4444':'#22b573',flex:'none'}}></span>
                   <i className="bi bi-three-dots-vertical" style={{color:'#aab2bd', fontSize:16}}></i>
                 </div>
