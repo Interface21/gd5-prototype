@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>รายการคำสั่งที่ได้รับ — GiveDeeFive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+@keyframes popIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.nav-item:hover{background:#f3f5f8}
+.job-row:hover{background:#fafbfc}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const MS = {fontFamily:"'Material Symbols Rounded'"};
+const primary='#15a08f', primarySoft='#e3f3f0';
+const ms=(name,size,color,fill)=>(<span className="bi" style={{...MS,fontSize:size,color,...(fill?{fontVariationSettings:"'FILL' 1"}:{})}}>{name}</span>);
+
+const STATUS = {
+  unack:{label:'ยังไม่รับทราบ',bg:'#fef3e6',color:'#c77d1a',dot:'#e8920c'},
+  inprogress:{label:'กำลังดำเนินการ',bg:'#eaf1fe',color:'#3b6fd4',dot:'#3b82f6'},
+  closing:{label:'ขอปิดงาน',bg:'#e4f3ef',color:'#0e8c7d',dot:'#15a08f'},
+  closed:{label:'ปิดงาน',bg:'#e7f6ee',color:'#1f9d57',dot:'#22b573'},
+};
+const DOTC = {green:'#22b573',yellow:'#f5b301',red:'#ef4444'};
+const DOTS = ['green','yellow','red','yellow','red','yellow','red','red','red','red'];
+
+const ROWS = [
+  {title:'ทำใบเสนอราคา โปรเจค วท.อยุธยา', targetText:'เป้าหมายที่ได้รับ', doneText:'ดำเนินการให้แล้วเสร็จ', ratio:{t:'5/5',tone:'green',check:true}, prog:3, days:3, status:'closing', odate:'07/05/2026', src:'คำสั่งตรง'},
+  {title:'ทำใบเสนอราคา โปรเจค วท.อยุธยา', targetText:'เป้าหมาย 7 งาน', progText:'คืบหน้า 6 งาน', bar:'85.71%', ratio:{t:'6/7',tone:'orange'}, prog:3, days:1, status:'inprogress', odate:'07/05/2026', src:'คำสั่งตรง'},
+  {title:'ใบเสนอราคา', targetText:'เป้าหมาย 1 งาน', progText:'คืบหน้า 0 งาน', bar:'0%', ratio:{t:'2/3',tone:'orange'}, days:-2, status:'inprogress', odate:'07/05/2026', src:'คำสั่งตรง'},
+  {title:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์', targetText:'เป้าหมายที่ได้รับ', doneText:'ดำเนินการให้แล้วเสร็จ', ratio:{t:'3/3',tone:'green',check:true}, prog:2, days:-1, status:'closed', odate:'04/05/2026', src:'คำสั่งตรง'},
+  {title:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์', targetText:'เป้าหมายที่ได้รับ', doneText:'ดำเนินการให้แล้วเสร็จ', ratio:{t:'0/4',tone:'red',check:true}, days:-5, status:'inprogress', odate:'04/05/2026', src:'คำสั่งตรง'},
+  {title:'รับสินค้าเข้าคลัง - วช.สมุทรปราการ', targetText:'เป้าหมายที่ได้รับ', doneText:'ดำเนินการให้แล้วเสร็จ', ratio:{t:'1/3',tone:'orange',check:true}, prog:1, days:2, status:'inprogress', odate:'04/05/2026', src:'คำสั่งตรง'},
+  {title:'3. ข้อมูลติดตาม: ขอใบเสนอราคา Supplier/Sub Contractor และออกใบขอซื้อ (PR) - วท.จุฬาภรณ์', group:true, targetText:'เป้าหมายกลุ่ม 7 งาน', progText:'คืบหน้า 0 งาน', bar:'0%', days:-12, status:'inprogress', odate:'20/03/2026', post:'โพสต์ของ SA-Tester', fromGroup:'จากกลุ่ม คนดูบอล'},
+  {title:'งานรายบุคคล-ตั้งเป้าหมาย', targetText:'เป้าหมาย 5 งาน', progText:'คืบหน้า 0 งาน', bar:'0%', days:-20, status:'inprogress', odate:'26/01/2026', src:'คำสั่งตรง'},
+  {title:'สั่งงานกลุ่ม D2D', group:true, targetText:'เป้าหมายกลุ่มที่ได้รับ', doneText:'ร่วมกันดำเนินการให้แล้วเสร็จ', days:-20, status:'inprogress', odate:'26/01/2026', src:'คำสั่งตรง'},
+  {title:'สั่งรายบุคคล STG', targetText:'เป้าหมายที่ได้รับ', doneText:'ดำเนินการให้แล้วเสร็จ', days:-1, status:'unack', odate:'26/01/2026', src:'คำสั่งตรง'},
+];
+
+function Bar({pct}){
+  const n=parseFloat(pct)||0;
+  return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:7,flex:'none'}}>
+      <span style={{width:92,height:5,background:'#eaedf1',borderRadius:99,overflow:'hidden'}}><span style={{display:'block',height:'100%',borderRadius:99,background:n>=100?'#22b573':primary,width:pct}}></span></span>
+      <span style={{fontSize:11.5,fontWeight:600,color:'#9aa3af'}}>{pct}</span>
+    </span>
+  );
+}
+function Ratio({r}){
+  const t={green:{b:'#e7f6ee',c:'#1f9d57'},orange:{b:'#fbf0df',c:'#bd7d18'},red:{b:'#fdeaea',c:'#d8513a'}}[r.tone];
+  return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:3,background:t.b,color:t.c,borderRadius:6,padding:'2px 8px',fontSize:11.5,fontWeight:700,flex:'none'}}>
+      {r.check && ms('check',14,t.c,true)}{r.t}
+    </span>
+  );
+}
+function ProgChip({n}){
+  return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:11.5,color:'#9aa3af',flex:'none'}}>
+      <span style={{minWidth:18,height:18,borderRadius:99,background:'#19a6b0',color:'#fff',fontSize:10.5,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{n}</span>ความก้าวหน้า
+    </span>
+  );
+}
+function DaysPill({d,closed}){
+  if(closed) return null;
+  const over=d<0,today=d===0,n=Math.abs(d);
+  const c=over?{t:'#d8513a',i:'error'}:today?{t:'#c77d1a',i:'schedule'}:{t:'#1f9d57',i:'schedule'};
+  const txt=over?'เกิน '+n+' วัน':today?'ครบกำหนดวันนี้':'เหลือ '+n+' วัน';
+  return <span style={{display:'inline-flex',alignItems:'center',gap:4,color:c.t,fontSize:12,fontWeight:600}}>{ms(c.i,15,c.t)}{txt}</span>;
+}
+
+function App(){
+  const navTop=[
+    {label:'เพิ่มการสั่งการใหม่'},
+    {label:'เพิ่มการสั่งการใหม่ PA'},
+    {label:'เพิ่มการสั่งการใหม่ WI'},
+  ];
+  const navList=[
+    {icon:'bi-check2',label:'คำสั่งที่ได้รับ',active:true,href:'assignee-action-list.html'},
+    {icon:'bi-arrow-up-right',label:'คำสั่งที่สั่งไป',href:'#'},
+    {icon:'bi-people',label:'คำสั่งที่ลูกทีมได้รับ',href:'#'},
+    {icon:'bi-person-plus',label:'CC/BCC',href:'#'},
+    {icon:'bi-search',label:'ค้นหาบันทึก/ความก้าวหน้า',href:'#'},
+  ];
+  const headPills=[
+    {n:3,label:'ยังไม่รับทราบ',bg:'#f59e0b'},
+    {n:18,label:'กำลังดำเนินการ',bg:'#3b82f6'},
+    {n:4,label:'ขอปิดงาน',bg:'#0e9f8e'},
+  ];
+
+  const rowHref=(r)=> r.status==='closed' ? 'assignee-action-close.html' : 'assignee-action-inprogress.html';
+
+  return (
+   <div style={{minHeight:'100vh',background:'#eef1f6'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>2</span></div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <img src="https://cdn.quasar.dev/img/avatar.png" style={{width:38,height:38,borderRadius:'50%',objectFit:'cover'}} alt="avatar"/>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#e7eaef',overflow:'hidden',marginBottom:6}}><img src="https://cdn.quasar.dev/img/avatar.png" style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/></div>
+        {[['bi-layout-sidebar'],['bi-graph-up'],['bi-arrow-down-left',true,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
+          <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
+        ) : (
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
+
+      {/* SECONDARY NAV */}
+      <div style={{width:264,background:'#fff',borderRight:'1px solid #e7eaef',padding:'18px 14px',position:'sticky',top:58,height:'calc(100vh - 58px)',display:'flex',flexDirection:'column'}}>
+        <div style={{display:'flex',flexDirection:'column',gap:4}}>
+          {navTop.map((n,i)=>(
+            <a key={i} href="#" className="nav-item" style={{display:'flex',alignItems:'center',gap:11,padding:'9px 10px',borderRadius:10}}>
+              <span style={{width:26,height:26,borderRadius:8,background:'#e0322b',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-plus-lg" style={{fontSize:14,color:'#fff'}}></i></span>
+              <span style={{fontSize:13.5,fontWeight:600,color:'#3a4452'}}>{n.label}</span>
+            </a>
+          ))}
+        </div>
+        <div style={{height:1,background:'#eef0f4',margin:'13px 4px'}}></div>
+        <div style={{display:'flex',flexDirection:'column',gap:3}}>
+          {navList.map((n,i)=>(
+            <a key={i} href={n.href} className="nav-item" style={{display:'flex',alignItems:'center',gap:12,padding:'10px 12px',borderRadius:10,background:n.active?primarySoft:'transparent'}}>
+              <i className={'bi '+n.icon} style={{fontSize:18,color:n.active?primary:'#8a93a3'}}></i>
+              <span style={{fontSize:13.5,fontWeight:n.active?700:600,color:n.active?primary:'#5a6473'}}>{n.label}</span>
+            </a>
+          ))}
+        </div>
+        <div style={{flex:1}}></div>
+      </div>
+
+      {/* MAIN */}
+      <div style={{flex:1,padding:22,minWidth:0}}>
+       <div style={{maxWidth:1320,margin:'0 auto',background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'20px 24px'}}>
+
+        {/* HEADER */}
+        <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+          <div style={{width:40,height:40,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('waving_hand',23,primary)}</div>
+          <div style={{fontWeight:700,fontSize:20}}>คำสั่งที่ได้รับ</div>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            {headPills.map((p,i)=>(
+              <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,background:p.bg,color:'#fff',borderRadius:8,padding:'5px 12px 5px 6px',fontSize:12.5,fontWeight:600}}>
+                <span style={{minWidth:22,height:22,borderRadius:6,background:'rgba(255,255,255,.28)',display:'inline-flex',alignItems:'center',justifyContent:'center',fontWeight:700,padding:'0 5px'}}>{p.n}</span>{p.label}
+              </span>
+            ))}
+          </div>
+          <div style={{flex:1}}></div>
+          <div style={{display:'flex',alignItems:'center',gap:6}}>
+            <button style={{width:38,height:34,borderRadius:9,border:'1px solid '+primary,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('list',21,primary)}</button>
+            <button style={{width:38,height:34,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('bar_chart',21,'#8a93a3')}</button>
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'7px 12px',fontSize:13,color:'#5a6473',fontWeight:600,marginLeft:6}}>{ms('sort',19,'#5a6473')}เรียงลำดับ</button>
+            <button style={{display:'inline-flex',alignItems:'center',gap:5,border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'7px 12px',fontSize:13,color:'#5a6473',fontWeight:600}}>{ms('search',19,'#5a6473')}ค้นหา</button>
+          </div>
+        </div>
+
+        <div style={{textAlign:'right',fontSize:13,color:'#8a93a3',fontWeight:600,margin:'16px 2px 6px'}}>29 คำสั่งการ</div>
+
+        {/* LIST */}
+        <div>
+          {ROWS.map((r,i)=>{const st=STATUS[r.status];return (
+            <a key={i} href={rowHref(r)} className="job-row" style={{display:'flex',alignItems:'flex-start',gap:13,padding:'14px 8px',borderTop:'1px solid #f3f5f8',flexWrap:'wrap'}}>
+              <div style={{width:36,height:36,borderRadius:'50%',background:'#eef1f5',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',marginTop:2}}>{ms('person',22,'#aab2bd')}</div>
+              <div style={{flex:'1 1 320px',minWidth:240}}>
+                <div style={{fontWeight:600,fontSize:14,marginBottom:7,lineHeight:1.45,color:'#2b3440'}}>{r.title}</div>
+                <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',fontSize:12.5,color:'#9aa3af'}}>
+                  {ms(r.group?'groups':'person',16,'#bcc3cd')}
+                  <span>{r.targetText}</span>
+                  {r.doneText && <span style={{color:'#b3bac4'}}>· {r.doneText}</span>}
+                  {r.progText && <span style={{color:'#b3bac4'}}>· {r.progText}</span>}
+                  {r.bar!=null && <Bar pct={r.bar}/>}
+                  {r.ratio && <Ratio r={r.ratio}/>}
+                  {r.prog!=null && <ProgChip n={r.prog}/>}
+                </div>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:6,flex:'0 1 auto',minWidth:0,marginLeft:'auto'}}>
+                <div style={{display:'flex',alignItems:'center',gap:13,flexWrap:'wrap',justifyContent:'flex-end'}}>
+                  <span style={{fontSize:11.5,color:'#aab2bd'}}>งานประจำวัน</span>
+                  <DaysPill d={r.days} closed={r.status==='closed'}/>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:6,background:st.bg,color:st.color,borderRadius:7,padding:'3px 11px',fontSize:12,fontWeight:600}}><span style={{width:7,height:7,borderRadius:'50%',background:st.dot}}></span>{st.label}</span>
+                  <span style={{width:12,height:12,borderRadius:'50%',background:DOTC[DOTS[i]],flex:'none'}}></span>
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:6,fontSize:11.5,color:'#aab2bd'}}>
+                  <span>วันที่สั่ง {r.odate}</span>
+                  {r.post ? (<span>· <span style={{color:primary,fontWeight:600}}>{r.post}</span> {r.fromGroup}</span>) : (<span>· {r.src}</span>)}
+                </div>
+              </div>
+            </a>
+          );})}
+        </div>
+       </div>
+      </div>
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

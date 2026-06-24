@@ -19,6 +19,9 @@ input{font-family:inherit}
 ::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
 @keyframes popIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fn-head:hover{background:#fafbfd}
+.fn-status-row:hover{background:#f5f8fb;border-color:#dde6ef}
+.chip-scroll::-webkit-scrollbar{display:none}
 </style>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -78,12 +81,36 @@ const pickColor=(name)=>{const c=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891
 const barColorFor=(p)=> p>=100?'#22b573':p>=40?primary:p>0?'#f5b301':'#cbd5e1';
 const statsFor=(arr)=>{const total=arr.length,done=arr.filter(j=>j.progress>=100).length,over=arr.filter(j=>j.daysType==='over').length,avg=total?Math.round(arr.reduce((s,j)=>s+j.progress,0)/total):0;return {total,done,over,pending:total-done,avg,avgStyle:avg+'%'};};
 
+function ChipScroller({statuses,base}){
+  const msc=(name,size,color)=>(<span className="bi" style={{...MS,fontSize:size,color}}>{name}</span>);
+  const ref=React.useRef(null);
+  const [ov,setOv]=React.useState({l:false,r:false});
+  const update=()=>{const el=ref.current;if(!el)return;setOv({l:el.scrollLeft>4,r:el.scrollLeft+el.clientWidth<el.scrollWidth-4});};
+  React.useEffect(()=>{const el=ref.current;if(!el)return;const h=()=>update();el.addEventListener('scroll',h);window.addEventListener('resize',h);const t=setTimeout(update,60);return()=>{el.removeEventListener('scroll',h);window.removeEventListener('resize',h);clearTimeout(t);};},[]);
+  const go=(d)=>{const el=ref.current;if(el)el.scrollBy({left:d*180,behavior:'smooth'});};
+  return (
+    <div style={{position:'relative',marginTop:10,paddingLeft:53}}>
+      {ov.l && <button onClick={()=>go(-1)} style={{position:'absolute',top:'50%',left:48,transform:'translateY(-50%)',width:26,height:26,borderRadius:'50%',border:'1px solid #e3e7ec',background:'#fff',boxShadow:'0 1px 5px rgba(16,24,40,.14)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:2,color:'#5a6473'}}>{msc('chevron_left',18)}</button>}
+      <div ref={ref} className="chip-scroll" style={{display:'flex',gap:7,overflowX:'auto',scrollbarWidth:'none'}}>
+        {statuses.map((st,j)=>(
+          <a key={j} className="fn-status-row" href={base+'&status='+st.key} style={{display:'inline-flex',alignItems:'center',gap:7,padding:'4px 11px 4px 5px',borderRadius:99,textDecoration:'none',color:'#5a6473',border:'1px solid #eef0f4',background:'#fff',whiteSpace:'nowrap',flex:'none',transition:'background .15s,border-color .15s'}}>
+            <span style={{minWidth:21,height:21,borderRadius:99,border:'1.5px solid '+st.color,color:st.color,fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>{st.count}</span>
+            <span style={{fontSize:12,fontWeight:500}}>{st.label}</span>
+          </a>
+        ))}
+      </div>
+      {ov.r && <button onClick={()=>go(1)} style={{position:'absolute',top:'50%',right:0,transform:'translateY(-50%)',width:26,height:26,borderRadius:'50%',border:'1px solid #e3e7ec',background:'#fff',boxShadow:'0 1px 5px rgba(16,24,40,.14)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:2,color:'#5a6473'}}>{msc('chevron_right',18)}</button>}
+    </div>
+  );
+}
+
 function App(){
   const [view,setView]=useState('dashboard');
   const [manageMode,setManageMode]=useState('me');
   const [selectedMember,setSelectedMember]=useState(0);
   const [reorderOpen,setReorderOpen]=useState(false);
   const [reorderKind,setReorderKind]=useState('me');
+  const [openFn,setOpenFn]=useState(1);
   const [poolFilter,setPoolFilter]=useState('all');
   const [poolSearch,setPoolSearch]=useState('');
   const [todayJobs,setTodayJobs]=useState(TODAY0);
@@ -139,11 +166,16 @@ function App(){
   const filterTabs=ft.map(t=>{const a=flt===t.key;return {...t,onClick:()=>setPoolFilter(t.key),bg:a?primary:'#fff',color:a?'#fff':'#5a6473',border:a?primary:'#e3e7ec'};});
   const memberTabs=members.map((m,i)=>{const a=i===selectedMember;return {name:m.name,onSelect:()=>setSelectedMember(i),bg:a?primarySoft:'#fff',color:a?primary:'#5a6473',border:a?primary:'#e3e7ec'};});
   const statCards=[
-    {label:'คำสั่งที่สั่งไป',pct:30,count:20,unit:'กำลังดำเนินการ',icon:'call_made',color:'#0e8c7d',softBg:'#e3f3f0'},
-    {label:'คำสั่งที่ได้รับ',pct:50,count:7,unit:'กำลังดำเนินการ',icon:'call_received',color:'#4f46e5',softBg:'#ecebfb'},
-    {label:'เอกสารปฏิบัติงาน',pct:50,count:2,unit:'งานใหม่',icon:'description',color:'#dd7a16',softBg:'#fdeee0'},
-    {label:'อนุมัติเอกสาร',pct:75,count:1,unit:'รออนุมัติ',icon:'fact_check',color:'#0891b2',softBg:'#e0f2f8'},
-    {label:'แผนธุรกิจที่รับผิดชอบ',pct:20,count:12,unit:'รายการ',icon:'monitoring',color:'#7c3aed',softBg:'#f1ebfb'},
+    {label:'คำสั่งที่สั่งไป',pct:30,count:20,unit:'กำลังดำเนินการ',icon:'call_made',color:'#0e8c7d',softBg:'#e3f3f0',base:'daily-job-list.html?fn=sent',
+      statuses:[{label:'คำสั่งการใหม่',count:3,color:'#dd7a16',key:'new'},{label:'กำลังดำเนินการ',count:14,color:'#4f46e5',key:'inprogress'},{label:'ความก้าวหน้าใหม่',count:5,color:'#0e8c7d',key:'progress'},{label:'ขอปิดงาน',count:2,color:'#d98223',key:'closing'},{label:'ข้อความใหม่',count:1,color:'#15a08f',key:'message'}]},
+    {label:'คำสั่งที่ได้รับ',pct:50,count:7,unit:'กำลังดำเนินการ',icon:'call_received',color:'#4f46e5',softBg:'#ecebfb',base:'daily-job-list.html?fn=received',
+      statuses:[{label:'ยังไม่รับทราบ',count:4,color:'#dd7a16',key:'unacknowledged'},{label:'กำลังดำเนินการ',count:31,color:'#4f46e5',key:'inprogress'},{label:'ขอปิดงาน',count:7,color:'#d98223',key:'closing'},{label:'ข้อความใหม่',count:0,color:'#15a08f',key:'message'}]},
+    {label:'เอกสารปฏิบัติงาน',pct:50,count:2,unit:'งานใหม่',icon:'description',color:'#dd7a16',softBg:'#fdeee0',base:'document-list.html?fn=wi',
+      statuses:[{label:'ฉบับร่าง',count:2,color:'#dd7a16',key:'draft'},{label:'รอตรวจสอบ',count:1,color:'#4f46e5',key:'review'},{label:'เผยแพร่แล้ว',count:5,color:'#22b573',key:'published'}]},
+    {label:'อนุมัติเอกสาร',pct:75,count:1,unit:'รออนุมัติ',icon:'fact_check',color:'#0891b2',softBg:'#e0f2f8',base:'approval-list.html?fn=approve',
+      statuses:[{label:'รออนุมัติ',count:1,color:'#dd7a16',key:'pending'},{label:'อนุมัติแล้ว',count:4,color:'#22b573',key:'approved'},{label:'ตีกลับแก้ไข',count:1,color:'#d83a3a',key:'returned'}]},
+    {label:'แผนธุรกิจที่รับผิดชอบ',pct:20,count:12,unit:'รายการ',icon:'monitoring',color:'#7c3aed',softBg:'#f1ebfb',base:'business-plan-list.html?fn=plan',
+      statuses:[]},
   ].map(s=>({...s,pctStyle:s.pct+'%'}));
   const vmGroups=[
     {name:'VM : AAR GiveDeeFive',members:'สมาชิก 18 คน',posts:'5 โพสใหม่'},
@@ -180,7 +212,9 @@ function App(){
       {/* ICON RAIL */}
       <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
         <div style={{width:34,height:34,borderRadius:'50%',background:'linear-gradient(135deg,#8aa0b8,#5d7088)',marginBottom:6}}></div>
-        {[['bi-layout-sidebar',true],['bi-graph-up'],['bi-arrow-down-left'],['bi-arrow-up-right'],['bi-easel'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act],i)=>(
+        {[['bi-layout-sidebar',true],['bi-graph-up'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
+          <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
+        ) : (
           <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
         ))}
         <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
@@ -299,17 +333,21 @@ function App(){
               <button style={{background:'#f6f8fa',border:'1px solid #eef1f5',borderRadius:11,padding:'13px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:7,color:'#5a6473'}}>{ms('leaderboard',24)}<span style={{fontSize:11.5,fontWeight:600}}>คะแนนของฉัน</span></button>
             </div>
           </div>
-          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'6px 16px'}}>
-            {statCards.map((s,i)=>(
-              <div key={i} style={{display:'flex',alignItems:'center',gap:13,padding:'13px 0',borderBottom:'1px solid #f1f3f6'}}>
-                <div style={{width:40,height:40,borderRadius:11,background:s.softBg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms(s.icon,22,s.color)}</div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}><span style={{fontWeight:600,fontSize:13}}>{s.label}</span><span style={{fontSize:11.5,color:s.color,fontWeight:700}}>{s.pctStyle}</span></div>
-                  <div style={{height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:s.color,width:s.pctStyle}}></div></div>
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'10px 16px'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,padding:'6px 0 10px'}}>{ms('donut_small',20,primary)}<div style={{fontWeight:700,fontSize:15}}>ภาพรวมงานแต่ละฟังก์ชัน</div><div style={{flex:1}}></div><span style={{fontSize:11,color:'#9aa3af'}}>แตะเพื่อดูตามสถานะ</span></div>
+            {statCards.map((s,i)=>{const hasSub=s.statuses&&s.statuses.length>0;return (
+              <div key={i} style={{padding:'13px 0',borderBottom:'1px solid #f1f3f6'}}>
+                <div style={{display:'flex',alignItems:'center',gap:13}}>
+                  <div style={{width:40,height:40,borderRadius:11,background:s.softBg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms(s.icon,22,s.color)}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}><span style={{fontWeight:600,fontSize:13}}>{s.label}</span><span style={{fontSize:11.5,color:s.color,fontWeight:700}}>{s.pctStyle}</span></div>
+                    <div style={{height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:s.color,width:s.pctStyle}}></div></div>
+                  </div>
+                  <div style={{textAlign:'right',flex:'none'}}><div style={{fontWeight:700,fontSize:21,color:s.color}}>{s.count}</div><div style={{fontSize:10.5,color:'#9aa3af'}}>{s.unit}</div></div>
                 </div>
-                <div style={{textAlign:'right',flex:'none'}}><div style={{fontWeight:700,fontSize:21,color:s.color}}>{s.count}</div><div style={{fontSize:10.5,color:'#9aa3af'}}>{s.unit}</div></div>
+                {hasSub && <ChipScroller statuses={s.statuses} base={s.base}/>}
               </div>
-            ))}
+            );})}
           </div>
           <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:13}}>{ms('forum',21,primary)}<div style={{fontWeight:700,fontSize:15}}>กลุ่มที่มีโพสต์ใหม่</div></div>
