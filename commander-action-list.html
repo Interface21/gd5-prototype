@@ -185,13 +185,13 @@ function App(){
                   {r.closed > 0 && <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#e4f4ec',color:'#1f9d57',padding:'1px 8px 1px 2px',borderRadius:99,fontWeight:600}}><span style={{background:'#1f9d57',color:'#fff',width:16,height:16,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10}}>{r.closed}</span> ปิดงาน</span>}
                   {r.inprogress > 0 && <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#eaf1fe',color:'#3b82f6',padding:'1px 8px 1px 2px',borderRadius:99,fontWeight:600}}><span style={{background:'#3b82f6',color:'#fff',width:16,height:16,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10}}>{r.inprogress}</span> กำลังดำเนินการ</span>}
                   {r.newProg > 0 && <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fef3e6',color:'#d98223',padding:'1px 8px 1px 2px',borderRadius:99,fontWeight:600}}><span style={{background:'#f5b301',color:'#fff',width:16,height:16,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10}}>{r.newProg}</span> ก้าวหน้าใหม่</span>}
-                  <Bar pct={r.progress+'%'}/>
                 </div>
               </div>
               <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:6,flex:'0 1 auto',minWidth:0,marginLeft:'auto'}}>
                 <div style={{display:'flex',alignItems:'center',gap:13,flexWrap:'wrap',justifyContent:'flex-end'}}>
                   <span style={{fontSize:11.5,color:'#aab2bd'}}>{r.type === 'daily' ? 'งานประจำวัน' : 'PA'}</span>
                   <DaysPill d={r.days} closed={r.closed===r.assignees}/>
+                  <Bar pct={r.progress+'%'}/>
                   <span style={{width:10,height:10,borderRadius:'50%',background:r.status==='red'?'#ef4444':'#22b573',flex:'none'}}></span>
                   <i className="bi bi-three-dots-vertical" style={{color:'#aab2bd', fontSize:16}}></i>
                 </div>
