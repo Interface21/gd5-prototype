@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>GiveDeeFive - Template Frontend</title>
+  <meta name="description" content="GiveDeeFive Template Frontend">
+
+  <!-- Quasar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/quasar.prod.css" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    /* ===== CSS Variables ===== */
+    :root {
+      --wee-main-bg-color: #fafbfc;
+      --wee-main-border-color: #dcdcdc;
+      --wee-main-border-light-color: #ededed;
+      --wee-text-muted: #6b7982;
+      --v-main-text-body: #000000;
+      --v-main-text-head: #1a2d39;
+      --second-bg-color: #fff;
+      --primary: #15a08f;
+    }
+
+    body {
+      font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      background-color: var(--wee-main-bg-color) !important;
+      color: var(--v-main-text-body);
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* ===== Header ===== */
+    .q-header {
+      background: #ffffff !important;
+      border-bottom: 1px solid var(--wee-main-border-color);
+      color: var(--v-main-text-head) !important;
+    }
+
+    .search-input { width: 280px; }
+    .search-input .q-field__control {
+      border-radius: 20px !important;
+      background: #f0f2f5;
+      height: 38px;
+    }
+    .search-input .q-field__control:before { border: none !important; }
+
+    /* ===== Left drawer ===== */
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      margin: 0 auto 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: #6b7982;
+    }
+    .drawer-item:hover { background: #e6f7f5; color: #15a08f; }
+    .drawer-item.active { background: #e6f7f5; color: #15a08f; }
+    
+    /* ===== Content Section ===== */
+    .content-box {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--wee-main-border-light-color);
+      padding: 20px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="q-app">
+    <q-layout view="hHh LpR fFf">
+
+      <!-- ===== HEADER (บาร์ด้านบน) ===== -->
+      <q-header class="q-px-md q-py-xs" flat>
+        <q-toolbar>
+          <div class="row items-center cursor-pointer q-mr-lg" onclick="window.location.href='dashboard.html'">
+            <img src="image/logo.png" style="height: 36px; object-fit: contain;" alt="Logo">
+          </div>
+
+          <q-input dense standout="bg-white text-primary" v-model="search" placeholder="ค้นหา" class="search-input">
+            <template v-slot:prepend>
+              <q-icon name="bi-search" color="grey-6"></q-icon>
+            </template>
+          </q-input>
+
+          <q-space></q-space>
+
+          <div class="row items-center q-gutter-x-xs">
+            <q-btn round flat icon="bi-bell" color="grey-8" size="md">
+              <q-badge color="red" floating label="3"></q-badge>
+            </q-btn>
+            <q-btn round flat icon="bi-chat" color="grey-8" size="md">
+              <q-badge color="red" floating label="7"></q-badge>
+            </q-btn>
+            <q-btn flat color="grey-8" size="sm">
+              <q-icon name="bi-globe" class="q-mr-xs"></q-icon> ไทย
+              <q-icon name="bi-chevron-down" size="16px"></q-icon>
+            </q-btn>
+
+            <div class="row items-center q-ml-sm cursor-pointer">
+              <div class="column items-end q-mr-sm" style="line-height: 1.3;">
+                <span class="text-weight-bold text-body2">Piyawat Takaew</span>
+                <span class="text-caption text-grey-6">SA Staff</span>
+              </div>
+              <q-avatar size="36px">
+                <img src="https://cdn.quasar.dev/img/avatar.png" alt="Avatar">
+              </q-avatar>
+              <q-icon name="bi-chevron-down" color="grey-6" size="16px" class="q-ml-xs"></q-icon>
+            </div>
+          </div>
+        </q-toolbar>
+      </q-header>
+
+      <!-- ===== LEFT DRAWER (เมนูซ้าย) ===== -->
+      <q-drawer v-model="leftDrawerOpen" show-if-above mini :mini-width="60" class="bg-white" style="border-right: 1px solid #ededed;">
+        <div class="q-pt-md q-pb-sm text-center">
+          <q-avatar size="34px" class="cursor-pointer">
+            <img src="https://cdn.quasar.dev/img/avatar.png" alt="Profile">
+          </q-avatar>
+        </div>
+        <div class="q-mt-sm">
+          <div class="drawer-item active"><q-icon name="bi-layout-sidebar" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-graph-up" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-arrow-down-left" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-arrow-up-right" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-easel" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-file-earmark-arrow-down" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-book" size="22px"></q-icon></div>
+          <div class="drawer-item"><q-icon name="bi-clipboard-data" size="22px"></q-icon></div>
+          <div class="drawer-item" style="margin: 8px auto 0 auto; background: #f0f2f5; border-radius: 50%; width: 36px; height: 36px;"><q-icon name="bi-chevron-down" size="20px"></q-icon></div>
+        </div>
+      </q-drawer>
+
+      <!-- ===== MAIN CONTENT (พื้นที่เนื้อหาหลัก) ===== -->
+      <q-page-container>
+        <q-page class="q-pa-md" style="max-width: 1400px; margin: 0 auto;">
+          <div class="text-h6 text-weight-bold" style="color: var(--v-main-text-head);">Page Title</div>
+          <div class="content-box">
+             <!-- เนื้อหาของเพจจะอยู่ที่นี่ -->
+             <p>This is your content area.</p>
+          </div>
+        </q-page>
+      </q-page-container>
+
+    </q-layout>
+  </div>
+
+  <!-- Vue 3 + Quasar UMD -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/quasar.umd.prod.js"></script>
+  <script>
+    const app = Vue.createApp({
+      setup() {
+        const { ref } = Vue
+        return {
+          leftDrawerOpen: ref(true),
+          search: ref('')
+        }
+      }
+    })
+    
+    app.use(Quasar, {
+      config: {
+        brand: {
+          primary: '#15a08f',
+          secondary: '#26A69A',
+          accent: '#9C27B0',
+          positive: '#21BA45',
+          negative: '#C10015',
+          info: '#31CCEC',
+          warning: '#F2C037'
+        }
+      }
+    })
+    app.mount('#q-app')
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.0/dist/icon-set/bootstrap-icons.umd.prod.js"></script>
+  <script>
+    Quasar.iconSet.set(Quasar.iconSet.bootstrapIcons);
+  </script>
+</body>
+</html>
