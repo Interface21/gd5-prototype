@@ -1,389 +1,333 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
+<title>Today's Job — Mobile — GiveDeeFive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#e7eaf0;-webkit-font-smoothing:antialiased}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#e7eaf0;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 0}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 input{font-family:inherit}
+.ms{font-family:'Material Symbols Rounded';line-height:1}
 .appscroll::-webkit-scrollbar{display:none}
 .appscroll{scrollbar-width:none}
 @keyframes popIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes slideIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
 </style>
-</helmet>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const MSF = {fontFamily:"'Material Symbols Rounded'"};
+const primary='#15a08f', primarySoft='#e3f3f0';
+const ic=(name,size,color,fill)=>(<span className="ms" style={{...MSF,fontSize:size,color,...(fill?{fontVariationSettings:"'FILL' 1"}:{})}}>{name}</span>);
 
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 0;background:#e7eaf0">
-<x-import component="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+const MYJOBS0=[
+  {id:'j1',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',priority:'high',due:'31/03/2026',days:'เกิน 5 วัน',daysType:'over',progress:60,status:'yellow'},
+  {id:'j2',title:'อัพเดทระบบ EDR เป็น jdk8',commander:'Piyawat',priority:'urgent',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over',progress:30,status:'red'},
+  {id:'j3',title:'จัดทำ WI กระบวนการ Deploy เว็บไซต์ใหม่',commander:'Chanavee',priority:'normal',due:'30/06/2026',days:'เหลือ 1 วัน',daysType:'left',progress:100,status:'green'},
+  {id:'j4',title:'ติดตามการเก็บเงิน ตามสัญญา',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:0,status:'yellow'},
+  {id:'j5',title:'โพสปัญหาเชิงโครงสร้างของ EDR',commander:'Pinij',priority:'normal',due:'30/06/2026',days:'เหลือ 4 วัน',daysType:'left',progress:45,status:'green'},
+];
+const MEMBERS0=[
+  {id:'m1',name:'Bodin Muanprasat',role:'Software Engineer',progress:14,jobs:[
+    {id:'b1',title:'เรียน NuxtJS สำหรับพัฒนา EDR V.3',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:10,status:'yellow'},
+    {id:'b2',title:'แก้บั๊ก dashboard EDR ก่อน demo',commander:'Narate',priority:'urgent',due:'29/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:40,status:'red'},
+    {id:'b3',title:'รีวิวโค้ด Pull Request #214',commander:'Chanavee',priority:'normal',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:0,status:'yellow'},
+  ]},
+  {id:'m2',name:'Narate Boonmee',role:'Software Engineer',progress:46,jobs:[
+    {id:'n1',title:'จัดทำ WI การ Deploy ด้วย Nuxt Content',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:60,status:'green'},
+    {id:'n2',title:'ทดสอบ regression ระบบ EDR',commander:'Piyawat',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:30,status:'yellow'},
+  ]},
+  {id:'m3',name:'Supatta Longna',role:'แผนปฏิบัติการ',progress:9,jobs:[
+    {id:'s1',title:'หาสาเหตุที่แท้จริงของปัญหา',commander:'Piyawat',priority:'normal',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:0,status:'red'},
+    {id:'s2',title:'สรุปยอดเก็บเงินรายเดือน',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:20,status:'yellow'},
+  ]},
+  {id:'m4',name:'Nichagorn Prajansen',role:'Staff',progress:46,jobs:[
+    {id:'g1',title:'สรุปข้อมูลความเห็นโพสต์',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:46,status:'green'},
+    {id:'g2',title:'จัดทำเอกสาร Tip การใช้ AI',commander:'Jarunya',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:50,status:'green'},
+  ]},
+];
+const POOL0=[
+  {id:'p1',title:'อบรมลูกค้า / ส่งมอบงานระบบ Grand ATS',commander:'บาส',priority:'urgent',due:'30/06/2026',days:'เกิน 10 วัน',daysType:'over'},
+  {id:'p2',title:'จัดทำรายละเอียดของสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',priority:'urgent',due:'30/06/2026',days:'เกิน 5 วัน',daysType:'over'},
+  {id:'p3',title:'ติดตามการเก็บเงิน ตามสัญญา (เพิ่มเติม)',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over'},
+  {id:'p4',title:'หาสาเหตุที่แท้จริงของปัญหาเชิงโครงสร้าง',commander:'Supatta',priority:'normal',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left'},
+  {id:'p5',title:'PA - พัฒนางานประจำ ไตรมาส 3',commander:'Piyawat',priority:'normal',due:'31/12/2026',days:'อีก 5 วัน',daysType:'left'},
+  {id:'p6',title:'โพสบทความเคล็ดลับการเขียน WI',commander:'Khajonsak',priority:'high',due:'30/06/2026',days:'อีก 4 วัน',daysType:'left'},
+  {id:'p7',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left'},
+  {id:'p8',title:'แชร์ Use Case ของ Nuxt Content บน GD5',commander:'Chanavee',priority:'normal',due:'05/07/2026',days:'อีก 8 วัน',daysType:'left'},
+];
 
-  <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#f3f5f8;border-radius:54px;overflow:hidden">
+const prStyle=(p)=> p==='urgent'?{bg:'#fdeaea',text:'#d83a3a',label:'ด่วนมาก'}:p==='high'?{bg:'#fff2e2',text:'#dd7a16',label:'ด่วน'}:{bg:'#eef1f5',text:'#6b7280',label:'ปกติ'};
+const pickColor=(name)=>{const c=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57'];let h=0;const s=name||'?';for(let i=0;i<s.length;i++)h=(h+s.charCodeAt(i))%c.length;return c[h];};
+const barColorFor=(p)=> p>=100?'#22b573':p>=40?primary:p>0?'#f5b301':'#cbd5e1';
+const statsFor=(arr)=>{const total=arr.length,done=arr.filter(j=>j.progress>=100).length,over=arr.filter(j=>j.daysType==='over').length,avg=total?Math.round(arr.reduce((s,j)=>s+j.progress,0)/total):0;return {total,done,over,pending:total-done,avg,avgStyle:avg+'%'};};
 
-    <!-- ===== HEADER ===== -->
-    <div style="background:{{ primary }};padding:58px 18px 16px;color:#fff;flex:none">
-      <sc-if value="{{ showBack }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <button onClick="{{ goBack }}" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;color:#fff"><span style="font-family:'Material Symbols Rounded';font-size:22px">arrow_back</span></button>
-          <div style="font-weight:700;font-size:17px">{{ headerTitle }}</div>
-        </div>
-      </sc-if>
-      <sc-if value="{{ showHome }}" hint-placeholder-val="{{ true }}">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex:none">PT</div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:12px;opacity:.85">สวัสดี 👋</div>
-            <div style="font-weight:700;font-size:18px;line-height:1.2">Piyawat Takaew</div>
-          </div>
-          <div style="position:relative;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px">notifications</span><span style="position:absolute;top:-1px;right:-1px;background:#ffcf33;color:#7a5b00;font-size:10px;font-weight:800;border-radius:99px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 3px">5</span></div>
-        </div>
-      </sc-if>
-      <sc-if value="{{ showPlainTitle }}" hint-placeholder-val="{{ false }}">
-        <div style="font-weight:700;font-size:20px">{{ headerTitle }}</div>
-      </sc-if>
-    </div>
+function App(){
+  const [screen,setScreen]=useState('home');
+  const [sel,setSel]=useState(0);
+  const [manageTab,setManageTab]=useState('list');
+  const [poolFilter,setPoolFilter]=useState('all');
+  const [poolSearch,setPoolSearch]=useState('');
+  const [myJobs,setMyJobs]=useState(MYJOBS0);
+  const [members,setMembers]=useState(MEMBERS0);
+  const [pool,setPool]=useState(POOL0);
 
-    <!-- ===== SCROLL AREA ===== -->
-    <div class="appscroll" style="flex:1;overflow-y:auto;padding:14px 14px 90px">
+  const getList=(kind)=> kind==='team'?(members[sel]?members[sel].jobs:[]):myJobs;
+  const setList=(kind,arr)=>{ if(kind==='team'){ setMembers(ms=>ms.map((m,i)=>i===sel?{...m,jobs:arr}:m)); } else setMyJobs(arr); };
+  const move=(kind,id,dir)=>{const arr=[...getList(kind)];const i=arr.findIndex(j=>j.id===id),ni=i+dir;if(i<0||ni<0||ni>=arr.length)return;const t=arr[i];arr[i]=arr[ni];arr[ni]=t;setList(kind,arr);};
+  const remove=(kind,id)=>setList(kind,getList(kind).filter(j=>j.id!==id));
+  const addProgress=(kind,id)=>setList(kind,getList(kind).map(j=>{if(j.id!==id)return j;const np=Math.min(100,j.progress+25);return {...j,progress:np,status:np>=100?'green':j.status};}));
+  const importJob=(id)=>{const p=pool.find(x=>x.id===id);if(!p)return;const job={id:'imp-'+id+'-'+Date.now(),title:p.title,commander:p.commander,priority:p.priority,due:p.due,days:p.days,daysType:p.daysType||'left',progress:0,status:'yellow'};setMyJobs(a=>[...a,job]);setPool(pl=>pl.filter(x=>x.id!==id));setManageTab('list');};
 
-      <!-- ============ HOME ============ -->
-      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
-        <!-- my summary -->
-        <div style="background:#fff;border-radius:16px;padding:15px;box-shadow:0 1px 3px rgba(16,24,40,.06);margin-bottom:13px">
-          <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
-            <div style="display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:#3730dc"><span style="font-family:'Material Symbols Rounded';font-size:19px">monitoring</span>ความก้าวหน้าของฉัน</div>
-            <div style="flex:1"></div>
-            <div style="font-weight:800;font-size:20px;color:#3730dc">{{ myStats.avg }} %</div>
-          </div>
-          <div style="height:13px;background:#eef0f4;border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;background:#3730dc;width:{{ myStats.avgStyle }}"></div></div>
-          <div style="display:flex;align-items:center;gap:7px;margin-top:11px;flex-wrap:wrap">
-            <span style="font-size:11.5px;color:#8a93a3;font-weight:500">{{ myStats.pending }} รอดำเนินการ</span>
-            <span style="background:#e4f4ec;color:#1f9d57;font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 10px">{{ myStats.done }} ดำเนินการแล้ว</span>
-            <span style="background:#fdeaea;color:#d83a3a;font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 10px">{{ myStats.over }} งานค้าง</span>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:center;gap:8px;margin:0 2px 10px">
-          <span style="font-family:'Material Symbols Rounded';font-size:21px;color:{{ primary }}">checklist</span>
-          <div style="font-weight:700;font-size:15.5px">Today's Job <span style="color:#8a93a3;font-weight:500;font-size:13px">(คำสั่งที่ได้รับ)</span></div>
-          <div style="flex:1"></div>
-          <button onClick="{{ goManageMe }}" style="display:inline-flex;align-items:center;gap:4px;color:{{ primary }};font-size:12.5px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:17px">tune</span>จัดการ</button>
-        </div>
-
-        <sc-for list="{{ myJobs }}" as="job" hint-placeholder-count="5">
-          <div style="background:{{ job.rowBg }};border:1px solid {{ job.rowBorder }};border-radius:14px;padding:13px;margin-bottom:10px;box-shadow:0 1px 2px rgba(16,24,40,.04);animation:popIn .2s ease">
-            <div style="display:flex;align-items:flex-start;gap:10px">
-              <div style="width:26px;height:26px;border-radius:8px;background:#ece9fd;color:#4338ca;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none">{{ job.rank }}</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-weight:600;font-size:13.5px;line-height:1.35">{{ job.title }}</div>
-                <div style="display:flex;align-items:center;gap:7px;margin-top:7px;flex-wrap:wrap;font-size:11px;color:#8a93a3">
-                  <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:16px;height:16px;border-radius:50%;background:{{ job.avatarColor }};color:#fff;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center">{{ job.avatarInitial }}</span>{{ job.commander }}</span>
-                  <span style="padding:1px 8px;border-radius:99px;font-weight:600;background:{{ job.prBg }};color:{{ job.prText }}">{{ job.prLabel }}</span>
-                  <span style="display:inline-flex;align-items:center;gap:3px;color:{{ job.daysColor }};font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:13px">{{ job.daysIcon }}</span>{{ job.days }}</span>
-                </div>
-              </div>
-              <span style="width:11px;height:11px;border-radius:50%;background:{{ job.statusColor }};flex:none;margin-top:4px"></span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
-              <div style="flex:1;height:7px;background:#eef0f4;border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;background:{{ job.barColor }};width:{{ job.widthStyle }}"></div></div>
-              <span style="font-size:11.5px;font-weight:700;color:{{ job.barColor }};width:34px;text-align:right">{{ job.widthStyle }}</span>
-              <button onClick="{{ job.onAddProgress }}" style="display:inline-flex;align-items:center;gap:3px;background:{{ primarySoft }};color:{{ primary }};border-radius:8px;padding:6px 9px;font-size:11px;font-weight:700;white-space:nowrap"><span style="font-family: &quot;Material Symbols Rounded&quot;; font-size: 15px;">add</span>เพิ่ม</button>
-            </div>
-          </div>
-        </sc-for>
-      </sc-if>
-
-      <!-- ============ TEAM ============ -->
-      <sc-if value="{{ isTeam }}" hint-placeholder-val="{{ false }}">
-        <div style="background:#eef0f3;border-radius:15px;padding:14px;margin-bottom:13px">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="display:inline-flex;align-items:center;gap:6px;color:#5a6473;font-size:12.5px;font-weight:700;white-space:nowrap"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:{{ primary }}">monitoring</span>ความก้าวหน้า</div>
-            <div style="flex:1;height:14px;background:#fff;border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;background:#3730dc;width:{{ teamStats.avgStyle }}"></div></div>
-            <div style="font-weight:800;font-size:18px;color:#3730dc;white-space:nowrap">{{ teamStats.avg }} %</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:7px;margin-top:10px;flex-wrap:wrap">
-            <span style="font-size:11.5px;color:#8a93a3;font-weight:500">{{ teamStats.pending }} รอดำเนินการ</span>
-            <span style="background:#e4f4ec;color:#1f9d57;font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 10px">{{ teamStats.done }} ดำเนินการแล้ว</span>
-            <span style="background:#fdeaea;color:#d83a3a;font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 10px">{{ teamStats.over }} งานค้าง</span>
-          </div>
-        </div>
-
-        <sc-for list="{{ teamView }}" as="m" hint-placeholder-count="4">
-          <div onClick="{{ m.onOpen }}" style="background:#fff;border-radius:15px;padding:14px;margin-bottom:11px;box-shadow:0 1px 3px rgba(16,24,40,.05);cursor:pointer;animation:popIn .2s ease">
-            <div style="display:flex;align-items:center;gap:12px">
-              <div style="width:44px;height:44px;border-radius:50%;border:1.5px solid #d3dae2;background:#f6f8fa;display:flex;align-items:center;justify-content:center;flex:none;color:#9aa3af"><span style="font-family:'Material Symbols Rounded';font-size:28px">person</span></div>
-              <div style="flex:1;min-width:0">
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">{{ m.name }}</div>
-                  <div style="font-weight:800;font-size:16px;color:#3730dc">{{ m.progress }} %</div>
-                </div>
-                <div style="font-size:11px;color:#8a93a3;margin-top:1px">{{ m.role }}</div>
-              </div>
-              <span style="font-family:'Material Symbols Rounded';font-size:22px;color:#c2cad4;flex:none">chevron_right</span>
-            </div>
-            <div style="height:11px;background:#eef0f4;border-radius:99px;overflow:hidden;margin:11px 0 9px"><div style="height:100%;border-radius:99px;background:#3730dc;width:{{ m.widthStyle }}"></div></div>
-            <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
-              <span style="font-size:11px;color:#8a93a3;font-weight:500">{{ m.pending }} รอดำเนินการ</span>
-              <span style="background:#e4f4ec;color:#1f9d57;font-size:11px;font-weight:600;border-radius:99px;padding:2px 9px">{{ m.done }} ดำเนินการแล้ว</span>
-              <sc-if value="{{ m.over }}" hint-placeholder-val="{{ false }}"><span style="background:#fdeaea;color:#d83a3a;font-size:11px;font-weight:600;border-radius:99px;padding:2px 9px">{{ m.over }} งานค้าง</span></sc-if>
-              <div style="flex:1"></div>
-              <span style="font-size:11px;color:#9aa3af">{{ m.total }} คำสั่งการ</span>
-            </div>
-          </div>
-        </sc-for>
-      </sc-if>
-
-      <!-- ============ MEMBER DETAIL ============ -->
-      <sc-if value="{{ isMember }}" hint-placeholder-val="{{ false }}">
-        <div style="background:#fff;border-radius:16px;padding:15px;box-shadow:0 1px 3px rgba(16,24,40,.06);margin-bottom:13px;animation:slideIn .2s ease">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:13px">
-            <div style="width:50px;height:50px;border-radius:50%;border:1.5px solid #d3dae2;background:#f6f8fa;display:flex;align-items:center;justify-content:center;flex:none;color:#9aa3af"><span style="font-family:'Material Symbols Rounded';font-size:32px">person</span></div>
-            <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:16px">{{ memberInfo.name }}</div><div style="font-size:12px;color:#8a93a3">{{ memberInfo.role }}</div></div>
-            <span style="background:{{ primarySoft }};color:{{ primary }};font-size:11px;font-weight:700;border-radius:99px;padding:5px 11px;display:inline-flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:14px">edit</span>ผู้จัดการ</span>
-          </div>
-          <div style="height:13px;background:#eef0f4;border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;background:#3730dc;width:{{ memberStats.avgStyle }}"></div></div>
-          <div style="display:flex;align-items:center;gap:7px;margin-top:10px;flex-wrap:wrap">
-            <span style="font-size:11.5px;color:#8a93a3;font-weight:500">{{ memberStats.pending }} รอดำเนินการ</span>
-            <span style="background:#e4f4ec;color:#1f9d57;font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 10px">{{ memberStats.done }} ดำเนินการแล้ว</span>
-            <span style="background:#fdeaea;color:#d83a3a;font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 10px">{{ memberStats.over }} งานค้าง</span>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:center;gap:8px;margin:0 2px 10px">
-          <span style="font-family:'Material Symbols Rounded';font-size:20px;color:{{ primary }}">checklist</span>
-          <div style="font-weight:700;font-size:14.5px">Today's Job ของลูกทีม</div>
-          <div style="flex:1"></div>
-          <span style="font-size:11px;color:#9aa3af">↑↓ จัดลำดับให้ลูกทีม</span>
-        </div>
-
-        <sc-for list="{{ memberJobs }}" as="job" hint-placeholder-count="3">
-          <div style="background:{{ job.rowBg }};border:1px solid {{ job.rowBorder }};border-radius:14px;padding:13px;margin-bottom:10px;box-shadow:0 1px 2px rgba(16,24,40,.04)">
-            <div style="display:flex;align-items:flex-start;gap:10px">
-              <div style="width:26px;height:26px;border-radius:8px;background:#ece9fd;color:#4338ca;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none">{{ job.rank }}</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-weight:600;font-size:13.5px;line-height:1.35">{{ job.title }}</div>
-                <div style="display:flex;align-items:center;gap:7px;margin-top:7px;flex-wrap:wrap;font-size:11px;color:#8a93a3">
-                  <span style="padding:1px 8px;border-radius:99px;font-weight:600;background:{{ job.prBg }};color:{{ job.prText }}">{{ job.prLabel }}</span>
-                  <span style="display:inline-flex;align-items:center;gap:3px;color:{{ job.daysColor }};font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:13px">{{ job.daysIcon }}</span>{{ job.days }}</span>
-                  <span style="display:inline-flex;align-items:center;gap:3px"><span style="font-family:'Material Symbols Rounded';font-size:13px">event</span>{{ job.due }}</span>
-                </div>
-              </div>
-              <div style="display:flex;flex-direction:column;border:1px solid #e1e6ec;border-radius:8px;overflow:hidden;flex:none">
-                <button onClick="{{ job.onMoveUp }}" style="padding:1px 5px;display:flex;align-items:center;color:#5a6473"><span style="font-family:'Material Symbols Rounded';font-size:18px">keyboard_arrow_up</span></button>
-                <button onClick="{{ job.onMoveDown }}" style="padding:1px 5px;display:flex;align-items:center;color:#5a6473;border-top:1px solid #eef0f4"><span style="font-family:'Material Symbols Rounded';font-size:18px">keyboard_arrow_down</span></button>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
-              <div style="flex:1;height:7px;background:#eef0f4;border-radius:99px;overflow:hidden"><div style="height:100%;border-radius:99px;background:{{ job.barColor }};width:{{ job.widthStyle }}"></div></div>
-              <span style="font-size:11.5px;font-weight:700;color:{{ job.barColor }};width:34px;text-align:right">{{ job.widthStyle }}</span>
-              <button onClick="{{ job.onAddProgress }}" style="display:inline-flex;align-items:center;gap:3px;background:{{ primarySoft }};color:{{ primary }};border-radius:8px;padding:6px 9px;font-size:11px;font-weight:700;white-space:nowrap"><span style="font-family:'Material Symbols Rounded';font-size:15px">add</span>เติม</button>
-            </div>
-          </div>
-        </sc-for>
-      </sc-if>
-
-      <!-- ============ MANAGE ============ -->
-      <sc-if value="{{ isManage }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;background:#e7eaf0;border-radius:11px;padding:3px;margin-bottom:13px">
-          <button onClick="{{ setTabList }}" style="flex:1;border-radius:9px;padding:9px;font-size:12.5px;font-weight:700;background:{{ listTabBg }};color:{{ listTabColor }}">รายการงาน ({{ manageList.length }})</button>
-          <button onClick="{{ setTabImport }}" style="flex:1;border-radius:9px;padding:9px;font-size:12.5px;font-weight:700;background:{{ importTabBg }};color:{{ importTabColor }}">นำเข้าจากผู้สั่งการ</button>
-        </div>
-
-        <!-- list tab -->
-        <sc-if value="{{ isTabList }}" hint-placeholder-val="{{ true }}">
-          <sc-for list="{{ manageList }}" as="job" hint-placeholder-count="5">
-            <div style="background:{{ job.rowBg }};border:1px solid {{ job.rowBorder }};border-radius:13px;padding:12px;margin-bottom:9px;display:flex;align-items:center;gap:10px;animation:popIn .2s ease">
-              <div style="width:24px;height:24px;border-radius:7px;background:#ece9fd;color:#4338ca;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none">{{ job.rank }}</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-weight:600;font-size:13px;line-height:1.3">{{ job.title }}</div>
-                <div style="display:flex;align-items:center;gap:7px;margin-top:5px;flex-wrap:wrap;font-size:10.5px;color:#8a93a3">
-                  <span style="padding:1px 7px;border-radius:99px;font-weight:600;background:{{ job.prBg }};color:{{ job.prText }}">{{ job.prLabel }}</span>
-                  <span style="color:{{ job.daysColor }};font-weight:600">{{ job.days }}</span>
-                </div>
-              </div>
-              <div style="display:flex;flex-direction:column;border:1px solid #e1e6ec;border-radius:8px;overflow:hidden;flex:none">
-                <button onClick="{{ job.onMoveUp }}" style="padding:0 5px;display:flex;align-items:center;color:#5a6473"><span style="font-family:'Material Symbols Rounded';font-size:17px">keyboard_arrow_up</span></button>
-                <button onClick="{{ job.onMoveDown }}" style="padding:0 5px;display:flex;align-items:center;color:#5a6473;border-top:1px solid #eef0f4"><span style="font-family:'Material Symbols Rounded';font-size:17px">keyboard_arrow_down</span></button>
-              </div>
-              <button onClick="{{ job.onRemove }}" style="width:32px;height:32px;border-radius:8px;background:#fdeaea;color:#d83a3a;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:17px">delete</span></button>
-            </div>
-          </sc-for>
-          <sc-if value="{{ manageEmpty }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;color:#aeb6c2;font-size:12.5px;padding:30px 0">ยังไม่มีงาน — นำเข้าจากผู้สั่งการ</div></sc-if>
-        </sc-if>
-
-        <!-- import tab -->
-        <sc-if value="{{ isTabImport }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #e7eaef;border-radius:11px;padding:9px 12px;margin-bottom:10px">
-            <span style="font-family:'Material Symbols Rounded';font-size:18px;color:#9aa3af">search</span>
-            <input value="{{ poolSearch }}" onInput="{{ onPoolSearch }}" placeholder="ค้นหาคำสั่งการ" style="border:none;background:transparent;outline:none;font-size:13px;width:100%;color:#1f2733">
-          </div>
-          <div style="display:flex;gap:6px;margin-bottom:11px;overflow-x:auto" class="appscroll">
-            <sc-for list="{{ filterTabs }}" as="f" hint-placeholder-count="4">
-              <button onClick="{{ f.onClick }}" style="border:1px solid {{ f.border }};border-radius:99px;padding:6px 13px;font-size:12px;font-weight:600;background:{{ f.bg }};color:{{ f.color }};white-space:nowrap;flex:none">{{ f.label }}</button>
-            </sc-for>
-          </div>
-          <sc-for list="{{ poolView }}" as="p" hint-placeholder-count="6">
-            <div style="background:#fff;border:1px solid #eef0f4;border-radius:13px;padding:12px;margin-bottom:9px;display:flex;align-items:center;gap:11px;animation:popIn .2s ease">
-              <div style="flex:1;min-width:0">
-                <div style="font-weight:600;font-size:13px;line-height:1.35">{{ p.title }}</div>
-                <div style="display:flex;align-items:center;gap:7px;margin-top:6px;flex-wrap:wrap;font-size:10.5px;color:#8a93a3">
-                  <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:15px;height:15px;border-radius:50%;background:{{ p.avatarColor }};color:#fff;font-size:8px;font-weight:700;display:inline-flex;align-items:center;justify-content:center">{{ p.avatarInitial }}</span>{{ p.commander }}</span>
-                  <span style="padding:1px 7px;border-radius:99px;font-weight:600;background:{{ p.prBg }};color:{{ p.prText }}">{{ p.prLabel }}</span>
-                  <span style="color:{{ p.daysColor }};font-weight:600">{{ p.days }}</span>
-                </div>
-              </div>
-              <button onClick="{{ p.onImport }}" style="width:38px;height:38px;border-radius:50%;background:{{ primary }};color:#fff;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:22px">add</span></button>
-            </div>
-          </sc-for>
-          <sc-if value="{{ poolEmpty }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;color:#aeb6c2;font-size:12.5px;padding:30px 0">ไม่พบคำสั่งการ</div></sc-if>
-        </sc-if>
-      </sc-if>
-
-    </div>
-
-    <!-- ===== BOTTOM NAV ===== -->
-    <div style="position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-top:1px solid #e7eaef;padding:8px 14px 26px;display:flex;align-items:flex-end;justify-content:space-around;z-index:30">
-      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
-        <button onClick="{{ n.onClick }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;color:{{ n.color }}">
-          <span style="font-family:'Material Symbols Rounded';font-size:25px">{{ n.icon }}</span>
-          <span style="font-size:10.5px;font-weight:{{ n.weight }}">{{ n.label }}</span>
-        </button>
-      </sc-for>
-    </div>
-  </div>
-
-</x-import>
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:480,&quot;height&quot;:940},&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;teal&quot;,&quot;indigo&quot;,&quot;blue&quot;,&quot;green&quot;],&quot;default&quot;:&quot;teal&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
-class Component extends DCLogic {
-  state = {
-    screen: 'home',
-    selectedMember: 0,
-    manageTab: 'list',
-    poolFilter: 'all',
-    poolSearch: '',
-    myJobs: [
-      {id:'j1',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',priority:'high',due:'31/03/2026',days:'เกิน 5 วัน',daysType:'over',progress:60,status:'yellow'},
-      {id:'j2',title:'อัพเดทระบบ EDR เป็น jdk8',commander:'Piyawat',priority:'urgent',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over',progress:30,status:'red'},
-      {id:'j3',title:'จัดทำ WI กระบวนการ Deploy เว็บไซต์ใหม่',commander:'Chanavee',priority:'normal',due:'30/06/2026',days:'เหลือ 1 วัน',daysType:'left',progress:100,status:'green'},
-      {id:'j4',title:'ติดตามการเก็บเงิน ตามสัญญา',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:0,status:'yellow'},
-      {id:'j5',title:'โพสปัญหาเชิงโครงสร้างของ EDR',commander:'Pinij',priority:'normal',due:'30/06/2026',days:'เหลือ 4 วัน',daysType:'left',progress:45,status:'green'},
-    ],
-    members: [
-      {id:'m1',name:'Bodin Muanprasat',role:'Software Engineer',progress:14,jobs:[
-        {id:'b1',title:'เรียน NuxtJS สำหรับพัฒนา EDR V.3',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:10,status:'yellow'},
-        {id:'b2',title:'แก้บั๊ก dashboard EDR ก่อน demo',commander:'Narate',priority:'urgent',due:'29/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:40,status:'red'},
-        {id:'b3',title:'รีวิวโค้ด Pull Request #214',commander:'Chanavee',priority:'normal',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:0,status:'yellow'},
-      ]},
-      {id:'m2',name:'Narate Boonmee',role:'Software Engineer',progress:46,jobs:[
-        {id:'n1',title:'จัดทำ WI การ Deploy ด้วย Nuxt Content',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:60,status:'green'},
-        {id:'n2',title:'ทดสอบ regression ระบบ EDR',commander:'Piyawat',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:30,status:'yellow'},
-      ]},
-      {id:'m3',name:'Supatta Longna',role:'แผนปฏิบัติการ',progress:9,jobs:[
-        {id:'s1',title:'หาสาเหตุที่แท้จริงของปัญหา',commander:'Piyawat',priority:'normal',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:0,status:'red'},
-        {id:'s2',title:'สรุปยอดเก็บเงินรายเดือน',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:20,status:'yellow'},
-      ]},
-      {id:'m4',name:'Nichagorn Prajansen',role:'Staff',progress:46,jobs:[
-        {id:'g1',title:'สรุปข้อมูลความเห็นโพสต์',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:46,status:'green'},
-        {id:'g2',title:'จัดทำเอกสาร Tip การใช้ AI',commander:'Jarunya',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:50,status:'green'},
-      ]},
-    ],
-    pool: [
-      {id:'p1',title:'อบรมลูกค้า / ส่งมอบงานระบบ Grand ATS',commander:'บาส',priority:'urgent',due:'30/06/2026',days:'เกิน 10 วัน',daysType:'over'},
-      {id:'p2',title:'จัดทำรายละเอียดของสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',priority:'urgent',due:'30/06/2026',days:'เกิน 5 วัน',daysType:'over'},
-      {id:'p3',title:'ติดตามการเก็บเงิน ตามสัญญา (เพิ่มเติม)',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over'},
-      {id:'p4',title:'หาสาเหตุที่แท้จริงของปัญหาเชิงโครงสร้าง',commander:'Supatta',priority:'normal',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left'},
-      {id:'p5',title:'PA - พัฒนางานประจำ ไตรมาส 3',commander:'Piyawat',priority:'normal',due:'31/12/2026',days:'อีก 5 วัน',daysType:'left'},
-      {id:'p6',title:'โพสบทความเคล็ดลับการเขียน WI',commander:'Khajonsak',priority:'high',due:'30/06/2026',days:'อีก 4 วัน',daysType:'left'},
-      {id:'p7',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left'},
-      {id:'p8',title:'แชร์ Use Case ของ Nuxt Content บน GD5',commander:'Chanavee',priority:'normal',due:'05/07/2026',days:'อีก 8 วัน',daysType:'left'},
-    ],
+  const mapJob=(job,idx,kind)=>{
+    const pr=prStyle(job.priority),hi=job.progress>=100;
+    return {...job,rank:idx+1,widthStyle:job.progress+'%',barColor:barColorFor(job.progress),
+      statusColor:job.status==='red'?'#ef4444':job.status==='green'?'#22b573':'#f5b301',
+      prBg:pr.bg,prText:pr.text,prLabel:pr.label,
+      daysColor:job.daysType==='over'?'#d83a3a':'#16916f',daysIcon:job.daysType==='over'?'warning':'schedule',
+      rowBg:hi?'#eaf7f0':'#ffffff',rowBorder:hi?'#bfe6d3':'#eef0f4',
+      avatarInitial:(job.commander||'?').trim().charAt(0),avatarColor:pickColor(job.commander)};
   };
 
-  primaryHex(){ const a=this.props.accent||'teal'; return ({teal:'#15a08f',indigo:'#4f46e5',blue:'#2563eb',green:'#1f9d57'})[a]||'#15a08f'; }
-  primarySoftHex(){ const a=this.props.accent||'teal'; return ({teal:'#e3f3f0',indigo:'#ecebfb',blue:'#e6effd',green:'#e4f4ec'})[a]||'#e3f3f0'; }
-  prStyle(p){ return p==='urgent'?{bg:'#fdeaea',text:'#d83a3a',label:'ด่วนมาก'}:p==='high'?{bg:'#fff2e2',text:'#dd7a16',label:'ด่วน'}:{bg:'#eef1f5',text:'#6b7280',label:'ปกติ'}; }
-  pickColor(name){ const c=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57']; let h=0; const s=name||'?'; for(let i=0;i<s.length;i++)h=(h+s.charCodeAt(i))%c.length; return c[h]; }
-  barColorFor(p){ return p>=100?'#22b573':p>=40?this.primaryHex():p>0?'#f5b301':'#cbd5e1'; }
-  statsFor(arr){ const total=arr.length,done=arr.filter(j=>j.progress>=100).length,over=arr.filter(j=>j.daysType==='over').length,avg=total?Math.round(arr.reduce((s,j)=>s+j.progress,0)/total):0; return {total,done,over,pending:total-done,avg,avgStyle:avg+'%'}; }
+  const myStats=statsFor(myJobs);
+  const teamAll=members.reduce((a,m)=>a.concat(m.jobs),[]);
+  const teamStats=statsFor(teamAll);
+  const mem=members[sel]||{name:'',role:'',jobs:[]};
+  const memberStats=statsFor(mem.jobs||[]);
 
-  getList(kind){ return kind==='team'?(this.state.members[this.state.selectedMember]?this.state.members[this.state.selectedMember].jobs:[]):this.state.myJobs; }
-  setList(kind,arr){ if(kind==='team'){ const sel=this.state.selectedMember; this.setState(s=>({members:s.members.map((m,i)=>i===sel?{...m,jobs:arr}:m)})); } else this.setState({myJobs:arr}); }
-  move(kind,id,dir){ const arr=[...this.getList(kind)]; const i=arr.findIndex(j=>j.id===id),ni=i+dir; if(i<0||ni<0||ni>=arr.length)return; const t=arr[i];arr[i]=arr[ni];arr[ni]=t; this.setList(kind,arr); }
-  remove(kind,id){ this.setList(kind,this.getList(kind).filter(j=>j.id!==id)); }
-  addProgress(kind,id){ this.setList(kind,this.getList(kind).map(j=>{ if(j.id!==id)return j; const np=Math.min(100,j.progress+25); return {...j,progress:np,status:np>=100?'green':j.status}; })); }
-  importJob(id){ const p=this.state.pool.find(x=>x.id===id); if(!p)return; const job={id:'imp-'+id+'-'+Date.now(),title:p.title,commander:p.commander,priority:p.priority,due:p.due,days:p.days,daysType:p.daysType||'left',progress:0,status:'yellow'}; this.setState(s=>({myJobs:[...s.myJobs,job],pool:s.pool.filter(x=>x.id!==id),manageTab:'list'})); }
+  const flt=poolFilter,q=(poolSearch||'').trim();
+  const poolView=pool.filter(p=>(flt==='all'||p.priority===flt)&&(!q||p.title.indexOf(q)>=0)).map(p=>{const pr=prStyle(p.priority);return {...p,prBg:pr.bg,prText:pr.text,prLabel:pr.label,avatarInitial:(p.commander||'?').charAt(0),avatarColor:pickColor(p.commander),daysColor:p.daysType==='over'?'#d83a3a':'#16916f'};});
+  const ft=[{key:'all',label:'ทั้งหมด'},{key:'urgent',label:'ด่วนมาก'},{key:'high',label:'ด่วน'},{key:'normal',label:'ปกติ'}];
 
-  mapJob(job,idx,kind){
-    const pr=this.prStyle(job.priority), hi=job.progress>=100;
-    return {...job, rank:idx+1, widthStyle:job.progress+'%', barColor:this.barColorFor(job.progress),
-      statusColor: job.status==='red'?'#ef4444':job.status==='green'?'#22b573':'#f5b301',
-      prBg:pr.bg,prText:pr.text,prLabel:pr.label,
-      daysColor: job.daysType==='over'?'#d83a3a':'#16916f', daysIcon: job.daysType==='over'?'warning':'schedule',
-      rowBg: hi?'#eaf7f0':'#ffffff', rowBorder: hi?'#bfe6d3':'#eef0f4',
-      avatarInitial:(job.commander||'?').trim().charAt(0), avatarColor:this.pickColor(job.commander),
-      onMoveUp:()=>this.move(kind,job.id,-1), onMoveDown:()=>this.move(kind,job.id,1),
-      onRemove:()=>this.remove(kind,job.id), onAddProgress:()=>this.addProgress(kind,job.id) };
-  }
+  const titles={home:'หน้าหลัก',team:"Today's Job ของลูกทีม",member:'ลูกทีม',manage:'จัดการ Daily Job'};
+  const navDef=[{key:'home',icon:'space_dashboard',label:'หน้าหลัก'},{key:'team',icon:'groups',label:'ลูกทีม'},{key:'manage',icon:'tune',label:'จัดการ'},{key:'score',icon:'leaderboard',label:'คะแนน'}];
+  const activeNav=screen==='member'?'team':screen;
 
-  renderVals(){
-    const primary=this.primaryHex(), primarySoft=this.primarySoftHex(), s=this.state.screen;
-    const titles={home:'หน้าหลัก',team:'Today\u0027s Job ของลูกทีม',member:'ลูกทีม',manage:'จัดการ Daily Job'};
-    const sel=this.state.selectedMember, mem=this.state.members[sel]||{name:'',role:'',jobs:[]};
-    const teamAll=this.state.members.reduce((a,m)=>a.concat(m.jobs),[]);
+  const StatRow=({s})=>(
+    <div style={{display:'flex',alignItems:'center',gap:7,marginTop:11,flexWrap:'wrap'}}>
+      <span style={{fontSize:11.5,color:'#8a93a3',fontWeight:500}}>{s.pending} รอดำเนินการ</span>
+      <span style={{background:'#e4f4ec',color:'#1f9d57',fontSize:11.5,fontWeight:600,borderRadius:99,padding:'3px 10px'}}>{s.done} ดำเนินการแล้ว</span>
+      <span style={{background:'#fdeaea',color:'#d83a3a',fontSize:11.5,fontWeight:600,borderRadius:99,padding:'3px 10px'}}>{s.over} งานค้าง</span>
+    </div>
+  );
 
-    const flt=this.state.poolFilter, q=(this.state.poolSearch||'').trim();
-    const poolView=this.state.pool.filter(p=>(flt==='all'||p.priority===flt)&&(!q||p.title.indexOf(q)>=0)).map(p=>{ const pr=this.prStyle(p.priority); return {...p, prBg:pr.bg,prText:pr.text,prLabel:pr.label, avatarInitial:(p.commander||'?').charAt(0), avatarColor:this.pickColor(p.commander), daysColor:p.daysType==='over'?'#d83a3a':'#16916f', onImport:()=>this.importJob(p.id)}; });
-    const ft=[{key:'all',label:'ทั้งหมด'},{key:'urgent',label:'ด่วนมาก'},{key:'high',label:'ด่วน'},{key:'normal',label:'ปกติ'}];
-    const filterTabs=ft.map(t=>{ const a=flt===t.key; return {...t, onClick:()=>this.setState({poolFilter:t.key}), bg:a?primary:'#fff', color:a?'#fff':'#5a6473', border:a?primary:'#e3e7ec'}; });
+  const JobCard=({job,kind,reorder})=>(
+    <div style={{background:job.rowBg,border:'1px solid '+job.rowBorder,borderRadius:14,padding:13,marginBottom:10,boxShadow:'0 1px 2px rgba(16,24,40,.04)',animation:'popIn .2s ease'}}>
+      <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+        <div style={{width:26,height:26,borderRadius:8,background:'#ece9fd',color:'#4338ca',fontWeight:800,fontSize:14,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{job.rank}</div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:600,fontSize:13.5,lineHeight:1.35}}>{job.title}</div>
+          <div style={{display:'flex',alignItems:'center',gap:7,marginTop:7,flexWrap:'wrap',fontSize:11,color:'#8a93a3'}}>
+            {!reorder && <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:16,height:16,borderRadius:'50%',background:job.avatarColor,color:'#fff',fontSize:9,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{job.avatarInitial}</span>{job.commander}</span>}
+            <span style={{padding:'1px 8px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+            <span style={{display:'inline-flex',alignItems:'center',gap:3,color:job.daysColor,fontWeight:600}}>{ic(job.daysIcon,13,job.daysColor)}{job.days}</span>
+          </div>
+        </div>
+        {reorder ? (
+          <div style={{display:'flex',flexDirection:'column',border:'1px solid #e1e6ec',borderRadius:8,overflow:'hidden',flex:'none'}}>
+            <button onClick={()=>move(kind,job.id,-1)} style={{padding:'1px 5px',display:'flex',alignItems:'center',color:'#5a6473'}}>{ic('keyboard_arrow_up',18)}</button>
+            <button onClick={()=>move(kind,job.id,1)} style={{padding:'1px 5px',display:'flex',alignItems:'center',color:'#5a6473',borderTop:'1px solid #eef0f4'}}>{ic('keyboard_arrow_down',18)}</button>
+          </div>
+        ) : <span style={{width:11,height:11,borderRadius:'50%',background:job.statusColor,flex:'none',marginTop:4}}></span>}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginTop:10}}>
+        <div style={{flex:1,height:7,background:'#eef0f4',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:job.barColor,width:job.widthStyle}}></div></div>
+        <span style={{fontSize:11.5,fontWeight:700,color:job.barColor,width:34,textAlign:'right'}}>{job.widthStyle}</span>
+        <button onClick={()=>addProgress(kind,job.id)} style={{display:'inline-flex',alignItems:'center',gap:3,background:primarySoft,color:primary,borderRadius:8,padding:'6px 9px',fontSize:11,fontWeight:700,whiteSpace:'nowrap'}}>{ic('add',15,primary)}เพิ่ม</button>
+      </div>
+    </div>
+  );
 
-    const navDef=[
-      {key:'home',icon:'space_dashboard',label:'หน้าหลัก'},
-      {key:'team',icon:'groups',label:'ลูกทีม'},
-      {key:'manage',icon:'tune',label:'จัดการ'},
-      {key:'score',icon:'leaderboard',label:'คะแนน'},
-    ];
-    const activeNav = s==='member'?'team':s;
-    const navItems=navDef.map(n=>{ const a=n.key===activeNav; return {...n, onClick:()=>this.setState({screen:n.key, manageTab:n.key==='manage'?this.state.manageTab:'list'}), color:a?primary:'#9aa3af', weight:a?700:500}; });
+  return (
+   <div style={{position:'relative',width:390,height:844,background:'#000',borderRadius:52,padding:11,boxShadow:'0 30px 60px rgba(16,24,40,.28)',flex:'none'}}>
+    <div style={{position:'absolute',inset:11,borderRadius:42,overflow:'hidden',display:'flex',flexDirection:'column',background:'#f3f5f8'}}>
 
-    const isTabList=this.state.manageTab==='list';
-    const manageList=this.state.myJobs.map((j,i)=>this.mapJob(j,i,'me'));
+      {/* STATUS BAR + HEADER */}
+      <div style={{background:primary,color:'#fff',flex:'none'}}>
+        <div style={{height:44,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 26px',position:'relative'}}>
+          <span style={{fontSize:14,fontWeight:700}}>9:41</span>
+          <div style={{position:'absolute',left:'50%',top:8,transform:'translateX(-50%)',width:96,height:26,background:'#000',borderRadius:99}}></div>
+          <div style={{display:'flex',alignItems:'center',gap:6}}>{ic('signal_cellular_alt',17,'#fff',true)}{ic('wifi',17,'#fff',true)}{ic('battery_full',19,'#fff',true)}</div>
+        </div>
+        <div style={{padding:'4px 16px 16px'}}>
+          {screen==='member' ? (
+            <div style={{display:'flex',alignItems:'center',gap:10}}>
+              <button onClick={()=>setScreen('team')} style={{width:34,height:34,borderRadius:'50%',background:'rgba(255,255,255,.18)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff'}}>{ic('arrow_back',22,'#fff')}</button>
+              <div style={{fontWeight:700,fontSize:17}}>{titles[screen]}</div>
+            </div>
+          ) : screen==='home' ? (
+            <div style={{display:'flex',alignItems:'center',gap:12}}>
+              <div style={{width:46,height:46,borderRadius:'50%',background:'rgba(255,255,255,.22)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:18,flex:'none'}}>PT</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:12,opacity:.85}}>สวัสดี 👋</div>
+                <div style={{fontWeight:700,fontSize:18,lineHeight:1.2}}>Piyawat Takaew</div>
+              </div>
+              <div style={{position:'relative',width:40,height:40,borderRadius:'50%',background:'rgba(255,255,255,.18)',display:'flex',alignItems:'center',justifyContent:'center'}}>{ic('notifications',22,'#fff')}<span style={{position:'absolute',top:-1,right:-1,background:'#ffcf33',color:'#7a5b00',fontSize:10,fontWeight:800,borderRadius:99,minWidth:16,height:16,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 3px'}}>5</span></div>
+            </div>
+          ) : (
+            <div style={{fontWeight:700,fontSize:20}}>{titles[screen]}</div>
+          )}
+        </div>
+      </div>
 
-    return {
-      primary, primarySoft,
-      isHome:s==='home', isTeam:s==='team', isMember:s==='member', isManage:s==='manage',
-      showHome:s==='home', showBack:s==='member', showPlainTitle:(s==='team'||s==='manage'),
-      headerTitle:titles[s]||'',
-      goBack:()=>this.setState({screen:'team'}),
-      myJobs:this.state.myJobs.map((j,i)=>this.mapJob(j,i,'me')),
-      myStats:this.statsFor(this.state.myJobs),
-      teamStats:this.statsFor(teamAll),
-      teamView:this.state.members.map((m,i)=>{ const st=this.statsFor(m.jobs); return {...m, widthStyle:m.progress+'%', total:st.total, done:st.done, over:st.over, pending:st.pending, onOpen:()=>this.setState({screen:'member',selectedMember:i})}; }),
-      memberInfo:{name:mem.name,role:mem.role},
-      memberStats:this.statsFor(mem.jobs||[]),
-      memberJobs:(mem.jobs||[]).map((j,i)=>this.mapJob(j,i,'team')),
-      manageList, manageEmpty:manageList.length===0,
-      isTabList, isTabImport:!isTabList,
-      listTabBg:isTabList?'#fff':'transparent', listTabColor:isTabList?primary:'#8a93a3',
-      importTabBg:!isTabList?'#fff':'transparent', importTabColor:!isTabList?primary:'#8a93a3',
-      setTabList:()=>this.setState({manageTab:'list'}), setTabImport:()=>this.setState({manageTab:'import'}),
-      poolView, poolEmpty:poolView.length===0, poolSearch:this.state.poolSearch,
-      filterTabs, onPoolSearch:(e)=>this.setState({poolSearch:e.target.value}),
-      goManageMe:()=>this.setState({screen:'manage',manageTab:'list'}),
-      navItems,
-    };
-  }
+      {/* SCROLL AREA */}
+      <div className="appscroll" style={{flex:1,overflowY:'auto',padding:'14px 14px 90px'}}>
+
+        {screen==='home' && (<React.Fragment>
+          <div style={{background:'#fff',borderRadius:16,padding:15,boxShadow:'0 1px 3px rgba(16,24,40,.06)',marginBottom:13}}>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
+              <div style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:13.5,fontWeight:700,color:'#3730dc'}}>{ic('monitoring',19,'#3730dc')}ความก้าวหน้าของฉัน</div>
+              <div style={{flex:1}}></div>
+              <div style={{fontWeight:800,fontSize:20,color:'#3730dc'}}>{myStats.avg} %</div>
+            </div>
+            <div style={{height:13,background:'#eef0f4',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:'#3730dc',width:myStats.avgStyle}}></div></div>
+            <StatRow s={myStats}/>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:8,margin:'0 2px 10px'}}>
+            {ic('checklist',21,primary)}
+            <div style={{fontWeight:700,fontSize:15.5}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:13}}>(คำสั่งที่ได้รับ)</span></div>
+            <div style={{flex:1}}></div>
+            <button onClick={()=>{setScreen('manage');setManageTab('list');}} style={{display:'inline-flex',alignItems:'center',gap:4,color:primary,fontSize:12.5,fontWeight:700}}>{ic('tune',17,primary)}จัดการ</button>
+          </div>
+          {myJobs.map((j,i)=><JobCard key={j.id} job={mapJob(j,i,'me')} kind="me"/>)}
+        </React.Fragment>)}
+
+        {screen==='team' && (<React.Fragment>
+          <div style={{background:'#eef0f3',borderRadius:15,padding:14,marginBottom:13}}>
+            <div style={{display:'flex',alignItems:'center',gap:10}}>
+              <div style={{display:'inline-flex',alignItems:'center',gap:6,color:'#5a6473',fontSize:12.5,fontWeight:700,whiteSpace:'nowrap'}}>{ic('monitoring',18,primary)}ความก้าวหน้า</div>
+              <div style={{flex:1,height:14,background:'#fff',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:'#3730dc',width:teamStats.avgStyle}}></div></div>
+              <div style={{fontWeight:800,fontSize:18,color:'#3730dc',whiteSpace:'nowrap'}}>{teamStats.avg} %</div>
+            </div>
+            <StatRow s={teamStats}/>
+          </div>
+          {members.map((m,i)=>{const st=statsFor(m.jobs);return (
+            <div key={m.id} onClick={()=>{setSel(i);setScreen('member');}} style={{background:'#fff',borderRadius:15,padding:14,marginBottom:11,boxShadow:'0 1px 3px rgba(16,24,40,.05)',cursor:'pointer',animation:'popIn .2s ease'}}>
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <div style={{width:44,height:44,borderRadius:'50%',border:'1.5px solid #d3dae2',background:'#f6f8fa',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:'#9aa3af'}}>{ic('person',28)}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <div style={{fontWeight:700,fontSize:14,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',flex:1}}>{m.name}</div>
+                    <div style={{fontWeight:800,fontSize:16,color:'#3730dc'}}>{m.progress} %</div>
+                  </div>
+                  <div style={{fontSize:11,color:'#8a93a3',marginTop:1}}>{m.role}</div>
+                </div>
+                {ic('chevron_right',22,'#c2cad4')}
+              </div>
+              <div style={{height:11,background:'#eef0f4',borderRadius:99,overflow:'hidden',margin:'11px 0 9px'}}><div style={{height:'100%',borderRadius:99,background:'#3730dc',width:m.progress+'%'}}></div></div>
+              <div style={{display:'flex',alignItems:'center',gap:7,flexWrap:'wrap'}}>
+                <span style={{fontSize:11,color:'#8a93a3',fontWeight:500}}>{st.pending} รอดำเนินการ</span>
+                <span style={{background:'#e4f4ec',color:'#1f9d57',fontSize:11,fontWeight:600,borderRadius:99,padding:'2px 9px'}}>{st.done} ดำเนินการแล้ว</span>
+                {st.over>0 && <span style={{background:'#fdeaea',color:'#d83a3a',fontSize:11,fontWeight:600,borderRadius:99,padding:'2px 9px'}}>{st.over} งานค้าง</span>}
+                <div style={{flex:1}}></div>
+                <span style={{fontSize:11,color:'#9aa3af'}}>{st.total} คำสั่งการ</span>
+              </div>
+            </div>
+          );})}
+        </React.Fragment>)}
+
+        {screen==='member' && (<React.Fragment>
+          <div style={{background:'#fff',borderRadius:16,padding:15,boxShadow:'0 1px 3px rgba(16,24,40,.06)',marginBottom:13,animation:'slideIn .2s ease'}}>
+            <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:13}}>
+              <div style={{width:50,height:50,borderRadius:'50%',border:'1.5px solid #d3dae2',background:'#f6f8fa',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:'#9aa3af'}}>{ic('person',32)}</div>
+              <div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:16}}>{mem.name}</div><div style={{fontSize:12,color:'#8a93a3'}}>{mem.role}</div></div>
+              <span style={{background:primarySoft,color:primary,fontSize:11,fontWeight:700,borderRadius:99,padding:'5px 11px',display:'inline-flex',alignItems:'center',gap:4}}>{ic('edit',14,primary)}ผู้จัดการ</span>
+            </div>
+            <div style={{height:13,background:'#eef0f4',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:'#3730dc',width:memberStats.avgStyle}}></div></div>
+            <StatRow s={memberStats}/>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:8,margin:'0 2px 10px'}}>
+            {ic('checklist',20,primary)}
+            <div style={{fontWeight:700,fontSize:14.5}}>Today's Job ของลูกทีม</div>
+            <div style={{flex:1}}></div>
+            <span style={{fontSize:11,color:'#9aa3af'}}>↑↓ จัดลำดับ</span>
+          </div>
+          {(mem.jobs||[]).map((j,i)=><JobCard key={j.id} job={mapJob(j,i,'team')} kind="team" reorder={true}/>)}
+        </React.Fragment>)}
+
+        {screen==='manage' && (<React.Fragment>
+          <div style={{display:'flex',background:'#e7eaf0',borderRadius:11,padding:3,marginBottom:13}}>
+            <button onClick={()=>setManageTab('list')} style={{flex:1,borderRadius:9,padding:9,fontSize:12.5,fontWeight:700,background:manageTab==='list'?'#fff':'transparent',color:manageTab==='list'?primary:'#8a93a3'}}>รายการงาน ({myJobs.length})</button>
+            <button onClick={()=>setManageTab('import')} style={{flex:1,borderRadius:9,padding:9,fontSize:12.5,fontWeight:700,background:manageTab==='import'?'#fff':'transparent',color:manageTab==='import'?primary:'#8a93a3'}}>นำเข้าจากผู้สั่งการ</button>
+          </div>
+          {manageTab==='list' ? (<React.Fragment>
+            {myJobs.map((j,idx)=>{const job=mapJob(j,idx,'me');return (
+              <div key={j.id} style={{background:job.rowBg,border:'1px solid '+job.rowBorder,borderRadius:13,padding:12,marginBottom:9,display:'flex',alignItems:'center',gap:10,animation:'popIn .2s ease'}}>
+                <div style={{width:24,height:24,borderRadius:7,background:'#ece9fd',color:'#4338ca',fontWeight:800,fontSize:13,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{job.rank}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:600,fontSize:13,lineHeight:1.3}}>{job.title}</div>
+                  <div style={{display:'flex',alignItems:'center',gap:7,marginTop:5,flexWrap:'wrap',fontSize:10.5,color:'#8a93a3'}}>
+                    <span style={{padding:'1px 7px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+                    <span style={{color:job.daysColor,fontWeight:600}}>{job.days}</span>
+                  </div>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',border:'1px solid #e1e6ec',borderRadius:8,overflow:'hidden',flex:'none'}}>
+                  <button onClick={()=>move('me',j.id,-1)} style={{padding:'0 5px',display:'flex',alignItems:'center',color:'#5a6473'}}>{ic('keyboard_arrow_up',17)}</button>
+                  <button onClick={()=>move('me',j.id,1)} style={{padding:'0 5px',display:'flex',alignItems:'center',color:'#5a6473',borderTop:'1px solid #eef0f4'}}>{ic('keyboard_arrow_down',17)}</button>
+                </div>
+                <button onClick={()=>remove('me',j.id)} style={{width:32,height:32,borderRadius:8,background:'#fdeaea',color:'#d83a3a',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ic('delete',17,'#d83a3a')}</button>
+              </div>
+            );})}
+            {myJobs.length===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:12.5,padding:'30px 0'}}>ยังไม่มีงาน — นำเข้าจากผู้สั่งการ</div>}
+          </React.Fragment>) : (<React.Fragment>
+            <div style={{display:'flex',alignItems:'center',gap:7,background:'#fff',border:'1px solid #e7eaef',borderRadius:11,padding:'9px 12px',marginBottom:10}}>
+              {ic('search',18,'#9aa3af')}
+              <input value={poolSearch} onChange={(e)=>setPoolSearch(e.target.value)} placeholder="ค้นหาคำสั่งการ" style={{border:'none',background:'transparent',outline:'none',fontSize:13,width:'100%',color:'#1f2733'}}/>
+            </div>
+            <div className="appscroll" style={{display:'flex',gap:6,marginBottom:11,overflowX:'auto'}}>
+              {ft.map(t=>{const a=flt===t.key;return <button key={t.key} onClick={()=>setPoolFilter(t.key)} style={{border:'1px solid '+(a?primary:'#e3e7ec'),borderRadius:99,padding:'6px 13px',fontSize:12,fontWeight:600,background:a?primary:'#fff',color:a?'#fff':'#5a6473',whiteSpace:'nowrap',flex:'none'}}>{t.label}</button>;})}
+            </div>
+            {poolView.map(p=>(
+              <div key={p.id} style={{background:'#fff',border:'1px solid #eef0f4',borderRadius:13,padding:12,marginBottom:9,display:'flex',alignItems:'center',gap:11,animation:'popIn .2s ease'}}>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:600,fontSize:13,lineHeight:1.35}}>{p.title}</div>
+                  <div style={{display:'flex',alignItems:'center',gap:7,marginTop:6,flexWrap:'wrap',fontSize:10.5,color:'#8a93a3'}}>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:15,height:15,borderRadius:'50%',background:p.avatarColor,color:'#fff',fontSize:8,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{p.avatarInitial}</span>{p.commander}</span>
+                    <span style={{padding:'1px 7px',borderRadius:99,fontWeight:600,background:p.prBg,color:p.prText}}>{p.prLabel}</span>
+                    <span style={{color:p.daysColor,fontWeight:600}}>{p.days}</span>
+                  </div>
+                </div>
+                <button onClick={()=>importJob(p.id)} style={{width:38,height:38,borderRadius:'50%',background:primary,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ic('add',22,'#fff')}</button>
+              </div>
+            ))}
+            {poolView.length===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:12.5,padding:'30px 0'}}>ไม่พบคำสั่งการ</div>}
+          </React.Fragment>)}
+        </React.Fragment>)}
+
+      </div>
+
+      {/* BOTTOM NAV */}
+      <div style={{position:'absolute',left:0,right:0,bottom:0,background:'rgba(255,255,255,.92)',backdropFilter:'blur(12px)',borderTop:'1px solid #e7eaef',padding:'8px 14px 22px',display:'flex',alignItems:'flex-end',justifyContent:'space-around',zIndex:30}}>
+        {navDef.map(n=>{const a=n.key===activeNav;return (
+          <button key={n.key} onClick={()=>{setScreen(n.key);if(n.key==='manage')setManageTab('list');}} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:3,padding:'4px 14px',color:a?primary:'#9aa3af'}}>
+            {ic(n.icon,25,a?primary:'#9aa3af',a)}
+            <span style={{fontSize:10.5,fontWeight:a?700:500}}>{n.label}</span>
+          </button>
+        );})}
+      </div>
+    </div>
+   </div>
+  );
 }
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
 </script>
 </body>
 </html>
