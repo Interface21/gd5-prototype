@@ -90,6 +90,11 @@ function DaysPill({d,closed}){
 }
 
 function App(){
+  const TKEY='gd5_today_jobs';
+  const loadAdded=()=>{try{return JSON.parse(localStorage.getItem(TKEY)||'[]');}catch(_){return [];}};
+  const [added,setAdded]=useState(()=>{const cur=loadAdded();return cur.length?cur:['r1','r5'];});
+  const isAdded=(id)=>added.indexOf(id)>=0;
+  const toggleAdd=(e,id)=>{e.preventDefault();e.stopPropagation();setAdded(prev=>{const next=prev.indexOf(id)>=0?prev.filter(x=>x!==id):prev.concat([id]);try{localStorage.setItem(TKEY,JSON.stringify(next));}catch(_){}return next;});};
   const navTop=[
     {label:'เพิ่มการสั่งการใหม่'},
     {label:'เพิ่มการสั่งการใหม่ PA'},
@@ -182,7 +187,7 @@ function App(){
           <div style={{flex:1}}></div>
           <div style={{display:'flex',alignItems:'center',gap:6}}>
             <button style={{width:38,height:34,borderRadius:9,border:'1px solid '+primary,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('list',21,primary)}</button>
-            <button style={{width:38,height:34,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('bar_chart',21,'#8a93a3')}</button>
+            <a href="assignee-action-dashboard.html" style={{width:38,height:34,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('bar_chart',21,'#8a93a3')}</a>
             <button style={{display:'inline-flex',alignItems:'center',gap:5,border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'7px 12px',fontSize:13,color:'#5a6473',fontWeight:600,marginLeft:6}}>{ms('sort',19,'#5a6473')}เรียงลำดับ</button>
             <button style={{display:'inline-flex',alignItems:'center',gap:5,border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'7px 12px',fontSize:13,color:'#5a6473',fontWeight:600}}>{ms('search',19,'#5a6473')}ค้นหา</button>
           </div>
@@ -192,8 +197,8 @@ function App(){
 
         {/* LIST */}
         <div>
-          {ROWS.map((r,i)=>{const st=STATUS[r.status];return (
-            <a key={i} href={rowHref(r)} className="job-row" style={{display:'flex',alignItems:'flex-start',gap:13,padding:'14px 8px',borderTop:'1px solid #f3f5f8',flexWrap:'wrap'}}>
+          {ROWS.map((r,i)=>{const st=STATUS[r.status];const id='r'+i;const on=isAdded(id);return (
+            <a key={i} href={rowHref(r)+'?id='+id} className="job-row" style={{display:'flex',alignItems:'flex-start',gap:13,padding:'14px 8px',borderTop:'1px solid #f3f5f8',flexWrap:'wrap',background:on?'#f4faf8':undefined}}>
               <div style={{width:36,height:36,borderRadius:'50%',background:'#eef1f5',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',marginTop:2}}>{ms('person',22,'#aab2bd')}</div>
               <div style={{flex:'1 1 320px',minWidth:240}}>
                 <div style={{fontWeight:600,fontSize:14,marginBottom:7,lineHeight:1.45,color:'#2b3440'}}>{r.title}</div>
@@ -213,6 +218,7 @@ function App(){
                   <DaysPill d={r.days} closed={r.status==='closed'}/>
                   <span style={{display:'inline-flex',alignItems:'center',gap:6,background:st.bg,color:st.color,borderRadius:7,padding:'3px 11px',fontSize:12,fontWeight:600}}><span style={{width:7,height:7,borderRadius:'50%',background:st.dot}}></span>{st.label}</span>
                   <span style={{width:12,height:12,borderRadius:'50%',background:DOTC[DOTS[i]],flex:'none'}}></span>
+                  {r.status!=='closed' && <button onClick={(e)=>toggleAdd(e,id)} title={on?"อยู่ใน Today's Job (กดเพื่อเอาออก)":"เพิ่มลง Today's Job"} style={{width:24,height:24,borderRadius:7,display:'inline-flex',alignItems:'center',justifyContent:'center',border:'1px solid '+(on?'#bfe6db':'#e3e7ec'),background:on?'#e4f3ef':'#fff',cursor:'pointer',flex:'none'}}>{ms(on?'playlist_add_check':'playlist_add',16,on?'#0e8c7d':'#9aa3af',on)}</button>}
                 </div>
                 <div style={{display:'flex',alignItems:'center',gap:6,fontSize:11.5,color:'#aab2bd'}}>
                   <span>วันที่สั่ง {r.odate}</span>
