@@ -233,9 +233,7 @@
                 <span class="text-weight-bold text-body2">Piyawat Takaew</span>
                 <span class="text-caption text-grey-6">SA Staff</span>
               </div>
-              <q-avatar size="36px">
-                <img src="https://cdn.quasar.dev/img/avatar.png">
-              </q-avatar>
+              <q-avatar size="36px" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
               <q-icon name="bi-chevron-down" color="grey-6" size="16px" class="q-ml-xs"></q-icon>
             </div>
           </div>
@@ -245,13 +243,11 @@
       <!-- ===== LEFT DRAWER (จาก FeedLayout.vue > FeedDrawer) ===== -->
       <q-drawer v-model="leftDrawerOpen" show-if-above mini :mini-width="60" class="bg-white" style="border-right: 1px solid #ededed;">
         <div class="q-pt-md q-pb-sm text-center">
-          <q-avatar size="34px" class="cursor-pointer">
-            <img src="https://cdn.quasar.dev/img/avatar.png">
-          </q-avatar>
+          <q-avatar size="34px" class="cursor-pointer" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
         </div>
         <div class="q-mt-sm">
           <div class="drawer-item active"><q-icon name="bi-layout-sidebar" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-graph-up" size="22px"></q-icon></div>
+          <a href="org-dashboard.html" class="drawer-item" style="text-decoration:none;"><q-icon name="bi-graph-up" size="22px"></q-icon></a>
           <a href="assignee-action-list.html" class="drawer-item" style="text-decoration:none;"><q-icon name="bi-arrow-down-left" size="22px"></q-icon></a>
           <a href="commander-action-dashboard.html" class="drawer-item" style="text-decoration:none;"><q-icon name="bi-arrow-up-right" size="22px"></q-icon></a>
           <a href="user-virtual-meeting.html" class="drawer-item" style="text-decoration:none;"><q-icon name="bi-easel" size="22px"></q-icon></a>
@@ -275,9 +271,7 @@
                 <span class="profile-banner-text">THE LAST SHIP</span>
               </div>
               <div class="text-center" style="margin-top: -32px; position: relative;">
-                <q-avatar size="64px" style="border: 3px solid white;">
-                  <img src="https://cdn.quasar.dev/img/avatar.png">
-                </q-avatar>
+                <q-avatar size="64px" style="border: 3px solid white;background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
               </div>
               <div class="text-center q-pt-sm q-pb-md q-px-md">
                 <div class="text-weight-bold" style="font-size: 16px; color: var(--v-main-text-head);">Piyawat Takaew</div>
@@ -553,15 +547,17 @@
             <!-- FeedStatistic: 3 cards (จาก FeedStatistic.vue) -->
             <div class="row q-col-gutter-sm q-mb-md">
               <div class="col-4">
-                <q-card flat class="card-style text-center text-white" style="background: #15a08f;">
+                <a href="org-dashboard.html" style="text-decoration:none;">
+                <q-card flat class="card-style text-center text-white" style="background: #15a08f; cursor:pointer;">
                   <div class="column flex-center full-height" style="background-color: rgba(0, 0, 0, 0.2);">
                     <div class="text-h6">แดชบอร์ด</div>
                     <q-icon name="bi-speedometer2" size="42px" class="q-mt-xs"></q-icon>
                   </div>
                 </q-card>
+                </a>
               </div>
               <div class="col-4">
-                <q-card flat class="card-style text-center" style="background: url('https://cdn.quasar.dev/img/avatar.png') center/cover;">
+                <q-card flat class="card-style text-center" style="background:#15a08f;">
                   <div class="column flex-center full-height" style="background-color: rgba(0, 0, 0, 0.5);">
                     <div class="text-caption text-white text-weight-bold q-mb-sm">คุณ</div>
                     <q-btn rounded unelevated color="negative" size="sm" label="18 Watcher" class="q-mb-xs"></q-btn>
@@ -585,9 +581,7 @@
               <q-card-section class="q-py-sm">
                 <q-item>
                   <q-item-section avatar>
-                    <q-avatar size="42px">
-                      <img src="https://cdn.quasar.dev/img/avatar.png">
-                    </q-avatar>
+                    <q-avatar size="42px" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
                   </q-item-section>
                   <q-item-section clickable>
                     <q-item-label class="cursor-pointer bg-grey-2 q-pa-sm" style="border-radius: 25px; color: var(--wee-text-muted);">

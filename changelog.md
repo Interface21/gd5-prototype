@@ -52,7 +52,7 @@ const primarySoft='#e3f3f0';    // พื้นอ่อนของ primary
 
 **Layout shell (ทุกหน้า prototype):**
 - Top bar สูง 58px (โลโก้→dashboard.html, ช่องค้นหา, แจ้งเตือน, แชท, ภาษา, โหมดมืด, โปรไฟล์)
-- **ชื่อผู้ใช้อ้างอิงจาก `dashboard.html`: `Piyawat Takaew` / `SA Staff`** + avatar `https://cdn.quasar.dev/img/avatar.png`
+- **ชื่อผู้ใช้อ้างอิงจาก `dashboard.html`: `Piyawat Takaew` / `SA Staff`** + avatar `https://api.dicebear.com/9.x/avataaars/svg?seed=Piyawat&backgroundColor=b6e3f4`
 - Icon rail ซ้าย 60px (ไอคอน Bootstrap, ไฮไลต์ด้วย `primarySoft`)
 - การ์ดเนื้อหา: `background:#fff; border:1px solid #eceef2; border-radius:14px; box-shadow:0 1px 2px rgba(16,24,40,.04)`
 
@@ -81,6 +81,15 @@ const primarySoft='#e3f3f0';    // พื้นอ่อนของ primary
   - **React 18 + Babel inline + กรอบโทรศัพท์วาดด้วย CSS** (self-contained — ไม่พึ่ง support.js/ios-frame.jsx) จึงรันได้บน GitHub Pages / ไฟล์ static ทั่วไป
   - ⚠️ เดิมเคยเป็น Design Component (`<x-dc>`+`support.js`) ซึ่งทำงานเฉพาะในเครื่องมือออกแบบ — บน hosting ธรรมดาจะโชว์ `{{ }}` ดิบ จึง port เป็น React standalone
   - 4 หน้าจอใน 1 ไฟล์ (state `screen`): home / team / member / manage + bottom nav (หน้าหลัก/ลูกทีม/จัดการ/คะแนน)
+
+### Dashboard องค์กร (Org Dashboard)
+- **`org-dashboard.html`** (React) — แดชบอร์ดภาพรวมองค์กร (rail `bi-graph-up` active; เข้าจากเมนูซ้าย + การ์ด "แดชบอร์ด" ใน feed)
+  - ซ้าย: การ์ด **องค์กร** (POST/PRIZE_GIVE/D_ENGAGE/D_LEARN/D_ACT/D_KEEP/D_USE + delta ขึ้น/ลง) + **กราฟสถานะพันธกิจ** (donut)
+  - กลาง: **สุขภาพธีม** (ตาราง teams × 7 metrics) + **สุขภาพแผนธุรกิจ** + **ข้อมูลสรุปจากคำสั่งการ** (tabs + 2 donut)
+  - ขวา: **โดดเด่น** (รายชื่อเด่น) + **การตรวจสอบระดับผู้ใช้** (% สีตามเกณฑ์)
+  - **เน้นสถานะแผนธุรกิจ + ดูรายไตรมาส**: ปุ่ม **Q1–Q4** มุมขวาบนของการ์ดสุขภาพแผนธุรกิจ → สลับข้อมูล 4 พันธกิจ (สีวงกลมสถานะ/dots/donut/period เปลี่ยนตามไตรมาส); ปุ่ม **"สถานะของแผนธุรกิจทั้งหมด"** เปิด modal เต็มจอ แสดง เป้าหมาย/กลยุทธ์/แผนงาน เป็น dot grid ต่อพันธกิจ (ตามไตรมาสที่เลือก)
+  - data ทั้งหมดเป็น mock; `QUARTERS` = ข้อมูลราย Q, `gridFor()` gen dot grid แบบ deterministic
+  - ⚠️ component root **ห้ามใส่ `animation:fadeIn`** (modal ใช้ได้เพราะเป็น overlay ชั้นเดียว)
 
 ### Virtual Meeting / กลุ่ม (Groups)
 - **`user-virtual-meeting.html`** (React) — หน้า "กลุ่มของคุณ" / Virtual Meeting (ไอคอน rail `bi-easel` active)
@@ -129,11 +138,12 @@ const primarySoft='#e3f3f0';    // พื้นอ่อนของ primary
 - โลโก้ (ทุกหน้า) → `dashboard.html`
 - **Icon rail ซ้าย — mapping มาตรฐาน (ทุกหน้าใช้เหมือนกัน, ต่างแค่ flag active):**
   - `bi-layout-sidebar` → `dashboard.html`
-  - `bi-graph-up` → (ยังไม่มีหน้า)
+  - `bi-graph-up` → `org-dashboard.html` (Dashboard องค์กร)
   - `bi-arrow-down-left` → `assignee-action-list.html` (คำสั่งที่ได้รับ)
   - `bi-arrow-up-right` → `commander-action-dashboard.html` (คำสั่งที่สั่งไป)
   - `bi-easel` → `user-virtual-meeting.html` (Virtual Meeting / กลุ่ม)
   - `bi-file-earmark-arrow-down`, `bi-book`, `bi-clipboard-data` → (ยังไม่มีหน้า)
+  - **feed entry**: การ์ด "แดชบอร์ด" (bi-speedometer2) ใน dashboard.html feed → `org-dashboard.html`
   - React: array `[icon, activeBool, url]` + `.map` (มี url → `<a>`, ไม่มี → `<div>`); Vue: `<a href>` ครอบ `.drawer-item`
 - ปุ่ม list/chart มุมขวาบน = สลับ "รายการ" ↔ "แดชบอร์ด" ของฟังก์ชันเดียวกัน
 - แถวในหน้า list → หน้า detail (`assignee-action-inprogress.html` / `assignee-action-close.html`) พร้อม `?id=`

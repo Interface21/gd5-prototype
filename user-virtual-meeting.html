@@ -40,6 +40,8 @@ const primary='#15a08f', primarySoft='#e3f3f0';
 const ms=(name,size,color,fill)=>(<span className="bi" style={{...MS,fontSize:size,color,...(fill?{fontVariationSettings:"'FILL' 1"}:{})}}>{name}</span>);
 
 const AV=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
+const AVB=['b6e3f4','c0aede','d1d4f9','ffd5dc','ffdfbf','c7f0d8','f7d9c4','d3e4f5'];
+const cartoon=(s)=>'https://api.dicebear.com/9.x/avataaars/svg?seed='+encodeURIComponent(s)+'&backgroundColor='+AVB[(String(s).charCodeAt(0)+String(s).length)%AVB.length];
 function Avatars({n,extra}){
   return (
     <div style={{display:'flex',alignItems:'center'}}>
@@ -109,6 +111,54 @@ const SUGGEST=[
   {title:'KOM: วช.พระนครศรีอยุธย...',members:15,posts:10,extra:10},
 ];
 
+// ===== EASY PM (ความคืบหน้าครุภัณฑ์/TODO) =====
+const PM=[
+  {title:'ชุดห้องปฏิบัติการคอมพิวเตอร์', college:'วิทยาลัยเทคนิคอุทัยธานี', value:'1,250,000 บาท', pct:75, done:12, total:16, near:3, over:0, date:'15/08/2569', day:10, status:'progress', main:'สมชาย ว.', sub:'นภา ก.'},
+  {title:'ชุดปฏิบัติการเทคโนโลยีการโรงแรม', college:'วิทยาลัยอาชีวศึกษาภูเก็ต', value:'2,480,000 บาท', pct:75, done:12, total:16, near:2, over:4, date:'02/08/2569', day:20, status:'overdue', main:'ปกรณ์ ส.', sub:'ดารณี อ.'},
+  {title:'ครุภัณฑ์งานไฟฟ้ากำลัง', college:'วิทยาลัยเทคนิคอุดรธานี', value:'980,000 บาท', pct:75, done:12, total:16, near:4, over:0, date:'20/08/2569', day:5, status:'progress', main:'อนุชา ท.', sub:'ศิริพร ม.'},
+  {title:'ชุดเครื่องมือช่างยนต์', college:'วิทยาลัยการอาชีพเดชอุดม', value:'1,640,000 บาท', pct:31, done:5, total:16, near:5, over:2, date:'22/08/2569', day:3, status:'progress', main:'ขจรศักดิ์ ส.', sub:'จารุณี ท.'},
+  {title:'ระบบเครือข่ายคอมพิวเตอร์แม่ข่าย', college:'วิทยาลัยเทคนิคมีนบุรี', value:'3,150,000 บาท', pct:31, done:5, total:16, near:3, over:5, date:'05/08/2569', day:10, status:'overdue', main:'ธนวัฒน์ พ.', sub:'พิมพ์ใจ ร.'},
+  {title:'ครุภัณฑ์ห้องปฏิบัติการวิทยาศาสตร์', college:'วิทยาลัยสารพัดช่างชลบุรี', value:'760,000 บาท', pct:31, done:5, total:16, near:2, over:1, date:'28/08/2569', day:15, status:'progress', main:'ปิยะวัฒน์ ต.', sub:'อรวรรณ ส.'},
+  {title:'ชุดปฏิบัติการหุ่นยนต์อุตสาหกรรม', college:'วิทยาลัยเทคนิคพิษณุโลก', value:'4,200,000 บาท', pct:31, done:5, total:16, near:1, over:8, date:'03/08/2569', day:17, status:'overdue', main:'วีระพล จ.', sub:'นิชากร ป.'},
+  {title:'ชุดครุภัณฑ์งานเชื่อมโลหะ', college:'วิทยาลัยการอาชีพนครนายก', value:'1,180,000 บาท', pct:100, done:16, total:16, near:0, over:0, date:'10/07/2569', day:0, status:'done', main:'ภานุพงศ์ ค.', sub:'รัตนา ส.'},
+  {title:'ชุดระบบคอมพิวเตอร์ไฟฟ้าแบบแยกส่วน', college:'วิทยาลัยเทคนิคนครศรีธรรมราช', value:'2,090,000 บาท', pct:12, done:2, total:16, near:0, over:8, date:'25/07/2569', day:30, status:'overdue', main:'กิตติ ว.', sub:'สุดารัตน์ ม.'},
+  {title:'ห้องปฏิบัติการสาขาวิชาเทคโนโลยีไฟฟ้า', college:'วิทยาลัยเทคนิคพิจิตร', value:'1,520,000 บาท', pct:50, done:8, total:16, near:5, over:0, date:'30/08/2569', day:12, status:'progress', main:'ชัยวัฒน์ บ.', sub:'เบญจมาศ ก.'},
+  {title:'ชุดครุภัณฑ์งานปูนและก่อสร้าง', college:'วิทยาลัยเทคนิคสันกำแพง', value:'690,000 บาท', pct:100, done:16, total:16, near:0, over:0, date:'05/07/2569', day:0, status:'done', main:'ประสิทธิ์ ล.', sub:'วันเพ็ญ ส.'},
+  {title:'ครุภัณฑ์ระบบโสตทัศนูปกรณ์', college:'วิทยาลัยอาชีวศึกษาเชียงใหม่', value:'1,330,000 บาท', pct:31, done:5, total:16, near:2, over:5, date:'01/08/2569', day:35, status:'overdue', main:'ดนัย ก.', sub:'อาภรณ์ ท.'},
+];
+function PMCard({d}){
+  const overdue=d.status==='overdue', done=d.status==='done';
+  const barColor=done?'#22b96a':'#5b8def';
+  const chipBg=overdue?'#fdecec':'#eafaf0', chipInk=overdue?'#d8513a':'#1f9d57';
+  const chipLabel=done?'เสร็จแล้ว':(overdue?'เกิน '+d.day+' วัน':'อีก '+d.day+' วัน');
+  return (
+    <a href="user-virtual-meeting-group.html?tab=todo" className="grp-card" style={{textDecoration:'none',color:'inherit',background:'#fff',border:'1px solid #eceef2',borderRadius:13,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'14px 15px',display:'flex',flexDirection:'column',gap:9,cursor:'pointer'}}>
+      <div style={{fontWeight:700,fontSize:14,lineHeight:1.35,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{d.title}</div>
+      <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#5a6473',minWidth:0}}>{ms('account_balance',16,'#9aa3af')}<span style={{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{d.college}</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#5a6473'}}><span style={{fontWeight:700,color:'#9aa3af',width:16,textAlign:'center',flex:'none'}}>฿</span><span>{d.value}</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:9}}>
+        {done?ms('check_circle',19,'#22b96a',true):<span style={{width:16,height:16,borderRadius:4,border:'2px solid #c2cad4',flex:'none'}}></span>}
+        <div style={{flex:1,height:8,borderRadius:99,background:'#eef1f5',overflow:'hidden'}}><div style={{width:d.pct+'%',height:'100%',background:barColor,borderRadius:99}}></div></div>
+        <span style={{fontSize:12,fontWeight:700,color:'#3a4452',width:48,textAlign:'right',flex:'none'}}>{d.pct}%</span>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#5a6473',flexWrap:'wrap'}}>
+        {ms('assignment',16,'#9aa3af')}
+        <span style={{background:'#eef1f5',color:'#5a6473',borderRadius:7,padding:'2px 10px',fontWeight:600}}>{d.done}/{d.total}</span>
+        {d.near>0 && <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fcf3c7',color:'#a9870a',borderRadius:7,padding:'2px 9px',fontSize:12,fontWeight:700}}>{ms('hourglass_top',14,'#caa204')}{d.near}</span>}
+        {d.over>0 && <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fdecec',color:'#d8513a',borderRadius:7,padding:'2px 9px',fontSize:12,fontWeight:700}}>{ms('hourglass_bottom',14,'#d8513a')}{d.over}</span>}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:8,fontSize:12.5,color:'#5a6473'}}>
+        {ms('calendar_month',16,'#9aa3af')}<span>{d.date}</span>
+        <span style={{display:'inline-flex',alignItems:'center',gap:4,background:chipBg,color:chipInk,borderRadius:7,padding:'2px 9px',fontSize:11.5,fontWeight:700}}>{ms(done?'check':(overdue?'hourglass_bottom':'hourglass_top'),13,chipInk)}{chipLabel}</span>
+      </div>
+      <div style={{borderTop:'1px solid #f1f3f6',paddingTop:9,display:'flex',alignItems:'center',gap:14,fontSize:11.5,color:'#8a93a3',flexWrap:'wrap'}}>
+        <span style={{display:'inline-flex',alignItems:'center',gap:5}}>{ms('account_circle',16,'#b3bac4',true)}{d.main}</span>
+        <span style={{display:'inline-flex',alignItems:'center',gap:5}}>{ms('account_circle',16,'#cfd6e0',true)}{d.sub}</span>
+      </div>
+    </a>
+  );
+}
+
 function MetaLine({m,unread,posts,muted}){
   return (
     <div style={{fontSize:12.5,color:'#8a93a3',display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
@@ -122,6 +172,9 @@ function MetaLine({m,unread,posts,muted}){
 function App(){
   const [tab,setTab]=useState('mine');
   const [q,setQ]=useState('');
+  const [mode,setMode]=useState('normal');
+  const [pmFilter,setPmFilter]=useState('progress');
+  const pmList=pmFilter==='all'?PM:PM.filter(d=>d.status===pmFilter);
 
   const navTop=[{label:'เพิ่มการสั่งการใหม่'},{label:'เพิ่มการสั่งการใหม่ PA'},{label:'เพิ่มการสั่งการใหม่ WI'}];
 
@@ -149,7 +202,7 @@ function App(){
       <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
       <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
         <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
-        <img src="https://cdn.quasar.dev/img/avatar.png" style={{width:38,height:38,borderRadius:'50%',objectFit:'cover'}} alt="avatar"/>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
         <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
       </div>
     </div>
@@ -157,8 +210,8 @@ function App(){
     <div style={{display:'flex'}}>
       {/* ICON RAIL */}
       <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
-        <div style={{width:34,height:34,borderRadius:'50%',background:'#e7eaef',overflow:'hidden',marginBottom:6}}><img src="https://cdn.quasar.dev/img/avatar.png" style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/></div>
-        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',true,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',false,'org-dashboard.html'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',true,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
           <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
         ) : (
           <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
@@ -188,7 +241,34 @@ function App(){
             <button title="สร้างกลุ่มใหม่" style={{width:38,height:38,borderRadius:'50%',border:'1.5px solid '+primary,background:'#fff',color:primary,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('add',23,primary)}</button>
           </div>
 
-          {tab==='mine' ? (
+          {/* MODE BAR */}
+          <div style={{display:'flex',alignItems:'flex-start',gap:12,marginBottom:16,flexWrap:'wrap'}}>
+            {mode==='easypm' && <div style={{display:'inline-flex',alignItems:'center',gap:7,fontSize:13.5,fontWeight:700,color:'#3a4452',paddingTop:5}}>{ms('swap_vert',18,'#8a93a3')}ครุภัณฑ์ 69 <span style={{color:'#9aa3af',fontWeight:500}}>(12)</span></div>}
+            <div style={{flex:1}}></div>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:10}}>
+              <div style={{display:'inline-flex',background:'#eef1f5',borderRadius:10,padding:3,gap:2}}>
+                {[['normal','view_list','โหมดทั่วไป'],['easypm','grid_view','โหมด Easy PM']].map(([k,ic,lb])=>{const a=mode===k;return (
+                  <button key={k} onClick={()=>setMode(k)} style={{display:'inline-flex',alignItems:'center',gap:6,border:'none',borderRadius:8,padding:'7px 14px',fontSize:13,fontWeight:700,cursor:'pointer',background:a?'#fff':'transparent',color:a?primary:'#5a6473',boxShadow:a?'0 1px 3px rgba(16,24,40,.12)':'none'}}>{ms(ic,17,a?primary:'#8a93a3')}{lb}</button>
+                );})}
+              </div>
+              {mode==='easypm' && (
+                <div style={{display:'inline-flex',gap:6,flexWrap:'wrap',justifyContent:'flex-end'}}>
+                  {[['all','ทั้งหมด'],['progress','ที่อยู่ระหว่างดำเนินการ'],['overdue','เกินสัญญา'],['done','เสร็จแล้ว']].map(([k,lb])=>{const a=pmFilter===k;return (
+                    <button key={k} onClick={()=>setPmFilter(k)} style={{border:'1px solid '+(a?primary:'#e3e7ec'),background:a?primarySoft:'#fff',color:a?primary:'#5a6473',borderRadius:99,padding:'5px 13px',fontSize:12.5,fontWeight:a?700:600,cursor:'pointer'}}>{lb}</button>
+                  );})}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {mode==='easypm' ? (
+           <div style={{animation:'fadeIn .2s ease'}}>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(292px,1fr))',gap:14}}>
+              {pmList.map((d,i)=>(<PMCard key={i} d={d}/>))}
+            </div>
+            {pmList.length===0 && (<div style={{textAlign:'center',color:'#aeb6c2',fontSize:13.5,padding:'50px 0',border:'1px dashed #e4e8ee',borderRadius:12}}>{ms('inventory_2',34,'#cfd6e0')}<div style={{marginTop:8}}>ไม่พบรายการในสถานะนี้</div></div>)}
+           </div>
+          ) : tab==='mine' ? (
            <div style={{animation:'fadeIn .2s ease'}}>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14,color:'#5a6473'}}>
               {ms('push_pin',19,primary,true)}<span style={{fontWeight:700,fontSize:13.5,color:'#3a4452'}}>กลุ่มที่ปักหมุด</span>

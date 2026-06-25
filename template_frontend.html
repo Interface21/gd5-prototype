@@ -109,9 +109,7 @@
                 <span class="text-weight-bold text-body2">Piyawat Takaew</span>
                 <span class="text-caption text-grey-6">SA Staff</span>
               </div>
-              <q-avatar size="36px">
-                <img src="https://cdn.quasar.dev/img/avatar.png" alt="Avatar">
-              </q-avatar>
+              <q-avatar size="36px" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
               <q-icon name="bi-chevron-down" color="grey-6" size="16px" class="q-ml-xs"></q-icon>
             </div>
           </div>
@@ -121,13 +119,11 @@
       <!-- ===== LEFT DRAWER (เมนูซ้าย) ===== -->
       <q-drawer v-model="leftDrawerOpen" show-if-above mini :mini-width="60" class="bg-white" style="border-right: 1px solid #ededed;">
         <div class="q-pt-md q-pb-sm text-center">
-          <q-avatar size="34px" class="cursor-pointer">
-            <img src="https://cdn.quasar.dev/img/avatar.png" alt="Profile">
-          </q-avatar>
+          <q-avatar size="34px" class="cursor-pointer" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
         </div>
         <div class="q-mt-sm">
           <div class="drawer-item active"><q-icon name="bi-layout-sidebar" size="22px"></q-icon></div>
-          <div class="drawer-item"><q-icon name="bi-graph-up" size="22px"></q-icon></div>
+          <a href="org-dashboard.html" class="drawer-item" style="text-decoration:none;"><q-icon name="bi-graph-up" size="22px"></q-icon></a>
           <a href="assignee-action-list.html" class="drawer-item" style="text-decoration:none;"><q-icon name="bi-arrow-down-left" size="22px"></q-icon></a>
           <a href="commander-action-dashboard.html" class="drawer-item" style="text-decoration:none;"><q-icon name="bi-arrow-up-right" size="22px"></q-icon></a>
           <a href="user-virtual-meeting.html" class="drawer-item" style="text-decoration:none;"><q-icon name="bi-easel" size="22px"></q-icon></a>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>รายละเอียดแผนธุรกิจ — GiveDeeFive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#f3f5f9;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:none;border:none}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+.nav-item:hover{background:#f3f5f8}
+.goal-row:hover{background:#f7f9fb}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const MS={fontFamily:"'Material Symbols Rounded'"};
+const primary='#15a08f', primarySoft='#e3f3f0';
+const RED='#ef4444', YEL='#f5b301', GRN='#22b96a';
+const ms=(name,size,color,fill)=>(<span className="bi" style={{...MS,fontSize:size,color,...(fill?{fontVariationSettings:"'FILL' 1"}:{})}}>{name}</span>);
+const dotC=(s)=> s==='r'?RED : s==='y'?YEL : GRN;
+const STLABEL={g:'บรรลุ / ปกติ',y:'เฝ้าระวัง',r:'ต่ำกว่าเกณฑ์'};
+const STBG={g:'#eafaf0',y:'#fff7e3',r:'#fdeaea'};
+
+const PLANS=[
+  {code:'พันธกิจที่ 1 : EDR', date:'01/10/2568 – No end date', status:'g', total:1013,
+   desc:'ขับเคลื่อนการพัฒนาเขตพื้นที่การศึกษา (EDR) ให้ครอบคลุมสถานศึกษาในความรับผิดชอบ ยกระดับคุณภาพผู้เรียน และความพร้อมของระบบให้เป็นไปตามเป้าหมายของปีงบประมาณ',
+   inPlan:{g:11,y:46,r:113}, support:{g:68,y:118,r:165},
+   gauge:0.82, gaugeLabel:'สถานศึกษายกเลิก EDR 0 แห่ง',
+   goals:[
+     {t:'เป้าหมาย 1.2 สรุปผลการประกวดโครงการ MOU', kpi:'ชื่อตัวชี้วัด', s:'g'},
+     {t:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568', kpi:'ชื่อตัวชี้วัด', s:'y'},
+     {t:'เป้าหมาย 1.4 ความพึงพอใจของผู้เรียนในระบบ EDR', kpi:'ชื่อตัวชี้วัด', s:'r'},
+   ]},
+  {code:'พันธกิจที่ 2 : GiveDeeFive', date:'01/10/2568 – No end date', status:'y', total:642,
+   desc:'พัฒนาระบบ GiveDeeFive ให้รองรับการมีส่วนร่วมของบุคลากรทุกระดับ ส่งเสริมวัฒนธรรมการให้และการเรียนรู้ในองค์กรอย่างต่อเนื่อง',
+   inPlan:{g:54,y:88,r:71}, support:{g:120,y:96,r:62},
+   gauge:0.58, gaugeLabel:'หน่วยงานที่ยังไม่เริ่มใช้งาน 3 แห่ง',
+   goals:[
+     {t:'เป้าหมาย 2.1 อัตราการมีส่วนร่วมของบุคลากร', kpi:'ชื่อตัวชี้วัด', s:'g'},
+     {t:'เป้าหมาย 2.2 จำนวนการให้คะแนนต่อเดือน', kpi:'ชื่อตัวชี้วัด', s:'y'},
+     {t:'เป้าหมาย 2.3 ความถี่การใช้งานระบบ', kpi:'ชื่อตัวชี้วัด', s:'y'},
+   ]},
+  {code:'พันธกิจที่ 3 : ครุภัณฑ์', date:'01/10/2568 – No end date', status:'r', total:288,
+   desc:'บริหารจัดการครุภัณฑ์และทรัพย์สินขององค์กรให้พร้อมใช้งาน มีการบำรุงรักษาและจัดเก็บอย่างเป็นระบบตามมาตรฐาน',
+   inPlan:{g:9,y:22,r:58}, support:{g:31,y:54,r:81},
+   gauge:0.34, gaugeLabel:'ครุภัณฑ์รอตรวจสอบ 12 รายการ',
+   goals:[
+     {t:'เป้าหมาย 3.1 ความพร้อมใช้งานของครุภัณฑ์', kpi:'ชื่อตัวชี้วัด', s:'r'},
+     {t:'เป้าหมาย 3.2 อัตราการบำรุงรักษาตามแผน', kpi:'ชื่อตัวชี้วัด', s:'r'},
+     {t:'เป้าหมาย 3.3 ความถูกต้องของทะเบียนทรัพย์สิน', kpi:'ชื่อตัวชี้วัด', s:'y'},
+   ]},
+  {code:'พันธกิจที่ 4 : ใช้เทคโนโลยีดิจิทัล GD5 และ AI', date:'01/10/2568 – No end date', status:'y', total:431,
+   desc:'นำเทคโนโลยีดิจิทัลและปัญญาประดิษฐ์มาประยุกต์ใช้กับงานขององค์กร เพื่อเพิ่มประสิทธิภาพการทำงานและการตัดสินใจบนฐานข้อมูล',
+   inPlan:{g:38,y:64,r:49}, support:{g:88,y:112,r:80},
+   gauge:0.64, gaugeLabel:'ระบบที่อยู่ระหว่างพัฒนา 4 ระบบ',
+   goals:[
+     {t:'เป้าหมาย 4.1 จำนวนกระบวนงานที่ใช้ระบบอัตโนมัติ', kpi:'ชื่อตัวชี้วัด', s:'g'},
+     {t:'เป้าหมาย 4.2 อัตราการนำ AI มาใช้ในงานประจำ', kpi:'ชื่อตัวชี้วัด', s:'y'},
+     {t:'เป้าหมาย 4.3 ความพึงพอใจต่อเครื่องมือดิจิทัล', kpi:'ชื่อตัวชี้วัด', s:'g'},
+   ]},
+];
+
+const rail=[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',true,'org-dashboard.html'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',false,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']];
+
+const Card=({children,pad,style})=>(<div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:pad||'16px 18px',...style}}>{children}</div>);
+
+function Gauge({value}){
+  const W=190,H=112,cx=W/2,cy=98,R=76,sw=17;
+  const a=t=>Math.PI+t*Math.PI;
+  const pt=(t,rr)=>[cx+(rr||R)*Math.cos(a(t)),cy+(rr||R)*Math.sin(a(t))];
+  const arc=(t0,t1,color)=>{const[x0,y0]=pt(t0),[x1,y1]=pt(t1);const large=(t1-t0)>0.5?1:0;return <path d={'M'+x0+','+y0+' A'+R+','+R+' 0 '+large+' 1 '+x1+','+y1} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="butt"/>;};
+  const [nx,ny]=pt(value,R-20);
+  return (
+    <svg viewBox={'0 0 '+W+' '+H} style={{width:W,height:H}}>
+      {arc(0.005,0.4,'#f3a3a3')}
+      {arc(0.4,0.7,'#f6d38c')}
+      {arc(0.7,0.995,'#9bdcb4')}
+      {arc(value-0.02<0.005?0.005:value-0.02,value+0.02>0.995?0.995:value+0.02,dotC(value<0.4?'r':value<0.7?'y':'g'))}
+      <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#2b3440" strokeWidth={3.5} strokeLinecap="round"/>
+      <circle cx={cx} cy={cy} r={6.5} fill="#2b3440"/>
+    </svg>
+  );
+}
+
+function BarBlock({title,total,seg,note}){
+  const arr=[{c:GRN,v:seg.g},{c:YEL,v:seg.y},{c:RED,v:seg.r}];
+  return (
+    <div style={{border:'1px solid #f1f3f6',borderRadius:11,padding:16}}>
+      <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:12}}>
+        <span style={{fontWeight:700,fontSize:14}}>{title}</span>
+        <div style={{flex:1}}></div>
+        <span style={{fontSize:12.5,color:'#5a6473',fontWeight:600,whiteSpace:'nowrap'}}>{total.toLocaleString()} คำสั่งการ</span>
+      </div>
+      <div style={{display:'flex',height:20,borderRadius:6,overflow:'hidden',marginBottom:11}}>
+        {arr.filter(s=>s.v>0).map((s,si)=>(<div key={si} style={{flexGrow:s.v,flexBasis:0,background:s.c}}></div>))}
+      </div>
+      <div style={{display:'flex',gap:22,flexWrap:'wrap',fontSize:12.5,color:'#3c4350',marginBottom:13}}>
+        {arr.map((s,si)=>(<span key={si} style={{display:'inline-flex',alignItems:'center',gap:7}}><span style={{width:11,height:11,borderRadius:'50%',background:s.c}}></span>{s.v} คำสั่งการ</span>))}
+      </div>
+      <div style={{borderTop:'1px solid #eef0f4',paddingTop:11,display:'flex',alignItems:'center',gap:7,fontSize:12,color:'#8a93a3'}}>
+        {ms('help',16,'#b3bac4')}<span>{note}</span>
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const params=new URLSearchParams(location.search);
+  let m=parseInt(params.get('m'),10); if(isNaN(m)||m<0||m>3) m=0;
+  const P=PLANS[m];
+  const totalCmd=P.inPlan.g+P.inPlan.y+P.inPlan.r+P.support.g+P.support.y+P.support.r;
+
+  return (
+   <div style={{minHeight:'100vh',background:'#f3f5f9'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>10</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+        {rail.map(([ic,act,url],i)=> url ? (
+          <a href={url} key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
+        ) : (
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
+
+      {/* MAIN */}
+      <div style={{flex:1,padding:'20px 24px',minWidth:0}}>
+       <div style={{maxWidth:1320,margin:'0 auto',display:'flex',flexDirection:'column',gap:18}}>
+
+        {/* breadcrumb */}
+        <div style={{display:'flex',alignItems:'center',gap:10,paddingBottom:4,borderBottom:'1px solid #e7eaef'}}>
+          <a href="org-dashboard.html" style={{width:34,height:34,borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center'}} className="nav-item">{ms('arrow_back',22,'#5a6473')}</a>
+          <span style={{fontWeight:700,fontSize:16}}>{P.code}</span>
+        </div>
+
+        {/* HERO */}
+        <Card pad="18px 20px">
+          <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:12,flexWrap:'wrap'}}>
+            <div style={{width:34,height:34,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('account_circle',21,primary,true)}</div>
+            <span style={{fontWeight:700,fontSize:16}}>{P.code}</span>
+            <span style={{fontSize:12,fontWeight:600,color:'#5a6473',background:'#f1f3f6',borderRadius:99,padding:'4px 12px',display:'inline-flex',alignItems:'center',gap:6}}>{ms('calendar_month',15,'#9aa3af')}{P.date}</span>
+            <div style={{flex:1}}></div>
+            <span style={{fontSize:11.5,fontWeight:700,color:dotC(P.status),background:STBG[P.status],borderRadius:99,padding:'5px 13px'}}>{STLABEL[P.status]}</span>
+          </div>
+          <p style={{margin:0,fontSize:13.5,lineHeight:1.7,color:'#5a6473',maxWidth:920,textWrap:'pretty'}}>{P.desc}</p>
+        </Card>
+
+        {/* STATUS + KPI  |  COMMAND SUMMARY */}
+        <div style={{display:'grid',gridTemplateColumns:'minmax(300px,360px) minmax(0,1fr)',gap:18,alignItems:'start'}}>
+
+          <div style={{display:'flex',flexDirection:'column',gap:18}}>
+            <Card>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+                <span style={{display:'flex',gap:5}}><span style={{width:9,height:9,borderRadius:'50%',background:RED}}></span><span style={{width:9,height:9,borderRadius:'50%',background:YEL}}></span><span style={{width:9,height:9,borderRadius:'50%',background:GRN}}></span></span>
+                <span style={{fontWeight:700,fontSize:14.5}}>สถานะของแผนธุรกิจล่าสุด</span>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:12,padding:'22px 0 16px'}}>
+                <div style={{width:92,height:92,borderRadius:'50%',background:dotC(P.status),boxShadow:'0 6px 18px '+dotC(P.status)+'55'}}></div>
+                <span style={{fontSize:13,fontWeight:700,color:dotC(P.status)}}>{STLABEL[P.status]}</span>
+              </div>
+            </Card>
+
+            <Card>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>{ms('speed',20,primary)}<span style={{fontWeight:700,fontSize:14.5}}>ตัวชี้วัด</span></div>
+              <div style={{display:'flex',justifyContent:'center',padding:'10px 0 4px'}}><Gauge value={P.gauge}/></div>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,paddingTop:12,borderTop:'1px solid #f3f5f8',fontSize:13,color:'#3c4350',fontWeight:600}}>{ms('account_circle',18,'#9aa3af',true)}{P.gaugeLabel}</div>
+            </Card>
+          </div>
+
+          <Card>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:14,flexWrap:'wrap'}}>
+              <div style={{width:30,height:30,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('send',17,primary)}</div>
+              <span style={{fontWeight:700,fontSize:15}}>ข้อมูลสรุปจากคำสั่งการ</span>
+              <div style={{flex:1}}></div>
+              <span style={{fontSize:12.5,color:'#5a6473',fontWeight:600,background:'#f1f3f6',borderRadius:99,padding:'5px 13px'}}>ทั้งหมด {totalCmd.toLocaleString()} คำสั่งการ</span>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:16}}>
+              <BarBlock title="งานตามแผนธุรกิจ" total={P.inPlan.g+P.inPlan.y+P.inPlan.r} seg={P.inPlan} note="นับคำสั่งการที่ติดพันธกิจนี้เท่านั้น"/>
+              <BarBlock title="งานสนับสนุนภายใต้แผนธุรกิจนี้" total={P.support.g+P.support.y+P.support.r} seg={P.support} note="นับคำสั่งการทั้งหมดที่ติดแผนธุรกิจที่อยู่ใต้พันธกิจนี้ทั้งหมด"/>
+            </div>
+          </Card>
+        </div>
+
+        {/* SUB-PLANS / GOALS */}
+        <div>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>{ms('account_tree',20,primary)}<span style={{fontWeight:700,fontSize:15}}>แผนธุรกิจภายใต้แผนธุรกิจนี้</span><span style={{fontSize:12.5,color:'#9aa3af'}}>· {P.goals.length} เป้าหมาย</span></div>
+          <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            {P.goals.map((g,i)=>(
+              <Card key={i} pad="0" style={{cursor:'pointer'}}>
+                <div className="goal-row" style={{display:'flex',alignItems:'center',gap:13,padding:'16px 20px',borderRadius:14}}>
+                  <div style={{width:34,height:34,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('account_circle',20,primary,true)}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:700,fontSize:14,marginBottom:3}}>{g.t}</div>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12.5,color:'#8a93a3'}}>{ms('add_circle',16,'#b3bac4')}{g.kpi}</span>
+                  </div>
+                  <span style={{width:22,height:22,borderRadius:'50%',background:dotC(g.s),flex:'none'}}></span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+       </div>
+      </div>
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

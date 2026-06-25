@@ -38,6 +38,11 @@ const MS = {fontFamily:"'Material Symbols Rounded'"};
 const primary='#15a08f', primarySoft='#e3f3f0';
 const ms=(name,size,color,fill)=>(<span className="bi" style={{...MS,fontSize:size,color,...(fill?{fontVariationSettings:"'FILL' 1"}:{})}}>{name}</span>);
 const AV=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
+const AVB=['b6e3f4','c0aede','d1d4f9','ffd5dc','ffdfbf','c7f0d8','f7d9c4','d3e4f5'];
+const cartoon=(s)=>'https://api.dicebear.com/9.x/avataaars/svg?seed='+encodeURIComponent(s)+'&backgroundColor='+AVB[(String(s).charCodeAt(0)+String(s).length)%AVB.length];
+const initial=(s)=>String(s||'?').trim().charAt(0).toUpperCase();
+const initColor=(s)=>{let h=0;for(const ch of String(s||''))h=ch.charCodeAt(0)+h;return AV[h%AV.length];};
+const Letter=({s,d,fs})=>(<div style={{width:d,height:d,borderRadius:'50%',background:initColor(s),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:fs||Math.round(d*0.42),flex:'none'}}>{initial(s)}</div>);
 
 function Avatars({n,sz,extra}){
   const d=sz||26;
@@ -270,7 +275,7 @@ function TodoPanel(){
   const [mode,setMode]=React.useState('do');   // 'do' | 'edit'
   const [calView,setCalView]=React.useState(false); // false = list, true = gantt
   const [topics,setTopics]=React.useState(TD_SEED);
-  const [open,setOpen]=React.useState(()=>{const o={};o[TD_SEED[0].id]=true;o[TD_SEED[1].id]=true;return o;});
+  const [open,setOpen]=React.useState({});
   const [modal,setModal]=React.useState(null);
 
   const cnt=(t)=>({done:t.subs.filter(s=>s.done).length,total:t.subs.length});
@@ -510,8 +515,113 @@ function AttachmentsCard(){
   );
 }
 
+const VERIFY=[
+  {user:'Phinit Butta', date:'12/03/2569', date2:'15/03/2569', summary:true, body:'สรุปแนวทางการติดตั้งระบบเครือข่ายภายในอาคารปฏิบัติการ พร้อมข้อเสนอแนะเรื่องการเดินสายและจุดติดตั้งอุปกรณ์', note:'ข้อสรุป: ใช้สายมาตรฐาน CAT6 และติดตั้งตู้ Rack เพิ่ม 1 จุด พร้อมทดสอบระบบก่อนส่งมอบ'},
+  {user:'Nichagorn Prajansen', date:'10/03/2569', date2:'10/03/2569', summary:false, body:'สอบถามเรื่องกำหนดการส่งมอบงานงวดแรก เนื่องจากอุปกรณ์บางส่วนยังอยู่ระหว่างขนส่ง ขอให้ทีมงานช่วยยืนยันกำหนดส่ง'},
+  {user:'Pannawat Chantharasena', date:'08/03/2569', date2:'11/03/2569', summary:true, body:'รายงานผลการทดสอบระบบกล้องวงจรปิดและการเชื่อมต่อสัญญาณภาพ พบจุดบอດ 2 จุดที่ต้องปรับตำแหน่ง', note:'ข้อสรุป: นัดช่างเข้าปรับภายใน 7 วัน และถ่ายภาพยืนยันก่อน/หลัง'},
+  {user:'Khajonsak Sukpasert', date:'05/03/2569', date2:'05/03/2569', summary:false, body:'แจ้งเปลี่ยนแปลงกำหนดส่งมอบงานงวดที่ 3 เนื่องจากผู้รับจ้างขอขยายระยะเวลาส่งมอบงาน'},
+  {user:'Jarunya Thaiprayoon', date:'02/03/2569', date2:'06/03/2569', summary:true, body:'สรุปผลการอบรมการใช้งานระบบให้กับบุคลากรประจำสถานศึกษา มีผู้เข้าร่วมทั้งสิ้น 28 คน', note:'ข้อสรุป: ผู้ใช้งานเข้าใจระบบได้ดี ควรจัดอบรมรอบถัดไปให้ครบทุกสถานศึกษา'},
+  {user:'Phinit Butta', date:'28/02/2569', date2:'28/02/2569', summary:false, body:'ฝากไฟล์คู่มือการติดตั้งซอฟต์แวร์จัดการครุภัณฑ์ สำหรับผู้ดูแลระบบมือใหม่'},
+];
+function VerifyPanel(){
+  const [creator,setCreator]=useState('');
+  const [noSum,setNoSum]=useState(false);
+  const [hasSum,setHasSum]=useState(false);
+  const [date,setDate]=useState('');
+  const [range,setRange]=useState('3 เดือนย้อนหลัง');
+  const [filterOpen,setFilterOpen]=useState(true);
+  const clear=()=>{setCreator('');setNoSum(false);setHasSum(false);setDate('');setRange('3 เดือนย้อนหลัง');};
+  const list=VERIFY.filter(p=>{
+    if(creator && p.user.toLowerCase().indexOf(creator.toLowerCase())<0) return false;
+    if(hasSum && !noSum && !p.summary) return false;
+    if(noSum && !hasSum && p.summary) return false;
+    return true;
+  });
+  const cardSt={background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)'};
+  const Check=({on,set,label})=>(
+    <button onClick={()=>set(!on)} style={{display:'inline-flex',alignItems:'center',gap:8,background:'none',border:'none',cursor:'pointer',fontSize:13,color:'#3a4452',padding:0}}>
+      <span style={{width:18,height:18,borderRadius:5,border:'2px solid '+(on?primary:'#c2cad4'),background:on?primary:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{on&&ms('check',13,'#fff')}</span>{label}
+    </button>
+  );
+  const datePill=(t)=>(<span style={{background:'#f1f3f7',borderRadius:6,padding:'2px 9px',fontSize:11.5,color:'#8a93a3',whiteSpace:'nowrap'}}>{t}</span>);
+  return (
+   <div style={{animation:'fadeIn .2s ease',display:'flex',flexDirection:'column',gap:16}}>
+     {/* FILTER CARD */}
+     <div style={{...cardSt,padding:'14px 18px 18px'}}>
+       <div style={{display:'flex',alignItems:'center',gap:8}}>
+         <span style={{display:'inline-flex',alignItems:'center',gap:7,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:9,padding:'6px 13px',fontSize:13,fontWeight:700,color:'#3a4452'}}>{ms('tune',18,'#5a6473')}กรองข้อมูล</span>
+         <div style={{flex:1}}></div>
+         <button onClick={()=>setFilterOpen(o=>!o)} style={{background:'none',border:'none',cursor:'pointer',display:'flex',alignItems:'center'}}>{ms(filterOpen?'expand_less':'expand_more',22,'#9aa3af')}</button>
+       </div>
+       {filterOpen && (
+       <div style={{marginTop:14}}>
+         <div style={{display:'flex',gap:24,flexWrap:'wrap',alignItems:'flex-start'}}>
+           <div style={{flex:'1 1 360px',minWidth:280}}>
+             <div style={{fontSize:12.5,fontWeight:600,color:'#5a6473',marginBottom:7}}>ผู้สร้างโพสต์</div>
+             <div style={{display:'flex',alignItems:'center',gap:8,background:'#fff',border:'1px solid #e3e7ec',borderRadius:10,padding:'8px 12px'}}>
+               <i className="bi bi-search" style={{fontSize:15,color:'#9aa3af'}}></i>
+               <input value={creator} onChange={(e)=>setCreator(e.target.value)} placeholder="ค้นหาจากชื่อผู้สร้างโพสต์" style={{border:'none',outline:'none',fontSize:13,flex:1,background:'transparent',color:'#1f2733'}}/>
+             </div>
+           </div>
+           <div style={{display:'flex',alignItems:'center',gap:22,paddingTop:26}}>
+             <Check on={noSum} set={setNoSum} label="ไม่มีข้อสรุป"/>
+             <Check on={hasSum} set={setHasSum} label="มีข้อสรุป"/>
+           </div>
+         </div>
+         <div style={{marginTop:14}}>
+           <div style={{fontSize:12.5,fontWeight:600,color:'#5a6473',marginBottom:7}}>วันที่สร้างโพสต์</div>
+           <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+             <div style={{display:'flex',alignItems:'center',gap:8,background:'#fff',border:'1px solid #e3e7ec',borderRadius:10,padding:'8px 12px',width:190,flex:'none'}}>
+               <input value={date} onChange={(e)=>setDate(e.target.value)} placeholder="dd/MM/yyyy" style={{border:'none',outline:'none',fontSize:13,flex:1,minWidth:0,background:'transparent',color:date?'#1f2733':'#9aa3af'}}/>
+               <span style={{display:'flex',flex:'none'}}>{ms('calendar_month',18,'#9aa3af')}</span>
+             </div>
+             <span style={{fontSize:12.5,color:'#8a93a3',margin:'0 4px',flex:'none'}}>หรือ</span>
+             <select value={range} onChange={(e)=>setRange(e.target.value)} style={{border:'1px solid #e3e7ec',borderRadius:10,padding:'9px 12px',fontSize:13,color:'#3a4452',background:'#fff',width:210,fontFamily:'inherit'}}>
+               {['3 เดือนย้อนหลัง','6 เดือนย้อนหลัง','1 ปีย้อนหลัง','ทั้งหมด'].map(o=>(<option key={o}>{o}</option>))}
+             </select>
+           </div>
+         </div>
+         <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:10,marginTop:18}}>
+           <button style={{display:'inline-flex',alignItems:'center',gap:6,background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 20px',fontSize:13,fontWeight:700,cursor:'pointer'}}>{ms('search',18,'#fff')}ค้นหา</button>
+           <button onClick={()=>setFilterOpen(false)} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 18px',fontSize:13,fontWeight:600,cursor:'pointer'}}>{ms('close',17,'#8a93a3')}ปิด</button>
+           <button onClick={clear} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 18px',fontSize:13,fontWeight:600,cursor:'pointer'}}>{ms('ink_eraser',17,'#8a93a3')}เคลียร์</button>
+         </div>
+       </div>
+       )}
+     </div>
+
+     {/* RESULT COUNT */}
+     <div style={{fontSize:12.5,color:'#8a93a3',margin:'-4px 2px'}}>พบ {list.length} โพสต์</div>
+
+     {/* POSTS */}
+     {list.map((p,i)=>(
+       <div key={i} style={{...cardSt,padding:'15px 18px'}}>
+         <div style={{display:'flex',alignItems:'center',gap:11}}>
+           <Letter s={p.user} d={34}/>
+           <span style={{fontWeight:700,fontSize:13.5,color:'#2b3440'}}>{p.user}</span>
+           <span style={{fontSize:12,color:'#aab2bd'}}>{p.date}</span>
+           <div style={{flex:1}}></div>
+           {p.summary
+             ? <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#eaf6f3',color:'#0f8f81',borderRadius:99,padding:'3px 11px',fontSize:11.5,fontWeight:600}}>{ms('task_alt',14,'#0f8f81')}มีข้อสรุป</span>
+             : <span style={{background:'#f4f5f7',color:'#9aa3af',borderRadius:99,padding:'3px 11px',fontSize:11.5,fontWeight:600}}>ไม่มีข้อสรุป</span>}
+           {p.summary && <span style={{fontSize:12,color:'#aab2bd'}}>สรุปเมื่อ {p.date2}</span>}
+           <button title="เปิดโพสต์" style={{background:'none',border:'none',cursor:'pointer',flex:'none',display:'flex',alignItems:'center',padding:2,marginLeft:4}}>{ms('open_in_new',18,'#c2cad4')}</button>
+         </div>
+         <div style={{fontSize:13,color:'#3c4350',margin:'10px 0 0 45px',lineHeight:1.65}}>{p.body}</div>
+         {p.summary && (
+           <div style={{background:'#eef7f5',borderRadius:9,padding:'9px 13px',fontSize:12.5,color:'#36675f',lineHeight:1.6,margin:'10px 0 0 45px'}}>{p.note}</div>
+         )}
+       </div>
+     ))}
+     {list.length===0 && (
+       <div style={{...cardSt,padding:'60px 0',textAlign:'center',color:'#aeb6c2'}}>{ms('search_off',36,'#cfd6e0')}<div style={{marginTop:8,fontSize:13.5}}>ไม่พบโพสต์ตามเงื่อนไข</div></div>
+     )}
+   </div>
+  );
+}
+
 function App(){
-  const [tab,setTab]=useState('talk');
+  const [tab,setTab]=useState(()=>{const t=new URLSearchParams(location.search).get('tab');return TABS.some(x=>x.key===t)?t:'talk';});
   const [view,setView]=useState('list');
 
   const Card=({children,pad})=>(<div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:pad||'16px 18px'}}>{children}</div>);
@@ -531,7 +641,7 @@ function App(){
       <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
       <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
         <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
-        <img src="https://cdn.quasar.dev/img/avatar.png" style={{width:38,height:38,borderRadius:'50%',objectFit:'cover'}} alt="avatar"/>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
         <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
       </div>
     </div>
@@ -539,8 +649,8 @@ function App(){
     <div style={{display:'flex'}}>
       {/* ICON RAIL */}
       <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
-        <div style={{width:34,height:34,borderRadius:'50%',background:'#e7eaef',overflow:'hidden',marginBottom:6}}><img src="https://cdn.quasar.dev/img/avatar.png" style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/></div>
-        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',true,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',false,'org-dashboard.html'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',true,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
           <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
         ) : (
           <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
@@ -628,7 +738,7 @@ function App(){
             {/* COMPOSER */}
             <Card>
               <div style={{display:'flex',alignItems:'center',gap:12}}>
-                <div style={{width:42,height:42,borderRadius:'50%',background:'#5d7088',flex:'none'}}></div>
+                <Letter s="Piyawat" d={42}/>
                 <div style={{flex:1,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:99,padding:'11px 16px',fontSize:13,color:'#9aa3af'}}>ถ้าเรียนรู้อะไรดีๆมา โพสต์แชร์เพื่อนเลย</div>
                 <button style={{width:42,height:42,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('send',20,primary)}</button>
               </div>
@@ -648,7 +758,7 @@ function App(){
               {POSTS.map((p,i)=>(
                 <div key={i} className="post" style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'15px 18px',transition:'box-shadow .15s'}}>
                   <div style={{display:'flex',alignItems:'center',gap:11}}>
-                    <div style={{width:40,height:40,borderRadius:'50%',background:AV[i%AV.length],flex:'none'}}></div>
+                    <Letter s={p.who} d={40}/>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{display:'flex',alignItems:'baseline',gap:8,flexWrap:'wrap'}}><span style={{fontWeight:700,fontSize:14}}>{p.who}</span><span style={{fontSize:11.5,color:'#9aa3af'}}>{p.date}</span></div>
                       <div style={{fontSize:11.5,color:'#9aa3af'}}>{p.role}</div>
@@ -674,6 +784,8 @@ function App(){
            </div>
           ) : tab==='todo' ? (
            <TodoPanel/>
+          ) : tab==='verify' ? (
+           <VerifyPanel/>
           ) : (
            <Card pad="70px 0"><div style={{textAlign:'center',color:'#aeb6c2'}}>{ms(tab==='members'?'group':tab==='invite'?'mail':tab==='verify'?'fact_check':'insights',40,'#cfd6e0')}<div style={{marginTop:10,fontWeight:600,color:'#9aa3af',fontSize:13.5}}>{tab==='members'?'รายชื่อสมาชิกในกลุ่ม':tab==='invite'?'ยังไม่มีคำเชิญที่รอตอบรับ':tab==='verify'?'ตรวจสอบโพสต์ในกลุ่ม':'ภาพรวมกลุ่ม'}</div></div></Card>
           )}
@@ -684,7 +796,7 @@ function App(){
           <Card>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:13}}>{ms('verified_user',19,primary)}<span style={{fontWeight:600,fontSize:13.5,color:'#5a6473'}}>เจ้าของกลุ่ม</span></div>
             <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:16}}>
-              <div style={{width:42,height:42,borderRadius:'50%',background:AV[1],flex:'none'}}></div>
+              <Letter s="Chanavee Bekaku" d={42}/>
               <div><div style={{fontWeight:700,fontSize:14}}>Chanavee Bekaku</div><div style={{fontSize:12,color:'#9aa3af'}}>Dev Manager</div></div>
             </div>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:11}}>{ms('shield_person',19,'#8a93a3')}<span style={{fontWeight:600,fontSize:13.5,color:'#5a6473'}}>ผู้ดูแลกลุ่ม</span></div>
