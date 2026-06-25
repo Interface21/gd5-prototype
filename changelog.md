@@ -82,6 +82,25 @@ const primarySoft='#e3f3f0';    // พื้นอ่อนของ primary
   - ⚠️ เดิมเคยเป็น Design Component (`<x-dc>`+`support.js`) ซึ่งทำงานเฉพาะในเครื่องมือออกแบบ — บน hosting ธรรมดาจะโชว์ `{{ }}` ดิบ จึง port เป็น React standalone
   - 4 หน้าจอใน 1 ไฟล์ (state `screen`): home / team / member / manage + bottom nav (หน้าหลัก/ลูกทีม/จัดการ/คะแนน)
 
+### Virtual Meeting / กลุ่ม (Groups)
+- **`user-virtual-meeting.html`** (React) — หน้า "กลุ่มของคุณ" / Virtual Meeting (ไอคอน rail `bi-easel` active)
+  - แท็บ: กลุ่มของคุณ / คำเชิญเข้ากลุ่ม / คำขอเข้ากลุ่ม / กลุ่มปิดถาวร (แท็บอื่นเป็น empty state)
+  - แถวบน: tabs + ช่องค้นหากลุ่ม (filter ตามชื่อ) + ปุ่ม + สร้างกลุ่ม
+  - เนื้อหา: การ์ดเด่น 4 ใบ (banner + title + desc + สมาชิก/โพสต์ + avatar stack + ดูกลุ่ม/pin/chat), รายการกลุ่มแบบแถว (thumbnail + meta + avatar), sidebar "กลุ่มที่คุณอาจสนใจ" (ปุ่มเข้าร่วม)
+  - banner/thumbnail เป็น placeholder วาดด้วย CSS (teal brand / restricted) — ยังไม่มีรูป banner จริง; grid responsive (auto-fill)
+  - **minimal**: banner/thumbnail พื้นโทนอ่อนแบน (ไม่มี gradient เข้ม/ลายจุด); 4 การ์ดบน = กลุ่มปักหมุด (badge ⴑมุด + ปุ่ม active); กลุ่มอื่นๆ แสดงแถวละ 2 กลุ่ม
+- **`user-virtual-meeting-group.html`** (React) — หน้ารายละเอียดกลุ่ม (ลิงก์จากปุ่ม "ดูกลุ่ม" 䏭ใน user-virtual-meeting)
+  - **3 คอลัมน์**: ซ้าย = เกี่ยวกับ/สิทธิ์ + จำนวนโพสต์ + VM list; กลาง = hero banner (RESTRICTED) + ชื่อกลุ่ม + ปุ่ม (เชิญ/เข้าร่วมแล้ว/ค้นหา) + tabs (พูดคุย/สมาชิก/รอตอบรับ/ภาพรวม) + composer + ฟีดโพสต์ (สลับ list/grid); ขวา = เจ้าของกลุ่ม/ผู้ดูแล + โพสต์ยอดวิว
+  - minimal, ธีมสว่าง; rail `bi-easel` active
+  - **`<ContractCard/>` (ข้อมูลสัญญา)** + **`<AttachmentsCard/>` (ไฟล์แนบตามสัญญา)** ในคอลัมน์ขวา — แก้ไขได้ในหน้า (toggle edit ด้วยปุ่ม pencil): ContractCard มีรายละเอียด/สถานศึกษา/มูลค่า/ช่วงเวลา/วันส่งมอบ/ค่าปรับ/Kick-off/ผู้รับผิดชอบหลัก-รอง + แถวเตือนสีแดง (วันเกิน/ค่าปรับรวม); AttachmentsCard = list PDF เปลี่ยนชื่อ/ลบ/เพิ่มได้; state ภายในแต่ละ component (mock)
+  - **TODO (สิ่งที่ต้องทำ)** — แท็บใหม่ในหน้ากลุ่ม (`tab==='todo'` → `<TodoPanel/>`):
+    - 2 โหมด: **ดำเนินการ** (`do`) = ติ๊ก checkbox sub-todo, ดูแถบ %, pill วันครบกำหนด/เหลือ-เกินวัน/ใน-นอกสัญญา/สถานะดำเนินการ; **แก้ไข** (`edit`) = เพิ่ม/ลบ/จัดลำดับ (↑↓) หัวข้อ, เพิ่ม/ลบ/แก้ไข sub-todo — สลับด้วยปุ่ม pencil ↔ check_circle
+    - โครงสร้าง 2 ระดับ: **หัวข้อ (topic)** → **รายการย่อย (sub-todo)**; แต่ละหัวข้อมีแถบ progress = done/total
+    - **`<TodoModal/>`** ฟอร์มสร้าง/แก้ไข (kind `topic`|`sub`): ชื่อ, รายละเอียด, ใน/นอกสัญญา (radio), วันครบกำหนด/ช่วงวันที่, แจ้งเตือน 2 ครั้ง; ปุ่ม บันทึก + (topic) เริ่มดำเนินการ / (sub) บันทึก+สั่งการ; โหมดแก้ไข topic โชว์การ์ดอ้างอิงคำสั่งการ
+    - state ภายใน `TodoPanel` (topics/open/mode/modal) — seed `TD_SEED` 16 หัวข้อตัวอย่าง (เฟสงานโครงการ)
+  - **layout note**: grid 3 คอลัมน์ใส่ `minWidth:1180`; sub-todo row ใช้ `flexWrap` ให้ pill ตัดบรรทัดเมื่อแคบ; ⚠️ TodoPanel/GanttView root **ห้ามใส่ `animation:fadeIn`** (เคยทำให้ทั้ง panel ค้างที่ opacity:0 มองไม่เห็น)
+  - **`<GanttView/>`** — กดปุ่มปฏิทิน (`calView=true`) สลับ list ↔ Gantt chart: แถวหัวข้อ (ตัวหนา ไม่มีแถบ) + งานย่อยเป็นแถบตามช่วงวันที่, สีตามสถานะ (เขียว=เสร็จ/ฟ้า=กำลังทำ/แดง=เกินกำหนด/เทา=ยังไม่เริ่ม), เส้น "วันนี้" แนวตั้ง, แกนวันที่รายสัปดาห์, legend; ช่วงวันที่ derive แบบ deterministic (seed ยังไม่มี start/end จริง — ถ้ามีข้อมูลจริงให้ map ลงแกน); **filter หัวข้อหลัก** ผ่าน select เหนือกราฟ (ทุกหัวข้อ/เจาะหัวข้อเดียว + ปุ่มล้าง) — range คงที่เพราะใช้ original topic index
+
 ### ฝั่งผู้รับคำสั่ง (Assignee — "คำสั่งที่ได้รับ")
 - **`assignee-action-list.html`** (React) — รายการคำสั่งที่ได้รับ (มี secondary nav ซ้าย)
   - แต่ละแถว: avatar, ชื่อ, เป้าหมาย/ความก้าวหน้า (แถบ % + ชิป ratio + ชิปจำนวนความก้าวหน้าแบบ badge), งานประจำวัน, **วันที่แบบสัมพัทธ์** ("เหลือ X วัน"/"เกิน X วัน"/"ครบกำหนดวันนี้"), badge สถานะ (soft pill + จุดสี), จุดสุขภาพ เขียว/เหลือง/แดง
@@ -134,4 +153,7 @@ const primarySoft='#e3f3f0';    // พื้นอ่อนของ primary
 - `assignee-action-list.html` — รายการคำสั่งที่ได้รับ (secondary nav, แถวรายงานสถานะ/ความก้าวหน้า), ปรับ minimal, วันที่เป็นแบบสัมพัทธ์, จุดสุขภาพ, ชิปความก้าวหน้าเป็น badge; เพิ่มปุ่ม "เพิ่มลง Today's Job" (ไอคอนเล็กท้ายสถานะ, ไอคอนต่างกันตามสถานะเพิ่มแล้ว, ซ่อนในงานปิด), seed ตัวอย่าง 2 งาน
 - `commander-action-dashboard.html` — แดชบอร์ดคำสั่งที่สั่งไป: การ์ดสถิติ gradient + กราฟ SVG (donut/stacked/scatter/bar)
 - `assignee-action-dashboard.html` — แดชบอร์ดคำสั่งที่ได้รับ: การ์ดสถิติ gradient + กราฟแท่งสุขภาพงาน + แท่ง 2 ชั้นแนวโน้ม + stacked ตามประเภท/สถานะ; ปุ่มสลับ list↔dashboard
-- `mobile/user-today-job-mobile.html` — (1) คัดลอก support.js/ios-frame.jsx เข้า mobile/ ให้ DC รัน; (2) **พบว่า DC ไม่รันบน GitHub Pages (โชว์ `{{ }}` ดิบ) จึง rewrite ใหม่เป็น React standalone + กรอบ iPhone วาดด้วย CSS** (self-contained ลบไฟล์ support.js/ios-frame.jsx ใน mobile/ ออก)
+- `mobile/user-today-job-mobile.html` — **แปลงกลับเป็นธีมสว่าง (light) ทั้งหมด**
+- `user-virtual-meeting.html` — หน้ากลุ่ม/Virtual Meeting จากภาพตัวอย่าง (ธีมสว่าง): tabs + การ์ดเด่น + รายการกลุ่ม + sidebar กลุ่มแนะนำ — บน shell เดียวกับหน้า list — ธีมมืดเป็นแค่ตัวอย่างจากผู้ใช้ ไม่ใช้จริง (พื้นขาว #f3f5f8 / การ์ดขาว / teal #15a08f / indigo #4f46e5). โครงสร้าง navigation: bottom bar 4 แท็บคงที่ — หน้าหลัก / แชท / วิเคราะห์ข้อมูล / อื่นๆ. "คำสั่งที่ได้รับ" (Today's Job) เข้าผ่านเมนู "อื่นๆ" → push หน้า (มีปุ่ม back); ภายในมี sub-tab งานของฉัน/ของลูกทีม/จัดการ
+
+> ⚠️ **ข้อตกลงถาวร: ห้ามทำ dark mode ทุกหน้าจอ** — ใช้ธีมสว่างเสมอ

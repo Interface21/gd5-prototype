@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SA-Developer — กลุ่ม — GiveDeeFive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:none;border:none}
+input{font-family:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.nav-item:hover{background:#f3f5f8}
+.vm-row:hover{background:#f7f9fb}
+.td-row:hover{background:#f7f9fb}
+.post:hover{box-shadow:0 4px 14px rgba(16,24,40,.06)}
+.ghost-btn:hover{background:#f3f5f8}
+.tjoin:hover{background:#119184}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const MS = {fontFamily:"'Material Symbols Rounded'"};
+const primary='#15a08f', primarySoft='#e3f3f0';
+const ms=(name,size,color,fill)=>(<span className="bi" style={{...MS,fontSize:size,color,...(fill?{fontVariationSettings:"'FILL' 1"}:{})}}>{name}</span>);
+const AV=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
+
+function Avatars({n,sz,extra}){
+  const d=sz||26;
+  return (
+    <div style={{display:'flex',alignItems:'center'}}>
+      {Array.from({length:n}).map((_,i)=>(<div key={i} style={{width:d,height:d,borderRadius:'50%',background:AV[i%AV.length],border:'2px solid #fff',marginLeft:i?-9:0}}></div>))}
+      {extra!=null && <span style={{marginLeft:7,fontSize:12,color:'#9aa3af',fontWeight:600}}>+{extra}</span>}
+    </div>
+  );
+}
+function VMThumb(){
+  return (
+    <div style={{width:52,height:52,borderRadius:10,flex:'none',background:'#eaf6f3',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <span style={{...MS,fontSize:22,color:'#13a394',fontVariationSettings:"'FILL' 1"}}>groups</span>
+    </div>
+  );
+}
+function PostThumb({icon,tone}){
+  const t={slate:'#eef0f4',amber:'#fdf2dd',teal:'#eaf6f3'}[tone||'slate'];
+  const ink={slate:'#7b8595',amber:'#cf9a23',teal:'#13a394'}[tone||'slate'];
+  return (
+    <div style={{width:118,height:78,borderRadius:9,flex:'none',background:t,display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <span style={{...MS,fontSize:30,color:ink}}>{icon}</span>
+    </div>
+  );
+}
+
+const VM=[
+  {title:'VM : AAR GiveDeeFive',members:18,unread:20,posts:136},
+  {title:'เคล็ดลับการเขียนแผนธุรกิจ',members:29,unread:0,posts:2},
+  {title:'AI วันละ 5 นาที',members:17,unread:7,posts:22},
+  {title:'VM : EDR วท.อุทัยธานี',members:15,unread:1,posts:5},
+];
+const POSTS=[
+  {who:'Narate Boonmee',role:'Software Engineer',date:'23 มิ.ย. 2026, 9:27 น.',title:'Group Arrangement Properties ของ Group ใน JasperReports/Jaspersoft Studio',excerpt:'1. Min Height To Start New Page...',icon:'description',tone:'slate',views:1,reacts:0,comments:0},
+  {who:'Narate Boonmee',role:'Software Engineer',date:'8 ม.ค. 2026, 11:37 น.',title:'การอ่านค่า ไฟล์ pdf โดยใช้ lib pdfbox 3.0.6',excerpt:'Lib ที่ต้องใช้ ...',icon:'picture_as_pdf',tone:'slate',views:2,reacts:1,comments:2},
+  {who:'Piyawat Takaew',role:'SA Staff',date:'18 ธ.ค. 2025, 13:07 น.',title:'5 วิธีง่ายๆ เผาผลาญไขมัน',excerpt:'1.มื้อเช้าอย่าเริ่มด้วยแป้ง ให้เริ่มด้วยโปรตีน จะทำให้เราอิ่มนาน ไม่ทำให้น้ำตาลขึ้นเร็ว...',icon:'restaurant',tone:'amber',views:3,reacts:2,comments:0},
+  {who:'Piyawat Takaew',role:'SA Staff',date:'4 พ.ย. 2025, 8:25 น.',title:'Win 11 LDPlayer ตั้งค่า Bypass ติดตั้ง APK',excerpt:'วิธีตั้งค่าให้ติดตั้งไฟล์ APK บน Windows 11 ผ่าน LDPlayer...',icon:'android',tone:'teal',views:5,reacts:1,comments:1},
+];
+const TABS=[{key:'talk',label:'พูดคุย'},{key:'members',label:'สมาชิกในกลุ่ม'},{key:'invite',label:'รอตอบรับคำเชิญ'},{key:'overview',label:'ภาพรวมกลุ่ม'},{key:'verify',label:'ตรวจสอบโพสต์'},{key:'todo',label:'TODO'}];
+
+function Pill({children,bg,color,icon}){
+  return <span style={{display:'inline-flex',alignItems:'center',gap:4,background:bg,color,borderRadius:7,padding:'3px 9px',fontSize:11,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{icon&&ms(icon,14,color)}{children}</span>;
+}
+
+let _uid=100;
+const uid=()=>'x'+(++_uid);
+const sub=(title,done,date,days,daysType,inContract,op)=>({id:uid(),title,done:!!done,date:date||'',days:days||0,daysType:daysType||'left',inContract:inContract!==false,op:op||null});
+const TD_SEED=[
+  {id:uid(),title:'แจ้งทำสัญญา',inContract:true,subs:[
+    sub('เอกสารมอบอำนาจ',true,'12/05/2026',0,'left',true,null),
+    sub('Catalog สินค้าที่ยื่นเสนอราคา',true,'12/05/2026',0,'left',true,null),
+    sub('หลักประกันสัญญา',false,'18/05/2026',10,'left',true,{label:'ที่กำลังดำเนินการ',count:'5/12'}),
+    sub('สำรวจหน้างาน',false,'02/05/2026',10,'over',true,{label:'ที่กำลังดำเนินการ',count:''}),
+    sub('เอกสารอื่นๆ ที่วิทยาลัยขอตามหนังสือแจ้ง',false,'15/05/2026',10,'over',true,{avatar:true}),
+  ]},
+  {id:uid(),title:'ขอใบเสนอราคาจาก Supplier/Sub Contractor',inContract:true,subs:[
+    sub('งานที่มีใบเสนอราคาอยู่ และมีการสั่งซื้อประจำ',false,'12/05/2026',10,'left',true,{label:'ที่กำลังดำเนินการ',count:'10/35'}),
+    sub('งานที่ต้องหาใบเสนอราคาใหม่ งานเฉพาะทางเทคนิค',false,'12/05/2026',10,'left',true,{avatar:true}),
+    sub('งานติดตั้งระบบไฟฟ้า',false,'12/05/2026',10,'left',true,{avatar:true}),
+  ]},
+  {id:uid(),title:'ทำ Scope of Work และแผนงาน',inContract:true,subs:[sub('กำหนดขอบเขตงาน'),sub('ทำแผนงาน Gantt')]},
+  {id:uid(),title:'Kick of Metting (KOM)',inContract:true,subs:[sub('นัดประชุม',true),sub('เตรียมเอกสาร',true),sub('สรุปประชุม',true)]},
+  {id:uid(),title:'ทำเรื่องขอเปลี่ยนรุ่นสินค้า และยี่ห้อ',inContract:true,subs:[sub('รวบรวมข้อมูล'),sub('ยื่นขออนุมัติ')]},
+  {id:uid(),title:'เปิดใบขอซื้อ (PR) / เปิดใบสั่งซื้อ (PO)',inContract:true,subs:[sub('เปิด PR'),sub('เปิด PO')]},
+  {id:uid(),title:'กำกับ ติดตาม การรับสินค้าเข้าคลัง',inContract:true,subs:[sub('รับสินค้า'),sub('ตรวจนับ'),sub('บันทึกคลัง')]},
+  {id:uid(),title:'ส่งสินค้าประกอบ (ถ้ามี)',inContract:false,subs:[]},
+  {id:uid(),title:'ติดตามสินค้าประกอบ (ถ้ามี)',inContract:false,subs:[]},
+  {id:uid(),title:'ตรวจสอบสินค้าประกอบ / ตรวจสอบงานติดตั้งหน้างาน (ถ้ามี)',inContract:false,subs:[]},
+  {id:uid(),title:'ทำเอกสารตรวจรับสินค้าประกอบ / ทำเอกสารตรวจรับงานติดตั้งหน้างาน',inContract:false,subs:[]},
+  {id:uid(),title:'จัดเตรียมใบงานเพื่ออบรม (ถ้ามี)',inContract:true,subs:[sub('เตรียมใบงาน'),sub('ตรวจสอบ')]},
+  {id:uid(),title:'จัดเตรียมการอบรม ตั้งเป้าหมาย',inContract:true,subs:[sub('วางแผนอบรม'),sub('ตั้งเป้าหมาย')]},
+  {id:uid(),title:'อบรมลูกค้า/ส่งมอบงาน',inContract:true,subs:[sub('อบรม'),sub('ส่งมอบ'),sub('รับ feedback')]},
+  {id:uid(),title:'ติดตามการเก็บเงิน ตามสัญญา',inContract:true,subs:[sub('วางบิล'),sub('ติดตามชำระ')]},
+  {id:uid(),title:'ติดตามขอคืนหลักประกันสัญญา',inContract:true,subs:[sub('ยื่นคำขอ'),sub('ติดตาม')]},
+];
+
+const REM=['ไม่แจ้งเตือน','1 วันล่วงหน้า','3 วันล่วงหน้า','7 วันล่วงหน้า','15 วันล่วงหน้า','30 วันล่วงหน้า'];
+
+function TodoModal({data,onClose,onSave,onDelete}){
+  const isTopic=data.kind==='topic';
+  const [title,setTitle]=React.useState(data.title||'');
+  const [detail,setDetail]=React.useState(data.detail||'');
+  const [inC,setInC]=React.useState(data.inContract!==false);
+  const [r1,setR1]=React.useState('7 วันล่วงหน้า');
+  const [r2,setR2]=React.useState('ไม่แจ้งเตือน');
+  const editing=!!data.id;
+  const Lbl=({i,children})=>(<div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,fontWeight:600,color:'#5a6473',margin:'14px 0 7px'}}>{ms(i,18,'#8a93a3')}{children}</div>);
+  const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:9,padding:'10px 12px',fontSize:13.5,outline:'none',color:'#1f2733',fontFamily:'inherit'};
+  return (
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.42)',display:'flex',alignItems:'flex-start',justifyContent:'center',zIndex:80,padding:'40px 16px',overflowY:'auto'}}>
+      <div onClick={(e)=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,width:560,maxWidth:'100%',boxShadow:'0 20px 50px rgba(16,24,40,.25)',animation:'fadeIn .15s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,padding:'16px 20px',borderBottom:'1px solid #f1f3f6'}}>
+          {ms('task_alt',22,primary,true)}
+          <div style={{fontWeight:700,fontSize:16}}>{isTopic?(editing?'แก้ไขหัวข้อสิ่งที่ต้องทำ':'หัวข้อสิ่งที่ต้องทำใหม่'):(editing?'แก้ไขสิ่งที่ต้องทำ':'สิ่งที่ต้องทำใหม่')}</div>
+          <div style={{flex:1}}></div>
+          <button onClick={onClose} style={{width:32,height:32,borderRadius:8,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('close',19,'#5a6473')}</button>
+        </div>
+        <div style={{padding:'12px 20px 20px'}}>
+          <input value={title} onChange={(e)=>setTitle(e.target.value)} placeholder="ชื่อสิ่งที่ต้องทำ" style={{...inp,background:'#f6f7f9',fontWeight:600}}/>
+          <Lbl i="edit_note">รายละเอียด</Lbl>
+          <textarea value={detail} onChange={(e)=>setDetail(e.target.value)} rows={3} style={{...inp,resize:'vertical'}}/>
+          <div style={{display:'flex',gap:18,marginTop:12}}>
+            {[['ในสัญญา',true],['นอกสัญญา',false]].map((o,i)=>(
+              <label key={i} style={{display:'inline-flex',alignItems:'center',gap:7,fontSize:13,fontWeight:600,color:inC===o[1]?primary:'#5a6473',cursor:'pointer'}}>
+                <span style={{width:18,height:18,borderRadius:'50%',border:'2px solid '+(inC===o[1]?primary:'#c2cad4'),display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{inC===o[1]&&<span style={{width:9,height:9,borderRadius:'50%',background:primary}}></span>}</span>
+                <input type="radio" checked={inC===o[1]} onChange={()=>setInC(o[1])} style={{display:'none'}}/>{o[0]}
+              </label>
+            ))}
+          </div>
+          <Lbl i="event">{isTopic?'ช่วงวันที่ดำเนินการ':'วันครบกำหนด'}</Lbl>
+          <div style={{display:'flex',alignItems:'center',gap:8,border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 12px',color:'#9aa3af',fontSize:13}}>{ms('calendar_today',17,'#9aa3af')}{isTopic?'dd/MM/yyyy - dd/MM/yyyy':'dd/MM/yyyy'}</div>
+          <div style={{display:'flex',gap:14,marginTop:6}}>
+            <div style={{flex:1}}><Lbl i="notifications">แจ้งเตือนครั้งที่ 1</Lbl><select value={r1} onChange={(e)=>setR1(e.target.value)} style={{...inp,cursor:'pointer'}}>{REM.map(r=><option key={r}>{r}</option>)}</select></div>
+            <div style={{flex:1}}><Lbl i="notifications">แจ้งเตือนครั้งที่ 2</Lbl><select value={r2} onChange={(e)=>setR2(e.target.value)} style={{...inp,cursor:'pointer'}}>{REM.map(r=><option key={r}>{r}</option>)}</select></div>
+          </div>
+          {isTopic && editing && (
+            <div style={{border:'1px solid #eceef2',borderRadius:12,padding:'14px 16px',marginTop:16}}>
+              <div style={{display:'flex',justifyContent:'flex-end',marginBottom:6}}><span style={{display:'inline-flex',alignItems:'center',gap:5,color:primary,fontSize:12,fontWeight:600}}>{ms('open_in_new',15,primary)}ดูคำสั่งการ</span></div>
+              <div style={{fontWeight:700,fontSize:14,color:'#2b3440',lineHeight:1.4,marginBottom:10}}>คำสั่งการ : {title||'—'}</div>
+              {[['person','ผู้สั่งการ'],['group','ผู้รับคำสั่ง'],['date_range','ช่วงวันที่ดำเนินการ : dd/MM/yyyy-dd/MM/yyyy'],['target','เป้าหมาย XX หน่วยนับ']].map((r,i)=>(
+                <div key={i} style={{display:'flex',alignItems:'center',gap:8,fontSize:12.5,color:'#5a6473',padding:'4px 0'}}>{ms(r[0],17,'#9aa3af')}{r[1]}</div>
+              ))}
+              <div style={{display:'flex',alignItems:'center',gap:10,margintop:6,padding:'6px 0'}}><span style={{flex:1,height:7,background:'#eef0f4',borderRadius:99,overflow:'hidden'}}><span style={{display:'block',height:'100%',width:'0%',background:primary}}></span></span><span style={{fontSize:11.5,color:'#9aa3af',fontWeight:600}}>0%</span></div>
+              <Pill bg="#eaf1fe" color="#3b6fd4">สถานะดำเนินการ</Pill>
+            </div>
+          )}
+          <div style={{display:'flex',justifyContent:'flex-end',gap:9,marginTop:20}}>
+            {editing && onDelete && <button onClick={()=>{onDelete();onClose();}} style={{background:'#fdeaea',color:'#d83a3a',border:'none',borderRadius:9,padding:'9px 18px',fontSize:13.5,fontWeight:700}}>ลบ</button>}
+            <div style={{flex:1}}></div>
+            <button onClick={()=>{onSave({title,detail,inContract:inC});onClose();}} style={{background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 20px',fontSize:13.5,fontWeight:700}}>{editing?'บันทึกแก้ไข':'บันทึก'}</button>
+            <button onClick={()=>{onSave({title,detail,inContract:inC});onClose();}} style={{background:'#0e8c7d',color:'#fff',border:'none',borderRadius:9,padding:'9px 20px',fontSize:13.5,fontWeight:700}}>{isTopic?'เริ่มดำเนินการ':'บันทึก + สั่งการ'}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GanttView({topics}){
+  const [filter,setFilter]=React.useState('all'); // 'all' | topic index
+  const DAY=86400000;
+  const base=new Date(2026,0,1);
+  const todayDay=13; // 14 Jan 2026
+  const fmt=(d)=>{const dt=new Date(base.getTime()+d*DAY);return dt.getDate()+'/'+(dt.getMonth()+1);};
+  // build rows with synthetic date ranges (prototype: seed has no explicit ranges)
+  let rows=[];
+  topics.forEach((t,ti)=>{
+    if(filter!=='all' && ti!==filter) return; // ti kept = original index → ranges stable
+    const tStart=ti*2;
+    const subRows=t.subs.map((s,i)=>{
+      const start=tStart+i*2;
+      const dur=8+((i+ti)%3)*6;
+      const end=start+dur;
+      let color = s.done?'#37b86e' : s.daysType==='over'?'#ef9a9a' : (s.op||s.days>0)?'#7aa7d9' : '#d6dce3';
+      return {type:'sub',title:s.title,start,end,color};
+    });
+    rows.push({type:'topic',title:t.title});
+    subRows.forEach(r=>rows.push(r));
+  });
+  const maxEnd=Math.max(49,...rows.filter(r=>r.type==='sub').map(r=>r.end));
+  const total=maxEnd+3;
+  const pct=(d)=>(d/total*100)+'%';
+  const ticks=[];for(let d=0;d<=total-3;d+=7)ticks.push(d);
+  const LBL=232;
+
+  return (
+   <div>
+    {/* topic filter */}
+    <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12,flexWrap:'wrap'}}>
+      {ms('filter_list',18,'#8a93a3')}
+      <span style={{fontSize:12.5,color:'#8a93a3',fontWeight:600}}>หัวข้อหลัก</span>
+      <select value={filter} onChange={(e)=>setFilter(e.target.value==='all'?'all':parseInt(e.target.value,10))} style={{flex:'1 1 200px',maxWidth:360,border:'1px solid #e3e7ec',borderRadius:9,padding:'8px 11px',fontSize:13,color:'#2b3440',fontFamily:'inherit',outline:'none',cursor:'pointer',background:'#fff'}}>
+        <option value="all">ทุกหัวข้อ ({topics.length})</option>
+        {topics.map((t,i)=>(<option key={i} value={i}>{t.title}</option>))}
+      </select>
+      {filter!=='all' && <button onClick={()=>setFilter('all')} style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:12,fontWeight:600,color:primary}}>{ms('close',16,primary)}ล้าง</button>}
+    </div>
+    {/* today label */}
+    <div style={{display:'flex'}}>
+      <div style={{width:LBL,flex:'none'}}></div>
+      <div style={{flex:1,position:'relative',height:20}}>
+        <div style={{position:'absolute',left:pct(todayDay),transform:'translateX(-50%)',display:'flex',flexDirection:'column',alignItems:'center'}}>
+          <span style={{fontSize:11,color:'#1f9d57',fontWeight:700}}>วันนี้</span>
+        </div>
+      </div>
+    </div>
+
+    <div style={{position:'relative',borderTop:'1px solid #f1f3f6'}}>
+      {/* plot overlay: gridlines + today line */}
+      <div style={{position:'absolute',left:LBL,right:0,top:0,bottom:0,pointerEvents:'none'}}>
+        {ticks.map((d,i)=>(<div key={i} style={{position:'absolute',left:pct(d),top:0,bottom:0,width:1,background:'#f4f6f8'}}></div>))}
+        <div style={{position:'absolute',left:pct(todayDay),top:0,bottom:0,width:2,marginLeft:-1,background:'#37b86e',opacity:.45}}></div>
+      </div>
+      {/* rows */}
+      {rows.map((r,i)=> r.type==='topic' ? (
+        <div key={i} style={{display:'flex',alignItems:'center',minHeight:34,borderTop:i?'1px solid #f4f6f8':'none'}}>
+          <div style={{width:LBL,flex:'none',paddingRight:14,fontWeight:700,fontSize:12.5,color:'#2b3440',lineHeight:1.3,paddingTop:6,paddingBottom:6,textWrap:'pretty'}}>{r.title}</div>
+          <div style={{flex:1}}></div>
+        </div>
+      ) : (
+        <div key={i} style={{display:'flex',alignItems:'center',minHeight:30}}>
+          <div style={{width:LBL,flex:'none',paddingLeft:8,paddingRight:14,fontSize:12,color:'#5a6473',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{r.title}</div>
+          <div style={{flex:1,position:'relative',height:30}}>
+            <div style={{position:'absolute',top:'50%',transform:'translateY(-50%)',left:pct(r.start),width:pct(r.end-r.start),height:11,borderRadius:99,background:r.color}}></div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* axis */}
+    <div style={{display:'flex',borderTop:'1px solid #f1f3f6',marginTop:2}}>
+      <div style={{width:LBL,flex:'none'}}></div>
+      <div style={{flex:1,position:'relative',height:24}}>
+        {ticks.map((d,i)=>(<span key={i} style={{position:'absolute',left:pct(d),transform:'translateX(-50%)',top:6,fontSize:11,color:'#9aa3af'}}>{fmt(d)}</span>))}
+      </div>
+    </div>
+
+    {/* legend */}
+    <div style={{display:'flex',alignItems:'center',gap:16,marginTop:12,paddingLeft:LBL,fontSize:11.5,color:'#7b8595',flexWrap:'wrap'}}>
+      {[['#37b86e','เสร็จแล้ว'],['#7aa7d9','กำลังดำเนินการ'],['#ef9a9a','เกินกำหนด'],['#d6dce3','ยังไม่เริ่ม']].map((l,i)=>(
+        <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:14,height:9,borderRadius:99,background:l[0]}}></span>{l[1]}</span>
+      ))}
+    </div>
+   </div>
+  );
+}
+
+function TodoPanel(){
+  const [mode,setMode]=React.useState('do');   // 'do' | 'edit'
+  const [calView,setCalView]=React.useState(false); // false = list, true = gantt
+  const [topics,setTopics]=React.useState(TD_SEED);
+  const [open,setOpen]=React.useState(()=>{const o={};o[TD_SEED[0].id]=true;o[TD_SEED[1].id]=true;return o;});
+  const [modal,setModal]=React.useState(null);
+
+  const cnt=(t)=>({done:t.subs.filter(s=>s.done).length,total:t.subs.length});
+  const complete=(t)=>{const c=cnt(t);return c.total>0&&c.done===c.total;};
+  const overallN=topics.length, overallDone=topics.filter(complete).length;
+  const overallPct=overallN?Math.round(overallDone/overallN*1000)/10:0;
+
+  const toggleOpen=(id)=>setOpen(o=>({...o,[id]:!o[id]}));
+  const toggleDone=(tid,sid)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,subs:t.subs.map(s=>s.id!==sid?s:{...s,done:!s.done})}));
+  const moveTopic=(i,dir)=>setTopics(ts=>{const a=[...ts],j=i+dir;if(j<0||j>=a.length)return ts;const x=a[i];a[i]=a[j];a[j]=x;return a;});
+  const delTopic=(id)=>setTopics(ts=>ts.filter(t=>t.id!==id));
+  const delSub=(tid,sid)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,subs:t.subs.filter(s=>s.id!==sid)}));
+  const addTopic=(d)=>setTopics(ts=>[...ts,{id:uid(),title:d.title||'หัวข้อใหม่',inContract:d.inContract,subs:[]}]);
+  const editTopic=(id,d)=>setTopics(ts=>ts.map(t=>t.id!==id?t:{...t,title:d.title,inContract:d.inContract}));
+  const addSub=(tid,d)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,subs:[...t.subs,sub(d.title||'รายการใหม่',false,'',0,'left',d.inContract,null)]}));
+  const editSub=(tid,sid,d)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,subs:t.subs.map(s=>s.id!==sid?s:{...s,title:d.title,inContract:d.inContract})}));
+
+  const Count=({c})=>{const done=c.total&&c.done===c.total;return <span style={{minWidth:30,textAlign:'right',color:done?'#22b573':'#aab2bd',fontWeight:600,fontSize:12,flex:'none'}}>{c.done}/{c.total||0}</span>;};
+  const MiniBar=({c})=>{const p=c.total?c.done/c.total*100:0,done=p>=100;return <span style={{width:96,height:5,background:'#eef1f5',borderRadius:99,overflow:'hidden',flex:'none'}}><span style={{display:'block',height:'100%',borderRadius:99,background:done?'#22b573':'#15a08f',width:p+'%'}}></span></span>;};
+
+  const ICONBTN=(icon,active,onClick,title)=>(<button onClick={onClick} title={title} style={{width:34,height:32,borderRadius:8,border:'1px solid '+(active?primary:'#e7eaef'),background:active?primarySoft:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms(icon,18,active?primary:'#8a93a3')}</button>);
+
+  return (
+   <div>
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
+      {/* TOOLBAR */}
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:14,flexWrap:'wrap'}}>
+        <div style={{fontWeight:700,fontSize:15}}>สิ่งที่ต้องทำ</div>
+        {mode==='do' ? (
+          <React.Fragment>
+            <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,color:'#9aa3af',flex:'none'}}><span style={{color:'#22b573',fontWeight:700}}>{overallDone}</span>/{overallN} เสร็จ</span>
+            <span style={{flex:'1 1 120px',maxWidth:260,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><span style={{display:'block',height:'100%',borderRadius:99,background:'#15a08f',width:overallPct+'%'}}></span></span>
+            <span style={{fontSize:12.5,color:'#9aa3af',fontWeight:600}}>{overallPct} %</span>
+            <div style={{flex:1}}></div>
+            {ICONBTN('format_list_bulleted',!calView,()=>setCalView(false),'รายการ')}
+            {ICONBTN('calendar_month',calView,()=>setCalView(true),'ปฏิทิน (Gantt)')}
+            {ICONBTN('edit',false,()=>setMode('edit'),'โหมดแก้ไข')}
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <div style={{flex:1}}></div>
+            <button onClick={()=>setModal({kind:'topic'})} title="เพิ่มหัวข้อ" style={{width:34,height:32,borderRadius:8,border:'1px solid #e7eaef',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('add',20,primary)}</button>
+            {ICONBTN('upload_file',false,null,'นำเข้า')}
+            {ICONBTN('view_column',false,null,'')}
+            {ICONBTN('check_circle',true,()=>setMode('do'),'โหมดดำเนินการ')}
+          </React.Fragment>
+        )}
+      </div>
+
+      {/* TOPICS */}
+      {calView ? <GanttView topics={topics} open={open} toggleOpen={toggleOpen}/> : (
+      <div>
+        {topics.map((t,ti)=>{const c=cnt(t),isOpen=open[t.id];return (
+          <div key={t.id} style={{borderTop:ti?'1px solid #f4f6f8':'none'}}>
+            {/* topic row */}
+            <div className="td-row" style={{display:'flex',alignItems:'center',gap:12,padding:'13px 8px',margin:'0 -8px',borderRadius:10}}>
+              <button onClick={()=>toggleOpen(t.id)} style={{display:'flex',alignItems:'center',flex:'none'}}>{ms(complete(t)?'check_circle':'radio_button_unchecked',22,complete(t)?'#22b96a':'#c4ccd4',complete(t))}</button>
+              <div onClick={()=>toggleOpen(t.id)} style={{flex:1,minWidth:0,fontWeight:600,fontSize:13.5,color:'#2b3440',cursor:'pointer'}}>{t.title}</div>
+              {mode==='do' && c.total>0 && <MiniBar c={c}/>}
+              {c.total>0 && <Count c={c}/>}
+              {mode==='edit' ? (
+                <div style={{display:'flex',alignItems:'center',gap:6,flex:'none'}}>
+                  <button onClick={()=>setModal({kind:'sub',topicId:t.id})} title="เพิ่มรายการ" style={{width:28,height:28,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('add',17,primary)}</button>
+                  <button onClick={()=>toggleOpen(t.id)} title="กาง/ยุบ" style={{width:28,height:28,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('swap_vert',17,'#8a93a3')}</button>
+                  <button onClick={()=>delTopic(t.id)} title="ลบ" style={{width:28,height:28,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('delete',17,'#d83a3a')}</button>
+                  <div style={{display:'flex',flexDirection:'column'}}>
+                    <button onClick={()=>moveTopic(ti,-1)} style={{height:14,display:'flex',alignItems:'center',color:'#9aa3af'}}>{ms('keyboard_arrow_up',16,'#9aa3af')}</button>
+                    <button onClick={()=>moveTopic(ti,1)} style={{height:14,display:'flex',alignItems:'center',color:'#9aa3af'}}>{ms('keyboard_arrow_down',16,'#9aa3af')}</button>
+                  </div>
+                </div>
+              ) : (
+                <button onClick={()=>toggleOpen(t.id)} style={{flex:'none',width:34,height:34,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',marginLeft:2,background:isOpen?'#cde2df':'#ebebeb',border:'none'}}>{ms(isOpen?'expand_less':'expand_more',21,isOpen?'#4e9b92':'#2b3440')}</button>
+              )}
+            </div>
+            {/* subs */}
+            {isOpen && t.subs.length>0 && (
+              <div style={{paddingLeft:14,paddingBottom:8}}>
+                {t.subs.map(s=>(
+                  <div key={s.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 8px',borderRadius:9,background:s.done?'#f1faf4':'transparent',marginBottom:3,flexWrap:'wrap'}}>
+                    <button onClick={()=>mode==='do'&&toggleDone(t.id,s.id)} style={{display:'flex',cursor:mode==='do'?'pointer':'default',flex:'none'}}>{ms(s.done?'check_box':'check_box_outline_blank',20,s.done?'#22b573':'#c2cad4',s.done)}</button>
+                    <div style={{flex:'1 1 180px',minWidth:140,fontSize:13,color:s.done?'#6b7785':'#2b3440',textDecoration:s.done?'line-through':'none'}}>{s.title}</div>
+                    {s.date && <Pill bg={s.daysType==='over'?'#fdeaea':'#e9f6ee'} color={s.daysType==='over'?'#d8513a':'#1f9d57'} icon="event">{s.date}</Pill>}
+                    {mode==='do' && s.days>0 && <Pill bg={s.daysType==='over'?'#fdeaea':'#fff3df'} color={s.daysType==='over'?'#d8513a':'#c77d1a'} icon="hourglass_top">{s.daysType==='over'?'เกิน':'เหลือ'} {s.days} วัน</Pill>}
+                    <Pill bg={s.inContract?'#eaf1fe':'#f1f3f6'} color={s.inContract?'#3b6fd4':'#8a93a3'}>{s.inContract?'ในสัญญา':'นอกสัญญา'}</Pill>
+                    {mode==='do' ? (
+                      s.op ? (s.op.avatar ? <div style={{width:24,height:24,borderRadius:'50%',background:AV[3],flex:'none'}}></div> :
+                        <span style={{display:'inline-flex',alignItems:'center',gap:5,flex:'none'}}><span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eaf1fe',color:'#3b6fd4',borderRadius:7,padding:'4px 10px',fontSize:11,fontWeight:600}}>{ms('autorenew',14,'#3b6fd4')}{s.op.label}</span>{s.op.count && <span style={{fontSize:11,color:'#9aa3af',fontWeight:600}}>{s.op.count}</span>}</span>)
+                      : <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eaf1fe',color:'#3b6fd4',borderRadius:7,padding:'4px 10px',fontSize:11,fontWeight:600,flex:'none'}}>{ms('play_circle',14,'#3b6fd4')}ดูสถานะ</span>
+                    ) : (
+                      <div style={{display:'flex',alignItems:'center',gap:6,flex:'none'}}>
+                        <button onClick={()=>setModal({kind:'sub',topicId:t.id,id:s.id,title:s.title,inContract:s.inContract})} style={{width:26,height:26,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('edit',15,'#3b6fd4')}</button>
+                        <button onClick={()=>delSub(t.id,s.id)} style={{width:26,height:26,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('delete',15,'#d83a3a')}</button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );})}
+      </div>
+      )}
+
+      {mode==='edit' && !calView && (
+        <button onClick={()=>setModal({kind:'topic'})} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:7,width:'100%',marginTop:12,padding:'11px 0',border:'1.5px dashed #cdd4de',borderRadius:11,background:'#fafbfc',color:primary,fontSize:13.5,fontWeight:700}}>{ms('add',20,primary)}เพิ่มหัวข้อสิ่งที่ต้องทำ</button>
+      )}
+    </div>
+
+    {modal && (
+      <TodoModal
+        data={modal}
+        onClose={()=>setModal(null)}
+        onSave={(d)=>{ if(modal.kind==='topic'){ modal.id?editTopic(modal.id,d):addTopic(d);} else { modal.id?editSub(modal.topicId,modal.id,d):addSub(modal.topicId,d);} }}
+        onDelete={modal.id?(()=>{ modal.kind==='topic'?delTopic(modal.id):delSub(modal.topicId,modal.id);}):null}
+      />
+    )}
+   </div>
+  );
+}
+
+function ContractCard(){
+  const [edit,setEdit]=useState(false);
+  const [c,setC]=useState({
+    desc:'งานปรับปรุงระบบเครือข่ายและติดตั้งอุปกรณ์ ICT ประจำปีงบประมาณ 2569 ตามขอบเขตงาน (TOR)',
+    school:'วิทยาลัยพณิชยการธนบุรี',
+    value:'1,250,000',
+    period:'01/05/2026 - 31/12/2026',
+    deliverDays:'90',
+    penalty:'12,500',
+    kickoff:'05/05/2026',
+    ownerMain:'Piyawat Takaew',
+    ownerSub:'Narate Boonmee',
+    overDays:'0',
+    penaltyTotal:'0',
+  });
+  const [draft,setDraft]=useState(c);
+  const start=()=>{setDraft(c);setEdit(true);};
+  const save=()=>{setC(draft);setEdit(false);};
+  const set=(k,v)=>setDraft(d=>({...d,[k]:v}));
+  const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:7,padding:'6px 9px',fontSize:12.5,outline:'none',color:'#1f2733',fontFamily:'inherit',background:'#fff'};
+
+  const Row=({icon,label,k,suffix,danger})=>(
+    <div style={{display:'flex',alignItems:'flex-start',gap:10,padding:'7px 0'}}>
+      {ms(icon,18,danger?'#d83a3a':'#9aa3af')}
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontSize:11.5,color:'#9aa3af',marginBottom:edit?5:1}}>{label}</div>
+        {edit ? <input value={draft[k]} onChange={(e)=>set(k,e.target.value)} style={inp}/> :
+          <div style={{fontSize:13,fontWeight:600,color:danger?'#d83a3a':'#2b3440'}}>{c[k]}{suffix?<span style={{fontWeight:400,color:'#8a93a3'}}> {suffix}</span>:null}</div>}
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10,paddingBottom:12,borderBottom:'1px solid #f3f5f8'}}>
+        {ms('description',19,primary)}
+        <span style={{fontWeight:600,fontSize:13.5,color:'#2b3440'}}>ข้อมูลสัญญา</span>
+        <div style={{flex:1}}></div>
+        {edit ? (
+          <div style={{display:'flex',gap:6}}>
+            <button onClick={()=>setEdit(false)} style={{fontSize:12.5,fontWeight:600,color:'#8a93a3',padding:'4px 8px'}}>ยกเลิก</button>
+            <button onClick={save} style={{fontSize:12.5,fontWeight:700,color:'#fff',background:primary,borderRadius:7,padding:'5px 13px'}}>บันทึก</button>
+          </div>
+        ) : (
+          <button onClick={start} title="แก้ไข" style={{width:30,height:30,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('edit',18,'#8a93a3')}</button>
+        )}
+      </div>
+      {edit ? <textarea value={draft.desc} onChange={(e)=>set('desc',e.target.value)} rows={3} style={{...inp,resize:'vertical',marginBottom:4}}/> :
+        <div style={{fontSize:12.5,color:'#5a6473',lineHeight:1.6,marginBottom:6}}>{c.desc}</div>}
+      <Row icon="account_balance" label="ชื่อสถานศึกษา" k="school"/>
+      <Row icon="payments" label="มูลค่าสัญญา (incl.vat)" k="value" suffix="บาท"/>
+      <Row icon="event" label="ช่วงเวลาสัญญา" k="period"/>
+      <Row icon="local_shipping" label="จำนวนวันส่งมอบ" k="deliverDays" suffix="วัน"/>
+      <Row icon="error" label="ค่าปรับ" k="penalty" suffix="บาท/วัน"/>
+      <Row icon="groups" label="Kick-off Meeting" k="kickoff"/>
+      <div style={{display:'flex',alignItems:'flex-start',gap:10,padding:'7px 0'}}>
+        {ms('engineering',18,'#9aa3af')}
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:11.5,color:'#9aa3af',marginBottom:edit?5:3}}>ผู้รับผิดชอบโครงการ</div>
+          {edit ? (
+            <div style={{display:'flex',flexDirection:'column',gap:6}}>
+              <input value={draft.ownerMain} onChange={(e)=>set('ownerMain',e.target.value)} style={inp} placeholder="หลัก"/>
+              <input value={draft.ownerSub} onChange={(e)=>set('ownerSub',e.target.value)} style={inp} placeholder="รอง"/>
+            </div>
+          ) : (
+            <div style={{fontSize:12.5,color:'#2b3440'}}>
+              <div style={{display:'flex',gap:6,marginBottom:2}}><span style={{color:'#9aa3af',minWidth:34}}>หลัก</span><span style={{fontWeight:600}}>{c.ownerMain}</span></div>
+              <div style={{display:'flex',gap:6}}><span style={{color:'#9aa3af',minWidth:34}}>รอง</span><span style={{fontWeight:600}}>{c.ownerSub}</span></div>
+            </div>
+          )}
+        </div>
+      </div>
+      <div style={{height:1,background:'#f3f5f8',margin:'8px 0'}}></div>
+      <Row icon="report" label="จำนวนวันที่เกินสัญญา" k="overDays" suffix="วันแล้ว" danger={true}/>
+      <Row icon="account_balance_wallet" label="ค่าปรับรวม" k="penaltyTotal" suffix="บาท" danger={true}/>
+    </div>
+  );
+}
+
+function AttachmentsCard(){
+  const [edit,setEdit]=useState(false);
+  const [files,setFiles]=useState([
+    {id:'f1',name:'สัญญาเลขที่ 25/2569.pdf'},
+    {id:'f2',name:'ขอบเขตงาน TOR.pdf'},
+    {id:'f3',name:'BOQ ราคากลาง.pdf'},
+    {id:'f4',name:'หนังสือมอบอำนาจ.pdf'},
+  ]);
+  let _n=0;
+  const rename=(id,v)=>setFiles(fs=>fs.map(f=>f.id===id?{...f,name:v}:f));
+  const del=(id)=>setFiles(fs=>fs.filter(f=>f.id!==id));
+  const add=()=>setFiles(fs=>[...fs,{id:'f'+Date.now(),name:'ไฟล์ใหม่.pdf'}]);
+  const inp={flex:1,minWidth:0,border:'1px solid #e3e7ec',borderRadius:7,padding:'6px 9px',fontSize:12.5,outline:'none',color:'#1f2733',fontFamily:'inherit'};
+
+  return (
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10,paddingBottom:12,borderBottom:'1px solid #f3f5f8'}}>
+        {ms('attach_file',19,primary)}
+        <span style={{fontWeight:600,fontSize:13.5,color:'#2b3440'}}>ไฟล์แนบตามสัญญา</span>
+        <div style={{flex:1}}></div>
+        <button onClick={()=>setEdit(e=>!e)} title={edit?'เสร็จ':'แก้ไข'} style={{width:30,height:30,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>{ms(edit?'check':'edit',18,edit?primary:'#8a93a3')}</button>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:7}}>
+        {files.map(f=>(
+          <div key={f.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 10px',border:'1px solid #f1f3f6',borderRadius:9,background:'#fbfcfd'}}>
+            <span style={{width:30,height:30,borderRadius:7,background:'#fdecec',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',fontSize:9,fontWeight:800,color:'#d8513a'}}>PDF</span>
+            {edit ? <input value={f.name} onChange={(e)=>rename(f.id,e.target.value)} style={inp}/> :
+              <a href="#" onClick={(e)=>e.preventDefault()} style={{flex:1,minWidth:0,fontSize:12.5,color:'#2b3440',fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{f.name}</a>}
+            {edit ? <button onClick={()=>del(f.id)} style={{width:28,height:28,borderRadius:7,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('delete',17,'#d83a3a')}</button> :
+              <span style={{flex:'none',display:'flex'}}>{ms('download',18,'#9aa3af')}</span>}
+          </div>
+        ))}
+      </div>
+      {edit && (
+        <button onClick={add} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:7,width:'100%',marginTop:9,padding:'9px 0',border:'1.5px dashed #cdd4de',borderRadius:9,background:'#fafbfc',color:primary,fontSize:12.5,fontWeight:700}}>{ms('upload_file',18,primary)}เพิ่มไฟล์แนบ</button>
+      )}
+    </div>
+  );
+}
+
+function App(){
+  const [tab,setTab]=useState('talk');
+  const [view,setView]=useState('list');
+
+  const Card=({children,pad})=>(<div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:pad||'16px 18px'}}>{children}</div>);
+
+  return (
+   <div style={{minHeight:'100vh',background:'#eef1f6'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>1</span></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>10</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <img src="https://cdn.quasar.dev/img/avatar.png" style={{width:38,height:38,borderRadius:'50%',objectFit:'cover'}} alt="avatar"/>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#e7eaef',overflow:'hidden',marginBottom:6}}><img src="https://cdn.quasar.dev/img/avatar.png" style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/></div>
+        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',true,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
+          <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
+        ) : (
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
+
+      {/* MAIN 3-COL */}
+      <div style={{flex:1,padding:'22px 26px',minWidth:0}}>
+       <div style={{maxWidth:1560,minWidth:1180,margin:'0 auto',display:'grid',gridTemplateColumns:'300px minmax(0,1fr) 290px',gap:22,alignItems:'start'}}>
+
+        {/* LEFT */}
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <Card>
+            <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>เกี่ยวกับ</div>
+            <div style={{fontSize:13,color:'#5a6473',lineHeight:1.6,marginBottom:14}}>สำหรับกลุ่มพัฒนาซอฟแวร์และวิเคราะห์ระบบเท่านั้น</div>
+            {[['อนุญาตให้ค้นหาชื่อกลุ่มได้'],['อนุญาตให้แชร์โพสต์ออกจากกลุ่มได้'],['อนุญาตให้ออกจากกลุ่มได้']].map((p,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'5px 0',fontSize:13,color:'#3a4452'}}>{ms('check_circle',19,primary,true)}{p[0]}</div>
+            ))}
+          </Card>
+          <Card>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:10}}>{ms('edit_note',21,'#8a93a3')}<span style={{fontWeight:600,fontSize:13.5}}>จำนวนโพสต์จากกลุ่ม</span><div style={{flex:1}}></div>{ms('done_all',19,primary)}</div>
+            {[['ทั้งหมด',10,'#eef0f4','#3a4452'],['มีข้อสรุป',0,'#eef0f4','#3a4452'],['ยังไม่ได้อ่าน',0,'#fdeaea','#d8513a']].map((r,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'7px 0',fontSize:13,color:'#5a6473'}}>
+                <span>{r[0]}</span><span style={{minWidth:30,textAlign:'center',background:r[2],color:r[3],fontWeight:700,borderRadius:8,padding:'2px 9px',fontSize:12.5}}>{r[1]}</span>
+              </div>
+            ))}
+          </Card>
+          <Card>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:13}}>
+              <div style={{flex:1}}><div style={{fontWeight:700,fontSize:14.5}}>Virtual Meeting</div><div style={{fontSize:12,color:'#9aa3af'}}>กลุ่มของคุณ</div></div>
+              <button className="ghost-btn" style={{width:32,height:32,borderRadius:8,border:'1px solid #e7eaef',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('group_add',18,'#8a93a3')}</button>
+              <a href="user-virtual-meeting.html" className="ghost-btn" style={{width:32,height:32,borderRadius:8,border:'1px solid #e7eaef',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('add',20,'#8a93a3')}</a>
+            </div>
+            <div style={{display:'flex',flexDirection:'column'}}>
+              {VM.map((g,i)=>(
+                <a key={i} href="user-virtual-meeting-group.html" className="vm-row" style={{display:'flex',alignItems:'center',gap:11,padding:'9px 6px',borderRadius:10,borderTop:i?'1px solid #f3f5f8':'none'}}>
+                  <VMThumb/>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:700,fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{g.title}</div>
+                    <div style={{fontSize:11.5,color:'#9aa3af',marginTop:2}}>สมาชิก {g.members} คน{g.unread>0 && <span style={{color:'#d8513a'}}> · {g.unread} ยังไม่ได้อ่าน</span>} · โพสต์ {g.posts}</div>
+                  </div>
+                  {ms('chat_bubble_outline',18,'#c2cad4')}
+                </a>
+              ))}
+            </div>
+          </Card>
+        </div>
+
+        {/* CENTER */}
+        <div style={{minWidth:0,display:'flex',flexDirection:'column',gap:16}}>
+          {/* HERO */}
+          <Card pad="0">
+            <div style={{height:230,position:'relative',overflow:'hidden',borderRadius:'13px 13px 0 0',background:'repeating-linear-gradient(46deg,#f6c916,#f6c916 26px,#e9bd11 26px,#e9bd11 52px)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <div style={{textAlign:'center',color:'#3a3526',fontWeight:800,fontSize:46,lineHeight:1,letterSpacing:2,textShadow:'0 2px 0 rgba(255,255,255,.18)'}}>RESTRICTED<br/>AREA</div>
+            </div>
+            <div style={{padding:'16px 20px 6px'}}>
+              <div style={{display:'flex',alignItems:'flex-start',gap:12,flexWrap:'wrap'}}>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:700,fontSize:22}}>SA-Developer</div>
+                  <div style={{fontSize:13,color:'#8a93a3',margin:'4px 0 8px'}}>สมาชิก 4 คน</div>
+                  <Avatars n={4} sz={28}/>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:9}}>
+                  <div style={{display:'flex',alignItems:'center',gap:9}}>
+                    <button className="ghost-btn" style={{width:38,height:38,borderRadius:'50%',border:'1px solid #e7eaef',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('chat_bubble_outline',20,'#5a6473')}</button>
+                    <button style={{display:'inline-flex',alignItems:'center',gap:6,background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 16px',fontSize:13.5,fontWeight:700}}>{ms('add',19,'#fff')}เชิญ</button>
+                    <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:'#3a4452',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 14px',fontSize:13.5,fontWeight:600}}>{ms('check',18,primary)}เข้าร่วมแล้ว</button>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:9,padding:'8px 13px',width:220}}>
+                    <i className="bi bi-search" style={{fontSize:14,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:12.5}}>ค้นหา SA-Developer</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:26,marginTop:16,borderBottom:'1px solid #f1f3f6'}}>
+                {TABS.map(t=>{const a=tab===t.key;return (
+                  <button key={t.key} onClick={()=>setTab(t.key)} style={{border:'none',background:'transparent',padding:'0 0 11px',fontSize:13.5,fontWeight:a?700:600,color:a?primary:'#8a93a3',borderBottom:'2.5px solid '+(a?primary:'transparent'),marginBottom:-1}}>{t.label}</button>
+                );})}
+              </div>
+            </div>
+          </Card>
+
+          {tab==='talk' ? (
+           <div style={{animation:'fadeIn .2s ease',display:'flex',flexDirection:'column',gap:16}}>
+            {/* COMPOSER */}
+            <Card>
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <div style={{width:42,height:42,borderRadius:'50%',background:'#5d7088',flex:'none'}}></div>
+                <div style={{flex:1,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:99,padding:'11px 16px',fontSize:13,color:'#9aa3af'}}>ถ้าเรียนรู้อะไรดีๆมา โพสต์แชร์เพื่อนเลย</div>
+                <button style={{width:42,height:42,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('send',20,primary)}</button>
+              </div>
+            </Card>
+
+            {/* FEED HEADER */}
+            <div style={{display:'flex',alignItems:'center',gap:8}}>
+              <span style={{fontWeight:600,fontSize:13.5,color:'#5a6473'}}>โพสต์ล่าสุด</span>
+              {ms('unfold_more',18,'#9aa3af')}
+              <div style={{flex:1}}></div>
+              <button onClick={()=>setView('list')} className="ghost-btn" style={{width:34,height:32,borderRadius:8,border:'1px solid '+(view==='list'?primary:'#e7eaef'),background:view==='list'?primarySoft:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('view_agenda',19,view==='list'?primary:'#8a93a3')}</button>
+              <button onClick={()=>setView('grid')} className="ghost-btn" style={{width:34,height:32,borderRadius:8,border:'1px solid '+(view==='grid'?primary:'#e7eaef'),background:view==='grid'?primarySoft:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('grid_view',18,view==='grid'?primary:'#8a93a3')}</button>
+            </div>
+
+            {/* POSTS */}
+            <div style={{display:view==='grid'?'grid':'flex',gridTemplateColumns:'1fr 1fr',flexDirection:view==='grid'?undefined:'column',gap:16}}>
+              {POSTS.map((p,i)=>(
+                <div key={i} className="post" style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'15px 18px',transition:'box-shadow .15s'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:11}}>
+                    <div style={{width:40,height:40,borderRadius:'50%',background:AV[i%AV.length],flex:'none'}}></div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:'flex',alignItems:'baseline',gap:8,flexWrap:'wrap'}}><span style={{fontWeight:700,fontSize:14}}>{p.who}</span><span style={{fontSize:11.5,color:'#9aa3af'}}>{p.date}</span></div>
+                      <div style={{fontSize:11.5,color:'#9aa3af'}}>{p.role}</div>
+                    </div>
+                    {ms('more_vert',20,'#c2cad4')}
+                  </div>
+                  <div style={{display:'flex',gap:14,marginTop:12,alignItems:'flex-start'}}>
+                    <PostThumb icon={p.icon} tone={p.tone}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontWeight:700,fontSize:14.5,lineHeight:1.4,color:'#2b3440'}}>{p.title}</div>
+                      <div style={{fontSize:12.5,color:'#8a93a3',marginTop:5,lineHeight:1.55}}>{p.excerpt}</div>
+                    </div>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:16,marginTop:12,paddingTop:11,borderTop:'1px solid #f3f5f8',fontSize:12,color:'#9aa3af'}}>
+                    {p.reacts>0 && <span style={{display:'inline-flex',alignItems:'center',gap:5}}>{ms('favorite',16,'#ef4444',true)}{p.reacts}</span>}
+                    <span style={{display:'inline-flex',alignItems:'center',gap:5}}>{ms('visibility',16,'#9aa3af')}{p.views}</span>
+                    <div style={{flex:1}}></div>
+                    {p.comments>0 && <span style={{display:'inline-flex',alignItems:'center',gap:5}}>{ms('chat_bubble_outline',16,'#9aa3af')}{p.comments} ความคิดเห็น</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+           </div>
+          ) : tab==='todo' ? (
+           <TodoPanel/>
+          ) : (
+           <Card pad="70px 0"><div style={{textAlign:'center',color:'#aeb6c2'}}>{ms(tab==='members'?'group':tab==='invite'?'mail':tab==='verify'?'fact_check':'insights',40,'#cfd6e0')}<div style={{marginTop:10,fontWeight:600,color:'#9aa3af',fontSize:13.5}}>{tab==='members'?'รายชื่อสมาชิกในกลุ่ม':tab==='invite'?'ยังไม่มีคำเชิญที่รอตอบรับ':tab==='verify'?'ตรวจสอบโพสต์ในกลุ่ม':'ภาพรวมกลุ่ม'}</div></div></Card>
+          )}
+        </div>
+
+        {/* RIGHT */}
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <Card>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:13}}>{ms('verified_user',19,primary)}<span style={{fontWeight:600,fontSize:13.5,color:'#5a6473'}}>เจ้าของกลุ่ม</span></div>
+            <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:16}}>
+              <div style={{width:42,height:42,borderRadius:'50%',background:AV[1],flex:'none'}}></div>
+              <div><div style={{fontWeight:700,fontSize:14}}>Chanavee Bekaku</div><div style={{fontSize:12,color:'#9aa3af'}}>Dev Manager</div></div>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:11}}>{ms('shield_person',19,'#8a93a3')}<span style={{fontWeight:600,fontSize:13.5,color:'#5a6473'}}>ผู้ดูแลกลุ่ม</span></div>
+            <Avatars n={1} sz={36}/>
+          </Card>
+          <ContractCard/>
+          <AttachmentsCard/>
+          <Card>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:13}}><span style={{width:30,height:30,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('trending_up',18,primary)}</span><span style={{fontWeight:600,fontSize:13,color:'#5a6473',lineHeight:1.3}}>โพสต์ที่มียอดวิวสูงสุดสัปดาห์นี้</span></div>
+            <div style={{display:'flex',alignItems:'flex-start',gap:11}}>
+              <span style={{minWidth:26,height:26,borderRadius:8,background:'#eaf1fe',color:'#3b6fd4',fontWeight:800,fontSize:14,display:'inline-flex',alignItems:'center',justifyContent:'center',flex:'none'}}>1</span>
+              <div><div style={{fontWeight:600,fontSize:13.5,lineHeight:1.4,color:'#2b3440'}}>Group Arrangement Properties …</div><div style={{fontSize:12,color:'#9aa3af',marginTop:3}}>โดย Narate Boonmee</div></div>
+            </div>
+          </Card>
+        </div>
+
+       </div>
+      </div>
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>
