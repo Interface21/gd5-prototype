@@ -127,7 +127,14 @@ const primarySoft='#e3f3f0';    // พื้นอ่อนของ primary
 
 ## 4. การลิงก์ระหว่างหน้า (Navigation)
 - โลโก้ (ทุกหน้า) → `dashboard.html`
-- Icon rail + secondary nav ลิงก์ข้ามหน้า (received ↔ sent ↔ dashboard)
+- **Icon rail ซ้าย — mapping มาตรฐาน (ทุกหน้าใช้เหมือนกัน, ต่างแค่ flag active):**
+  - `bi-layout-sidebar` → `dashboard.html`
+  - `bi-graph-up` → (ยังไม่มีหน้า)
+  - `bi-arrow-down-left` → `assignee-action-list.html` (คำสั่งที่ได้รับ)
+  - `bi-arrow-up-right` → `commander-action-dashboard.html` (คำสั่งที่สั่งไป)
+  - `bi-easel` → `user-virtual-meeting.html` (Virtual Meeting / กลุ่ม)
+  - `bi-file-earmark-arrow-down`, `bi-book`, `bi-clipboard-data` → (ยังไม่มีหน้า)
+  - React: array `[icon, activeBool, url]` + `.map` (มี url → `<a>`, ไม่มี → `<div>`); Vue: `<a href>` ครอบ `.drawer-item`
 - ปุ่ม list/chart มุมขวาบน = สลับ "รายการ" ↔ "แดชบอร์ด" ของฟังก์ชันเดียวกัน
 - แถวในหน้า list → หน้า detail (`assignee-action-inprogress.html` / `assignee-action-close.html`) พร้อม `?id=`
 

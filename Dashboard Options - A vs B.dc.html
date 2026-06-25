@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+:root{--bg:#fafbfc;--card:#fff;--border:#dcdcdc;--border-light:#ededed;--muted:#6b7982;--head:#1a2d39;--primary:#15a08f;--indigo:#3949c9}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Helvetica Neue","Segoe UI",Arial,sans-serif;color:#000;font-size:14px;line-height:1.5}
+.bi{vertical-align:-2px}
+</style>
+</helmet>
+
+<div style="min-width:100%;width:max-content;min-height:100vh;box-sizing:border-box;padding:44px;background:#e7e5df">
+
+  <div style="margin-bottom:6px;font-weight:700;font-size:21px;color:#2a2a28">Duty Monitor × Today's Job — เทียบการวางบน Dashboard</div>
+  <div style="color:#6b6b66;margin-bottom:30px;max-width:820px">ทั้งสองแบบใช้ข้อมูลชุดเดียวกัน ต่างกันที่ “วางแยกแล้วลับคม” กับ “ยุบรวมเป็นการ์ดเดียว”</div>
+
+  <div style="display:flex;gap:44px;align-items:flex-start">
+
+    <!-- ============ OPTION A ============ -->
+    <div style="flex:none;width:820px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="background:var(--primary);color:#fff;font-weight:700;font-size:13px;border-radius:6px;padding:4px 11px">แบบ A · แนะนำ</span>
+        <span style="font-weight:700;font-size:16px;color:#2a2a28">แยกการ์ด + ลับคม Duty Monitor เป็น “Action Inbox”</span>
+      </div>
+
+      <div style="background:var(--card);border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden">
+        <!-- mini header -->
+        <div style="height:50px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px">
+          <div style="display:flex;align-items:center;gap:7px"><span style="width:26px;height:26px;border-radius:7px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff"><i class="bi bi-hand-thumbs-up-fill" style="font-size:14px"></i></span><span style="font-weight:800;font-size:12px;color:var(--primary);letter-spacing:.5px">GD5</span></div>
+          <div style="flex:1;height:30px;background:#f0f2f5;border-radius:18px;display:flex;align-items:center;padding:0 12px;color:#9aa3af;font-size:12px"><i class="bi bi-search" style="margin-right:7px"></i>ค้นหา GiveDeeFive</div>
+          <i class="bi bi-bell" style="color:#5a6473;font-size:16px"></i><i class="bi bi-chat" style="color:#5a6473;font-size:16px"></i>
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#8aa0b8,#5d7088)"></div>
+        </div>
+
+        <div style="background:var(--bg);padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+
+          <!-- LEFT: Action Inbox -->
+          <div style="background:var(--card);border:1px solid var(--border-light);border-radius:10px;overflow:hidden">
+            <div style="padding:13px 15px 11px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px">
+              <i class="bi bi-inboxes-fill" style="color:var(--primary);font-size:17px"></i>
+              <span style="font-weight:700;color:var(--head)">รอฉันตัดสินใจ</span>
+              <span style="background:#fdeaea;color:#d83a3a;font-weight:700;font-size:11px;border-radius:20px;padding:2px 8px">11</span>
+            </div>
+            <div style="padding:9px">
+              <sc-for list="{{ inbox }}" as="r" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;margin-bottom:5px;cursor:pointer;border:1px solid var(--border-light)" style-hover="background:#f6f8fa">
+                  <span style="width:28px;height:28px;border-radius:7px;background:{{ r.bg }};color:{{ r.color }};display:flex;align-items:center;justify-content:center;flex:none"><i class="bi {{ r.icon }}" style="font-size:14px"></i></span>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-weight:600;color:var(--head);font-size:13px">{{ r.label }}</div>
+                    <div style="font-size:11px;color:var(--muted)">{{ r.stream }}</div>
+                  </div>
+                  <span style="min-width:24px;height:22px;padding:0 7px;border-radius:20px;background:{{ r.bg }};color:{{ r.color }};font-weight:700;font-size:12px;display:inline-flex;align-items:center;justify-content:center">{{ r.count }}</span>
+                  <i class="bi bi-chevron-right" style="color:#c2cad4;font-size:12px"></i>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- RIGHT: Today's Job -->
+          <div style="background:var(--card);border:1px solid var(--border-light);border-radius:10px;padding:15px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+              <i class="bi bi-graph-up" style="color:var(--indigo);font-size:18px"></i>
+              <span style="font-weight:700;color:var(--indigo)">Today's Job</span>
+              <div style="flex:1"></div>
+              <span style="font-weight:800;font-size:19px;color:var(--indigo)">47 %</span>
+            </div>
+            <div style="height:11px;background:#eef0f4;border-radius:6px;overflow:hidden;margin-bottom:12px"><div style="height:100%;border-radius:6px;background:var(--indigo);width:47%"></div></div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px">
+              <span style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-light);border-radius:20px;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--head)"><span style="width:7px;height:7px;border-radius:50%;background:#3949c9"></span>กำลังทำ 4</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-light);border-radius:20px;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--head)"><span style="width:7px;height:7px;border-radius:50%;background:#22b573"></span>เสร็จ 1</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-light);border-radius:20px;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--head)"><span style="width:7px;height:7px;border-radius:50%;background:#d83a3a"></span>ค้าง 2</span>
+            </div>
+            <sc-for list="{{ jobs }}" as="j" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid #f3f4f6">
+                <span style="width:22px;font-weight:800;color:var(--indigo);font-size:14px;text-align:center;flex:none">{{ j.rank }}</span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-weight:600;color:var(--head);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ j.title }}</div>
+                  <div style="height:5px;background:#eef0f4;border-radius:5px;overflow:hidden;margin-top:5px"><div style="height:100%;border-radius:5px;background:{{ j.color }};width:{{ j.w }}"></div></div>
+                </div>
+                <span style="font-size:11px;font-weight:700;color:{{ j.color }};width:30px;text-align:right">{{ j.w }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:13px;background:#fff;border-radius:8px;padding:13px 15px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
+        <div style="font-weight:700;color:#1f8a5b;font-size:13px;margin-bottom:5px"><i class="bi bi-check-circle-fill"></i> ทำไมแนะนำ</div>
+        <div style="font-size:12.5px;color:#5a5a55;line-height:1.55">สองการ์ดเล่าคนละเรื่อง ไม่ทับกัน — <b>ซ้าย = “มีอะไรรอฉันตัดสินใจ”</b> (ข้ามทั้งสั่งไป/ได้รับ/WI), <b>ขวา = “วันนี้ฉันคืบแค่ไหน”</b>. ตัดตัวนับ in-progress ที่เคยซ้ำออกจาก Duty Monitor → กลายเป็น action inbox ล้วนๆ คลิกเด้งไปจัดการได้</div>
+      </div>
+    </div>
+
+    <!-- ============ OPTION B ============ -->
+    <div style="flex:none;width:820px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="background:#8a8f98;color:#fff;font-weight:700;font-size:13px;border-radius:6px;padding:4px 11px">แบบ B</span>
+        <span style="font-weight:700;font-size:16px;color:#2a2a28">ยุบรวมเป็นการ์ดเดียว “งานของฉัน”</span>
+      </div>
+
+      <div style="background:var(--card);border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden">
+        <div style="height:50px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px">
+          <div style="display:flex;align-items:center;gap:7px"><span style="width:26px;height:26px;border-radius:7px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff"><i class="bi bi-hand-thumbs-up-fill" style="font-size:14px"></i></span><span style="font-weight:800;font-size:12px;color:var(--primary);letter-spacing:.5px">GD5</span></div>
+          <div style="flex:1;height:30px;background:#f0f2f5;border-radius:18px;display:flex;align-items:center;padding:0 12px;color:#9aa3af;font-size:12px"><i class="bi bi-search" style="margin-right:7px"></i>ค้นหา GiveDeeFive</div>
+          <i class="bi bi-bell" style="color:#5a6473;font-size:16px"></i><i class="bi bi-chat" style="color:#5a6473;font-size:16px"></i>
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#8aa0b8,#5d7088)"></div>
+        </div>
+
+        <div style="background:var(--bg);padding:16px;display:flex;justify-content:center">
+          <!-- merged card -->
+          <div style="width:430px;background:var(--card);border:1px solid var(--border-light);border-radius:10px;overflow:hidden">
+            <!-- header = today's job % -->
+            <div style="padding:15px 16px 14px;background:linear-gradient(135deg,#eef0fc,#f6f7fe);border-bottom:1px solid var(--border-light)">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                <i class="bi bi-clipboard-check" style="color:var(--indigo);font-size:18px"></i>
+                <span style="font-weight:700;color:var(--head)">งานของฉัน</span>
+                <div style="flex:1"></div>
+                <span style="font-weight:800;font-size:19px;color:var(--indigo)">47 %</span>
+              </div>
+              <div style="height:11px;background:#fff;border-radius:6px;overflow:hidden"><div style="height:100%;border-radius:6px;background:var(--indigo);width:47%"></div></div>
+            </div>
+            <!-- cross-stream tabs -->
+            <div style="display:flex;border-bottom:1px solid var(--border-light)">
+              <sc-for list="{{ mergeTabs }}" as="t" hint-placeholder-count="3">
+                <button onClick="{{ t.onClick }}" style="flex:1;border:none;background:none;padding:11px 4px 9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;border-bottom:2px solid {{ t.indicator }};color:{{ t.color }}">
+                  <i class="bi {{ t.icon }}" style="font-size:15px"></i>
+                  <span style="font-size:11.5px;font-weight:600">{{ t.label }}</span>
+                </button>
+              </sc-for>
+            </div>
+            <!-- counts for active tab -->
+            <div style="padding:10px">
+              <sc-for list="{{ mergeRows }}" as="r" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;margin-bottom:5px;border:1px solid var(--border-light)">
+                  <span style="width:26px;height:26px;border-radius:7px;background:{{ r.bg }};color:{{ r.color }};display:flex;align-items:center;justify-content:center;flex:none"><i class="bi {{ r.icon }}" style="font-size:13px"></i></span>
+                  <span style="flex:1;font-weight:600;color:var(--head);font-size:13px">{{ r.label }}</span>
+                  <span style="min-width:24px;height:22px;padding:0 7px;border-radius:20px;background:{{ r.bg }};color:{{ r.color }};font-weight:700;font-size:12px;display:inline-flex;align-items:center;justify-content:center">{{ r.count }}</span>
+                </div>
+              </sc-for>
+              <div style="text-align:center;padding:8px 0 4px"><span style="color:var(--indigo);font-weight:700;font-size:12.5px;cursor:pointer">ดูรายการงานทั้งหมด <i class="bi bi-chevron-right" style="font-size:11px"></i></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:13px;background:#fff;border-radius:8px;padding:13px 15px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
+        <div style="font-weight:700;color:#b8860b;font-size:13px;margin-bottom:5px"><i class="bi bi-exclamation-triangle-fill"></i> ข้อแลกเปลี่ยน</div>
+        <div style="font-size:12.5px;color:#5a5a55;line-height:1.55">เหลือการ์ดเดียว เป็นระเบียบขึ้น และ % กับตัวนับอยู่ที่เดียว — แต่ <b>เสีย at-a-glance ของ right rail</b> (Today's Job เคยเห็นทันทีโดยไม่ต้องสลับแท็บ) และการ์ดสูง/หนักขึ้น เหมาะถ้าต้องการ <b>ลดจำนวนการ์ด</b>บน dashboard</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1730,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { mergeTab:'received' };
+  renderVals(){
+    const inbox=[
+      {icon:'bi-bell-fill',label:'ยังไม่รับทราบ',stream:'คำสั่งที่ได้รับ',count:4,bg:'#fff4e0',color:'#d98223'},
+      {icon:'bi-check2-circle',label:'คำขอปิดงาน',stream:'คำสั่งที่สั่งไป · รออนุมัติ',count:7,bg:'#e3f3f0',color:'#0e8c7d'},
+      {icon:'bi-journal-check',label:'WI ต้องพิจารณา',stream:'เอกสารปฏิบัติงาน',count:0,bg:'#e7f0fb',color:'#2f74c0'},
+      {icon:'bi-chat-dots-fill',label:'ข้อความใหม่',stream:'ทุกสาย',count:0,bg:'#f1ecfb',color:'#7c3aed'},
+    ];
+    const jobs=[
+      {rank:1,title:'อัพเดทระบบ EDR เป็น jdk8',w:'30%',color:'#ee9d2b'},
+      {rank:2,title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อ',w:'60%',color:'#3949c9'},
+      {rank:3,title:'ติดตามการเก็บเงิน ตามสัญญา',w:'45%',color:'#3949c9'},
+    ];
+    const tabsDef=[{key:'sent',icon:'bi-arrow-up-right',label:'สั่งไป'},{key:'received',icon:'bi-arrow-down-left',label:'ได้รับ'},{key:'wi',icon:'bi-book',label:'WI'}];
+    const mergeTabs=tabsDef.map(t=>{const a=this.state.mergeTab===t.key;return {...t,onClick:()=>this.setState({mergeTab:t.key}),color:a?'var(--indigo)':'var(--muted)',indicator:a?'var(--indigo)':'transparent'};});
+    const rowsByTab={
+      sent:[{icon:'bi-plus-circle',label:'คำสั่งการใหม่',count:0,bg:'#e3f3f0',color:'#0e8c7d'},{icon:'bi-arrow-repeat',label:'กำลังดำเนินการ',count:3,bg:'#fff4e0',color:'#d98223'},{icon:'bi-check2-circle',label:'คำขอปิดงาน',count:0,bg:'#e3f3f0',color:'#0e8c7d'}],
+      received:[{icon:'bi-bell-fill',label:'ยังไม่รับทราบ',count:4,bg:'#fff4e0',color:'#d98223'},{icon:'bi-arrow-repeat',label:'กำลังดำเนินการ',count:31,bg:'#fdeaea',color:'#d83a3a'},{icon:'bi-check2-circle',label:'ขอปิดงาน',count:7,bg:'#e3f3f0',color:'#0e8c7d'}],
+      wi:[{icon:'bi-eye',label:'ต้องพิจารณา',count:0,bg:'#e7f0fb',color:'#2f74c0'},{icon:'bi-send',label:'ยังไม่ขออนุมัติ',count:0,bg:'#e7f0fb',color:'#2f74c0'},{icon:'bi-arrow-counterclockwise',label:'ส่งกลับมาแก้ไข',count:0,bg:'#e7f0fb',color:'#2f74c0'}],
+    };
+    return { inbox, jobs, mergeTabs, mergeRows:rowsByTab[this.state.mergeTab] };
+  }
+}
+</script>
+</body>
+</html>

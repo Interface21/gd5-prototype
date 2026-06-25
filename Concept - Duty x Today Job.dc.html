@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#fafbfc; --card:#fff; --border:#dcdcdc; --border-light:#ededed;
+  --muted:#6b7982; --head:#1a2d39; --primary:#15a08f; --indigo:#3949c9;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Helvetica Neue","Segoe UI",Arial,sans-serif;background:var(--bg);color:#000;font-size:14px;line-height:1.5}
+.bi{vertical-align:-2px}
+@keyframes popIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="max-width:1240px;margin:0 auto;padding:24px 20px 60px">
+
+  <!-- intro -->
+  <div style="margin-bottom:8px;font-weight:700;font-size:20px;color:var(--head)">แนวคิด: เชื่อม Duty Monitor ↔ Today's Job</div>
+  <div style="color:var(--muted);margin-bottom:18px;max-width:760px">ข้อมูลชุดเดียว มองได้สองมุม — <b style="color:var(--head)">Duty Monitor</b> นับหัวตาม “สถานะ” และทำหน้าที่เป็น <b style="color:var(--head)">ตัวกรอง</b>, <b style="color:var(--head)">Today's Job</b> คือพื้นที่ลงมือ + % ความก้าวหน้า ที่อัปเดตตามตัวกรอง</div>
+
+  <!-- lifecycle stepper -->
+  <div style="background:var(--card);border:1px solid var(--border-light);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span style="font-weight:700;color:var(--head);margin-right:6px"><i class="bi bi-diagram-3"></i> วงจรงาน (lifecycle เดียวกัน)</span>
+    <sc-for list="{{ lifecycle }}" as="st" hint-placeholder-count="5">
+      <span style="display:inline-flex;align-items:center;gap:7px">
+        <span style="display:inline-flex;align-items:center;gap:6px;background:{{ st.bg }};color:{{ st.color }};border-radius:20px;padding:5px 12px;font-weight:600;font-size:12.5px"><i class="bi {{ st.icon }}"></i>{{ st.label }}</span>
+        <sc-if value="{{ st.arrow }}" hint-placeholder-val="{{ true }}"><i class="bi bi-chevron-right" style="color:#c2cad4;font-size:11px"></i></sc-if>
+      </span>
+    </sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start">
+
+    <!-- ================= LEFT: DUTY MONITOR ================= -->
+    <div style="background:var(--card);border:1px solid var(--border-light);border-radius:10px;overflow:hidden">
+      <!-- tabs -->
+      <div style="display:flex;border-bottom:1px solid var(--border-light)">
+        <sc-for list="{{ dutyTabs }}" as="t" hint-placeholder-count="3">
+          <button onClick="{{ t.onClick }}" style="flex:1;border:none;background:none;padding:13px 4px 11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;border-bottom:2px solid {{ t.indicator }};color:{{ t.color }}">
+            <i class="bi {{ t.icon }}" style="font-size:17px"></i>
+            <span style="font-size:12px;font-weight:600">{{ t.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+
+      <!-- status rows (clickable filters) -->
+      <div style="padding:10px">
+        <div style="font-size:11.5px;color:var(--muted);padding:2px 6px 8px">แตะสถานะเพื่อกรองรายการใน Today's Job →</div>
+        <sc-for list="{{ statusRows }}" as="r" hint-placeholder-count="4">
+          <button onClick="{{ r.onClick }}" style="width:100%;display:flex;align-items:center;gap:11px;border:1px solid {{ r.rowBorder }};background:{{ r.rowBg }};border-radius:8px;padding:10px 11px;margin-bottom:7px;cursor:pointer;text-align:left;transition:background .15s">
+            <span style="width:30px;height:30px;border-radius:8px;background:{{ r.dotBg }};color:{{ r.dotColor }};display:flex;align-items:center;justify-content:center;flex:none"><i class="bi {{ r.icon }}" style="font-size:15px"></i></span>
+            <span style="flex:1;font-weight:600;color:var(--head)">{{ r.label }}</span>
+            <span style="min-width:26px;height:24px;padding:0 8px;border-radius:20px;background:{{ r.badgeBg }};color:{{ r.badgeColor }};font-weight:700;font-size:12.5px;display:inline-flex;align-items:center;justify-content:center">{{ r.count }}</span>
+            <i class="bi bi-chevron-right" style="color:#c2cad4;font-size:13px"></i>
+          </button>
+        </sc-for>
+
+        <div style="margin-top:9px;padding:11px;border-radius:8px;background:#f6f8fa;border:1px dashed #d8dee5;display:flex;align-items:center;gap:9px">
+          <i class="bi bi-lightbulb" style="color:var(--primary);font-size:17px"></i>
+          <span style="font-size:11.5px;color:var(--muted);line-height:1.4"><b style="color:var(--head)">กระทบยอด:</b> “ยังไม่รับทราบ” ยังไม่เข้า Today's Job จนกว่าจะกดรับ · “กำลังดำเนินการ” = อยู่ใน Today's Job</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= RIGHT: TODAY'S JOB ================= -->
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+
+      <!-- summary card with shared % -->
+      <div style="background:var(--card);border:1px solid var(--border-light);border-radius:10px;padding:16px 18px">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+          <i class="bi bi-graph-up" style="color:var(--indigo);font-size:19px"></i>
+          <span style="font-weight:700;font-size:15px;color:var(--indigo)">Today's Job</span>
+          <span style="font-size:12px;color:var(--muted)">— {{ filterCaption }}</span>
+          <div style="flex:1"></div>
+          <span style="font-weight:800;font-size:20px;color:var(--indigo)">{{ avg }} %</span>
+        </div>
+        <div style="height:12px;background:#eef0f4;border-radius:6px;overflow:hidden;margin-bottom:13px"><div style="height:100%;border-radius:6px;background:var(--indigo);width:{{ avgStyle }};transition:width .3s"></div></div>
+
+        <!-- status strip = same taxonomy, also clickable -->
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ chips }}" as="c" hint-placeholder-count="4">
+            <button onClick="{{ c.onClick }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }};border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">
+              <span style="width:8px;height:8px;border-radius:50%;background:{{ c.dot }}"></span>{{ c.label }} <b>{{ c.count }}</b>
+            </button>
+          </sc-for>
+          <div style="flex:1"></div>
+          <sc-if value="{{ filtered }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ clearFilter }}" style="display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);background:#fff;color:var(--muted);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer"><i class="bi bi-x-circle"></i>ล้างตัวกรอง</button>
+          </sc-if>
+        </div>
+      </div>
+
+      <!-- job list -->
+      <div style="background:var(--card);border:1px solid var(--border-light);border-radius:10px;padding:8px 14px 14px">
+        <div style="display:flex;align-items:center;gap:8px;padding:11px 2px 9px">
+          <i class="bi bi-list-check" style="color:var(--primary);font-size:18px"></i>
+          <span style="font-weight:700;color:var(--head)">รายการงานวันนี้</span>
+          <span style="font-size:12px;color:var(--muted)">({{ visibleCount }} งาน)</span>
+        </div>
+
+        <sc-for list="{{ jobsView }}" as="job" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:13px;padding:12px;border:1px solid {{ job.rowBorder }};background:{{ job.rowBg }};border-radius:9px;margin-bottom:8px;animation:popIn .2s ease">
+            <div style="width:26px;text-align:center;font-weight:800;font-size:18px;color:var(--indigo);flex:none">{{ job.rank }}</div>
+            <span style="width:30px;height:30px;border-radius:8px;background:{{ job.dotBg }};color:{{ job.dotColor }};display:flex;align-items:center;justify-content:center;flex:none" title="{{ job.statusLabel }}"><i class="bi {{ job.statusIcon }}" style="font-size:15px"></i></span>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:600;color:var(--head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ job.title }}</div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:5px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)">
+                <span style="display:inline-flex;align-items:center;gap:5px"><i class="bi bi-person-circle"></i>{{ job.commander }}</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;background:{{ job.dotBg }};color:{{ job.dotColor }};border-radius:20px;padding:1px 9px;font-weight:600">{{ job.statusLabel }}</span>
+                <span style="display:inline-flex;align-items:center;gap:4px;color:{{ job.daysColor }};font-weight:600"><i class="bi {{ job.daysIcon }}"></i>{{ job.days }}</span>
+              </div>
+              <div style="margin-top:7px;height:6px;background:#eef0f4;border-radius:6px;overflow:hidden;max-width:460px"><div style="height:100%;border-radius:6px;background:{{ job.barColor }};width:{{ job.widthStyle }}"></div></div>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:{{ job.barColor }};width:36px;text-align:right">{{ job.widthStyle }}</span>
+          </div>
+        </sc-for>
+
+        <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;color:#aeb6c2;padding:34px 0;font-size:13px">ไม่มีงานในสถานะนี้</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1240,&quot;height&quot;:820}}">
+class Component extends DCLogic {
+  state = { dutyTab:'received', filter:'all',
+    jobs:[
+      {id:1,title:'อัพเดทระบบ EDR เป็น jdk8',commander:'Piyawat',status:'doing',progress:30,days:'เกิน 2 วัน',over:true},
+      {id:2,title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',status:'doing',progress:60,days:'เกิน 5 วัน',over:true},
+      {id:3,title:'ติดตามการเก็บเงิน ตามสัญญา',commander:'Nitirud',status:'doing',progress:45,days:'เหลือ 2 วัน',over:false},
+      {id:4,title:'โพสปัญหาเชิงโครงสร้างของ EDR',commander:'Pinij',status:'doing',progress:20,days:'เหลือ 4 วัน',over:false},
+      {id:5,title:'จัดทำ WI กระบวนการ Deploy เว็บไซต์',commander:'Chanavee',status:'closing',progress:100,days:'เหลือ 1 วัน',over:false},
+      {id:6,title:'ส่งรายงาน PA พัฒนางานประจำ',commander:'Sunthan',status:'closing',progress:90,days:'เหลือ 1 วัน',over:false},
+      {id:7,title:'รับงาน: ปรับปรุงเอกสารสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',status:'new',progress:0,days:'รอกดรับ',over:false},
+      {id:8,title:'รับงาน: อบรมลูกค้า ส่งมอบระบบ Grand ATS',commander:'บาส',status:'new',progress:0,days:'รอกดรับ',over:false},
+      {id:9,title:'ตรวจรับการปิดงาน: ทดสอบ regression',commander:'Narate',status:'done',progress:100,days:'ปิดแล้ว',over:false},
+    ]
+  };
+
+  STATUS = {
+    new:    {label:'ยังไม่รับทราบ', icon:'bi-bell',                dotBg:'#fff4e0', dotColor:'#d98223', dot:'#ee9d2b'},
+    doing:  {label:'กำลังดำเนินการ', icon:'bi-arrow-repeat',        dotBg:'#e7eafc', dotColor:'#3949c9', dot:'#3949c9'},
+    closing:{label:'ขอปิดงาน',       icon:'bi-check2-circle',       dotBg:'#e3f3f0', dotColor:'#0e8c7d', dot:'#15a08f'},
+    done:   {label:'ปิดงานแล้ว',     icon:'bi-check-circle-fill',   dotBg:'#e4f4ec', dotColor:'#1f9d57', dot:'#22b573'},
+  };
+
+  count(st){ return this.state.jobs.filter(j=>j.status===st).length; }
+  setFilter(f){ this.setState(s=>({filter:s.filter===f?'all':f})); }
+
+  renderVals(){
+    const f=this.state.filter, S=this.STATUS;
+    const lifeOrder=['new','doing','closing','done'];
+    const lifecycle=lifeOrder.map((k,i)=>({label:S[k].label,icon:S[k].icon,bg:S[k].dotBg,color:S[k].dotColor,arrow:i<lifeOrder.length-1}));
+
+    const tabsDef=[{key:'sent',icon:'bi-arrow-up-right',label:'คำสั่งที่สั่งไป'},{key:'received',icon:'bi-arrow-down-left',label:'คำสั่งที่ได้รับ'},{key:'wi',icon:'bi-book',label:'WI'}];
+    const dutyTabs=tabsDef.map(t=>{ const a=this.state.dutyTab===t.key; return {...t, onClick:()=>this.setState({dutyTab:t.key}), color:a?'var(--primary)':'var(--muted)', indicator:a?'var(--primary)':'transparent'}; });
+
+    // received-tab status rows, counts derived from the SAME job set
+    const rowDefs=[['new'],['doing'],['closing'],['done']];
+    const statusRows=rowDefs.map(([k])=>{ const st=S[k]; const active=f===k; const n=this.count(k); return {
+      label:st.label, icon:st.icon, count:n, onClick:()=>this.setFilter(k),
+      dotBg:st.dotBg, dotColor:st.dotColor,
+      rowBg:active?st.dotBg:'#fff', rowBorder:active?st.dotColor:'var(--border-light)',
+      badgeBg:active?'#fff':st.dotBg, badgeColor:st.dotColor }; });
+
+    const chipsDef=['new','doing','closing','done'];
+    const chips=chipsDef.map(k=>{ const st=S[k]; const active=f===k; return {
+      label:st.label, count:this.count(k), onClick:()=>this.setFilter(k), dot:st.dot,
+      bg:active?st.dotBg:'#fff', border:active?st.dotColor:'var(--border-light)', color:active?st.dotColor:'var(--head)' }; });
+
+    let list=this.state.jobs;
+    if(f!=='all') list=list.filter(j=>j.status===f);
+    const jobsView=list.map((j,i)=>{ const st=S[j.status]; return {...j, rank:i+1,
+      statusLabel:st.label, statusIcon:st.icon, dotBg:st.dotBg, dotColor:st.dotColor,
+      widthStyle:j.progress+'%', barColor:j.progress>=100?'#22b573':j.progress>=40?'var(--indigo)':j.progress>0?'#ee9d2b':'#cbd5e1',
+      daysColor:j.over?'#d83a3a':'#0e8c7d', daysIcon:j.over?'bi-exclamation-triangle-fill':(j.status==='done'?'bi-check2':'bi-calendar-event'),
+      rowBg: f==='all'&&j.over?'#fdf4f4':'#fff', rowBorder: f==='all'&&j.over?'#f3d6d6':'var(--border-light)' }; });
+
+    const active=this.state.jobs.filter(j=>j.status==='doing'||j.status==='closing');
+    const avgBase=f==='all'?active:list;
+    const avg=avgBase.length?Math.round(avgBase.reduce((s,j)=>s+j.progress,0)/avgBase.length):0;
+
+    const captions={all:'งานที่ลงมือวันนี้ (กำลังดำเนินการ + ขอปิดงาน)',new:'กรอง: ยังไม่รับทราบ',doing:'กรอง: กำลังดำเนินการ',closing:'กรอง: ขอปิดงาน',done:'กรอง: ปิดงานแล้ว'};
+
+    return { lifecycle, dutyTabs, statusRows, chips,
+      jobsView, visibleCount:list.length, empty:list.length===0,
+      avg, avgStyle:avg+'%', filtered:f!=='all', clearFilter:()=>this.setState({filter:'all'}),
+      filterCaption:captions[f] };
+  }
+}
+</script>
+</body>
+</html>

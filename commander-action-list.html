@@ -110,7 +110,7 @@ function App(){
       {/* ICON RAIL */}
       <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
         <div style={{width:34,height:34,borderRadius:'50%',background:'#e7eaef',overflow:'hidden',marginBottom:6}}><img src="https://i.pravatar.cc/100?img=11" style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/></div>
-        {[['bi-layout-sidebar'],['bi-graph-up'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',true,'commander-action-dashboard.html'],['bi-easel'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
+        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',true,'commander-action-dashboard.html'],['bi-easel',false,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
           <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
         ) : (
           <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
