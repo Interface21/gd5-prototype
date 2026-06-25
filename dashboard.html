@@ -194,6 +194,8 @@
     }
     .drawer-item:hover { background: #e6f7f5; color: #15a08f; }
     .drawer-item.active { background: #e6f7f5; color: #15a08f; }
+    .feed-compose { transition: box-shadow .15s, border-color .15s; }
+    .feed-compose:hover { box-shadow: 0 4px 14px rgba(16,24,40,.08); border-color: #bfe6df; }
   </style>
 </head>
 <body>
@@ -465,7 +467,7 @@
               <q-list class="q-px-sm q-pb-sm">
                 <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
                   <q-item-section avatar style="min-width: 42px;">
-                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar2.jpg"></q-avatar>
+                    <q-avatar size="38" style="background:#0891b2;color:#fff;font-weight:700">N</q-avatar>
                   </q-item-section>
                   <q-item-section>
                     <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้อ่านโพสต์ของ Nichagorn Prajansen</q-item-label>
@@ -479,7 +481,7 @@
 
                 <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
                   <q-item-section avatar style="min-width: 42px;">
-                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar3.jpg"></q-avatar>
+                    <q-avatar size="38" style="background:#7c3aed;color:#fff;font-weight:700">C</q-avatar>
                   </q-item-section>
                   <q-item-section>
                     <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้อ่านโพสต์ของ Chanavee Bekaku</q-item-label>
@@ -493,7 +495,7 @@
 
                 <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
                   <q-item-section avatar style="min-width: 42px;">
-                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar4.jpg"></q-avatar>
+                    <q-avatar size="38" style="background:#7c3aed;color:#fff;font-weight:700">C</q-avatar>
                   </q-item-section>
                   <q-item-section>
                     <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้ให้รางวัลโพสต์ของ Chanavee...</q-item-label>
@@ -507,7 +509,7 @@
 
                 <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
                   <q-item-section avatar style="min-width: 42px;">
-                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar5.jpg"></q-avatar>
+                    <q-avatar size="38" style="background:#dd7a16;color:#fff;font-weight:700">S</q-avatar>
                   </q-item-section>
                   <q-item-section>
                     <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้อ่านโพสต์ของ Sunthan Mongkol</q-item-label>
@@ -521,7 +523,7 @@
 
                 <q-item clickable v-ripple class="q-px-md q-mb-sm bg-grey-1" style="border-radius: 8px;">
                   <q-item-section avatar style="min-width: 42px;">
-                    <q-avatar size="38px"><img src="https://cdn.quasar.dev/img/avatar2.jpg"></q-avatar>
+                    <q-avatar size="38" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
                   </q-item-section>
                   <q-item-section>
                     <q-item-label class="text-weight-bold" style="font-size: 13px;">คุณได้แสดงความคิดเห็นโพสต์ของ Pinij</q-item-label>
@@ -577,7 +579,8 @@
             </div>
 
             <!-- FeedPostArea (จาก FeedPostArea.vue) -->
-            <q-card flat bordered class="q-mb-md">
+            <a href="create-post.html" style="text-decoration:none;color:inherit;">
+            <q-card flat bordered class="q-mb-md feed-compose" style="cursor:pointer;">
               <q-card-section class="q-py-sm">
                 <q-item>
                   <q-item-section avatar>
@@ -594,6 +597,7 @@
                 </q-item>
               </q-card-section>
             </q-card>
+            </a>
 
             <!-- Feed Sort -->
             <div class="row items-center q-mb-sm">
@@ -608,7 +612,7 @@
             <div class="feed-card">
               <q-item class="q-pa-md q-pb-sm">
                 <q-item-section avatar>
-                  <q-avatar size="40px"><img src="https://cdn.quasar.dev/img/avatar2.jpg"></q-avatar>
+                  <q-avatar size="40" style="background:#d83a3a;color:#fff;font-weight:700">M</q-avatar>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label class="text-weight-bold">Mr.Test Bekaku <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">25 พ.ค. 2026, 10:46 น.</span></q-item-label>
@@ -640,7 +644,7 @@
             <div class="feed-card">
               <q-item class="q-pa-md q-pb-sm">
                 <q-item-section avatar>
-                  <q-avatar size="40px"><img src="https://cdn.quasar.dev/img/avatar3.jpg"></q-avatar>
+                  <q-avatar size="40" style="background:#dd7a16;color:#fff;font-weight:700">S</q-avatar>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label class="text-weight-bold">SA-Tester <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">25 พ.ค. 2026, 9:30 น.</span></q-item-label>
@@ -672,7 +676,7 @@
             <div class="feed-card">
               <q-item class="q-pa-md q-pb-sm">
                 <q-item-section avatar>
-                  <q-avatar size="40px"><img src="https://cdn.quasar.dev/img/avatar6.jpg"></q-avatar>
+                  <q-avatar size="40" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label class="text-weight-bold">Pinij Ningunha <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">24 พ.ค. 2026, 15:20 น.</span></q-item-label>
@@ -702,7 +706,7 @@
             <div class="feed-card">
               <q-item class="q-pa-md q-pb-sm">
                 <q-item-section avatar>
-                  <q-avatar size="40px"><img src="https://cdn.quasar.dev/img/avatar4.jpg"></q-avatar>
+                  <q-avatar size="40" style="background:#4f46e5;color:#fff;font-weight:700">T</q-avatar>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label class="text-weight-bold">Tsiramet <span class="text-grey-6 text-weight-regular q-ml-sm" style="font-size: 11px;">23 พ.ค. 2026, 11:15 น.</span></q-item-label>
@@ -746,25 +750,19 @@
               </div>
               <div class="row q-gutter-md justify-start">
                 <div class="text-center" style="width: 72px;">
-                  <q-avatar rounded size="56px" class="q-mb-sm" style="border-radius: 8px;">
-                    <img src="https://cdn.quasar.dev/img/parallax2.jpg">
-                  </q-avatar>
+                  <q-avatar rounded size="56px" class="q-mb-sm" style="border-radius:8px;background:#15a08f;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center">P</q-avatar>
                   <div class="text-weight-bold ellipsis" style="font-size: 13px; color: var(--v-main-text-head);">Piyawat T...</div>
                   <div class="text-grey ellipsis" style="font-size: 11px;">SA Staff</div>
                   <div class="text-grey ellipsis" style="font-size: 11px;">น้อยกว่า 1 ...</div>
                 </div>
                 <div class="text-center" style="width: 72px;">
-                  <q-avatar rounded size="56px" class="q-mb-sm" style="border-radius: 8px;">
-                    <img src="https://cdn.quasar.dev/img/avatar3.jpg">
-                  </q-avatar>
+                  <q-avatar rounded size="56px" class="q-mb-sm" style="border-radius:8px;background:#dd7a16;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center">S</q-avatar>
                   <div class="text-weight-bold ellipsis" style="font-size: 13px; color: var(--v-main-text-head);">Somchai M...</div>
                   <div class="text-grey ellipsis" style="font-size: 11px;">Developer</div>
                   <div class="text-grey ellipsis" style="font-size: 11px;">5 นาที</div>
                 </div>
                 <div class="text-center" style="width: 72px;">
-                  <q-avatar rounded size="56px" class="q-mb-sm" style="border-radius: 8px;">
-                    <img src="https://cdn.quasar.dev/img/avatar5.jpg">
-                  </q-avatar>
+                  <q-avatar rounded size="56px" class="q-mb-sm" style="border-radius:8px;background:#1f9d57;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center">W</q-avatar>
                   <div class="text-weight-bold ellipsis" style="font-size: 13px; color: var(--v-main-text-head);">Wandee K...</div>
                   <div class="text-grey ellipsis" style="font-size: 11px;">QA Engineer</div>
                   <div class="text-grey ellipsis" style="font-size: 11px;">10 นาที</div>
@@ -860,7 +858,7 @@
               </div>
 
               <div class="group-item q-mb-md">
-                <q-avatar size="38px" class="q-mr-sm"><img src="https://cdn.quasar.dev/img/avatar6.jpg"></q-avatar>
+                <q-avatar size="38px" class="q-mr-sm" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
                 <div class="col">
                   <div class="text-weight-bold" style="font-size: 13px;">พันธกิจที่ 1 : EDR</div>
                   <div class="text-grey" style="font-size: 11px; line-height: 1.4;"><q-icon name="bi-pencil" size="12px"></q-icon> โพสต์ 341<br>Pinij Ningunha</div>
