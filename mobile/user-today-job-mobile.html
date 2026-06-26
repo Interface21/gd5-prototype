@@ -7,9 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
+.bi{vertical-align:-2px}
 body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#e8edf2;background:#e7eaf0;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 0}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 input{font-family:inherit}
@@ -28,11 +29,12 @@ input{font-family:inherit}
 <div id="root"></div>
 <script type="text/plain" id="jsx-src">
 const {useState} = React;
-const MSF = {fontFamily:"'Material Symbols Rounded'"};
+const ICON={"account_balance":"bank","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","add_circle":"plus-circle","add_task":"plus-square","arrow_back":"arrow-left","arrow_forward":"arrow-right","arrow_drop_down":"caret-down-fill","arrow_drop_up":"caret-up-fill","assignment":"clipboard","attach_file":"paperclip","autorenew":"arrow-repeat","back_hand":"hand-index","bar_chart":"bar-chart","battery_full":"battery-full","bolt":"lightning-charge","bookmark":"bookmark","bookmark_add":"bookmark-plus","calendar_month":"calendar3","calendar_today":"calendar","call_made":"arrow-up-right","call_received":"arrow-down-left","campaign":"megaphone","cancel":"x-circle","chat":"chat-dots","chat_bubble":"chat-dots","chat_bubble_outline":"chat","check":"check-lg","check_box":"check-square","check_box_outline_blank":"square","check_circle":"check-circle","checklist":"list-check","chevron_left":"chevron-left","chevron_right":"chevron-right","close":"x-lg","content_copy":"files","delete":"trash","description":"file-text","desktop_windows":"display","domain":"building","done":"check-lg","done_all":"check2-all","donut_small":"pie-chart","download":"download","drag_indicator":"grip-vertical","ecg_heart":"activity","edit":"pencil","edit_note":"pencil-square","engineering":"tools","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","favorite":"heart","filter":"funnel","filter_alt_off":"funnel","filter_list":"funnel","flag":"flag","format_list_bulleted":"list-ul","forum":"chat-square-text","grid_view":"grid","group":"people","group_add":"person-plus","groups":"people","help":"question-circle","home":"house","hourglass":"hourglass","hourglass_bottom":"hourglass-bottom","hourglass_empty":"hourglass","hourglass_top":"hourglass-top","how_to_reg":"person-check","image":"image","inbox":"inbox","ink_eraser":"eraser","insert_chart":"bar-chart","insights":"graph-up","inventory_2":"box-seam","keyboard_arrow_down":"chevron-down","keyboard_arrow_up":"chevron-up","leaderboard":"bar-chart-line","list":"list","lock":"lock","low_priority":"sort-down","mail":"envelope","menu":"list","menu_book":"book","monitor_heart":"activity","monitoring":"graph-up-arrow","more_horiz":"three-dots","more_vert":"three-dots-vertical","move_up":"arrow-up-square","note_add":"file-earmark-plus","notifications":"bell","open_in_full":"arrows-fullscreen","open_in_new":"box-arrow-up-right","outbox":"box-arrow-up","palette":"palette","pending":"hourglass-split","person":"person","pie_chart":"pie-chart","play_arrow":"play-fill","play_circle":"play-circle","playlist_add":"list-task","playlist_add_check":"list-check","power_settings_new":"power","public":"globe","push_pin":"pin-angle","radio_button_unchecked":"circle","redeem":"gift","reply":"reply","schedule":"clock","search":"search","south_west":"arrow-down-left","north_east":"arrow-up-right","co_present":"easel","show_chart":"graph-up","storefront":"shop","shopping_bag":"bag","search_off":"search","send":"send","settings":"gear","shield_lock":"shield-lock","shield_person":"shield-check","signal_cellular_alt":"reception-4","signpost":"signpost-2","sort":"sort-down","speed":"speedometer2","star":"star","support":"life-preserver","swap_vert":"arrow-down-up","tag":"hash","task_alt":"check2-circle","title":"type","today":"calendar-check","touch_app":"hand-index","trending_up":"graph-up-arrow","tune":"sliders","unfold_more":"chevron-expand","upload_file":"file-earmark-arrow-up","verified_user":"patch-check","videocam":"camera-video","view_agenda":"card-heading","visibility":"eye","volunteer_activism":"hand-heart","warning":"exclamation-triangle","waving_hand":"emoji-smile","wifi":"wifi"};
+const ICONF={"check_circle":"check-circle-fill","favorite":"heart-fill","person":"person-fill","groups":"people-fill","group":"people-fill","play_circle":"play-circle-fill","lock":"lock-fill","send":"send-fill","push_pin":"pin-angle-fill","verified_user":"patch-check-fill","shield_person":"shield-fill-check","inbox":"inbox-fill","waving_hand":"emoji-smile-fill","star":"star-fill","flag":"flag-fill","notifications":"bell-fill","home":"house-fill","pie_chart":"pie-chart-fill"};
 // Dark app palette (matches real GD5 mobile)
 const bg0='#f3f5f8', bg1='#ffffff', bg2='#eef0f4', line='#e7eaef';
 const txt='#1f2733', sub='#8a93a3', teal='#15a08f', tealDim='#e3f3f0', pink='#ef4444', indigo='#4f46e5';
-const ic=(name,size,color,fill)=>(<span className="ms" style={{...MSF,fontSize:size,color,...(fill?{fontVariationSettings:"'FILL' 1"}:{})}}>{name}</span>);
+const ic=(name,size,color,fill)=>{var k=(fill&&ICONF[name])||ICON[name]||'bi-record-circle';return (<i className={'bi '+(/^bi-/.test(k)?k:'bi-'+k)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
 
 const MYJOBS0=[
   {id:'j1',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',priority:'high',due:'31/03/2026',days:'เกิน 5 วัน',daysType:'over',progress:60,status:'yellow'},
@@ -209,7 +211,7 @@ function App(){
         </div>
       </div>
       <div style={{display:'flex',alignItems:'center',gap:10,background:bg1,border:'1px solid '+line,borderRadius:12,padding:'10px 12px',marginBottom:14}}>
-        <div style={{width:30,height:30,borderRadius:'50%',background:'#d3dae2',flex:'none'}}></div>
+        <div style={{width:30,height:30,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:13,flex:'none'}}>P</div>
         <span style={{flex:1,fontSize:12.5,color:sub}}>ถ้าอยากได้ความคิดเห็น โพสต์ถามเพื่อนเลย</span>
         <div style={{width:26,height:26,borderRadius:'50%',background:'#15a08f'}}></div>
       </div>
@@ -223,7 +225,7 @@ function App(){
       {[{n:'Praphas Khongsabai',r:'ที่ปรึกษาด้านปฏิบัติการ',d:'24 มิ.ย. 2026',t:'สรุปแผนธุรกิจ บจ.แกรนด์ เอทีเอส ปี 2569 บนระบบ GD5 — ประกอบด้วย 4 พันธกิจ…'},{n:'Jirapa Saegkam',r:'Senior Implement',d:'23 มิ.ย. 2026',t:'งานทวิภาคีต้องการให้ระบบแสดงข้อมูลการอัพโหลดแผนฝึกอาชีพในสถานประกอบการ…'}].map((p,i)=>(
         <div key={i} style={{background:bg1,border:'1px solid '+line,borderRadius:14,padding:14,marginBottom:11}}>
           <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
-            <div style={{width:38,height:38,borderRadius:'50%',background:pickColor(p.n),flex:'none'}}></div>
+            <div style={{width:38,height:38,borderRadius:'50%',background:pickColor(p.n),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>{(p.n||'?').trim().charAt(0)}</div>
             <div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:13.5,color:txt}}>{p.n}</div><div style={{fontSize:11,color:sub}}>{p.r} · {p.d}</div></div>
             {ic('more_vert',20,sub)}
           </div>
@@ -237,7 +239,7 @@ function App(){
     <div className="appscroll" style={{flex:1,overflowY:'auto',padding:'10px 12px 92px'}}>
       {[{n:'SA-Developer',m:'Narate: เดี๋ยวรีวิว PR ให้นะครับ',t:'15:42',u:3},{n:'Piyawat Takaew',m:'อัพเดทความก้าวหน้าให้หน่อยครับ',t:'14:08',u:1},{n:'VM : EDR วก.ตะกั่วป่า',m:'Jirapa: รีโพสต์แล้วค่ะ',t:'13:58',u:0},{n:'Bodin Muanprasat',m:'รับทราบครับ กำลังทำอยู่',t:'เมื่อวาน',u:0},{n:'แผนปฏิบัติการ',m:'สรุปยอดเก็บเงินเดือนนี้',t:'จ.',u:6}].map((c,i)=>(
         <div key={i} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 8px',borderBottom:'1px solid '+line}}>
-          <div style={{width:48,height:48,borderRadius:'50%',background:pickColor(c.n),flex:'none'}}></div>
+          <div style={{width:48,height:48,borderRadius:'50%',background:pickColor(c.n),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:19,flex:'none'}}>{(c.n||'?').trim().charAt(0)}</div>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontWeight:700,fontSize:14,color:txt}}>{c.n}</div>
             <div style={{fontSize:12.5,color:sub,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{c.m}</div>
@@ -283,7 +285,7 @@ function App(){
   const MoreMenu=()=>(
     <div className="appscroll" style={{flex:1,overflowY:'auto',padding:'14px 14px 92px'}}>
       <div style={{background:bg1,border:'1px solid '+line,borderRadius:14,padding:'12px 14px',display:'flex',alignItems:'center',gap:12,marginBottom:13}}>
-        <div style={{width:42,height:42,borderRadius:'50%',background:'#d3dae2',flex:'none'}}></div>
+        <div style={{width:42,height:42,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:18,flex:'none'}}>P</div>
         <div style={{flex:1,fontWeight:700,fontSize:15,color:txt}}>Piyawat Takaew</div>
         <div style={{position:'relative',width:34,height:34,borderRadius:'50%',background:bg2,display:'flex',alignItems:'center',justifyContent:'center'}}>{ic('expand_more',22,sub)}<span style={{position:'absolute',top:-3,right:-3,background:pink,color:'#fff',fontSize:9,fontWeight:800,borderRadius:99,minWidth:15,height:15,display:'flex',alignItems:'center',justifyContent:'center'}}>1</span></div>
       </div>

@@ -22,7 +22,7 @@
 ### กติกาจาก `scope.md`
 - **framework**: Vue/Quasar
 - **font**: `"Google Sans", "Noto Sans Thai Looped", system-ui, sans-serif` (หน้า React prototype ใช้ `IBM Plex Sans Thai` แทนชั่วคราว)
-- **icon**: Bootstrap Icons (https://icons.getbootstrap.com/) — หน้า React ยังใช้ Material Symbols Rounded ร่วมด้วยในเนื้อหา
+- **icon**: **Bootstrap Icons (https://icons.getbootstrap.com/) เป็นหลักทุกหน้า** — เลิกใช้ Material Symbols แล้ว ทุกหน้าเรนเดอร์ผ่าน `<i className="bi bi-...">`
 - ใช้ `template_frontend.html` เป็น template ฝั่ง frontend
 - อัปเดตขึ้น GitHub ทันทีหลังแก้โค้ดเสร็จ
 - **คลิกโลโก้ → กลับหน้าแรก `dashboard.html`**
@@ -59,7 +59,7 @@ const primarySoft='#e3f3f0';    // พื้นอ่อนของ primary
 **รูปแบบโค้ด React prototype:**
 - เขียน JSX ใน `<script type="text/plain" id="jsx-src">` แล้ว transpile ด้วย Babel ตอน runtime
 - ใช้ **inline style ทั้งหมด** (ไม่มี CSS class ยกเว้น hover/keyframes เล็กน้อยใน `<style>`)
-- helper ไอคอน Material: `ms(name,size,color,fill)`
+- helper ไอคอน: `ms(name,size,color,fill)` — รับชื่อเดิม (สไตล์ Material) แล้ว map เป็นคลาส Bootstrap Icons ผ่านตาราง `ICON`/`ICONF` ที่ประกาศต้นไฟล์ คืน `<i className="bi bi-...">` (ไม่มี Material Symbols font แล้ว). หน้า mobile ใช้ helper `ic(...)` รูปแบบเดียวกัน
 - รักษา shell (top bar + icon rail) ให้เหมือนกันทุกหน้าเพื่อความต่อเนื่อง
 
 ---
@@ -174,3 +174,12 @@ const primarySoft='#e3f3f0';    // พื้นอ่อนของ primary
 - `user-virtual-meeting.html` — หน้ากลุ่ม/Virtual Meeting จากภาพตัวอย่าง (ธีมสว่าง): tabs + การ์ดเด่น + รายการกลุ่ม + sidebar กลุ่มแนะนำ — บน shell เดียวกับหน้า list — ธีมมืดเป็นแค่ตัวอย่างจากผู้ใช้ ไม่ใช้จริง (พื้นขาว #f3f5f8 / การ์ดขาว / teal #15a08f / indigo #4f46e5). โครงสร้าง navigation: bottom bar 4 แท็บคงที่ — หน้าหลัก / แชท / วิเคราะห์ข้อมูล / อื่นๆ. "คำสั่งที่ได้รับ" (Today's Job) เข้าผ่านเมนู "อื่นๆ" → push หน้า (มีปุ่ม back); ภายในมี sub-tab งานของฉัน/ของลูกทีม/จัดการ
 
 > ⚠️ **ข้อตกลงถาวร: ห้ามทำ dark mode ทุกหน้าจอ** — ใช้ธีมสว่างเสมอ
+
+- `create-post.html` — หน้าสร้างโพสต์ใหม่ (modal 2 คอลัมน์, rich text, แท็ก/แฮชแท็ก/WI เป็นชิป, ไฟล์แนบ, ปุ่มโพสต์ + โพสต์&สั่งการ) ลิงก์จากกล่อง compose ใน dashboard.html
+- `create-command.html` — หน้าสั่งการใหม่ (wizard เลือกประเภท → สร้างคำสั่ง → ตั้งเป้าหมาย → ผู้รับผิดชอบ → ยืนยัน, มี stepper) ลิงก์จากเมนู "เพิ่มการสั่งการใหม่" ทุกหน้า + ปุ่ม "โพสต์ + สั่งการ"
+- `team-action-received.html` — หน้า "คำสั่งที่ลูกทีมได้รับ" 3 มุมมองสลับด้วยปุ่มมุมขวาบน: **การ์ด** (กราฟแท่งแนวนอนสถานะรายคน + จำนวนคำสั่ง · คลิก → `assignee-action-list.html?member=<ชื่อ>` ดูรายการคำสั่งที่ได้รับทั้งหมดของคนนั้น), **รายการ** (progress bar · คลิก → `user-today-job.html?member=<ชื่อ>` Today Job), **แดชบอร์ด รายบุคคล** (dropdown เลือกลูกทีม → สถิติ + กราฟ + donut ของคนนั้น) — ลิงก์จากเมนูในหน้า commander
+- `assignee-action-list.html` — รองรับ deep-link `?member=<ชื่อ>` แสดง header บริบทลูกทีม (avatar + ปุ่มย้อนกลับไป team-action-received + "คำสั่งที่ได้รับ — <ชื่อ>"); แก้ไอคอน schedule/error ใน DaysPill ที่ตกหล่นจากการ map (เคยขึ้น fallback)
+- `user-today-job.html` — รวม roster ลูกทีมให้ตรงกับ team-action-received (8 คน) + รองรับ deep-link `?member=<ชื่อ>` เปิดมุมมอง Today Job ของคนนั้นทันทีเมื่อโหลด
+- `user-virtual-meeting.html` — เปลี่ยนฟิลเตอร์ Easy PM "ที่อยู่ระหว่างดำเนินการ" → "กำลังดำเนินการ" + เพิ่ม badge จำนวนให้ "กำลังดำเนินการ"/"เกินสัญญา"
+- **avatar ทุกหน้า** — เปลี่ยนจากรูป (การ์ตูน/ภาพถ่าย) เป็นวงกลมตัวอักษรตัวแรกของชื่อ พร้อมสีประจำตัว (CSS ล้วน ไม่พึ่งรูปจากเน็ต)
+- **ไอคอนทุกหน้า → Bootstrap Icons** — แปลง Material Symbols ทั้งหมด (~120 ชื่อ) มาเป็นคลาส `bi-*` ผ่านตาราง map ใน helper `ms()`/`ic()`; ลบ Material Symbols font ออกทุกไฟล์

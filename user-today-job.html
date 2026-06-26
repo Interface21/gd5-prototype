@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
@@ -31,7 +30,8 @@ input{font-family:inherit}
 <div id="root"></div>
 <script type="text/plain" id="jsx-src">
 const {useState} = React;
-const MS = {fontFamily:"'Material Symbols Rounded'"};
+const ICON={"account_balance":"bank","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","add_circle":"plus-circle","add_task":"plus-square","arrow_back":"arrow-left","arrow_forward":"arrow-right","arrow_drop_down":"caret-down-fill","arrow_drop_up":"caret-up-fill","assignment":"clipboard","attach_file":"paperclip","autorenew":"arrow-repeat","back_hand":"hand-index","bar_chart":"bar-chart","battery_full":"battery-full","bolt":"lightning-charge","bookmark":"bookmark","bookmark_add":"bookmark-plus","calendar_month":"calendar3","calendar_today":"calendar","call_made":"arrow-up-right","call_received":"arrow-down-left","campaign":"megaphone","cancel":"x-circle","chat":"chat-dots","chat_bubble":"chat-dots","chat_bubble_outline":"chat","check":"check-lg","check_box":"check-square","check_box_outline_blank":"square","check_circle":"check-circle","checklist":"list-check","chevron_left":"chevron-left","chevron_right":"chevron-right","close":"x-lg","content_copy":"files","delete":"trash","description":"file-text","desktop_windows":"display","domain":"building","done":"check-lg","done_all":"check2-all","donut_small":"pie-chart","download":"download","drag_indicator":"grip-vertical","ecg_heart":"activity","edit":"pencil","edit_note":"pencil-square","engineering":"tools","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","favorite":"heart","filter":"funnel","filter_alt_off":"funnel","filter_list":"funnel","flag":"flag","format_list_bulleted":"list-ul","forum":"chat-square-text","grid_view":"grid","group":"people","group_add":"person-plus","groups":"people","help":"question-circle","home":"house","hourglass":"hourglass","hourglass_bottom":"hourglass-bottom","hourglass_empty":"hourglass","hourglass_top":"hourglass-top","how_to_reg":"person-check","image":"image","inbox":"inbox","ink_eraser":"eraser","insert_chart":"bar-chart","insights":"graph-up","inventory_2":"box-seam","keyboard_arrow_down":"chevron-down","keyboard_arrow_up":"chevron-up","leaderboard":"bar-chart-line","list":"list","lock":"lock","low_priority":"sort-down","mail":"envelope","menu":"list","menu_book":"book","monitor_heart":"activity","monitoring":"graph-up-arrow","more_horiz":"three-dots","more_vert":"three-dots-vertical","move_up":"arrow-up-square","note_add":"file-earmark-plus","notifications":"bell","open_in_full":"arrows-fullscreen","open_in_new":"box-arrow-up-right","outbox":"box-arrow-up","palette":"palette","pending":"hourglass-split","person":"person","pie_chart":"pie-chart","play_arrow":"play-fill","play_circle":"play-circle","playlist_add":"list-task","playlist_add_check":"list-check","power_settings_new":"power","public":"globe","push_pin":"pin-angle","radio_button_unchecked":"circle","redeem":"gift","reply":"reply","schedule":"clock","search":"search","search_off":"search","send":"send","settings":"gear","shield_lock":"shield-lock","shield_person":"shield-check","signal_cellular_alt":"reception-4","signpost":"signpost-2","sort":"sort-down","speed":"speedometer2","star":"star","support":"life-preserver","swap_vert":"arrow-down-up","tag":"hash","task_alt":"check2-circle","title":"type","today":"calendar-check","touch_app":"hand-index","trending_up":"graph-up-arrow","tune":"sliders","unfold_more":"chevron-expand","upload_file":"file-earmark-arrow-up","verified_user":"patch-check","videocam":"camera-video","view_agenda":"card-heading","visibility":"eye","volunteer_activism":"hand-heart","warning":"exclamation-triangle","waving_hand":"emoji-smile","wifi":"wifi"};
+const ICONF={"check_circle":"check-circle-fill","favorite":"heart-fill","person":"person-fill","groups":"people-fill","group":"people-fill","play_circle":"play-circle-fill","lock":"lock-fill","send":"send-fill","push_pin":"pin-angle-fill","verified_user":"patch-check-fill","shield_person":"shield-fill-check","inbox":"inbox-fill","waving_hand":"emoji-smile-fill","star":"star-fill","flag":"flag-fill","notifications":"bell-fill","home":"house-fill","pie_chart":"pie-chart-fill"};
 
 const TODAY0 = [
   {id:'j1',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',priority:'high',due:'31/03/2026',days:'เกิน 5 วัน',daysType:'over',progress:60,status:'yellow',type:'strategic'},
@@ -48,17 +48,35 @@ const MEMBERS0 = [
     {id:'b2',title:'แก้บั๊ก dashboard EDR ก่อน demo',commander:'Narate',priority:'urgent',due:'29/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:40,status:'red',type:'daily'},
     {id:'b3',title:'รีวิวโค้ด Pull Request #214',commander:'Chanavee',priority:'normal',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:0,status:'yellow',type:'daily'},
   ]},
-  {id:'m2',name:'Narate Boonmee',role:'Software Engineer',progress:46,jobs:[
+  {id:'m2',name:'Chanavee Bekaku',role:'Dev Manager',progress:46,jobs:[
+    {id:'c1',title:'วางแผน Sprint ทีมพัฒนา EDR',commander:'Piyawat',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:60,status:'green',type:'daily'},
+    {id:'c2',title:'รีวิวสถาปัตยกรรมระบบ Grand ATS',commander:'Piyawat',priority:'normal',due:'03/07/2026',days:'เหลือ 6 วัน',daysType:'left',progress:40,status:'yellow',type:'pa'},
+    {id:'c3',title:'อนุมัติ Pull Request ค้างทั้งหมด',commander:'Narate',priority:'urgent',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:35,status:'red',type:'daily'},
+  ]},
+  {id:'m3',name:'Chanon Thaiprayoo',role:'Technician',progress:9,jobs:[
+    {id:'t1',title:'ติดตั้งอุปกรณ์เครือข่ายสาขาใหม่',commander:'Piyawat',priority:'normal',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:0,status:'red',type:'daily'},
+    {id:'t2',title:'ตรวจเช็คระบบสำรองไฟ UPS',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:18,status:'yellow',type:'daily'},
+  ]},
+  {id:'m4',name:'Narate Boonmee',role:'Software Engineer',progress:18,jobs:[
     {id:'n1',title:'จัดทำ WI การ Deploy ด้วย Nuxt Content',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:60,status:'green',type:'daily'},
     {id:'n2',title:'ทดสอบ regression ระบบ EDR',commander:'Piyawat',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:30,status:'yellow',type:'daily'},
   ]},
-  {id:'m3',name:'Supatta Longna',role:'แผนปฏิบัติการ',progress:9,jobs:[
-    {id:'s1',title:'หาสาเหตุที่แท้จริงของปัญหา',commander:'Piyawat',priority:'normal',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:0,status:'red',type:'daily'},
-    {id:'s2',title:'สรุปยอดเก็บเงินรายเดือน',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:20,status:'yellow',type:'daily'},
+  {id:'m5',name:'Sunthan Mongkol',role:'QA Engineer',progress:46,jobs:[
+    {id:'q1',title:'เขียน Test Case ฟีเจอร์ Virtual Meeting',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:55,status:'green',type:'daily'},
+    {id:'q2',title:'ทดสอบ End-to-End ก่อน Release',commander:'Piyawat',priority:'urgent',due:'29/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:45,status:'red',type:'daily'},
+    {id:'q3',title:'สรุปรายงานบั๊กประจำสัปดาห์',commander:'Narate',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:40,status:'yellow',type:'daily'},
   ]},
-  {id:'m4',name:'Nichagorn Prajansen',role:'Staff',progress:46,jobs:[
-    {id:'g1',title:'สรุปข้อมูลความเห็นโพสต์',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:46,status:'green',type:'daily'},
-    {id:'g2',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:50,status:'green',type:'pa'},
+  {id:'m6',name:'Wandee Klaharn',role:'QA Engineer',progress:14,jobs:[
+    {id:'w1',title:'ตรวจสอบความถูกต้องของรายงาน',commander:'Piyawat',priority:'normal',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:15,status:'yellow',type:'daily'},
+    {id:'w2',title:'ทดสอบการแสดงผลบนมือถือ',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:10,status:'yellow',type:'daily'},
+  ]},
+  {id:'m7',name:'Chayanee Prajongkarn',role:'Staff',progress:18,jobs:[
+    {id:'y1',title:'สรุปข้อมูลความเห็นโพสต์',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:20,status:'yellow',type:'daily'},
+    {id:'y2',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:25,status:'yellow',type:'pa'},
+  ]},
+  {id:'m8',name:'Anusorn Suksri',role:'ที่ปรึกษา',progress:14,jobs:[
+    {id:'a1',title:'ให้คำปรึกษาการวางแผนธุรกิจ Q3',commander:'Piyawat',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:18,status:'yellow',type:'strategic'},
+    {id:'a2',title:'ทบทวนเอกสารกลยุทธ์องค์กร',commander:'Nitirud',priority:'normal',due:'03/07/2026',days:'เหลือ 6 วัน',daysType:'left',progress:10,status:'yellow',type:'pa'},
   ]},
 ];
 const POOL0 = [
@@ -82,7 +100,7 @@ const barColorFor=(p)=> p>=100?'#22b573':p>=40?primary:p>0?'#f5b301':'#cbd5e1';
 const statsFor=(arr)=>{const total=arr.length,done=arr.filter(j=>j.progress>=100).length,over=arr.filter(j=>j.daysType==='over').length,avg=total?Math.round(arr.reduce((s,j)=>s+j.progress,0)/total):0;return {total,done,over,pending:total-done,avg,avgStyle:avg+'%'};};
 
 function ChipScroller({statuses,base}){
-  const msc=(name,size,color)=>(<span className="bi" style={{...MS,fontSize:size,color}}>{name}</span>);
+  const msc=(name,size,color)=>{var k=(ICON[name]||'bi-record-circle');return (<i className={'bi '+(/^bi-/.test(k)?k:'bi-'+k)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
   const ref=React.useRef(null);
   const [ov,setOv]=React.useState({l:false,r:false});
   const update=()=>{const el=ref.current;if(!el)return;setOv({l:el.scrollLeft>4,r:el.scrollLeft+el.clientWidth<el.scrollWidth-4});};
@@ -108,6 +126,15 @@ function App(){
   const [view,setView]=useState('dashboard');
   const [manageMode,setManageMode]=useState('me');
   const [selectedMember,setSelectedMember]=useState(0);
+  React.useEffect(()=>{
+    try{
+      const p=new URLSearchParams(window.location.search).get('member');
+      if(p){
+        const idx=MEMBERS0.findIndex(m=>m.name===decodeURIComponent(p));
+        if(idx>=0){ setSelectedMember(idx); setView('member'); }
+      }
+    }catch(e){}
+  },[]);
   const [reorderOpen,setReorderOpen]=useState(false);
   const [reorderKind,setReorderKind]=useState('me');
   const [openFn,setOpenFn]=useState(1);
@@ -186,7 +213,7 @@ function App(){
   ];
   const openReorder=()=>{ setReorderKind(view==='manage'?activeKind:view==='member'?'team':'me'); setReorderOpen(true); };
 
-  const ms=(name,size,color)=>(<span className="bi" style={{...MS,fontSize:size,color}}>{name}</span>);
+  const ms=(name,size,color)=>{var k=(ICON[name]||'bi-record-circle');return (<i className={'bi '+(/^bi-/.test(k)?k:'bi-'+k)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
 
   return (
    <div style={{minHeight:'100vh',background:'#eef1f6'}}>

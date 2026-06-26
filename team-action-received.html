@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>คำสั่งที่ลูกทีมได้รับ — GiveDeeFive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+.nav-item:hover{background:#f3f5f8}
+.mcard{transition:box-shadow .15s,border-color .15s}
+.mcard:hover{box-shadow:0 6px 20px rgba(16,24,40,.08);border-color:#dfe4ea}
+.tgl:hover{background:#eef1f5}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const ICON={"donut_large":"pie-chart","groups":"people","group":"people","outbox":"box-arrow-up","arrow_down_left":"arrow-down-left","list":"list","grid_view":"grid","bar_chart":"bar-chart","fact_check":"ui-checks","expand_more":"chevron-down","search":"search","all_inbox":"inboxes","autorenew":"arrow-repeat","error":"exclamation-circle","task_alt":"check2-circle","trending_up":"graph-up-arrow","cancel":"x-circle","inventory_2":"box-seam","monitor_heart":"activity","hourglass_top":"hourglass-top","person":"person","event":"calendar-event","schedule":"clock","filter_list":"funnel"};
+const ICONF={"groups":"people-fill","group":"people-fill","person":"person-fill"};
+const primary='#15a08f', primarySoft='#e3f3f0';
+const ms=(name,size,color,fill)=>{var c=(fill&&ICONF[name])||ICON[name]||'bi-record-circle';return (<i className={'bi '+(/^bi-/.test(c)?c:'bi-'+c)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
+
+const AV=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
+const initial=(s)=>String(s||'?').trim().charAt(0).toUpperCase();
+const initColor=(s)=>{let h=0;for(const ch of String(s||''))h=ch.charCodeAt(0)+h;return AV[h%AV.length];};
+const Letter=({s,d})=>(<div style={{width:d,height:d,borderRadius:'50%',background:initColor(s),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:Math.round(d*0.4),flex:'none'}}>{initial(s)}</div>);
+
+// ===== team members & their received-command stats =====
+// b = [คำสั่งใหม่, กำลังดำเนินการ, รอปิดงาน, ปิดงานแล้ว, ปฏิเสธคำสั่ง, ยกเลิก]
+const MEMBERS=[
+  {n:'Bodin Muanprasat', role:'Software Engineer', total:50, b:[1,7,9,8,0,4], pending:6, done:1, overdue:0, pct:14},
+  {n:'Chanavee Bekaku', role:'Dev Manager', total:50, b:[2,8,7,9,1,3], pending:5, done:2, overdue:2, pct:46},
+  {n:'Chanon Thaiprayoo', role:'Technician', total:50, b:[1,6,8,7,0,3], pending:6, done:1, overdue:2, pct:9},
+  {n:'Narate Boonmee', role:'Software Engineer', total:50, b:[2,9,6,8,1,2], pending:6, done:2, overdue:2, pct:18},
+  {n:'Sunthan Mongkol', role:'QA Engineer', total:50, b:[1,7,9,8,0,4], pending:5, done:5, overdue:2, pct:46},
+  {n:'Wandee Klaharn', role:'QA Engineer', total:50, b:[2,8,7,6,0,3], pending:6, done:1, overdue:0, pct:14},
+  {n:'Chayanee Prajongkarn', role:'Staff', total:50, b:[1,6,8,9,1,2], pending:6, done:2, overdue:2, pct:18},
+  {n:'Anusorn Suksri', role:'ที่ปรึกษา', total:50, b:[2,7,9,7,0,3], pending:5, done:2, overdue:0, pct:14},
+];
+const BARLABELS=['คำสั่งใหม่','กำลังดำเนินการ','รอปิดงาน','ปิดงานแล้ว','ปฏิเสธคำสั่ง','ยกเลิก'];
+
+// ====== card-view mini horizontal bar chart ======
+function MiniBars({b}){
+  const max=10, ticks=[0,2,4,6,8,10];
+  return (
+    <div style={{marginTop:4}}>
+      {b.map((v,i)=>(
+        <div key={i} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
+          <span style={{width:74,fontSize:9.5,color:'#8a93a3',textAlign:'right',flex:'none',lineHeight:1.1}}>{BARLABELS[i]}</span>
+          <div style={{flex:1,height:13,background:'#f4f1f9',borderRadius:3,overflow:'hidden'}}>
+            <div style={{height:'100%',width:(v/max*100)+'%',background:'linear-gradient(90deg,#c79fe8,#b487df)',borderRadius:3}}></div>
+          </div>
+        </div>
+      ))}
+      <div style={{display:'flex',marginLeft:82,justifyContent:'space-between',fontSize:9,color:'#b3bac4',marginTop:1}}>
+        {ticks.map(t=><span key={t}>{t}</span>)}
+      </div>
+    </div>
+  );
+}
+
+function MemberCard({m}){
+  return (
+    <a href={'assignee-action-list.html?member='+encodeURIComponent(m.n)} className="mcard" style={{display:'block',background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'14px 16px'}}>
+      <div style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:8}}>
+        <Letter s={m.n} d={30}/>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:700,fontSize:13.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.n}</div>
+          <div style={{fontSize:11,color:'#9aa3af'}}>{m.role}</div>
+        </div>
+        <div style={{textAlign:'right',lineHeight:1.05,flex:'none'}}>
+          <div style={{fontSize:21,fontWeight:700,color:primary}}>{m.total}</div>
+          <div style={{fontSize:10.5,color:'#9aa3af'}}>คำสั่ง</div>
+        </div>
+      </div>
+      <MiniBars b={m.b}/>
+    </a>
+  );
+}
+
+// ====== list-view row ======
+function MemberRow({m}){
+  const barColor = m.pct>=40?'#3730dc':m.pct>=20?'#4f6bdf':'#6b7fe0';
+  return (
+    <a href={'user-today-job.html?member='+encodeURIComponent(m.n)} className="mcard" style={{display:'flex',alignItems:'center',gap:13,background:'#fff',border:'1px solid #eceef2',borderRadius:13,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'13px 16px'}}>
+      <Letter s={m.n} d={40}/>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:7}}>
+          <span style={{fontWeight:700,fontSize:13.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.n}</span>
+          <div style={{flex:1}}></div>
+          <span style={{fontWeight:800,fontSize:14,color:barColor,flex:'none'}}>{m.pct} %</span>
+        </div>
+        <div style={{height:9,background:'#eef1f5',borderRadius:99,overflow:'hidden',marginBottom:8}}>
+          <div style={{height:'100%',width:m.pct+'%',background:barColor,borderRadius:99}}></div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:14,fontSize:11.5,color:'#8a93a3',flexWrap:'wrap'}}>
+          <span><b style={{color:'#5a6473',fontWeight:700}}>{m.pending}</b> รอดำเนินการ</span>
+          <span><b style={{color:'#1f9d57',fontWeight:700}}>{m.done}</b> ดำเนินการแล้ว</span>
+          {m.overdue>0 && <span style={{background:'#fdecec',color:'#d8513a',borderRadius:99,padding:'2px 9px',fontWeight:700}}>{m.overdue} งานค้าง</span>}
+          <div style={{flex:1}}></div>
+          <span style={{color:'#5a6473',fontWeight:600}}>{m.total} คำสั่งการ</span>
+        </div>
+      </div>
+    </a>
+  );
+}
+
+// ====== dashboard view ======
+const sum=(k)=>MEMBERS.reduce((a,m)=>a+(Array.isArray(m.b)?m.b[k]:0),0);
+const STAT=[
+  {label:'คำสั่งทั้งหมด',value:String(MEMBERS.reduce((a,m)=>a+m.total,0)),unit:'คำสั่งการ',icon:'all_inbox',c1:'#9aa4b0',c2:'#828c99',sh:'rgba(130,140,153,.30)'},
+  {label:'กำลังดำเนินการ',value:String(sum(1)),unit:'คำสั่งการ',icon:'autorenew',c1:'#4eaae8',c2:'#2f93da',sh:'rgba(47,147,218,.32)'},
+  {label:'เกินกำหนด',value:String(MEMBERS.reduce((a,m)=>a+m.overdue,0)),unit:'คำสั่งการ',icon:'error',c1:'#f55b7c',c2:'#ea3b62',sh:'rgba(234,59,98,.30)'},
+  {label:'ปิดคำสั่งการ',value:String(sum(3)),unit:'คำสั่งการ',icon:'task_alt',c1:'#2ec873',c2:'#1cab60',sh:'rgba(28,171,96,.30)'},
+  {label:'อัตราความสำเร็จ',value:'68',unit:'เปอร์เซ็นต์',icon:'trending_up',c1:'#1fb6a6',c2:'#109385',sh:'rgba(16,147,133,.30)'},
+  {label:'อัตราการยกเลิก',value:'7',unit:'เปอร์เซ็นต์',icon:'cancel',c1:'#f56450',c2:'#e83e2c',sh:'rgba(232,62,44,.30)'},
+];
+
+function Card({icon,title,children,extra}){
+  return (
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:14,paddingBottom:12,borderBottom:'1px solid #f3f5f8'}}>
+        {ms(icon,20,primary)}
+        <div style={{fontWeight:600,fontSize:14,color:'#2b3440'}}>{title}</div>
+        <div style={{flex:1}}></div>
+        {extra}
+      </div>
+      {children}
+    </div>
+  );
+}
+function Legend({items}){
+  return (<div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:18,marginTop:10,fontSize:12,color:'#7b8595'}}>{items.map((it,i)=>(<span key={i} style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:11,height:11,borderRadius:3,background:it.c}}></span>{it.l}</span>))}</div>);
+}
+// workload per member (total bars stacked: in-progress vs overdue-ish), purple theme
+function WorkloadBars(){
+  const W=560,H=230,L=30,R=12,T=12,B=58,max=50;
+  const data=MEMBERS;
+  const pw=W-L-R,ph=H-T-B,band=pw/data.length,bw=26;
+  const ys=[0,10,20,30,40,50], yOf=v=>T+ph*(1-v/max);
+  return (
+    <div>
+      <svg viewBox={'0 0 '+W+' '+H} style={{width:'100%',height:'auto'}}>
+        <defs><linearGradient id="vbar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c79fe8"/><stop offset="1" stopColor="#a878d6"/></linearGradient></defs>
+        {ys.map((v,i)=>(<g key={i}><line x1={L} y1={yOf(v)} x2={W-R} y2={yOf(v)} stroke="#eef1f5"/><text x={L-7} y={yOf(v)+4} textAnchor="end" fontSize="10.5" fill="#aab2bd" fontFamily="'IBM Plex Sans Thai'">{v}</text></g>))}
+        {data.map((d,i)=>{const x=L+band*i+(band-bw)/2;const y=yOf(d.total),base=yOf(0);return (
+          <g key={i}>
+            <rect x={x} y={y} width={bw} height={base-y} fill="url(#vbar)" rx="4"/>
+            <text x={x+bw/2} y={H-38} textAnchor="middle" fontSize="9" fill="#8a93a3" fontFamily="'IBM Plex Sans Thai'">{d.n.split(' ')[0]}</text>
+          </g>
+        );})}
+      </svg>
+      <Legend items={[{c:'#a878d6',l:'จำนวนคำสั่งที่ได้รับต่อคน'}]}/>
+    </div>
+  );
+}
+// status distribution across the whole team
+function StatusBars(){
+  const data=BARLABELS.map((l,i)=>({l,v:sum(i)}));
+  const W=560,H=230,L=30,R=12,T=12,B=58,max=Math.max(...data.map(d=>d.v))+8;
+  const pw=W-L-R,ph=H-T-B,band=pw/data.length,bw=34;
+  const step=Math.ceil(max/6/5)*5, ys=[]; for(let v=0;v<=max;v+=step)ys.push(v);
+  const yOf=v=>T+ph*(1-v/max);
+  return (
+    <div>
+      <svg viewBox={'0 0 '+W+' '+H} style={{width:'100%',height:'auto'}}>
+        <defs><linearGradient id="tbar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#74dbe2"/><stop offset="1" stopColor="#4ec9d2"/></linearGradient></defs>
+        {ys.map((v,i)=>(<g key={i}><line x1={L} y1={yOf(v)} x2={W-R} y2={yOf(v)} stroke="#eef1f5"/><text x={L-7} y={yOf(v)+4} textAnchor="end" fontSize="10.5" fill="#aab2bd" fontFamily="'IBM Plex Sans Thai'">{v}</text></g>))}
+        {data.map((d,i)=>{const x=L+band*i+(band-bw)/2;const y=yOf(d.v),base=yOf(0);return (
+          <g key={i}>
+            <rect x={x} y={y} width={bw} height={base-y} fill="url(#tbar)" rx="4"/>
+            <text x={x+bw/2} y={H-38} textAnchor="middle" fontSize="8.5" fill="#8a93a3" fontFamily="'IBM Plex Sans Thai'">{d.l}</text>
+          </g>
+        );})}
+      </svg>
+    </div>
+  );
+}
+
+// per-member dashboard stats: [กำลังดำเนินการ, เกินกำหนด, ปิดคำสั่งการ, อัตราสำเร็จ%, อัตรายกเลิก%]
+const DASH=[[18,3,26,72,4],[22,5,20,64,6],[16,4,28,76,3],[20,4,24,70,5],[14,2,30,80,2],[19,3,25,74,3],[17,5,26,71,4],[21,2,23,73,3]];
+const indivStat=(i)=>{const m=MEMBERS[i],d=DASH[i];return [
+  {label:'คำสั่งทั้งหมด',value:String(m.total),unit:'คำสั่งการ',icon:'all_inbox',c1:'#9aa4b0',c2:'#828c99',sh:'rgba(130,140,153,.30)'},
+  {label:'กำลังดำเนินการ',value:String(d[0]),unit:'คำสั่งการ',icon:'autorenew',c1:'#4eaae8',c2:'#2f93da',sh:'rgba(47,147,218,.32)'},
+  {label:'เกินกำหนด',value:String(d[1]),unit:'คำสั่งการ',icon:'error',c1:'#f55b7c',c2:'#ea3b62',sh:'rgba(234,59,98,.30)'},
+  {label:'ปิดคำสั่งการ',value:String(d[2]),unit:'คำสั่งการ',icon:'task_alt',c1:'#2ec873',c2:'#1cab60',sh:'rgba(28,171,96,.30)'},
+  {label:'อัตราความสำเร็จ',value:String(d[3]),unit:'เปอร์เซ็นต์',icon:'trending_up',c1:'#1fb6a6',c2:'#109385',sh:'rgba(16,147,133,.30)'},
+  {label:'อัตราการยกเลิก',value:String(d[4]),unit:'เปอร์เซ็นต์',icon:'cancel',c1:'#f56450',c2:'#e83e2c',sh:'rgba(232,62,44,.30)'},
+];};
+// this person's status breakdown (vertical bars, 0-10 scale)
+function IndivStatusBars({b}){
+  const data=BARLABELS.map((l,i)=>({l,v:b[i]}));
+  const W=560,H=230,L=30,R=12,T=12,B=58,max=10;
+  const pw=W-L-R,ph=H-T-B,band=pw/data.length,bw=34;
+  const ys=[0,2,4,6,8,10], yOf=v=>T+ph*(1-v/max);
+  return (
+    <svg viewBox={'0 0 '+W+' '+H} style={{width:'100%',height:'auto'}}>
+      <defs><linearGradient id="tbar2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#74dbe2"/><stop offset="1" stopColor="#4ec9d2"/></linearGradient></defs>
+      {ys.map((v,i)=>(<g key={i}><line x1={L} y1={yOf(v)} x2={W-R} y2={yOf(v)} stroke="#eef1f5"/><text x={L-7} y={yOf(v)+4} textAnchor="end" fontSize="10.5" fill="#aab2bd" fontFamily="'IBM Plex Sans Thai'">{v}</text></g>))}
+      {data.map((d,i)=>{const x=L+band*i+(band-bw)/2;const y=yOf(d.v),base=yOf(0);return (
+        <g key={i}>
+          <rect x={x} y={y} width={bw} height={base-y} fill="url(#tbar2)" rx="4"/>
+          <text x={x+bw/2} y={H-38} textAnchor="middle" fontSize="8.5" fill="#8a93a3" fontFamily="'IBM Plex Sans Thai'">{d.l}</text>
+        </g>
+      );})}
+    </svg>
+  );
+}
+// this person's status distribution donut
+function IndivDonut({b}){
+  const segs=[{v:b[0],c:'#f5d34a',l:'คำสั่งใหม่'},{v:b[1],c:'#5bc5e8',l:'กำลังดำเนินการ'},{v:b[2],c:'#a878d6',l:'รอปิดงาน'},{v:b[3],c:'#22b96a',l:'ปิดงานแล้ว'}];
+  const total=segs.reduce((a,s)=>a+s.v,0)||1;
+  const C=2*Math.PI*52; let off=0;
+  const circles=segs.map((s,i)=>{const len=C*s.v/total;const el=(<circle key={i} r="52" cx="90" cy="90" fill="none" stroke={s.c} strokeWidth="24" strokeDasharray={len+' '+(C-len)} strokeDashoffset={-off}/>);off+=len;return el;});
+  return (
+    <div style={{display:'flex',alignItems:'center',gap:20,padding:'10px 4px',flexWrap:'wrap'}}>
+      <svg viewBox="0 0 180 180" style={{width:160,height:160,flex:'none'}}><g transform="rotate(-90 90 90)">{circles}</g></svg>
+      <div style={{display:'flex',flexDirection:'column',gap:12}}>
+        {segs.map((s,i)=>(<span key={i} style={{display:'inline-flex',alignItems:'center',gap:9,fontSize:13,color:'#5a6473'}}><span style={{width:12,height:12,borderRadius:'50%',background:s.c}}></span>{s.l} <b style={{color:'#2b3440'}}>({Math.round(s.v/total*100)}%)</b></span>))}
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const [view,setView]=useState('cards');  // cards | list | dashboard
+  const [sel,setSel]=useState(0);           // selected member (dashboard)
+  const [range,setRange]=useState('ย้อนหลัง 30 วัน');
+  const [q,setQ]=useState('');
+
+  const navTop=['เพิ่มการสั่งการใหม่','เพิ่มการสั่งการใหม่ PA','เพิ่มการสั่งการใหม่ WI'];
+  const navList=[
+    {icon:'bi-arrow-down-left',label:'คำสั่งที่ได้รับ',href:'assignee-action-list.html'},
+    {icon:'bi-arrow-up-right',label:'คำสั่งที่สั่งไป',href:'commander-action-dashboard.html'},
+    {icon:'bi-people',label:'คำสั่งที่ลูกทีมได้รับ',active:true,href:'team-action-received.html'},
+    {icon:'bi-person-plus',label:'CC/BCC',href:'#'},
+    {icon:'bi-book',label:'ตรวจสอบการจัดทำเอกสาร WI',href:'#'},
+    {icon:'bi-clipboard-data',label:'สรุปข้อมูลการสั่งการ',href:'#'},
+    {icon:'bi-search',label:'ค้นหาบันทึก/ความก้าวหน้า',href:'#'},
+  ];
+
+  const members = MEMBERS.filter(m=>!q || m.n.toLowerCase().includes(q.toLowerCase()));
+
+  const ToggleBtn=({mode,icon})=>{
+    const a=view===mode;
+    return (<button onClick={()=>setView(mode)} className="tgl" style={{width:40,height:36,borderRadius:9,border:'1px solid '+(a?primary:'#e3e7ec'),background:a?primarySoft:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms(icon,20,a?primary:'#8a93a3')}</button>);
+  };
+
+  return (
+   <div style={{minHeight:'100vh',background:'#eef1f6'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>2</span></div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',false,'org-dashboard.html'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',true,'commander-action-dashboard.html'],['bi-easel',false,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
+          <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
+        ) : (
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
+
+      {/* SECONDARY NAV */}
+      <div style={{width:264,background:'#fff',borderRight:'1px solid #e7eaef',padding:'18px 14px',position:'sticky',top:58,height:'calc(100vh - 58px)',display:'flex',flexDirection:'column'}}>
+        <div style={{display:'flex',flexDirection:'column',gap:4}}>
+          {navTop.map((n,i)=>(
+            <a key={i} href={i===0?'create-command.html':'#'} className="nav-item" style={{display:'flex',alignItems:'center',gap:11,padding:'9px 10px',borderRadius:10}}>
+              <span style={{width:26,height:26,borderRadius:8,background:'#e0322b',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-plus-lg" style={{fontSize:14,color:'#fff'}}></i></span>
+              <span style={{fontSize:13.5,fontWeight:600,color:'#3a4452'}}>{n}</span>
+            </a>
+          ))}
+        </div>
+        <div style={{height:1,background:'#eef0f4',margin:'13px 4px'}}></div>
+        <div style={{display:'flex',flexDirection:'column',gap:3}}>
+          {navList.map((n,i)=>(
+            <a key={i} href={n.href} className="nav-item" style={{display:'flex',alignItems:'center',gap:12,padding:'10px 12px',borderRadius:10,background:n.active?primarySoft:'transparent'}}>
+              <i className={'bi '+n.icon} style={{fontSize:18,color:n.active?primary:'#8a93a3'}}></i>
+              <span style={{fontSize:13.5,fontWeight:n.active?700:600,color:n.active?primary:'#5a6473'}}>{n.label}</span>
+            </a>
+          ))}
+        </div>
+        <div style={{flex:1}}></div>
+      </div>
+
+      {/* MAIN */}
+      <div style={{flex:1,padding:22,minWidth:0}}>
+       <div style={{maxWidth:1360,margin:'0 auto',background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'20px 24px'}}>
+
+        {/* HEADER */}
+        <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap',marginBottom:4}}>
+          <div style={{width:40,height:40,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('groups',22,primary,true)}</div>
+          <div>
+            <div style={{fontWeight:700,fontSize:20,lineHeight:1.2}}>คำสั่งที่ลูกทีมได้รับ</div>
+            <div style={{fontSize:12.5,color:'#8a93a3'}}>{view==='dashboard'?('รายบุคคล · '+MEMBERS[sel].n):'ทั่วไป · '+members.length+' คน'}</div>
+          </div>
+          <div style={{flex:1}}></div>
+          <div style={{display:'flex',alignItems:'center',gap:6}}>
+            <ToggleBtn mode="cards" icon="grid_view"/>
+            <ToggleBtn mode="list" icon="list"/>
+            <ToggleBtn mode="dashboard" icon="bar_chart"/>
+          </div>
+        </div>
+
+        {/* CONTROLS */}
+        {view!=='dashboard' ? (
+          <div style={{display:'flex',alignItems:'center',gap:11,margin:'16px 0 18px',flexWrap:'wrap'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,background:'#f5f7f9',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 13px',width:300,maxWidth:'100%'}}>
+              {ms('search',17,'#9aa3af')}
+              <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="ค้นหาชื่อลูกทีม" style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:13.5}}/>
+            </div>
+            <div style={{flex:1}}></div>
+            <button style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid #e3e7ec',background:'#fff',color:'#5a6473',borderRadius:9,padding:'8px 14px',fontSize:13,fontWeight:600}}>{ms('filter_list',17,'#8a93a3')}ตัวกรอง</button>
+          </div>
+        ) : (
+          <div style={{display:'flex',alignItems:'center',gap:11,margin:'16px 0 16px',flexWrap:'wrap'}}>
+            <Letter s={MEMBERS[sel].n} d={38}/>
+            <div style={{display:'flex',flexDirection:'column'}}>
+              <span style={{fontSize:10.5,color:'#aab2be'}}>เลือกลูกทีม</span>
+              <div style={{display:'flex',alignItems:'center',gap:6,border:'1px solid #e3e7ec',borderRadius:9,padding:'4px 10px',background:'#fff'}}>
+                <select value={sel} onChange={(e)=>setSel(Number(e.target.value))} style={{border:'none',outline:'none',background:'transparent',fontSize:14,fontWeight:700,color:'#1f2733',cursor:'pointer',appearance:'none',paddingRight:4}}>
+                  {MEMBERS.map((m,i)=><option key={i} value={i}>{m.n} — {m.role}</option>)}
+                </select>
+                {ms('expand_more',18,'#9aa3af')}
+              </div>
+            </div>
+            <div style={{flex:1}}></div>
+            <span style={{fontSize:13,color:'#8a93a3'}}>เลือกดูข้อมูล</span>
+            <button style={{display:'inline-flex',alignItems:'center',gap:9,border:'1px solid #d3ece7',background:'#f3faf8',color:primary,borderRadius:9,padding:'8px 14px',fontSize:13,fontWeight:600}}>{range}{ms('expand_more',18,primary)}</button>
+          </div>
+        )}
+
+        {/* ===== CARDS VIEW ===== */}
+        {view==='cards' && (
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:16}}>
+            {members.map((m,i)=><MemberCard key={i} m={m}/>)}
+          </div>
+        )}
+
+        {/* ===== LIST VIEW ===== */}
+        {view==='list' && (
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(420px,1fr))',gap:14}}>
+            {members.map((m,i)=><MemberRow key={i} m={m}/>)}
+          </div>
+        )}
+
+        {/* ===== DASHBOARD VIEW ===== */}
+        {view==='dashboard' && (
+          <div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:13,marginBottom:18}}>
+              {indivStat(sel).map((s,i)=>(
+                <div key={i} style={{position:'relative',overflow:'hidden',background:'linear-gradient(150deg,'+s.c1+' 0%,'+s.c2+' 100%)',borderRadius:16,padding:'15px 15px 15px',color:'#fff',boxShadow:'0 7px 16px '+s.sh,minHeight:140,display:'flex',flexDirection:'column'}}>
+                  <span style={{position:'absolute',right:-16,bottom:-20,opacity:.15,lineHeight:0}}>{ms(s.icon,94,'#fff',true)}</span>
+                  <div style={{width:34,height:34,borderRadius:10,background:'rgba(255,255,255,.22)',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms(s.icon,20,'#fff',true)}</div>
+                  <div style={{fontSize:13,fontWeight:600,opacity:.96,marginTop:11}}>{s.label}</div>
+                  <div style={{display:'flex',alignItems:'baseline',gap:6,marginTop:'auto'}}>
+                    <div style={{fontSize:34,fontWeight:700,lineHeight:1}}>{s.value}</div>
+                    <div style={{fontSize:11.5,opacity:.9}}>{s.unit}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+              <Card icon="groups" title={'จำนวนคำสั่งแยกตามสถานะ — '+MEMBERS[sel].n.split(' ')[0]}><IndivStatusBars b={MEMBERS[sel].b}/></Card>
+              <Card icon="donut_large" title="ติดตามสถานะงานแบบ Real-time"><IndivDonut b={MEMBERS[sel].b}/></Card>
+            </div>
+          </div>
+        )}
+
+       </div>
+      </div>
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

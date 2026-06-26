@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
@@ -31,9 +30,14 @@ a{color:inherit;text-decoration:none}
 <div id="root"></div>
 <script type="text/plain" id="jsx-src">
 const {useState} = React;
-const MS = {fontFamily:"'Material Symbols Rounded'"};
+const ICON={"schedule":"clock","error":"exclamation-circle","account_balance":"bank","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","add_circle":"plus-circle","add_task":"plus-square","arrow_back":"arrow-left","arrow_drop_down":"caret-down-fill","arrow_drop_up":"caret-up-fill","assignment":"clipboard","attach_file":"paperclip","autorenew":"arrow-repeat","back_hand":"hand-index","bar_chart":"bar-chart","bolt":"lightning-charge","bookmark":"bookmark","bookmark_add":"bookmark-plus","calendar_month":"calendar3","calendar_today":"calendar","campaign":"megaphone","cancel":"x-circle","chat_bubble_outline":"chat","check":"check-lg","check_box":"check-square","check_box_outline_blank":"square","check_circle":"check-circle","checklist":"list-check","chevron_right":"chevron-right","close":"x-lg","content_copy":"files","delete":"trash","description":"file-text","desktop_windows":"display","domain":"building","done_all":"check2-all","donut_small":"pie-chart","download":"download","drag_indicator":"grip-vertical","ecg_heart":"activity","edit":"pencil","edit_note":"pencil-square","engineering":"tools","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","favorite":"heart","filter_alt_off":"funnel","filter_list":"funnel","format_list_bulleted":"list-ul","forum":"chat-square-text","grid_view":"grid","group":"people","group_add":"person-plus","groups":"people","help":"question-circle","hourglass_bottom":"hourglass-bottom","hourglass_empty":"hourglass","hourglass_top":"hourglass-top","how_to_reg":"person-check","image":"image","inbox":"inbox","ink_eraser":"eraser","insert_chart":"bar-chart","insights":"graph-up","inventory_2":"box-seam","keyboard_arrow_down":"chevron-down","keyboard_arrow_up":"chevron-up","leaderboard":"bar-chart-line","list":"list","lock":"lock","low_priority":"sort-down","menu_book":"book","monitor_heart":"activity","monitoring":"graph-up-arrow","more_vert":"three-dots-vertical","move_up":"arrow-up-square","note_add":"file-earmark-plus","open_in_full":"arrows-fullscreen","open_in_new":"box-arrow-up-right","outbox":"box-arrow-up","palette":"palette","person":"person","play_arrow":"play-fill","play_circle":"play-circle","playlist_add":"list-task","playlist_add_check":"list-check","power_settings_new":"power","public":"globe","push_pin":"pin-angle","radio_button_unchecked":"circle","reply":"reply","search":"search","search_off":"search","send":"send","shield_lock":"shield-lock","shield_person":"shield-check","signpost":"signpost-2","sort":"sort-down","speed":"speedometer2","support":"life-preserver","swap_vert":"arrow-down-up","task_alt":"check2-circle","title":"type","touch_app":"hand-index","trending_up":"graph-up-arrow","tune":"sliders","unfold_more":"chevron-expand","upload_file":"file-earmark-arrow-up","verified_user":"patch-check","videocam":"camera-video","view_agenda":"card-heading","visibility":"eye","volunteer_activism":"hand-heart","waving_hand":"emoji-smile"};
+const ICONF={"check_circle":"check-circle-fill","favorite":"heart-fill","person":"person-fill","groups":"people-fill","group":"people-fill","play_circle":"play-circle-fill","lock":"lock-fill","send":"send-fill","push_pin":"pin-angle-fill","verified_user":"patch-check-fill","shield_person":"shield-fill-check","inbox":"inbox-fill","waving_hand":"emoji-smile-fill","fact_check":"ui-checks"};
 const primary='#15a08f', primarySoft='#e3f3f0';
-const ms=(name,size,color,fill)=>(<span className="bi" style={{...MS,fontSize:size,color,...(fill?{fontVariationSettings:"'FILL' 1"}:{})}}>{name}</span>);
+const _AV=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
+const _initColor=(s)=>{let h=0;for(const ch of String(s||''))h=ch.charCodeAt(0)+h;return _AV[h%_AV.length];};
+const MemberAvatar=({s,d})=>(<div style={{width:d,height:d,borderRadius:'50%',background:_initColor(s),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:Math.round(d*0.4),flex:'none'}}>{String(s||'?').trim().charAt(0).toUpperCase()}</div>);
+const MEMBER_PARAM=(()=>{try{const v=new URLSearchParams(window.location.search).get('member');return v?decodeURIComponent(v):null;}catch(_){return null;}})();
+const ms=(name,size,color,fill)=>{var c=(fill&&ICONF[name])||ICON[name]||'bi-record-circle';return (<i className={'bi '+(/^bi-/.test(c)?c:'bi-'+c)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
 
 const STATUS = {
   unack:{label:'ยังไม่รับทราบ',bg:'#fef3e6',color:'#c77d1a',dot:'#e8920c'},
@@ -175,8 +179,21 @@ function App(){
 
         {/* HEADER */}
         <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
-          <div style={{width:40,height:40,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('waving_hand',23,primary)}</div>
-          <div style={{fontWeight:700,fontSize:20}}>คำสั่งที่ได้รับ</div>
+          {MEMBER_PARAM ? (
+            <React.Fragment>
+              <a href="team-action-received.html" style={{width:36,height:36,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('arrow_back',20,'#5a6473')}</a>
+              <MemberAvatar s={MEMBER_PARAM} d={40}/>
+              <div style={{lineHeight:1.2}}>
+                <div style={{fontWeight:700,fontSize:19}}>คำสั่งที่ได้รับ — {MEMBER_PARAM}</div>
+                <div style={{fontSize:12.5,color:'#8a93a3'}}>รายการคำสั่งทั้งหมดของลูกทีม</div>
+              </div>
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <div style={{width:40,height:40,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('waving_hand',23,primary)}</div>
+              <div style={{fontWeight:700,fontSize:20}}>คำสั่งที่ได้รับ</div>
+            </React.Fragment>
+          )}
           <div style={{display:'flex',alignItems:'center',gap:8}}>
             {headPills.map((p,i)=>(
               <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,background:p.bg,color:'#fff',borderRadius:8,padding:'5px 12px 5px 6px',fontSize:12.5,fontWeight:600}}>
