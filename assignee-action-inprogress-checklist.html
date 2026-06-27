@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>คำสั่งการของคุณ — Checklist — GiveDeeFive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+.ck-item:hover{background:#f7f9fb}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const primary='#15a08f', primarySoft='#e3f3f0', primarySoftBorder='#c4e7df';
+const RED='#ef4444', GRN='#22b96a';
+const ic=(name,size,color,style)=>(<i className={'bi bi-'+name} style={Object.assign({fontSize:size,color:color||'#7b8595',lineHeight:1,display:'inline-flex',verticalAlign:'middle'},style||{})}></i>);
+const AV=['#4f46e5','#dd7a16','#0e8c7d','#d83a3a','#7c3aed','#0891b2'];
+const Avatar=({s,c,size})=>(<div style={{width:size||26,height:size||26,borderRadius:'50%',background:c,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:(size||26)*0.45,flex:'none'}}>{String(s||'?').trim().charAt(0).toUpperCase()}</div>);
+
+// ===== DUMMY DATA (from red-boxed list item) =====
+const ITEM={
+  id:'po-chulabhorn-0-4',
+  title:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',
+  college:'วิทยาลัยเทคนิคจุฬาภรณ์',
+  ratio:'0/4', days:5, odate:'04/05/2026',
+  plan:'งานตามแผนธุรกิจ (Strategic)',
+};
+const QUOTE=[
+  {t:'โปรแกรมการเขียนโปรแกรมออกแบบ โรงงานอุตสาหกรรม สามารถเชื่อมต่อกับแว่น VR แสดงการทำงานแบบ 3 มิติ', qty:3, done:true, mine:true},
+  {t:'แว่น VR แว่นตาอัจฉริยะเสมือนจริงสำหรับเชื่อมต่อโปรแกรม', qty:'', done:true, mine:false},
+  {t:'กระดานโต๊ะอัจฉริยะสำหรับการเรียนการสอนแบบผสมผสาน', qty:5, done:true, mine:true},
+  {t:'เครื่องคอมพิวเตอร์สำหรับงานประมวลผล (จอแสดงภาพขนาดไม่น้อยกว่า 19 นิ้ว)', qty:1, done:false, mine:true},
+  {t:'โต๊ะวางเครื่องคอมพิวเตอร์พร้อมเก้าอี้', qty:2, done:false, mine:false},
+  {t:'ระบบงานไฟฟ้า', qty:'', done:false, mine:false},
+];
+const PO=[
+  {t:'โปรแกรมการเขียนโปรแกรมออกแบบ โรงงานอุตสาหกรรม สามารถเชื่อมต่อกับแว่น VR แสดงการทำงานแบบ 3 มิติ', qty:3, done:false, mine:true},
+  {t:'แว่น VR แว่นตาอัจฉริยะเสมือนจริงสำหรับเชื่อมต่อโปรแกรม', qty:'', done:false, mine:false},
+  {t:'กระดานโต๊ะอัจฉริยะสำหรับการเรียนการสอนแบบผสมผสาน', qty:2, done:false, mine:true},
+  {t:'เครื่องคอมพิวเตอร์สำหรับงานประมวลผล (จอแสดงภาพขนาดไม่น้อยกว่า 19 นิ้ว)', qty:1, done:false, mine:false},
+];
+
+function App(){
+  const [lists,setLists]=useState({quote:QUOTE,po:PO});
+  const [scope,setScope]=useState('all'); // 'me' | 'all'
+  const toggle=(k,i)=>setLists(s=>({...s,[k]:s[k].map((it,j)=>j===i?{...it,done:!it.done}:it)}));
+  const cnt=(arr)=>arr.filter(x=>x.done).length;
+
+  // watch list (รายการที่เฝ้าติดตาม) — ระดับรายการใน checklist
+  const WKEY='gd5_vm_watch';
+  const loadWatch=()=>{try{return JSON.parse(localStorage.getItem(WKEY)||'[]');}catch(_){return [];}};
+  const [watch,setWatch]=useState(loadWatch);
+  const isWatched=(id)=>watch.some(w=>w.id===id);
+  const toggleWatchItem=(entry)=>setWatch(prev=>{
+    const ex=prev.some(w=>w.id===entry.id);
+    const next=ex?prev.filter(w=>w.id!==entry.id):prev.concat([entry]);
+    try{localStorage.setItem(WKEY,JSON.stringify(next));}catch(_){}
+    return next;
+  });
+
+  const SideRow=({icon,title,children,sub})=>(
+    <div style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 0'}}>
+      <div style={{flex:'none',marginTop:1}}>{ic(icon,19,'#9aa3af')}</div>
+      <div style={{flex:1,minWidth:0,fontSize:13.5}}>
+        <div style={{fontWeight:600}}>{title}{children}</div>
+        {sub && <div style={{fontSize:12.5,color:'#8a93a3',marginTop:3,lineHeight:1.5}}>{sub}</div>}
+      </div>
+    </div>
+  );
+
+  const ChecklistGroup=({label,k,icon})=>{
+    const all=lists[k];const arr=all.map((it,i)=>({it,i})).filter(({it})=>scope==='all'||it.mine);
+    const done=all.filter(x=>x.done).length;
+    const tone=done===all.length?{b:'#e7f6ee',c:'#1f9d57'}:done===0?{b:'#fdeaea',c:'#d8513a'}:{b:'#fbf0df',c:'#bd7d18'};
+    return (
+      <div>
+        <div style={{display:'flex',alignItems:'center',gap:9,padding:'4px 2px 10px'}}>
+          {ic(icon,18,'#7b8595')}
+          <span style={{fontWeight:700,fontSize:14}}>{label}</span>
+          <span style={{background:tone.b,color:tone.c,borderRadius:7,padding:'2px 9px',fontSize:12,fontWeight:700}}>{done}/{all.length}</span>
+        </div>
+        {arr.length===0 && <div style={{fontSize:12.5,color:'#aab2bf',padding:'6px 2px 4px'}}>ไม่มีรายการของฉันในหัวข้อนี้</div>}
+        {arr.map(({it,i})=>{const itemId=ITEM.id+':'+k+':'+i;const w=isWatched(itemId);return (
+          <div key={i} className="ck-item" style={{display:'flex',alignItems:'flex-start',gap:11,padding:'9px 8px',margin:'0 -8px',borderRadius:9}}>
+            <button onClick={()=>toggle(k,i)} style={{flex:'none',marginTop:1,display:'flex',background:'none',border:'none',padding:0,cursor:'pointer'}}>{ic(it.done?'check-square-fill':'square',19,it.done?primary:'#c2cad4')}</button>
+            <div onClick={()=>toggle(k,i)} style={{flex:1,minWidth:0,fontSize:13.5,lineHeight:1.55,color:it.done?'#5a6473':'#2b3440',cursor:'pointer'}}>{it.t}</div>
+            <span title="บันทึกย่อ / จำนวน" style={{flex:'none',display:'inline-flex',alignItems:'center',gap:6,background:'#f1f3f6',borderRadius:99,padding:'5px 11px',marginTop:1}}>{ic('card-text',15,'#5a6473')}{it.qty!=='' && <span style={{fontSize:13,fontWeight:700,color:'#3a4452',lineHeight:1}}>{it.qty}</span>}</span>
+            <button onClick={()=>toggleWatchItem({id:itemId,title:it.t,group:label,parent:ITEM.title,href:'assignee-action-inprogress-checklist.html',addedBy:'Piyawat Takaew',addedByRole:'SA Staff',addedAt:Date.now(),tags:[],notes:[]})} title={w?'นำออกจากรายการเฝ้าติดตาม':'เพิ่มลงรายการเฝ้าติดตาม'} style={{flex:'none',width:32,height:32,borderRadius:8,marginTop:1,border:'1px solid '+(w?'#bfe6db':'#eceef2'),background:w?'#e4f3ef':'#fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>{ic(w?'clipboard-check':'clipboard-plus',16,w?'#0e8c7d':'#9aa3af')}</button>
+          </div>
+        );})}
+      </div>
+    );
+  };
+
+  return (
+   <div style={{minHeight:'100vh',background:'#eef1f6'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>7</span></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>10</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',false,'org-dashboard.html'],['bi-arrow-down-left',true,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',false,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([icn,act,url],i)=> url ? (
+          <a href={url} key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+icn} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
+        ) : (
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+icn} style={{fontSize:21,color:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
+
+      {/* MAIN */}
+      <div style={{flex:1,padding:22,minWidth:0}}>
+       <div style={{maxWidth:1280,margin:'0 auto',background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'18px 24px 26px'}}>
+
+        {/* HEADER */}
+        <div style={{display:'flex',alignItems:'center',gap:12,paddingBottom:16,borderBottom:'1px solid #f1f3f6',marginBottom:20,flexWrap:'wrap'}}>
+          <a href="assignee-action-list.html" style={{width:36,height:36,borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',color:'#3a4452'}}>{ic('arrow-left',24,'#3a4452')}</a>
+          <div style={{fontWeight:700,fontSize:19}}>คำสั่งการของคุณ</div>
+          <div style={{flex:1}}></div>
+          {/* Todo-plus — ย้ายไปอยู่ระดับรายการใน checklist */}
+          <span style={{display:'inline-flex',alignItems:'center',gap:6,color:'#9aa3af',fontSize:12.5,marginRight:6}}>{ic('clipboard-plus',16,'#9aa3af')}กดไอคอนท้ายรายการเพื่อเฝ้าติดตาม</span>
+          <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'none',color:'#5a6473',fontSize:13,fontWeight:600,padding:'7px 9px'}}>{ic('pencil-square',18,primary)}แก้ไข</button>
+          <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'none',color:'#5a6473',fontSize:13,fontWeight:600,padding:'7px 9px'}}>{ic('bell',18,'#5a6473')}แจ้งเตือนการสั่งการ</button>
+          <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'none',color:'#d8513a',fontSize:13,fontWeight:600,padding:'7px 9px'}}>{ic('power',18,'#d8513a')}ปิดคำสั่งการ</button>
+          <div style={{display:'inline-flex',alignItems:'center',gap:8,paddingLeft:13,marginLeft:2,borderLeft:'1px solid #e7eaef',color:'#5a6473',fontSize:13,fontWeight:700}}>สถานะล่าสุด<span style={{width:15,height:15,borderRadius:'50%',background:'#ef4444'}}></span></div>
+        </div>
+
+        <div style={{display:'grid',gridTemplateColumns:'1fr 372px',gap:28,alignItems:'start'}}>
+          {/* LEFT */}
+          <div style={{minWidth:0}}>
+            <div style={{fontWeight:700,fontSize:21,lineHeight:1.4,marginBottom:18,textWrap:'pretty'}}>{ITEM.title}</div>
+
+            {/* รายละเอียด */}
+            <div style={{display:'flex',gap:12,marginBottom:20}}>
+              <div style={{flex:'none',marginTop:2}}>{ic('list-ul',20,'#9aa3af')}</div>
+              <div style={{flex:1,minWidth:0,fontSize:13.5,color:'#3a4452',lineHeight:1.7}}>
+                <div style={{fontWeight:600,color:'#1f2733',marginBottom:6}}>รายละเอียด</div>
+                <p style={{margin:0}}>ดำเนินการจัดทำเอกสารและออกใบสั่งซื้อ (PO) ครุภัณฑ์ชุด EDR Plus ตามรายการที่ได้รับอนุมัติจากวิทยาลัยเทคนิคจุฬาภรณ์ ให้ครบทุกรายการภายในกำหนด พร้อมแนบเอกสารใบเสนอราคาและรายการครุภัณฑ์ประกอบการสั่งซื้อ</p>
+              </div>
+            </div>
+
+            {/* CHECKLIST CARD */}
+            <div style={{border:'1px solid #eceef2',borderRadius:13,padding:'16px 18px',marginBottom:22}}>
+              {/* single header w/ scope toggle */}
+              <div style={{display:'flex',alignItems:'center',gap:10,paddingBottom:14,marginBottom:14,borderBottom:'1px solid #f1f3f6'}}>
+                <span style={{fontWeight:700,fontSize:15}}>รายการตรวจสอบ</span>
+                <div style={{flex:1}}></div>
+                <div style={{display:'flex',gap:8}}>
+                  {[['me','เฉพาะฉัน','person'],['all','ทั้งหมด','people-fill']].map(([v,lbl,icn])=>{const on=scope===v;return (
+                    <button key={v} onClick={()=>setScope(v)} style={{display:'inline-flex',alignItems:'center',gap:7,borderRadius:99,padding:'7px 16px',fontSize:13,fontWeight:600,border:'1px solid '+(on?primarySoftBorder:'#e3e7ec'),background:on?primarySoft:'#fff',color:on?'#0e8c7d':'#5a6473',transition:'all .12s'}}>{ic(icn,15,on?'#0e8c7d':'#9aa3af')}{lbl}</button>
+                  );})}
+                </div>
+              </div>
+              <ChecklistGroup label="ใบเสนอราคา" k="quote" icon="list-check"/>
+              <div style={{height:1,background:'#f1f3f6',margin:'16px 0'}}></div>
+              <ChecklistGroup label="ใบสั่งซื้อ (PO)" k="po" icon="list-check"/>
+            </div>
+
+            {/* แผนธุรกิจ */}
+            <div style={{display:'flex',gap:12,marginBottom:20}}>
+              <div style={{flex:'none',marginTop:2}}>{ic('bar-chart-line',20,'#9aa3af')}</div>
+              <div style={{flex:1,minWidth:0,fontSize:13.5,color:'#3a4452',lineHeight:1.7}}>
+                <div style={{fontWeight:600,color:'#1f2733',marginBottom:6}}>คำสั่งการนี้สนับสนุนงานแผนธุรกิจ</div>
+                <p style={{margin:0}}>เป้าหมายที่ 11 ติดตั้ง EDR Plus ให้มีการเข้าใช้งาน 70-90%</p>
+              </div>
+            </div>
+
+            {/* เอกสารสนับสนุน */}
+            <div style={{display:'flex',gap:12,marginBottom:20}}>
+              <div style={{flex:'none',marginTop:2}}>{ic('paperclip',20,'#9aa3af')}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:600,fontSize:13.5,marginBottom:9}}>เอกสารสนับสนุนการสั่งการ</div>
+                {[['file-earmark-pdf','#d8513a','ใบเสนอราคา_จุฬาภรณ์.pdf'],['file-earmark-image','#0e8c7d','รายการครุภัณฑ์.png']].map((f,i)=>(
+                  <div key={i} style={{display:'flex',alignItems:'center',gap:9,background:'#f6f7f9',border:'1px solid #eceef2',borderRadius:8,padding:'8px 12px',marginBottom:8,maxWidth:420}}>{ic(f[0],17,f[1])}<span style={{fontSize:13,color:'#3a4452'}}>{f[2]}</span></div>
+                ))}
+              </div>
+            </div>
+
+            {/* เอกสารประกอบการส่งงาน */}
+            <div style={{display:'flex',gap:12,marginBottom:24}}>
+              <div style={{flex:'none',marginTop:2}}>{ic('paperclip',20,'#9aa3af')}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:600,fontSize:13.5,marginBottom:9}}>เอกสารประกอบการส่งงาน</div>
+                <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                  {['Block Diagram','Tips/Hint'].map((c,i)=>(<span key={i} style={{background:primarySoft,color:'#0e8c7d',border:'1px solid '+primarySoftBorder,borderRadius:7,padding:'5px 13px',fontSize:12.5,fontWeight:600}}>{c}</span>))}
+                </div>
+              </div>
+            </div>
+
+            {/* ผู้รับคำสั่งการ */}
+            <div style={{borderTop:'1px solid #f1f3f6',paddingTop:18}}>
+              <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:14}}>{ic('people',20,'#9aa3af')}<span style={{fontWeight:700,fontSize:15}}>ผู้รับคำสั่งการ</span></div>
+              <div style={{display:'flex',alignItems:'flex-start',gap:13,flexWrap:'wrap'}}>
+                <Avatar s="ก" c={AV[2]} size={40}/>
+                <div style={{flex:1,minWidth:160}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+                    <span style={{fontWeight:700,fontSize:14.5}}>กิตติพงศ์ ว.</span>
+                    <span style={{background:'#eaf1fe',color:'#3b6fd4',borderRadius:99,padding:'2px 10px',fontSize:11.5,fontWeight:600}}>ความก้าวหน้า</span>
+                    <span style={{background:'#fdf3d6',color:'#a9870a',borderRadius:99,padding:'2px 10px',fontSize:11.5,fontWeight:700}}>แจ้งเตือน</span>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:12,marginTop:9,flexWrap:'wrap',fontSize:12.5,color:'#5a6473'}}>
+                    <span>เป้าหมายที่ได้รับ <b style={{color:'#3a4452'}}>4 รายการ</b></span>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fdeaea',color:'#d8513a',borderRadius:7,padding:'2px 9px',fontWeight:700,fontSize:11.5}}>{ic('check2',13,'#d8513a')}0/4</span>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:7}}><span style={{width:120,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><span style={{display:'block',height:'100%',width:'0%',background:primary,borderRadius:99}}></span></span><b style={{color:'#9aa3af'}}>0%</b></span>
+                  </div>
+                  <div style={{fontSize:12.5,color:'#8a93a3',marginTop:8}}>วันที่เริ่มดำเนินการ {ITEM.odate}</div>
+                </div>
+                <span style={{display:'inline-flex',alignItems:'center',gap:7,background:'#eaf1fe',color:'#3b6fd4',borderRadius:99,padding:'5px 13px',fontSize:12.5,fontWeight:700,flex:'none'}}>{ic('hourglass-split',14,'#3b6fd4')}กำลังดำเนินการ</span>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDEBAR */}
+          <div style={{minWidth:0}}>
+            <div style={{background:'linear-gradient(135deg,#e8503f,#d8513a)',borderRadius:13,padding:'16px 18px',display:'flex',alignItems:'center',gap:13,marginBottom:8,color:'#fff'}}>
+              <div style={{width:44,height:44,borderRadius:11,background:'rgba(255,255,255,.2)',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ic('people-fill',26,'#fff')}</div>
+              <div style={{minWidth:0}}>
+                <div style={{fontWeight:700,fontSize:16}}>งานกลุ่ม</div>
+                <div style={{fontSize:11.5,opacity:.95,lineHeight:1.45,marginTop:2}}>ผู้รับผิดชอบทุกคน ต้องร่วมกันทำงานเพื่อบรรลุเป้าหมายส่วนรวม</div>
+              </div>
+            </div>
+
+            <SideRow icon="arrow-up-right" title="คำสั่งจากโพสต์ของ Piyawat Takaew"/>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none'}}>{ic('file-earmark-text',19,'#9aa3af')}</div>
+              <span style={{background:primarySoft,color:'#0e8c7d',border:'1px solid '+primarySoftBorder,fontSize:12.5,fontWeight:700,borderRadius:8,padding:'5px 12px'}}>{ITEM.plan}</span>
+            </div>
+
+            <SideRow icon="calendar-event" title="เมื่อ"><span style={{fontWeight:500,color:'#3a4452',marginLeft:8}}>{ITEM.odate} 09:00</span></SideRow>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none'}}>{ic('person',19,'#9aa3af')}</div>
+              <div style={{fontWeight:600,fontSize:13.5}}>ผู้รับคำสั่งนี้</div>
+              <div style={{display:'flex',alignItems:'center',marginLeft:6}}>
+                {['ก','น','ส','ป','ด'].map((s,i)=>(<div key={i} style={{marginLeft:i?-8:0}}><Avatar s={s} c={AV[i%AV.length]} size={24}/></div>))}
+                <span style={{marginLeft:7,fontSize:12.5,color:'#8a93a3',fontWeight:600}}>+5</span>
+              </div>
+            </div>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none'}}>{ic('person',19,'#9aa3af')}</div>
+              <div style={{fontWeight:600,fontSize:13.5}}>สำเนาถึง</div>
+              <div style={{display:'flex',alignItems:'center',marginLeft:6}}>
+                {['ว','อ'].map((s,i)=>(<div key={i} style={{marginLeft:i?-8:0}}><Avatar s={s} c={AV[(i+2)%AV.length]} size={24}/></div>))}
+              </div>
+            </div>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none'}}>{ic('person',19,'#9aa3af')}</div>
+              <div style={{fontWeight:600,fontSize:13.5}}>สำเนาลับถึง</div>
+              <div style={{display:'flex',alignItems:'center',marginLeft:6}}>
+                {['ภ','ร'].map((s,i)=>(<div key={i} style={{marginLeft:i?-8:0}}><Avatar s={s} c={AV[(i+4)%AV.length]} size={24}/></div>))}
+              </div>
+            </div>
+
+            <SideRow icon="calendar-range" title="ช่วงเวลาดำเนินการ"><span style={{fontWeight:500,color:'#3a4452',marginLeft:8}}>04/05/2026 - 18/05/2026</span></SideRow>
+
+            <div style={{height:1,background:'#f1f3f6',margin:'6px 0'}}></div>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'12px 0'}}>
+              <div style={{flex:'none'}}>{ic('graph-up',19,'#9aa3af')}</div>
+              <span style={{flex:1,height:14,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><span style={{display:'block',height:'100%',width:'30%',background:primary,borderRadius:99}}></span></span>
+              <span style={{fontSize:12.5,fontWeight:700,color:'#3a4452',flex:'none'}}>30%</span>
+            </div>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none'}}>{ic('check2-square',19,'#9aa3af')}</div>
+              <span style={{fontWeight:700,fontSize:13.5,color:'#3a4452'}}>3/10</span>
+              <span style={{fontSize:12.5,color:'#9aa3af'}}>รายการที่ดำเนินการ</span>
+            </div>
+
+            <div style={{display:'flex',alignItems:'center',gap:11,padding:'11px 0'}}>
+              <div style={{flex:'none'}}>{ic('activity',19,'#9aa3af')}</div>
+              <span style={{background:'#eaf1fe',color:'#3b6fd4',fontSize:12.5,fontWeight:700,borderRadius:8,padding:'5px 13px',display:'inline-flex',alignItems:'center',gap:6}}>{ic('hourglass-split',15,'#3b6fd4')}กำลังดำเนินการ</span>
+            </div>
+          </div>
+        </div>
+       </div>
+      </div>
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

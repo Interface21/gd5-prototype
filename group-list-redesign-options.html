@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>กลุ่มของคุณ — ตัวเลือกการออกแบบ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#f4f6fa;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+
+.card{transition:box-shadow .16s,transform .16s,border-color .16s}
+.cardA:hover{box-shadow:0 8px 24px rgba(16,24,40,.08);transform:translateY(-2px)}
+.rowB:hover{background:#f7f9fb}
+.cardC:hover{box-shadow:0 10px 30px rgba(16,24,40,.10);transform:translateY(-3px)}
+.qbtn:hover{background:#f1f3f7}
+.join:hover{background:#119184}
+.pinbtn:hover{color:#15a08f}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const primary='#15a08f', primarySoft='#e3f3f0', ink='#1f2733', mut='#8a93a3', line='#eceef2';
+
+// ---- DATA (จากหน้าจริง) ----
+const ACCENTS=[
+  {bg:'#e6f5f1',fg:'#0e8c7d'},
+  {bg:'#eaf1fe',fg:'#3b6fd4'},
+  {bg:'#fdf0e6',fg:'#c2740f'},
+  {bg:'#efeafc',fg:'#6b53d6'},
+  {bg:'#e7f4ee',fg:'#1f9d57'},
+  {bg:'#fdeaea',fg:'#cf4040'},
+];
+const ac=i=>ACCENTS[i%ACCENTS.length];
+
+const PINNED=[
+  {title:'SA-Developer',desc:'สำหรับกลุ่มพัฒนาซอฟต์แวร์และวิเคราะห์ระบบ',members:4,unread:0,posts:10,extra:0,restricted:true},
+  {title:'VM : AAR GiveDeeFive',desc:'ใช้สำหรับพูดคุยเกี่ยวกับ GiveDeeFive',members:18,unread:20,posts:136,extra:13},
+  {title:'เคล็ดลับการเขียนแผนธุรกิจ',desc:'รวบรวมองค์ความรู้ในการเขียนแผนธุรกิจ',members:29,unread:0,posts:2,extra:24},
+  {title:'AI วันละ 5 นาที',desc:'ศึกษาและทดลองนำ AI เริ่มจาก Automated',members:17,unread:7,posts:22,extra:12},
+];
+const OTHERS=[
+  {title:'VM : EDR วท.อุทัยธานี',members:15,unread:1,posts:5,extra:10},
+  {title:'VM : EDR วบท.อุดรธานี',members:14,unread:1,posts:4,extra:9},
+  {title:'VM : EDR วท.อุดรธานี',members:17,unread:3,posts:3,extra:12},
+  {title:'ประชุม AAR ระบบ EDR',members:17,unread:10,posts:24,extra:12},
+  {title:'VM_วอศ ชลบุรี-ชุดปฏิบัติการออกแบบเขียน',members:22,unread:1,posts:2,extra:17},
+  {title:'VM : EDR วท.เดชอุดม',members:16,unread:4,posts:12,extra:11},
+];
+
+const mono=t=>{const s=t.replace(/^VM[\s:_]*/,'').replace(/[^ก-๙A-Za-z0-9]/g,'').trim();return s.slice(0,2)||'GD';};
+
+function Avatars({n,extra,size}){
+  const d=size||24;
+  return (
+    <div style={{display:'flex',alignItems:'center'}}>
+      {Array.from({length:n}).map((_,i)=>(<div key={i} style={{width:d,height:d,borderRadius:'50%',background:ac(i+2).fg,border:'2px solid #fff',marginLeft:i?-(d*0.34):0,opacity:.92}}></div>))}
+      {extra>0 && <span style={{marginLeft:7,fontSize:12,color:mut,fontWeight:600}}>+{extra}</span>}
+    </div>
+  );
+}
+function Mono({t,i,size,radius,restricted}){
+  const s=size||46, a=restricted?{bg:'#fbf3d0',fg:'#b58908'}:ac(i);
+  return (
+    <div style={{width:s,height:s,flex:'none',borderRadius:radius||13,background:a.bg,color:a.fg,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:s*0.36}}>
+      {restricted?<i className="bi bi-shield-lock" style={{fontSize:s*0.46}}></i>:mono(t)}
+    </div>
+  );
+}
+function Unread({n}){
+  if(!n) return null;
+  return <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fdecec',color:'#d8513a',borderRadius:99,padding:'2px 9px',fontSize:11.5,fontWeight:700,whiteSpace:'nowrap'}}><span style={{width:6,height:6,borderRadius:'50%',background:'#e0573f'}}></span>{n} ใหม่</span>;
+}
+const Meta=({g})=>(
+  <span style={{fontSize:12.5,color:mut,whiteSpace:'nowrap'}}>{g.members} สมาชิก · {g.posts} โพสต์</span>
+);
+const PinTag=()=>(
+  <span style={{display:'inline-flex',alignItems:'center',gap:5,color:primary,fontSize:11.5,fontWeight:700}}><i className="bi bi-pin-angle-fill" style={{fontSize:12}}></i>ปักหมุด</span>
+);
+
+/* ======================= OPTION A — การ์ดเรียบ โปร่ง ======================= */
+function OptionA(){
+  const Card=({g,i,pinned})=>(
+    <div className="card cardA" style={{background:'#fff',border:'1px solid '+line,borderRadius:16,padding:18,display:'flex',flexDirection:'column',minHeight:pinned?186:0}}>
+      <div style={{display:'flex',alignItems:'flex-start',gap:13}}>
+        <Mono t={g.title} i={i} restricted={g.restricted}/>
+        <div style={{minWidth:0,flex:1}}>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            {pinned && <i className="bi bi-pin-angle-fill" style={{fontSize:12,color:primary}}></i>}
+            <span style={{fontWeight:700,fontSize:14.5,lineHeight:1.3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{g.title}</span>
+          </div>
+          {g.desc && <div style={{fontSize:12.5,color:mut,marginTop:4,lineHeight:1.5,display:'-webkit-box',WebkitLineClamp:1,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{g.desc}</div>}
+        </div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginTop:14}}>
+        <Meta g={g}/><div style={{flex:1}}></div><Unread n={g.unread}/>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginTop:16,paddingTop:14,borderTop:'1px solid #f3f5f8'}}>
+        <Avatars n={4} extra={g.extra}/>
+        <div style={{flex:1}}></div>
+        <button className="qbtn pinbtn" style={{width:34,height:34,borderRadius:9,color:'#aeb6c2',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-chat" style={{fontSize:15}}></i></button>
+        <button className="join" style={{background:primary,color:'#fff',borderRadius:9,padding:'8px 16px',fontSize:13,fontWeight:700}}>ดูกลุ่ม</button>
+      </div>
+    </div>
+  );
+  return (
+    <div>
+      <SectionHead icon="pin-angle-fill" title="กลุ่มที่ปักหมุด" count="4 กลุ่ม"/>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:16}}>
+        {PINNED.map((g,i)=><Card key={i} g={g} i={i} pinned/>)}
+      </div>
+      <SectionHead icon="grid" title="กลุ่มอื่น ๆ" count="6 กลุ่ม" mt/>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:16}}>
+        {OTHERS.map((g,i)=><Card key={i} g={g} i={i+1}/>)}
+      </div>
+    </div>
+  );
+}
+
+/* ======================= OPTION B — รายการกะทัดรัด ======================= */
+function OptionB(){
+  const Row=({g,i,pinned})=>(
+    <div className="rowB" style={{display:'flex',alignItems:'center',gap:15,padding:'14px 16px',borderRadius:13,borderLeft:pinned?'3px solid '+primary:'3px solid transparent'}}>
+      <Mono t={g.title} i={i} size={42} radius={11} restricted={g.restricted}/>
+      <div style={{minWidth:0,flex:1}}>
+        <div style={{display:'flex',alignItems:'center',gap:9}}>
+          <span style={{fontWeight:700,fontSize:14,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{g.title}</span>
+          <Unread n={g.unread}/>
+        </div>
+        <div style={{fontSize:12.5,color:mut,marginTop:3}}>{g.members} สมาชิก · {g.posts} โพสต์{g.desc?' · '+g.desc:''}</div>
+      </div>
+      <div style={{display:'none'}}></div>
+      <div style={{flex:'none'}}><Avatars n={4} extra={g.extra}/></div>
+      <button className="qbtn pinbtn" style={{width:36,height:36,borderRadius:9,color:'#aeb6c2',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-chat" style={{fontSize:15}}></i></button>
+      <button className="qbtn" style={{border:'1px solid #e3e7ec',color:'#3a4452',borderRadius:9,padding:'8px 15px',fontSize:13,fontWeight:700,flex:'none'}}>ดูกลุ่ม</button>
+    </div>
+  );
+  return (
+    <div style={{background:'#fff',border:'1px solid '+line,borderRadius:16,overflow:'hidden'}}>
+      <div style={{padding:'13px 18px',borderBottom:'1px solid #f3f5f8',display:'flex',alignItems:'center',gap:8}}>
+        <i className="bi bi-pin-angle-fill" style={{fontSize:14,color:primary}}></i>
+        <span style={{fontWeight:700,fontSize:13.5}}>กลุ่มที่ปักหมุด</span><span style={{fontSize:12.5,color:mut}}>· 4 กลุ่ม</span>
+      </div>
+      <div style={{padding:8,display:'flex',flexDirection:'column',gap:2}}>{PINNED.map((g,i)=><Row key={i} g={g} i={i} pinned/>)}</div>
+      <div style={{padding:'13px 18px',borderTop:'1px solid #f3f5f8',borderBottom:'1px solid #f3f5f8',display:'flex',alignItems:'center',gap:8,background:'#fafbfc'}}>
+        <i className="bi bi-grid" style={{fontSize:14,color:mut}}></i>
+        <span style={{fontWeight:700,fontSize:13.5}}>กลุ่มอื่น ๆ</span><span style={{fontSize:12.5,color:mut}}>· 6 กลุ่ม</span>
+      </div>
+      <div style={{padding:8,display:'flex',flexDirection:'column',gap:2}}>{OTHERS.map((g,i)=><Row key={i} g={g} i={i+1}/>)}</div>
+    </div>
+  );
+}
+
+/* ======================= OPTION C — การ์ดโมโนแกรมเด่น ======================= */
+function OptionC(){
+  const Card=({g,i,pinned})=>(
+    <div className="card cardC" style={{position:'relative',background:'#fff',border:'1px solid '+line,borderRadius:18,padding:22,display:'flex',flexDirection:'column',alignItems:'center',textAlign:'center'}}>
+      {pinned && <div style={{position:'absolute',top:14,right:14,color:primary}}><i className="bi bi-pin-angle-fill" style={{fontSize:14}}></i></div>}
+      {g.unread>0 && <div style={{position:'absolute',top:14,left:14}}><Unread n={g.unread}/></div>}
+      <Mono t={g.title} i={i} size={64} radius={18} restricted={g.restricted}/>
+      <div style={{fontWeight:700,fontSize:15,marginTop:14,lineHeight:1.3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>{g.title}</div>
+      <div style={{fontSize:12.5,color:mut,marginTop:6,lineHeight:1.5,minHeight:g.desc?38:0,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{g.desc||''}</div>
+      <div style={{display:'flex',justifyContent:'center',margin:'14px 0 16px'}}><Avatars n={4} extra={g.extra} size={26}/></div>
+      <div style={{fontSize:12,color:mut,marginBottom:16}}>{g.members} สมาชิก · {g.posts} โพสต์</div>
+      <div style={{display:'flex',gap:8,width:'100%',marginTop:'auto'}}>
+        <button className="join" style={{flex:1,background:primary,color:'#fff',borderRadius:10,padding:'9px 0',fontSize:13,fontWeight:700}}>ดูกลุ่ม</button>
+        <button className="qbtn" style={{width:40,borderRadius:10,border:'1px solid #e3e7ec',color:'#8a93a3',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-chat" style={{fontSize:15}}></i></button>
+      </div>
+    </div>
+  );
+  return (
+    <div>
+      <SectionHead icon="pin-angle-fill" title="กลุ่มที่ปักหมุด" count="4 กลุ่ม"/>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16}}>{PINNED.map((g,i)=><Card key={i} g={g} i={i} pinned/>)}</div>
+      <SectionHead icon="grid" title="กลุ่มอื่น ๆ" count="6 กลุ่ม" mt/>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16}}>{OTHERS.map((g,i)=><Card key={i} g={g} i={i+1}/>)}</div>
+    </div>
+  );
+}
+
+function SectionHead({icon,title,count,mt}){
+  return (
+    <div style={{display:'flex',alignItems:'center',gap:9,margin:(mt?'30px':'0')+' 0 14px'}}>
+      <i className={'bi bi-'+icon} style={{fontSize:15,color:icon==='grid'?mut:primary}}></i>
+      <span style={{fontWeight:700,fontSize:14.5,color:'#2b3440'}}>{title}</span>
+      <span style={{fontSize:12.5,color:mut}}>· {count}</span>
+      <div style={{flex:1,height:1,background:'#eef1f5',marginLeft:4}}></div>
+    </div>
+  );
+}
+
+const OPTS=[
+  {key:'A',label:'การ์ดเรียบ',sub:'โปร่ง อ่านง่าย 2 คอลัมน์'},
+  {key:'B',label:'รายการกะทัดรัด',sub:'สแกนเร็ว ประหยัดพื้นที่'},
+  {key:'C',label:'โมโนแกรมเด่น',sub:'การ์ดกริด ดูสะอาดตา'},
+];
+function App(){
+  const [opt,setOpt]=useState('A');
+  const cur=OPTS.find(o=>o.key===opt);
+  return (
+    <div style={{maxWidth:1180,margin:'0 auto',padding:'26px 24px 60px'}}>
+      {/* control strip */}
+      <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:8,flexWrap:'wrap'}}>
+        <div>
+          <div style={{fontSize:12.5,fontWeight:700,color:primary,letterSpacing:.4}}>เลือกสไตล์ที่ชอบ</div>
+          <div style={{fontWeight:700,fontSize:22,letterSpacing:'-.01em',marginTop:2}}>กลุ่มของคุณ — ตัวเลือกการออกแบบ</div>
+        </div>
+        <div style={{flex:1}}></div>
+        <div style={{display:'flex',background:'#fff',border:'1px solid '+line,borderRadius:13,padding:5,gap:4,boxShadow:'0 1px 3px rgba(16,24,40,.05)'}}>
+          {OPTS.map(o=>{const a=opt===o.key;return (
+            <button key={o.key} onClick={()=>setOpt(o.key)} style={{display:'flex',alignItems:'center',gap:9,borderRadius:9,padding:'9px 15px',background:a?primary:'transparent',transition:'background .15s'}}>
+              <span style={{width:22,height:22,borderRadius:7,background:a?'rgba(255,255,255,.22)':primarySoft,color:a?'#fff':primary,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:12,flex:'none'}}>{o.key}</span>
+              <span style={{textAlign:'left'}}>
+                <span style={{display:'block',fontSize:13,fontWeight:700,color:a?'#fff':'#3a4452',lineHeight:1.2}}>{o.label}</span>
+                <span style={{display:'block',fontSize:11,color:a?'rgba(255,255,255,.8)':mut,lineHeight:1.3}}>{o.sub}</span>
+              </span>
+            </button>
+          );})}
+        </div>
+      </div>
+
+      {/* mock app panel */}
+      <div style={{background:'#fbfcfe',border:'1px solid '+line,borderRadius:20,padding:24,marginTop:18,boxShadow:'0 4px 24px rgba(16,24,40,.05)'}}>
+        {/* mini toolbar mimicking real page */}
+        <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:22,flexWrap:'wrap'}}>
+          <div style={{display:'flex',gap:22,fontSize:13.5}}>
+            <span style={{fontWeight:700,color:primary,borderBottom:'2.5px solid '+primary,paddingBottom:8}}>กลุ่มของคุณ</span>
+            <span style={{color:mut,paddingBottom:8}}>คำเชิญเข้ากลุ่ม</span>
+            <span style={{color:mut,paddingBottom:8}}>คำขอเข้ากลุ่ม</span>
+            <span style={{color:mut,paddingBottom:8}}>กลุ่มปิดถาวร</span>
+          </div>
+          <div style={{flex:1}}></div>
+          <div style={{display:'flex',alignItems:'center',gap:8,background:'#fff',border:'1px solid '+line,borderRadius:10,padding:'8px 13px',minWidth:230}}>
+            <i className="bi bi-search" style={{fontSize:14,color:mut}}></i>
+            <span style={{fontSize:13,color:'#aeb6c2'}}>ค้นหากลุ่มของคุณ</span>
+          </div>
+          <button style={{background:primary,color:'#fff',borderRadius:10,padding:'9px 16px',fontSize:13,fontWeight:700}}>ค้นหา</button>
+        </div>
+
+        <div key={opt}>
+          {opt==='A'&&<OptionA/>}
+          {opt==='B'&&<OptionB/>}
+          {opt==='C'&&<OptionC/>}
+        </div>
+      </div>
+
+      <div style={{textAlign:'center',marginTop:18,fontSize:12.5,color:mut}}>
+        กำลังดู <b style={{color:'#3a4452'}}>สไตล์ {cur.key} · {cur.label}</b> — {cur.sub} · เลือกสไตล์ที่ชอบแล้วบอกผมเพื่อนำไปใช้กับหน้าจริง
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ตัวอย่างโมดัลสถานะแผนธุรกิจ — แนวทางอื่น</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:none;border:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:none}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const primary='#15a08f';
+const RED='#ef4444', YEL='#f5b301', GRN='#22b96a';
+const dotC=(s)=> s==='r'?RED : s==='y'?YEL : GRN;
+const SOFTBG={g:'#eafaf0',y:'#fff7e3',r:'#fdeaea'};
+const STLABEL={g:'บรรลุ / ปกติ',y:'เฝ้าระวัง',r:'ต่ำกว่าเกณฑ์'};
+const STSHORT={g:'บรรลุ',y:'เฝ้าระวัง',r:'ต่ำกว่าเกณฑ์'};
+const LEVELS=[['goal','เป้าหมาย'],['strat','กลยุทธ์'],['plan','แผนปฏิบัติการ']];
+const MNAMES=['พันธกิจที่ 1 : EDR','พันธกิจที่ 2 : GiveDeeFive','พันธกิจที่ 3 : ครุภัณฑ์','พันธกิจที่ 4 : ใช้เทคโนโลยีดิจิทัล GD5 และ AI'];
+function gridFor(seed,n){const a=[];let x=seed*9301+49297;for(let i=0;i<n;i++){x=(x*9301+49297)%233280;const r=x/233280;a.push(r<0.62?'r':r<0.85?'y':'g');}return a;}
+const QKEYS=['Q1','Q2','Q3','Q4'];
+const QUARTERS={
+  Q1:{label:'ไตรมาส 1',period:'ม.ค. – มี.ค. 2569',orgPct:42.1,missions:[
+    {status:'r',goal:4,strat:7,plan:22},{status:'r',goal:6,strat:6,plan:35},{status:'y',goal:3,strat:10,plan:30},{status:'r',goal:3,strat:10,plan:33}]},
+  Q2:{label:'ไตรมาส 2',period:'เม.ย. – มิ.ย. 2569',orgPct:58.4,missions:[
+    {status:'r',goal:4,strat:7,plan:22},{status:'y',goal:6,strat:6,plan:35},{status:'y',goal:3,strat:10,plan:30},{status:'r',goal:3,strat:10,plan:33}]},
+  Q3:{label:'ไตรมาส 3',period:'ก.ค. – ก.ย. 2569',orgPct:66.67,missions:[
+    {status:'g',goal:4,strat:7,plan:22},{status:'y',goal:6,strat:6,plan:35},{status:'r',goal:3,strat:10,plan:30},{status:'y',goal:3,strat:10,plan:33}]},
+  Q4:{label:'ไตรมาส 4',period:'ต.ค. – ธ.ค. 2569',orgPct:71.2,missions:[
+    {status:'y',goal:4,strat:7,plan:22},{status:'g',goal:6,strat:6,plan:35},{status:'y',goal:3,strat:10,plan:30},{status:'y',goal:3,strat:10,plan:33}]},
+};
+function itemsFor(mi,li,n,q){
+  const arr=gridFor(mi*40+li*13+QKEYS.indexOf(q)*5,n);
+  const lab=LEVELS[li][1];
+  const desc={0:'ตัวชี้วัดเป้าหมายของพันธกิจ ประเมินจากผลลัพธ์ที่กำหนดไว้ในรอบไตรมาสนี้',1:'แนวทางกลยุทธ์ที่ใช้ขับเคลื่อนพันธกิจให้บรรลุเป้าหมายที่วางไว้',2:'งาน/กิจกรรมตามแผนปฏิบัติการที่อยู่ระหว่างดำเนินการในไตรมาสนี้'}[li];
+  return arr.map((s,i)=>({status:s,title:lab+'ที่ '+(i+1),desc}));
+}
+function countLevel(mi,li,n,q){const c={g:0,y:0,r:0};itemsFor(mi,li,n,q).forEach(it=>c[it.status]++);return c;}
+function aggFor(mi,q){const a={g:0,y:0,r:0};LEVELS.forEach((lv,li)=>{const c=countLevel(mi,li,QUARTERS[q].missions[mi][lv[0]],q);a.g+=c.g;a.y+=c.y;a.r+=c.r;});return a;}
+const ms=(name,size,color)=><i className={'bi bi-'+name} style={{fontSize:size,color,lineHeight:1,display:'inline-flex',verticalAlign:'middle'}}></i>;
+
+function Seg({g,y,r,h,radius}){
+  const part=(v,c)=> v>0 ? <div key={c} style={{flex:v,background:c}}></div> : null;
+  return <div style={{display:'flex',height:h||8,borderRadius:radius||99,overflow:'hidden',background:'#eef1f5'}}>{part(g,GRN)}{part(y,YEL)}{part(r,RED)}</div>;
+}
+function CountRow({g,y,r,gap,size}){
+  const Item=({c,n})=> <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:size||12,fontWeight:600,color:'#5a6473'}}><span style={{width:8,height:8,borderRadius:'50%',background:c,flex:'none'}}></span>{n}</span>;
+  return <div style={{display:'flex',gap:gap||13}}>{g>0&&<Item c={GRN} n={g}/>}{y>0&&<Item c={YEL} n={y}/>}{r>0&&<Item c={RED} n={r}/>}</div>;
+}
+function StatusPill({s,short}){
+  return <span style={{display:'inline-flex',alignItems:'center',gap:7,fontSize:12,fontWeight:700,whiteSpace:'nowrap',color:dotC(s),background:SOFTBG[s],borderRadius:99,padding:'4px 11px',flex:'none'}}><span style={{width:9,height:9,borderRadius:'50%',background:dotC(s),flex:'none'}}></span>{short?STSHORT[s]:STLABEL[s]}</span>;
+}
+
+/* ============ OPTION A · MATRIX TABLE ============ */
+function OptA({q}){
+  const Q=QUARTERS[q];
+  const [open,setOpen]=useState({});   // {"mi-li":true}
+  const [pick,setPick]=useState({});    // {"mi-li":itemIndex}
+  const toggle=(id)=>setOpen(o=>({...o,[id]:!o[id]}));
+  const Cell=({mi,li})=>{
+    const n=Q.missions[mi][LEVELS[li][0]];const items=itemsFor(mi,li,n,q);
+    const c={g:0,y:0,r:0};items.forEach(it=>c[it.status]++);
+    const id=mi+'-'+li;const on=open[id];const pk=pick[id];
+    return (
+      <td style={{padding:'16px 16px',borderBottom:'1px solid #f1f3f6',verticalAlign:'top',background:on?'#fafbfc':'transparent'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:9}}>
+          <CountRow g={c.g} y={c.y} r={c.r} gap={11}/>
+          <span style={{fontSize:11.5,color:'#b3bac4',fontWeight:600}}>{n}</span>
+        </div>
+        <button onClick={()=>toggle(id)} title="คลิกเพื่อดูรายแผน" style={{display:'block',width:'100%',padding:0}}>
+          <Seg g={c.g} y={c.y} r={c.r} h={9}/>
+          <div style={{display:'flex',alignItems:'center',gap:4,marginTop:6,fontSize:11,fontWeight:600,color:on?primary:'#aab2bf'}}>
+            {ms(on?'chevron-up':'chevron-down',14,on?primary:'#aab2bf')}{on?'ซ่อนรายแผน':'ดูรายแผน'}
+          </div>
+        </button>
+        {on && (
+          <div style={{marginTop:11,animation:'fadeIn .14s ease'}}>
+            <div style={{display:'flex',flexWrap:'wrap',gap:7}}>
+              {items.map((it,i)=>{const sel=pk===i;return (
+                <button key={i} title={it.title} onClick={()=>setPick(p=>({...p,[id]:sel?null:i}))} style={{width:21,height:21,borderRadius:'50%',background:dotC(it.status),boxShadow:sel?'0 0 0 2px #fff,0 0 0 4px #2b3440':'none',transform:sel?'scale(1.08)':'none',transition:'transform .1s',cursor:'pointer',flex:'none'}}></button>
+              );})}
+            </div>
+            {pk!=null && items[pk] && (
+              <div style={{marginTop:11,background:'#fff',border:'1px solid #eef0f4',borderRadius:9,padding:'10px 12px'}}>
+                <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:5}}>
+                  <span style={{width:10,height:10,borderRadius:'50%',background:dotC(items[pk].status),flex:'none'}}></span>
+                  <span style={{fontWeight:700,fontSize:12.5}}>{items[pk].title}</span>
+                  <span style={{fontSize:10.5,fontWeight:700,color:dotC(items[pk].status),background:SOFTBG[items[pk].status],borderRadius:99,padding:'2px 8px'}}>{STSHORT[items[pk].status]}</span>
+                </div>
+                <div style={{fontSize:11.5,color:'#5a6473',lineHeight:1.5}}>{items[pk].desc}</div>
+              </div>
+            )}
+          </div>
+        )}
+      </td>
+    );
+  };
+  return (
+    <div style={{padding:24,overflow:'auto'}}>
+      <table style={{width:'100%',borderCollapse:'collapse',tableLayout:'fixed'}}>
+        <thead>
+          <tr>
+            <th style={{width:230,textAlign:'left',padding:'0 16px 12px',fontSize:11,fontWeight:700,letterSpacing:'.5px',color:'#9aa3af',borderBottom:'2px solid #eceef2'}}>พันธกิจ</th>
+            <th style={{width:158,textAlign:'left',padding:'0 16px 12px',fontSize:11,fontWeight:700,letterSpacing:'.5px',color:'#9aa3af',borderBottom:'2px solid #eceef2'}}>สถานะรวม</th>
+            {LEVELS.map((lv,li)=><th key={li} style={{textAlign:'left',padding:'0 16px 12px',fontSize:11,fontWeight:700,letterSpacing:'.5px',color:'#9aa3af',borderBottom:'2px solid #eceef2'}}>{lv[1].toUpperCase()}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {Q.missions.map((m,mi)=>{const parts=MNAMES[mi].split(' : ');const agg=aggFor(mi,q);
+            return (
+            <tr key={mi}>
+              <td style={{padding:'16px 16px',borderBottom:'1px solid #f1f3f6',verticalAlign:'top'}}>
+                <div style={{fontSize:11,fontWeight:700,color:'#9aa3af'}}>{parts[0]}</div>
+                <div style={{fontWeight:700,fontSize:14,lineHeight:1.3,marginTop:2}}>{parts.slice(1).join(' : ')}</div>
+                <div style={{display:'flex',alignItems:'center',gap:7,marginTop:9}}>
+                  <span style={{width:10,height:10,borderRadius:'50%',background:dotC(m.status),flex:'none'}}></span>
+                  <span style={{fontSize:12.5,fontWeight:600,color:dotC(m.status)}}>{STLABEL[m.status]}</span>
+                </div>
+              </td>
+              <td style={{padding:'16px 16px',borderBottom:'1px solid #f1f3f6',verticalAlign:'top'}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:9}}>
+                  <CountRow g={agg.g} y={agg.y} r={agg.r} gap={11}/>
+                  <span style={{fontSize:11.5,color:'#b3bac4',fontWeight:600}}>{agg.g+agg.y+agg.r}</span>
+                </div>
+                <Seg g={agg.g} y={agg.y} r={agg.r} h={9}/>
+              </td>
+              {LEVELS.map((lv,li)=><Cell key={li} mi={mi} li={li}/>)}
+            </tr>
+          );})}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/* ============ OPTION B · STACKED BARS (NO DOTS) ============ */
+function OptB({q}){
+  const Q=QUARTERS[q];
+  return (
+    <div style={{padding:24,display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:18,overflow:'auto'}}>
+      {Q.missions.map((m,mi)=>{const parts=MNAMES[mi].split(' : ');const agg=aggFor(mi,q);const tot=agg.g+agg.y+agg.r;
+        return (
+        <div key={mi} style={{border:'1px solid #eceef2',borderRadius:14,padding:22,background:'#fff'}}>
+          <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12}}>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,letterSpacing:'.5px',color:'#9aa3af'}}>{parts[0].toUpperCase()}</div>
+              <div style={{fontWeight:700,fontSize:16,lineHeight:1.3,marginTop:3}}>{parts.slice(1).join(' : ')}</div>
+            </div>
+            <StatusPill s={m.status}/>
+          </div>
+          <div style={{display:'flex',alignItems:'baseline',gap:8,margin:'18px 0 7px'}}>
+            <span style={{fontSize:30,fontWeight:700,letterSpacing:'-.02em'}}>{Math.round(agg.g/tot*100)}<span style={{fontSize:16,color:'#9aa3af'}}>%</span></span>
+            <span style={{fontSize:12.5,color:'#9aa3af'}}>บรรลุเกณฑ์ · {tot} รายการ</span>
+          </div>
+          <Seg g={agg.g} y={agg.y} r={agg.r} h={10}/>
+          <div style={{marginTop:18,display:'flex',flexDirection:'column',gap:15}}>
+            {LEVELS.map((lv,li)=>{const c=countLevel(mi,li,m[lv[0]],q);const n=m[lv[0]];
+              return (
+              <div key={li}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:7}}>
+                  <span style={{fontSize:12.5,fontWeight:600,color:'#3a424f'}}>{lv[1]} <span style={{color:'#b3bac4',fontWeight:400}}>· {n}</span></span>
+                  <CountRow g={c.g} y={c.y} r={c.r} gap={12}/>
+                </div>
+                <Seg g={c.g} y={c.y} r={c.r} h={7}/>
+              </div>
+            );})}
+          </div>
+        </div>
+      );})}
+    </div>
+  );
+}
+
+/* ============ OPTION C · HEATMAP TILES ============ */
+function OptC({q}){
+  const Q=QUARTERS[q];
+  const [sel,setSel]=useState({});
+  const pick=(mi,li,i)=>setSel(s=>({...s,[mi]:(s[mi]&&s[mi].li===li&&s[mi].i===i)?null:{li,i}}));
+  return (
+    <div style={{padding:24,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:18,overflow:'auto'}}>
+      {Q.missions.map((m,mi)=>{const parts=MNAMES[mi].split(' : ');const picked=sel[mi];
+        return (
+        <div key={mi} style={{border:'1px solid #eceef2',borderRadius:14,padding:18,background:'#fff'}}>
+          <div style={{minHeight:46}}>
+            <div style={{fontSize:11,fontWeight:700,letterSpacing:'.5px',color:'#9aa3af'}}>{parts[0].toUpperCase()}</div>
+            <div style={{fontWeight:700,fontSize:14,lineHeight:1.3,marginTop:3}}>{parts.slice(1).join(' : ')}</div>
+          </div>
+          <div style={{margin:'12px 0 4px'}}><StatusPill s={m.status} short/></div>
+          {LEVELS.map((lv,li)=>{const items=itemsFor(mi,li,m[lv[0]],q);const c={g:0,y:0,r:0};items.forEach(it=>c[it.status]++);
+            return (
+            <div key={li} style={{marginTop:16}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:9}}>
+                <span style={{fontSize:12,fontWeight:600,color:'#3a424f'}}>{lv[1]}</span>
+                <CountRow g={c.g} y={c.y} r={c.r} gap={10} size={11.5}/>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(8,1fr)',gap:5}}>
+                {items.map((it,i)=>{const on=picked&&picked.li===li&&picked.i===i;
+                  return <button key={i} title={it.title} onClick={()=>pick(mi,li,i)} style={{aspectRatio:'1',borderRadius:5,background:dotC(it.status),outline:on?'2px solid #2b3440':'none',outlineOffset:2,cursor:'pointer'}}></button>;
+                })}
+              </div>
+            </div>
+          );})}
+          {picked && (()=>{const it=itemsFor(mi,picked.li,m[LEVELS[picked.li][0]],q)[picked.i];
+            return <div style={{marginTop:14,background:'#fafbfc',border:'1px solid #eef0f4',borderRadius:10,padding:'11px 13px',animation:'fadeIn .14s ease'}}>
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:5}}><span style={{width:11,height:11,borderRadius:'50%',background:dotC(it.status),flex:'none'}}></span><span style={{fontWeight:700,fontSize:13}}>{it.title}</span></div>
+              <div style={{fontSize:12,color:'#5a6473',lineHeight:1.55}}>{it.desc}</div>
+            </div>;
+          })()}
+        </div>
+      );})}
+    </div>
+  );
+}
+
+/* ============ OPTION D · RADIAL RINGS ============ */
+function Ring({segs,size}){
+  const cx=size/2,cy=size/2,sw=size*0.085;
+  const radii=[size*0.40,size*0.30,size*0.20];
+  return (
+    <svg viewBox={'0 0 '+size+' '+size} style={{width:size,height:size}}>
+      <g transform={'rotate(-90 '+cx+' '+cy+')'}>
+        {radii.map((r,li)=>{const seg=segs[li];const C=2*Math.PI*r;let acc=0;const tot=(seg.g+seg.y+seg.r)||1;
+          const parts=[['g',GRN,seg.g],['y',YEL,seg.y],['r',RED,seg.r]];
+          return (
+            <g key={li}>
+              <circle cx={cx} cy={cy} r={r} fill="none" stroke="#eef1f5" strokeWidth={sw}/>
+              {parts.map(([k,col,v])=>{if(!v)return null;const len=v/tot*C;const off=acc/tot*C;acc+=v;
+                return <circle key={k} cx={cx} cy={cy} r={r} fill="none" stroke={col} strokeWidth={sw} strokeDasharray={len.toFixed(2)+' '+(C-len).toFixed(2)} strokeDashoffset={(-off).toFixed(2)}/>;})}
+            </g>
+          );
+        })}
+      </g>
+    </svg>
+  );
+}
+function OptD({q}){
+  const Q=QUARTERS[q];const RNAMES=['วงนอก','วงกลาง','วงใน'];
+  return (
+    <div style={{padding:24,display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:18,overflow:'auto'}}>
+      {Q.missions.map((m,mi)=>{const parts=MNAMES[mi].split(' : ');const agg=aggFor(mi,q);const tot=agg.g+agg.y+agg.r;
+        const segs=LEVELS.map((lv,li)=>countLevel(mi,li,m[lv[0]],q));
+        return (
+        <div key={mi} style={{border:'1px solid #eceef2',borderRadius:14,padding:20,background:'#fff',display:'flex',gap:20,alignItems:'center'}}>
+          <div style={{position:'relative',flex:'none'}}>
+            <Ring segs={segs} size={150}/>
+            <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+              <div style={{fontSize:26,fontWeight:700,letterSpacing:'-.02em',lineHeight:1}}>{Math.round(agg.g/tot*100)}%</div>
+              <div style={{fontSize:10.5,color:'#9aa3af',marginTop:2}}>บรรลุเกณฑ์</div>
+            </div>
+          </div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:11,fontWeight:700,letterSpacing:'.5px',color:'#9aa3af'}}>{parts[0].toUpperCase()}</div>
+            <div style={{fontWeight:700,fontSize:15,lineHeight:1.3,margin:'2px 0 4px'}}>{parts.slice(1).join(' : ')}</div>
+            {LEVELS.map((lv,li)=>{const c=segs[li];
+              return (
+              <div key={li} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 0',borderTop:'1px solid #f3f5f8'}}>
+                <div style={{minWidth:0}}>
+                  <div style={{fontSize:12.5,fontWeight:600,lineHeight:1.2}}>{lv[1]}</div>
+                  <div style={{fontSize:10,color:'#b3bac4'}}>{RNAMES[li]}</div>
+                </div>
+                <div style={{flex:1}}></div>
+                <CountRow g={c.g} y={c.y} r={c.r} gap={10} size={11.5}/>
+              </div>
+            );})}
+          </div>
+        </div>
+      );})}
+    </div>
+  );
+}
+
+/* ============ OPTION E · TRIAGE BY STATUS ============ */
+function OptE({q}){
+  const Q=QUARTERS[q];const cols=[['r',RED,'#fdeaea'],['y',YEL,'#fff7e3'],['g',GRN,'#eafaf0']];
+  return (
+    <div style={{padding:24,display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:18,overflow:'auto'}}>
+      {cols.map(([s,col,bg])=>{
+        let total=0;const rows=Q.missions.map((m,mi)=>{const perLevel=LEVELS.map((lv,li)=>countLevel(mi,li,m[lv[0]],q)[s]);const sum=perLevel.reduce((a,b)=>a+b,0);total+=sum;return {mi,perLevel,sum};});
+        return (
+        <div key={s} style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,overflow:'hidden',alignSelf:'start'}}>
+          <div style={{display:'flex',alignItems:'center',gap:9,padding:'14px 16px',background:bg}}>
+            <span style={{width:11,height:11,borderRadius:'50%',background:col,flex:'none'}}></span>
+            <span style={{fontWeight:700,fontSize:13.5,color:'#1f2733'}}>{STLABEL[s]}</span>
+            <div style={{flex:1}}></div>
+            <span style={{fontSize:16,fontWeight:700,color:col}}>{total}</span>
+          </div>
+          <div style={{padding:'4px 16px 12px'}}>
+            {rows.filter(r=>r.sum>0).map(r=>{const parts=MNAMES[r.mi].split(' : ');
+              return (
+              <div key={r.mi} style={{padding:'12px 0',borderBottom:'1px solid #f5f7f9'}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:8}}>
+                  <span style={{fontSize:12.5,fontWeight:700}}><span style={{color:'#9aa3af',fontWeight:600}}>{parts[0]} · </span>{parts.slice(1).join(' : ')}</span>
+                  <span style={{fontSize:11.5,fontWeight:700,color:col,background:bg,borderRadius:99,padding:'2px 9px',flex:'none'}}>{r.sum}</span>
+                </div>
+                <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                  {LEVELS.map((lv,li)=> r.perLevel[li]>0 ? (
+                    <span key={li} style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:11,fontWeight:600,color:'#5a6473',background:'#f4f6f9',borderRadius:7,padding:'3px 9px'}}>{lv[1]}<b style={{color:'#1f2733'}}>{r.perLevel[li]}</b></span>
+                  ) : null)}
+                </div>
+              </div>
+            );})}
+            {rows.every(r=>r.sum===0) && <div style={{fontSize:12,color:'#c2cad4',padding:'16px 0',textAlign:'center'}}>ไม่มีรายการ</div>}
+          </div>
+        </div>
+      );})}
+    </div>
+  );
+}
+
+/* ============ OPTION F · QUARTERLY TREND ============ */
+function pctOf(mi,q){const a=aggFor(mi,q);const t=a.g+a.y+a.r||1;return a.g/t*100;}
+function OptF({q}){
+  const Q=QUARTERS[q];const W=320,H=88,pad=10,cur=QKEYS.indexOf(q);
+  const xs=(i)=>pad+i/(QKEYS.length-1)*(W-2*pad);
+  const ys=(v)=>H-pad-(v/100)*(H-2*pad);
+  return (
+    <div style={{padding:24,display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:18,overflow:'auto'}}>
+      {Q.missions.map((m,mi)=>{const parts=MNAMES[mi].split(' : ');const agg=aggFor(mi,q);
+        const pts=QKEYS.map(k=>pctOf(mi,k));
+        const path=pts.map((v,i)=>(i?'L':'M')+xs(i).toFixed(1)+' '+ys(v).toFixed(1)).join(' ');
+        const area=path+' L'+xs(QKEYS.length-1).toFixed(1)+' '+(H-pad)+' L'+xs(0).toFixed(1)+' '+(H-pad)+' Z';
+        const delta=cur>0?Math.round(pts[cur]-pts[cur-1]):0;
+        return (
+        <div key={mi} style={{border:'1px solid #eceef2',borderRadius:14,padding:20,background:'#fff'}}>
+          <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,marginBottom:14}}>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,letterSpacing:'.5px',color:'#9aa3af'}}>{parts[0].toUpperCase()}</div>
+              <div style={{fontWeight:700,fontSize:15,lineHeight:1.3,marginTop:2}}>{parts.slice(1).join(' : ')}</div>
+            </div>
+            <div style={{textAlign:'right',flex:'none'}}>
+              <div style={{fontSize:24,fontWeight:700,letterSpacing:'-.02em',lineHeight:1}}>{Math.round(pts[cur])}%</div>
+              {cur>0 && <div style={{fontSize:11.5,fontWeight:700,color:delta>=0?GRN:RED,marginTop:4,whiteSpace:'nowrap'}}>{delta>=0?'▲':'▼'} {Math.abs(delta)} จาก {QKEYS[cur-1]}</div>}
+            </div>
+          </div>
+          <svg viewBox={'0 0 '+W+' '+H} style={{width:'100%',height:H,display:'block'}}>
+            <path d={area} fill={primary+'14'}/>
+            <path d={path} fill="none" stroke={primary} strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round"/>
+            {pts.map((v,i)=>{const on=i===cur;return <circle key={i} cx={xs(i)} cy={ys(v)} r={on?5:3.5} fill={on?primary:'#fff'} stroke={primary} strokeWidth={2}/>;})}
+          </svg>
+          <div style={{display:'flex',justifyContent:'space-between',margin:'6px 4px 0',fontSize:11,fontWeight:600}}>
+            {QKEYS.map(k=><span key={k} style={{color:k===q?primary:'#9aa3af'}}>{k}</span>)}
+          </div>
+          <div style={{marginTop:14}}><Seg g={agg.g} y={agg.y} r={agg.r} h={8}/></div>
+          <div style={{marginTop:9}}><CountRow g={agg.g} y={agg.y} r={agg.r}/></div>
+        </div>
+      );})}
+    </div>
+  );
+}
+
+/* ============ OPTION G · KANBAN COLUMNS (bars, from A+B) ============ */
+function OptG({q}){
+  const Q=QUARTERS[q];
+  const [openAll,setOpenAll]=useState(false);
+  const [open,setOpen]=useState({});
+  const [pick,setPick]=useState({});
+  const isOpen=(id)=> id in open ? open[id] : openAll;
+  const toggle=(id)=>setOpen(o=>({...o,[id]:!isOpen(id)}));
+  return (
+    <div style={{padding:24}}>
+      <div style={{display:'flex',alignItems:'center',marginBottom:16}}>
+        <span style={{fontSize:12.5,color:'#8a93a3'}}>{Q.missions.length} พันธกิจ · คอลัมน์เคียงกัน</span>
+        <div style={{flex:1}}></div>
+        <button onClick={()=>{setOpenAll(v=>!v);setOpen({});setPick({});}} style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid #dfe3ea',borderRadius:9,padding:'8px 14px',fontSize:12.5,fontWeight:700,color:'#5a6473',background:'#fff'}}>
+          {ms(openAll?'chevron-up':'chevron-down',15,'#5a6473')}{openAll?'ย่อทั้งหมด':'ขยายทั้งหมด'}
+        </button>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:18,alignItems:'start'}}>
+        {Q.missions.map((m,mi)=>{const parts=MNAMES[mi].split(' : ');const agg=aggFor(mi,q);const tot=agg.g+agg.y+agg.r;
+          return (
+          <div key={mi} style={{border:'1px solid #eceef2',borderRadius:14,background:'#fff',padding:20}}>
+            <div style={{fontSize:11,fontWeight:700,letterSpacing:'.5px',color:'#9aa3af'}}>{parts[0].toUpperCase()}</div>
+            <div style={{fontWeight:700,fontSize:15,lineHeight:1.3,marginTop:3,minHeight:40}}>{parts.slice(1).join(' : ')}</div>
+            <div style={{marginTop:10}}><StatusPill s={m.status}/></div>
+            <div style={{display:'flex',alignItems:'baseline',gap:8,margin:'14px 0 8px'}}>
+              <span style={{fontSize:28,fontWeight:700,letterSpacing:'-.02em',lineHeight:1}}>{Math.round(agg.g/tot*100)}<span style={{fontSize:15,color:'#9aa3af'}}>%</span></span>
+              <span style={{fontSize:12,color:'#9aa3af'}}>บรรลุเกณฑ์ · {tot} รายการ</span>
+            </div>
+            <Seg g={agg.g} y={agg.y} r={agg.r} h={10}/>
+            <div style={{marginTop:18,display:'flex',flexDirection:'column',gap:16}}>
+              {LEVELS.map((lv,li)=>{const id=mi+'-'+li;const items=itemsFor(mi,li,m[lv[0]],q);
+                const c={g:0,y:0,r:0};items.forEach(it=>c[it.status]++);const on=isOpen(id);const pk=pick[id];
+                return (
+                <div key={li}>
+                  <button onClick={()=>toggle(id)} style={{display:'block',width:'100%',padding:0,textAlign:'left'}}>
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:7}}>
+                      <span style={{fontSize:12.5,fontWeight:600,color:'#3a424f'}}>{lv[1]} <span style={{color:'#b3bac4',fontWeight:400}}>· {items.length}</span></span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:9}}>
+                        <CountRow g={c.g} y={c.y} r={c.r} gap={11}/>
+                        {ms(on?'chevron-up':'chevron-down',14,on?primary:'#c2cad4')}
+                      </span>
+                    </div>
+                    <Seg g={c.g} y={c.y} r={c.r} h={9}/>
+                  </button>
+                  {on && (
+                    <div style={{marginTop:11,animation:'fadeIn .14s ease'}}>
+                      <div style={{display:'flex',flexWrap:'wrap',gap:7}}>
+                        {items.map((it,i)=>{const sel=pk===i;return (
+                          <button key={i} title={it.title} onClick={()=>setPick(p=>({...p,[id]:sel?null:i}))} style={{width:23,height:23,borderRadius:'50%',background:dotC(it.status),boxShadow:sel?'0 0 0 2px #fff,0 0 0 4px #2b3440':'none',transform:sel?'scale(1.06)':'none',transition:'transform .1s',cursor:'pointer',flex:'none'}}></button>
+                        );})}
+                      </div>
+                      {pk!=null && items[pk] && (
+                        <div style={{marginTop:11,background:'#fafbfc',border:'1px solid #eef0f4',borderRadius:9,padding:'10px 12px'}}>
+                          <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:5}}>
+                            <span style={{width:10,height:10,borderRadius:'50%',background:dotC(items[pk].status),flex:'none'}}></span>
+                            <span style={{fontWeight:700,fontSize:12.5}}>{items[pk].title}</span>
+                          </div>
+                          <div style={{fontSize:11.5,color:'#5a6473',lineHeight:1.5}}>{items[pk].desc}</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );})}
+            </div>
+          </div>
+        );})}
+      </div>
+    </div>
+  );
+}
+
+const TABS=[['A','ตาราง (Matrix)','ภาพรวมทั้งหมดในตารางเดียว — สแกนเร็ว เหมาะผู้บริหาร'],['B','แถบสุขภาพ (Bars)','ไม่มีจุด เน้น %บรรลุ + แถบสัดส่วน อ่านง่ายที่สุด'],['C','Heatmap ช่อง','คงจุดสถานะแบบ grid สี่เหลี่ยม คลิกดูรายละเอียดได้'],['D','วงแหวน (Radial)','3 วงซ้อน = เป้าหมาย/กลยุทธ์/แผน + %บรรลุตรงกลาง'],['E','จัดกลุ่มตามสถานะ','3 คอลัมน์ตามสถานะ — เห็นงานที่ต้องเร่งแก้ก่อน'],['F','แนวโน้มรายไตรมาส','กราฟ Q1→Q4 ดูทิศทางว่าดีขึ้นหรือแย่ลง'],['G','Kanban (คอลัมน์)','4 คอลัมน์เคียงกัน คอลัมน์ละพันธกิจ + ปุ่มขยาย/ย่อทั้งหมด']];
+
+function App(){
+  const [tab,setTab]=useState('A');
+  const [q,setQ]=useState('Q3');
+  const Q=QUARTERS[q];
+  const meta=TABS.find(t=>t[0]===tab);
+  return (
+    <div style={{minHeight:'100vh',padding:'26px',display:'flex',flexDirection:'column',gap:16}}>
+      {/* proposal switcher */}
+      <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
+        <span style={{fontSize:13,fontWeight:700,color:'#5a6473',marginRight:4}}>เลือกแนวทาง:</span>
+        {TABS.map(t=>{const a=tab===t[0];return (
+          <button key={t[0]} onClick={()=>setTab(t[0])} style={{display:'flex',alignItems:'center',gap:9,padding:'9px 15px',borderRadius:11,border:'1px solid '+(a?primary:'#dfe3ea'),background:a?'#fff':'#f7f9fb',boxShadow:a?'0 1px 0 '+primary:'none'}}>
+            <span style={{width:24,height:24,borderRadius:7,background:a?primary:'#e4e8ee',color:a?'#fff':'#8a93a3',fontWeight:700,fontSize:13,display:'flex',alignItems:'center',justifyContent:'center'}}>{t[0]}</span>
+            <span style={{fontSize:13.5,fontWeight:700,color:a?'#1f2733':'#7a838f'}}>{t[1]}</span>
+          </button>
+        );})}
+        <div style={{flex:1}}></div>
+        <span style={{fontSize:12.5,color:'#8a93a3'}}>{meta[2]}</span>
+      </div>
+
+      {/* modal mock */}
+      <div style={{background:'#fff',borderRadius:16,flex:1,display:'flex',flexDirection:'column',overflow:'hidden',boxShadow:'0 16px 44px rgba(16,24,40,.14)',minHeight:0}}>
+        <div style={{display:'flex',alignItems:'center',gap:14,padding:'18px 24px',borderBottom:'1px solid #eef0f4'}}>
+          <div>
+            <div style={{fontWeight:700,fontSize:17,letterSpacing:'-.01em'}}>สถานะของแผนธุรกิจทั้งหมด</div>
+            <div style={{fontSize:12.5,color:'#8a93a3',marginTop:2}}>{Q.label} · {Q.period}</div>
+          </div>
+          <div style={{flex:1}}></div>
+          <div style={{display:'flex',background:'#f1f3f7',borderRadius:10,padding:3,gap:2}}>
+            {QKEYS.map(k=>{const a=q===k;return <button key={k} onClick={()=>setQ(k)} style={{borderRadius:7,padding:'7px 15px',fontSize:12.5,fontWeight:700,background:a?primary:'transparent',color:a?'#fff':'#5a6473',transition:'all .12s'}}>{k}</button>;})}
+          </div>
+          <button style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('x-lg',18,'#5a6473')}</button>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:14,padding:'11px 24px',borderBottom:'1px solid #f3f5f8',fontSize:12,color:'#8a93a3',flexWrap:'wrap'}}>
+          <span style={{display:'inline-flex',alignItems:'center',gap:7,color:'#5a6473'}}>ภาพรวมองค์กร <b style={{color:'#1f2733',fontSize:13.5}}>{Q.orgPct}%</b> บรรลุเกณฑ์</span>
+          <div style={{flex:1}}></div>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:10,height:10,borderRadius:'50%',background:GRN}}></span>บรรลุ/ปกติ</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:10,height:10,borderRadius:'50%',background:YEL}}></span>เฝ้าระวัง</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:10,height:10,borderRadius:'50%',background:RED}}></span>ต่ำกว่าเกณฑ์</span>
+        </div>
+        <div style={{flex:1,overflowY:'auto',background:'#fafbfc',minHeight:0}}>
+          {tab==='A'&&<OptA q={q}/>}
+          {tab==='B'&&<OptB q={q}/>}
+          {tab==='C'&&<OptC q={q}/>}
+          {tab==='D'&&<OptD q={q}/>}
+          {tab==='E'&&<OptE q={q}/>}
+          {tab==='F'&&<OptF q={q}/>}
+          {tab==='G'&&<OptG q={q}/>}
+        </div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

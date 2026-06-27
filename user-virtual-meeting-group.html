@@ -82,7 +82,22 @@ const POSTS=[
   {who:'Piyawat Takaew',role:'SA Staff',date:'18 ธ.ค. 2025, 13:07 น.',title:'5 วิธีง่ายๆ เผาผลาญไขมัน',excerpt:'1.มื้อเช้าอย่าเริ่มด้วยแป้ง ให้เริ่มด้วยโปรตีน จะทำให้เราอิ่มนาน ไม่ทำให้น้ำตาลขึ้นเร็ว...',icon:'restaurant',tone:'amber',views:3,reacts:2,comments:0},
   {who:'Piyawat Takaew',role:'SA Staff',date:'4 พ.ย. 2025, 8:25 น.',title:'Win 11 LDPlayer ตั้งค่า Bypass ติดตั้ง APK',excerpt:'วิธีตั้งค่าให้ติดตั้งไฟล์ APK บน Windows 11 ผ่าน LDPlayer...',icon:'android',tone:'teal',views:5,reacts:1,comments:1},
 ];
-const TABS=[{key:'talk',label:'พูดคุย'},{key:'members',label:'สมาชิกในกลุ่ม'},{key:'invite',label:'รอตอบรับคำเชิญ'},{key:'overview',label:'ภาพรวมกลุ่ม'},{key:'verify',label:'ตรวจสอบโพสต์'},{key:'todo',label:'TODO'}];
+const TABS=[{key:'talk',label:'พูดคุย'},{key:'members',label:'สมาชิกในกลุ่ม'},{key:'invite',label:'รอตอบรับคำเชิญ'},{key:'overview',label:'ภาพรวมกลุ่ม'},{key:'verify',label:'ตรวจสอบโพสต์'},{key:'todo',label:'TODO'},{key:'watch',label:'เฝ้าระวัง'}];
+
+// ===== Watch list (รายการเฝ้าระวัง) — shared store =====
+const WKEY='gd5_vm_watch';            // watched items
+const TAGKEY='gd5_watch_tags';        // tag catalog, shared across all VM groups
+const WATCH_SEED=[
+  {id:'po-chulabhorn-0-4:quote:4',title:'โต๊ะวางเครื่องคอมพิวเตอร์พร้อมเก้าอี้',group:'ใบเสนอราคา',parent:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',href:'assignee-action-inprogress-checklist.html',addedBy:'Piyawat Takaew',addedByRole:'SA Staff',addedAt:Date.now()-1000*60*60*26,tags:['LongLead-PO'],notes:[{by:'Piyawat Takaew',at:Date.now()-1000*60*60*25,t:'รอยืนยันสเปกขาโต๊ะกับผู้ขายก่อนออก PO'}]},
+  {id:'po-chulabhorn-0-4:quote:1',title:'แว่น VR แว่นตาอัจฉริยะเสมือนจริงสำหรับเชื่อมต่อโปรแกรม',group:'ใบเสนอราคา',parent:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',href:'assignee-action-inprogress-checklist.html',addedBy:'Narate Boonmee',addedByRole:'PM',addedAt:Date.now()-1000*60*60*4,tags:['LongLead-PR'],notes:[]},
+];
+const loadWatch=()=>{try{const a=JSON.parse(localStorage.getItem(WKEY)||'null');if(a&&a.length)return a;}catch(_){}return WATCH_SEED;};
+const loadTags=()=>{try{const a=JSON.parse(localStorage.getItem(TAGKEY)||'null');if(a&&a.length)return a;}catch(_){}return ['LongLead-PO','LongLead-PR'];};
+const saveWatch=(a)=>{try{localStorage.setItem(WKEY,JSON.stringify(a));}catch(_){}};
+const saveTags=(a)=>{try{localStorage.setItem(TAGKEY,JSON.stringify(a));}catch(_){}};
+const relTime=(ts)=>{const s=(Date.now()-ts)/1000;if(s<60)return 'เมื่อสักครู่';if(s<3600)return Math.floor(s/60)+' นาทีที่แล้ว';if(s<86400)return Math.floor(s/3600)+' ชั่วโมงที่แล้ว';const d=Math.floor(s/86400);if(d<30)return d+' วันที่แล้ว';return new Date(ts).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});};
+const TAGTONE=['#e3f3f0|#0e8c7d|#bfe6db','#eaf1fe|#3b6fd4|#cdddf8','#fdf3d6|#a9870a|#f0e0a8','#f3e8fd|#7c3aed|#e2cdf7','#fde9e7|#d8513a|#f6cfca'];
+const tagColor=(t)=>{let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return TAGTONE[h%TAGTONE.length].split('|');};
 
 function Pill({children,bg,color,icon}){
   return <span style={{display:'inline-flex',alignItems:'center',gap:4,background:bg,color,borderRadius:7,padding:'3px 9px',fontSize:11,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{icon&&ms(icon,14,color)}{children}</span>;
@@ -620,6 +635,237 @@ function VerifyPanel(){
   );
 }
 
+// โปรเจค/วิทยาลัยที่มีอยู่ (สำหรับเพิ่มรายการเฝ้าระวังเอง — ต้องผูกกับโปรเจคเสมอ)
+const WPROJECTS=[
+  {project:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',college:'วท.จุฬาภรณ์'},
+  {project:'ครุภัณฑ์ห้องปฏิบัติการคอมพิวเตอร์ - วท.เชียงใหม่',college:'วท.เชียงใหม่'},
+  {project:'ระบบ Virtual Reality เพื่อการเรียนรู้ - วท.ขอนแก่น',college:'วท.ขอนแก่น'},
+  {project:'จัดซื้อครุภัณฑ์ทางการแพทย์ - วท.สงขลา',college:'วท.สงขลา'},
+];
+
+function AddWatchModal({onClose,onSave,catalog}){
+  const [title,setTitle]=useState('');
+  const [owner,setOwner]=useState('Piyawat Takaew');
+  const [due,setDue]=useState('');
+  const [proj,setProj]=useState('');
+  const [tags,setTags]=useState([]);
+  const [tagInput,setTagInput]=useState('');
+  const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:9,padding:'10px 12px',fontSize:13.5,outline:'none',color:'#1f2733',fontFamily:'inherit',background:'#fff',boxSizing:'border-box'};
+  const Lbl=({i,children,req})=>(<div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,fontWeight:600,color:'#5a6473',margin:'14px 0 7px'}}><i className={'bi bi-'+i} style={{fontSize:15,color:'#8a93a3'}}></i>{children}{req&&<span style={{color:'#d83a3a',fontWeight:700}}>*</span>}</div>);
+  const toggleTag=(t)=>setTags(s=>s.includes(t)?s.filter(x=>x!==t):[...s,t]);
+  const addNewTag=()=>{const t=tagInput.trim();if(!t)return;if(!tags.includes(t))setTags([...tags,t]);setTagInput('');};
+  const valid=title.trim()&&proj;
+  const allTags=Array.from(new Set([...(catalog||[]),...tags]));
+  const submit=()=>{if(!valid)return;const pj=WPROJECTS.find(p=>p.project===proj)||{};onSave({id:'manual-'+Date.now(),title:title.trim(),group:pj.college||'',parent:proj,manual:true,owner:owner.trim()||'-',due,addedBy:'Piyawat Takaew',addedByRole:'ผู้รับผิดชอบโปรเจค',addedAt:Date.now(),tags:[...tags],notes:[]});};
+  return (
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.42)',display:'flex',alignItems:'flex-start',justifyContent:'center',zIndex:90,padding:'40px 16px',overflowY:'auto'}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,width:540,maxWidth:'100%',boxShadow:'0 20px 50px rgba(16,24,40,.25)',animation:'fadeIn .15s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,padding:'16px 20px',borderBottom:'1px solid #f1f3f6'}}>
+          <div style={{width:34,height:34,borderRadius:9,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-shield-plus" style={{fontSize:18,color:primary}}></i></div>
+          <div>
+            <div style={{fontWeight:700,fontSize:16}}>เพิ่มรายการเฝ้าระวังเอง</div>
+            <div style={{fontSize:11.5,color:'#9aa3af',marginTop:1}}>สำหรับรายการนอกเหนือคำสั่งการ ที่เพิ่มมาทีหลัง</div>
+          </div>
+          <div style={{flex:1}}></div>
+          <button onClick={onClose} style={{width:32,height:32,borderRadius:8,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-x-lg" style={{fontSize:15,color:'#5a6473'}}></i></button>
+        </div>
+        <div style={{padding:'4px 20px 20px'}}>
+          <Lbl i="card-text" req>ชื่อรายการ</Lbl>
+          <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="เช่น เครื่องสำรองไฟ UPS สำหรับห้องเซิร์ฟเวอร์" style={{...inp,background:'#f6f7f9',fontWeight:600}}/>
+          <div style={{display:'flex',gap:14}}>
+            <div style={{flex:1}}>
+              <Lbl i="person">ผู้รับผิดชอบ</Lbl>
+              <input value={owner} onChange={e=>setOwner(e.target.value)} style={inp}/>
+            </div>
+            <div style={{flex:1}}>
+              <Lbl i="calendar-event">วันครบกำหนด</Lbl>
+              <input type="date" value={due} onChange={e=>setDue(e.target.value)} style={{...inp,cursor:'pointer'}}/>
+            </div>
+          </div>
+          <Lbl i="folder2-open" req>โปรเจค / วิทยาลัย</Lbl>
+          <select value={proj} onChange={e=>setProj(e.target.value)} style={{...inp,cursor:'pointer',color:proj?'#1f2733':'#9aa3af'}}>
+            <option value="">เลือกโปรเจคที่มีอยู่...</option>
+            {WPROJECTS.map(p=><option key={p.project} value={p.project}>{p.project}</option>)}
+          </select>
+          <div style={{fontSize:11.5,color:'#aab2bd',marginTop:6,display:'flex',alignItems:'center',gap:5}}><i className="bi bi-info-circle" style={{fontSize:12}}></i>รายการเฝ้าระวังต้องผูกกับโปรเจคที่มีอยู่เสมอ</div>
+          <Lbl i="tags">Tag</Lbl>
+          <div style={{display:'flex',flexWrap:'wrap',gap:7}}>
+            {allTags.map(t=>{const on=tags.includes(t);const[bg,fg,bd]=tagColor(t);return (
+              <button key={t} onClick={()=>toggleTag(t)} style={{display:'inline-flex',alignItems:'center',gap:5,background:on?bg:'#f4f5f7',color:on?fg:'#8a93a3',border:'1px solid '+(on?bd:'#e7eaef'),borderRadius:99,padding:'4px 11px',fontSize:12,fontWeight:700,cursor:'pointer'}}><i className={'bi bi-'+(on?'check2':'tag')} style={{fontSize:12}}></i>{t}</button>
+            );})}
+            {allTags.length===0 && <span style={{fontSize:12,color:'#b3bac4'}}>ยังไม่มี Tag</span>}
+          </div>
+          <div style={{display:'flex',gap:7,marginTop:8}}>
+            <input value={tagInput} onChange={e=>setTagInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();addNewTag();}}} placeholder="พิมพ์ Tag ใหม่ แล้วกด Enter" style={{...inp,flex:1,fontSize:12.5,padding:'8px 11px'}}/>
+            <button onClick={addNewTag} style={{border:'1px dashed #cdd4dd',background:'#fff',borderRadius:9,padding:'0 14px',fontSize:12.5,fontWeight:600,color:'#5a6473',cursor:'pointer',whiteSpace:'nowrap'}}>เพิ่ม</button>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:10,justifyContent:'flex-end',padding:'14px 20px',borderTop:'1px solid #f1f3f6'}}>
+          <button onClick={onClose} style={{border:'1px solid #e3e7ec',background:'#fff',borderRadius:10,padding:'10px 18px',fontSize:13.5,fontWeight:600,color:'#5a6473',cursor:'pointer'}}>ยกเลิก</button>
+          <button onClick={submit} disabled={!valid} style={{border:'none',background:valid?primary:'#cdd4dd',color:'#fff',borderRadius:10,padding:'10px 20px',fontSize:13.5,fontWeight:700,cursor:valid?'pointer':'not-allowed',display:'inline-flex',alignItems:'center',gap:7}}><i className="bi bi-plus-lg" style={{fontSize:14}}></i>เพิ่มเข้ารายการเฝ้าระวัง</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WatchPanel(){
+  const [items,setItems]=useState(loadWatch);
+  const [catalog,setCatalog]=useState(loadTags);
+  const [showAdd,setShowAdd]=useState(false);
+  const [openNotes,setOpenNotes]=useState({});
+  const [tagMenu,setTagMenu]=useState(null);   // item id whose add-tag menu is open
+  const [tagInput,setTagInput]=useState('');
+  const [noteInput,setNoteInput]=useState({});
+  const ME='Piyawat Takaew';
+
+  const persist=(next)=>{setItems(next);saveWatch(next);};
+  const remove=(id)=>persist(items.filter(w=>w.id!==id));
+  const addManual=(item)=>{persist([item,...items]);setShowAdd(false);};
+  // สิทธิ์: เฉพาะผู้รับผิดชอบโปรเจค Easy PM (ในต้นแบบนี้ ME เป็นผู้รับผิดชอบ)
+  const canAdd=true;
+  const toggleNotes=(id)=>setOpenNotes(o=>({...o,[id]:!o[id]}));
+
+  const addTag=(id,label)=>{
+    label=(label||'').trim();if(!label)return;
+    if(!catalog.includes(label)){const c=[...catalog,label];setCatalog(c);saveTags(c);}
+    persist(items.map(w=>w.id!==id?w:{...w,tags:(w.tags||[]).includes(label)?w.tags:[...(w.tags||[]),label]}));
+    setTagInput('');setTagMenu(null);
+  };
+  const removeTag=(id,label)=>persist(items.map(w=>w.id!==id?w:{...w,tags:(w.tags||[]).filter(t=>t!==label)}));
+  const removeFromCatalog=(label)=>{const c=catalog.filter(t=>t!==label);setCatalog(c);saveTags(c);persist(items.map(w=>({...w,tags:(w.tags||[]).filter(t=>t!==label)})));};
+  const addNote=(id)=>{const t=(noteInput[id]||'').trim();if(!t)return;persist(items.map(w=>w.id!==id?w:{...w,notes:[...(w.notes||[]),{by:ME,at:Date.now(),t}]}));setNoteInput(n=>({...n,[id]:''}));};
+  const delNote=(id,idx)=>persist(items.map(w=>w.id!==id?w:{...w,notes:(w.notes||[]).filter((_,j)=>j!==idx)}));
+
+  const Tag=({label,onX})=>{const[bg,fg,bd]=tagColor(label);return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:5,background:bg,color:fg,border:'1px solid '+bd,borderRadius:99,padding:'3px 5px 3px 11px',fontSize:12,fontWeight:700}}>
+      <i className="bi bi-tag-fill" style={{fontSize:11}}></i>{label}
+      {onX && <button onClick={onX} style={{width:17,height:17,borderRadius:'50%',border:'none',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',color:fg,opacity:.7}}><i className="bi bi-x" style={{fontSize:14}}></i></button>}
+    </span>
+  );};
+
+  return (
+   <div style={{animation:'fadeIn .2s ease',display:'flex',flexDirection:'column',gap:16}}>
+    {showAdd && <AddWatchModal catalog={catalog} onClose={()=>setShowAdd(false)} onSave={addManual}/>}
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
+        <i className="bi bi-shield-check" style={{fontSize:21,color:primary}}></i>
+        <span style={{fontWeight:700,fontSize:16}}>รายการเฝ้าระวัง</span>
+        <span style={{minWidth:22,height:22,borderRadius:99,background:primarySoft,color:primary,fontSize:12,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 7px'}}>{items.length}</span>
+        <div style={{flex:1}}></div>
+        {canAdd && <button onClick={()=>setShowAdd(true)} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:primary,color:'#fff',borderRadius:10,padding:'9px 15px',fontSize:13,fontWeight:700,cursor:'pointer',boxShadow:'0 1px 2px rgba(21,160,143,.3)'}}><i className="bi bi-plus-lg" style={{fontSize:14}}></i>เพิ่มเอง</button>}
+      </div>
+      <div style={{fontSize:12.5,color:'#9aa3af',marginTop:9}}>รวมรายการที่เพิ่มจาก Checklist ในคำสั่งการ และที่ผู้รับผิดชอบโปรเจคเพิ่มเอง</div>
+    </div>
+
+    {items.length===0 ? (
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'64px 0',textAlign:'center',color:'#aeb6c2'}}>
+        <i className="bi bi-bookmark-x" style={{fontSize:42,color:'#cfd6e0'}}></i>
+        <div style={{marginTop:12,fontSize:13.5}}>ยังไม่มีรายการเฝ้าระวัง</div>
+        <div style={{marginTop:4,fontSize:12.5}}>กดไอคอนเฝ้าติดตามท้ายรายการใน Checklist ของคำสั่งการ</div>
+      </div>
+    ) : items.map(w=>{
+      const notesOpen=openNotes[w.id];const notes=w.notes||[];const tags=w.tags||[];const menu=tagMenu===w.id;
+      const suggestions=catalog.filter(t=>!tags.includes(t)&&t.toLowerCase().includes(tagInput.trim().toLowerCase()));
+      return (
+      <div key={w.id} style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'18px 20px'}}>
+        {/* head */}
+        <div style={{display:'flex',alignItems:'flex-start',gap:13}}>
+          <div style={{width:40,height:40,borderRadius:11,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-clipboard-check" style={{fontSize:20,color:primary}}></i></div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+              <div style={{fontWeight:700,fontSize:15.5,lineHeight:1.4,textWrap:'pretty'}}>{w.title}</div>
+              {w.manual && <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fef3e2',color:'#b97d09',border:'1px solid #f3d79a',borderRadius:99,padding:'2px 10px',fontSize:11,fontWeight:700,flex:'none'}}><i className="bi bi-hand-index-thumb" style={{fontSize:11}}></i>เพิ่มเอง</span>}
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginTop:6,flexWrap:'wrap'}}>
+              {w.group && <span style={{background:primarySoft,color:'#0e8c7d',borderRadius:7,padding:'2px 9px',fontSize:11.5,fontWeight:700}}>{w.group}</span>}
+              <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12.5,color:'#8a93a3'}}><i className="bi bi-folder2-open" style={{fontSize:13}}></i>{w.parent}</span>
+              {w.due && <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,color:'#b45309',background:'#fff7e8',borderRadius:7,padding:'2px 9px'}}><i className="bi bi-calendar-event" style={{fontSize:12}}></i>ครบกำหนด {w.due}</span>}
+            </div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:8,flex:'none'}}>
+            {w.manual
+              ? <span title="รายการนี้เพิ่มเอง ไม่มีคำสั่งการต้นทาง" style={{display:'inline-flex',alignItems:'center',gap:6,background:'#f4f5f7',color:'#8a93a3',borderRadius:9,padding:'7px 13px',fontSize:12.5,fontWeight:700}}><i className="bi bi-slash-circle" style={{fontSize:14}}></i>ไม่มีคำสั่งการ</span>
+              : <a href={(w.href||'#')} title="ย้อนกลับไปคำสั่งการ" style={{display:'inline-flex',alignItems:'center',gap:6,background:'#eaf1fe',color:'#3b6fd4',borderRadius:9,padding:'7px 13px',fontSize:12.5,fontWeight:700}}><i className="bi bi-arrow-return-left" style={{fontSize:14}}></i>ไปยังคำสั่งการ</a>}
+            <button onClick={()=>remove(w.id)} title="นำออกจากรายการเฝ้าระวัง" style={{width:34,height:34,borderRadius:9,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-x-lg" style={{fontSize:15,color:'#d83a3a'}}></i></button>
+          </div>
+        </div>
+
+        {/* added by / when */}
+        <div style={{display:'flex',alignItems:'center',gap:9,marginTop:14,paddingTop:13,borderTop:'1px solid #f4f6f8'}}>
+          <Letter s={w.addedBy||ME} d={26} fs={11}/>
+          <span style={{fontSize:12.5,color:'#5a6473'}}>เพิ่มโดย <b style={{color:'#2b3440'}}>{w.addedBy||ME}</b>{w.addedByRole?' · '+w.addedByRole:''}</span>
+          {w.owner && <><span style={{color:'#d4d9e0'}}>•</span><span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12.5,color:'#5a6473'}}><i className="bi bi-person-badge" style={{fontSize:13,color:'#9aa3af'}}></i>ผู้รับผิดชอบ <b style={{color:'#2b3440'}}>{w.owner}</b></span></>}
+          <span style={{color:'#d4d9e0'}}>•</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12.5,color:'#9aa3af'}}><i className="bi bi-clock" style={{fontSize:12}}></i>{relTime(w.addedAt||Date.now())}</span>
+        </div>
+
+        {/* tags */}
+        <div style={{display:'flex',alignItems:'center',gap:8,marginTop:13,flexWrap:'wrap',position:'relative'}}>
+          <span style={{fontSize:12.5,fontWeight:600,color:'#8a93a3',display:'inline-flex',alignItems:'center',gap:5}}><i className="bi bi-tags" style={{fontSize:14}}></i>Tag</span>
+          {tags.map(t=><Tag key={t} label={t} onX={()=>removeTag(w.id,t)}/>)}
+          {tags.length===0 && <span style={{fontSize:12,color:'#b3bac4'}}>ยังไม่มี</span>}
+          <button onClick={()=>{setTagMenu(menu?null:w.id);setTagInput('');}} style={{display:'inline-flex',alignItems:'center',gap:5,border:'1px dashed #cdd4dd',background:'#fff',borderRadius:99,padding:'4px 12px',fontSize:12,fontWeight:600,color:'#5a6473'}}><i className="bi bi-plus-lg" style={{fontSize:12}}></i>เพิ่ม Tag</button>
+          {menu && (
+            <div style={{position:'absolute',top:'100%',left:54,marginTop:7,zIndex:20,width:268,background:'#fff',border:'1px solid #e7eaef',borderRadius:12,boxShadow:'0 12px 30px rgba(16,24,40,.16)',padding:12,animation:'fadeIn .12s ease'}}>
+              <div style={{display:'flex',alignItems:'center',gap:7,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:9,padding:'7px 10px'}}>
+                <i className="bi bi-tag" style={{fontSize:14,color:'#9aa3af'}}></i>
+                <input autoFocus value={tagInput} onChange={e=>setTagInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')addTag(w.id,tagInput);}} placeholder="ค้นหา หรือพิมพ์ Tag ใหม่" style={{border:'none',outline:'none',background:'transparent',fontSize:13,flex:1,color:'#2b3440',fontFamily:'inherit'}}/>
+              </div>
+              <div style={{fontSize:11,fontWeight:700,color:'#9aa3af',margin:'11px 2px 6px'}}>ใช้ได้ทุกกลุ่ม Virtual Meeting</div>
+              <div style={{display:'flex',flexDirection:'column',gap:2,maxHeight:180,overflowY:'auto'}}>
+                {suggestions.map(t=>(
+                  <div key={t} style={{display:'flex',alignItems:'center',gap:8,padding:'6px 7px',borderRadius:8}} className="td-row">
+                    <button onClick={()=>addTag(w.id,t)} style={{flex:1,display:'flex',alignItems:'center',gap:7,border:'none',background:'transparent',textAlign:'left'}}><Tag label={t}/></button>
+                    <button onClick={()=>removeFromCatalog(t)} title="ลบ Tag นี้ออกจากระบบ" style={{width:24,height:24,borderRadius:6,border:'none',background:'transparent',color:'#c2cad4',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-trash3" style={{fontSize:13}}></i></button>
+                  </div>
+                ))}
+                {tagInput.trim() && !catalog.some(t=>t.toLowerCase()===tagInput.trim().toLowerCase()) && (
+                  <button onClick={()=>addTag(w.id,tagInput)} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 7px',border:'none',background:'transparent',textAlign:'left',fontSize:12.5,fontWeight:600,color:primary}}><i className="bi bi-plus-circle" style={{fontSize:15}}></i>สร้าง “{tagInput.trim()}”</button>
+                )}
+                {suggestions.length===0 && !tagInput.trim() && <div style={{fontSize:12,color:'#b3bac4',padding:'6px 7px'}}>พิมพ์เพื่อสร้าง Tag ใหม่</div>}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* notes toggle */}
+        <div style={{marginTop:14}}>
+          <button onClick={()=>toggleNotes(w.id)} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',padding:0,fontSize:13,fontWeight:600,color:'#5a6473'}}>
+            <i className="bi bi-journal-text" style={{fontSize:15,color:primary}}></i>Note List
+            <span style={{minWidth:18,height:18,borderRadius:99,background:'#f1f3f6',color:'#7b8595',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{notes.length}</span>
+            <i className={'bi '+(notesOpen?'bi-chevron-up':'bi-chevron-down')} style={{fontSize:13,color:'#aab2bf'}}></i>
+          </button>
+          {notesOpen && (
+            <div style={{marginTop:10,background:'#fafbfc',border:'1px solid #eef0f4',borderRadius:11,padding:'12px 14px',animation:'fadeIn .12s ease'}}>
+              {notes.length===0 && <div style={{fontSize:12.5,color:'#aeb6c2',paddingBottom:10}}>ยังไม่มีบันทึก</div>}
+              {notes.map((n,idx)=>(
+                <div key={idx} style={{display:'flex',gap:10,padding:'8px 0',borderTop:idx?'1px solid #eef0f4':'none'}}>
+                  <Letter s={n.by} d={24} fs={10}/>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:2}}>
+                      <span style={{fontWeight:700,fontSize:12.5}}>{n.by}</span>
+                      <span style={{fontSize:11.5,color:'#9aa3af'}}>{relTime(n.at)}</span>
+                    </div>
+                    <div style={{fontSize:13,color:'#3a4452',lineHeight:1.55}}>{n.t}</div>
+                  </div>
+                  <button onClick={()=>delNote(w.id,idx)} title="ลบบันทึก" style={{width:26,height:26,borderRadius:7,border:'none',background:'transparent',color:'#c2cad4',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-trash3" style={{fontSize:13}}></i></button>
+                </div>
+              ))}
+              <div style={{display:'flex',gap:9,alignItems:'center',marginTop:notes.length?10:0,paddingTop:notes.length?10:0,borderTop:notes.length?'1px solid #eef0f4':'none'}}>
+                <Letter s={ME} d={26} fs={11}/>
+                <input value={noteInput[w.id]||''} onChange={e=>setNoteInput(n=>({...n,[w.id]:e.target.value}))} onKeyDown={e=>{if(e.key==='Enter')addNote(w.id);}} placeholder="เพิ่มบันทึก…" style={{flex:1,border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 12px',fontSize:13,outline:'none',fontFamily:'inherit',color:'#2b3440'}}/>
+                <button onClick={()=>addNote(w.id)} style={{display:'inline-flex',alignItems:'center',gap:6,background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 15px',fontSize:13,fontWeight:700}}><i className="bi bi-send" style={{fontSize:14}}></i>บันทึก</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );})}
+   </div>
+  );
+}
+
 function App(){
   const [tab,setTab]=useState(()=>{const t=new URLSearchParams(location.search).get('tab');return TABS.some(x=>x.key===t)?t:'talk';});
   const [view,setView]=useState('list');
@@ -726,8 +972,8 @@ function App(){
                 </div>
               </div>
               <div style={{display:'flex',alignItems:'center',gap:26,marginTop:16,borderBottom:'1px solid #f1f3f6'}}>
-                {TABS.map(t=>{const a=tab===t.key;return (
-                  <button key={t.key} onClick={()=>setTab(t.key)} style={{border:'none',background:'transparent',padding:'0 0 11px',fontSize:13.5,fontWeight:a?700:600,color:a?primary:'#8a93a3',borderBottom:'2.5px solid '+(a?primary:'transparent'),marginBottom:-1}}>{t.label}</button>
+                {TABS.map(t=>{const a=tab===t.key;const cnt=t.key==='watch'?(()=>{try{return JSON.parse(localStorage.getItem('gd5_vm_watch')||'[]').length;}catch(_){return 0;}})():0;return (
+                  <button key={t.key} onClick={()=>setTab(t.key)} style={{border:'none',background:'transparent',padding:'0 0 11px',fontSize:13.5,fontWeight:a?700:600,color:a?primary:'#8a93a3',borderBottom:'2.5px solid '+(a?primary:'transparent'),marginBottom:-1,display:'inline-flex',alignItems:'center',gap:7}}>{t.label}{t.key==='watch'&&cnt>0&&<span style={{minWidth:19,height:19,borderRadius:99,background:a?primary:'#e7eaef',color:a?'#fff':'#7b8595',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{cnt}</span>}</button>
                 );})}
               </div>
             </div>
@@ -784,6 +1030,8 @@ function App(){
            </div>
           ) : tab==='todo' ? (
            <TodoPanel/>
+          ) : tab==='watch' ? (
+           <WatchPanel/>
           ) : tab==='verify' ? (
            <VerifyPanel/>
           ) : (

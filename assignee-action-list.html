@@ -53,7 +53,7 @@ const ROWS = [
   {title:'ทำใบเสนอราคา โปรเจค วท.อยุธยา', targetText:'เป้าหมาย 7 งาน', progText:'คืบหน้า 6 งาน', bar:'85.71%', ratio:{t:'6/7',tone:'orange'}, prog:3, days:1, status:'inprogress', odate:'07/05/2026', src:'คำสั่งตรง'},
   {title:'ใบเสนอราคา', targetText:'เป้าหมาย 1 งาน', progText:'คืบหน้า 0 งาน', bar:'0%', ratio:{t:'2/3',tone:'orange'}, days:-2, status:'inprogress', odate:'07/05/2026', src:'คำสั่งตรง'},
   {title:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์', targetText:'เป้าหมายที่ได้รับ', doneText:'ดำเนินการให้แล้วเสร็จ', ratio:{t:'3/3',tone:'green',check:true}, prog:2, days:-1, status:'closed', odate:'04/05/2026', src:'คำสั่งตรง'},
-  {title:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์', targetText:'เป้าหมายที่ได้รับ', doneText:'ดำเนินการให้แล้วเสร็จ', ratio:{t:'0/4',tone:'red',check:true}, days:-5, status:'inprogress', odate:'04/05/2026', src:'คำสั่งตรง'},
+  {title:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์', targetText:'เป้าหมายที่ได้รับ', doneText:'ดำเนินการให้แล้วเสร็จ', ratio:{t:'0/4',tone:'red',check:true}, days:-5, status:'inprogress', odate:'04/05/2026', src:'คำสั่งตรง', href:'assignee-action-inprogress-checklist.html'},
   {title:'รับสินค้าเข้าคลัง - วช.สมุทรปราการ', targetText:'เป้าหมายที่ได้รับ', doneText:'ดำเนินการให้แล้วเสร็จ', ratio:{t:'1/3',tone:'orange',check:true}, prog:1, days:2, status:'inprogress', odate:'04/05/2026', src:'คำสั่งตรง'},
   {title:'3. ข้อมูลติดตาม: ขอใบเสนอราคา Supplier/Sub Contractor และออกใบขอซื้อ (PR) - วท.จุฬาภรณ์', group:true, targetText:'เป้าหมายกลุ่ม 7 งาน', progText:'คืบหน้า 0 งาน', bar:'0%', days:-12, status:'inprogress', odate:'20/03/2026', post:'โพสต์ของ SA-Tester', fromGroup:'จากกลุ่ม คนดูบอล'},
   {title:'งานรายบุคคล-ตั้งเป้าหมาย', targetText:'เป้าหมาย 5 งาน', progText:'คืบหน้า 0 งาน', bar:'0%', days:-20, status:'inprogress', odate:'26/01/2026', src:'คำสั่งตรง'},
@@ -117,7 +117,7 @@ function App(){
     {n:4,label:'ขอปิดงาน',bg:'#0e9f8e'},
   ];
 
-  const rowHref=(r)=> r.status==='closed' ? 'assignee-action-close.html' : 'assignee-action-inprogress.html';
+  const rowHref=(r)=> r.href || (r.status==='closed' ? 'assignee-action-close.html' : 'assignee-action-inprogress.html');
 
   return (
    <div style={{minHeight:'100vh',background:'#eef1f6'}}>

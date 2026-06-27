@@ -113,27 +113,213 @@ const SUGGEST=[
 
 // ===== EASY PM (ความคืบหน้าครุภัณฑ์/TODO) =====
 const PM=[
-  {title:'ชุดห้องปฏิบัติการคอมพิวเตอร์', college:'วิทยาลัยเทคนิคอุทัยธานี', value:'1,250,000 บาท', pct:75, done:12, total:16, near:3, over:0, date:'15/08/2569', day:10, status:'progress', main:'สมชาย ว.', sub:'นภา ก.'},
-  {title:'ชุดปฏิบัติการเทคโนโลยีการโรงแรม', college:'วิทยาลัยอาชีวศึกษาภูเก็ต', value:'2,480,000 บาท', pct:75, done:12, total:16, near:2, over:4, date:'02/08/2569', day:20, status:'overdue', main:'ปกรณ์ ส.', sub:'ดารณี อ.'},
-  {title:'ครุภัณฑ์งานไฟฟ้ากำลัง', college:'วิทยาลัยเทคนิคอุดรธานี', value:'980,000 บาท', pct:75, done:12, total:16, near:4, over:0, date:'20/08/2569', day:5, status:'progress', main:'อนุชา ท.', sub:'ศิริพร ม.'},
-  {title:'ชุดเครื่องมือช่างยนต์', college:'วิทยาลัยการอาชีพเดชอุดม', value:'1,640,000 บาท', pct:31, done:5, total:16, near:5, over:2, date:'22/08/2569', day:3, status:'progress', main:'ขจรศักดิ์ ส.', sub:'จารุณี ท.'},
-  {title:'ระบบเครือข่ายคอมพิวเตอร์แม่ข่าย', college:'วิทยาลัยเทคนิคมีนบุรี', value:'3,150,000 บาท', pct:31, done:5, total:16, near:3, over:5, date:'05/08/2569', day:10, status:'overdue', main:'ธนวัฒน์ พ.', sub:'พิมพ์ใจ ร.'},
-  {title:'ครุภัณฑ์ห้องปฏิบัติการวิทยาศาสตร์', college:'วิทยาลัยสารพัดช่างชลบุรี', value:'760,000 บาท', pct:31, done:5, total:16, near:2, over:1, date:'28/08/2569', day:15, status:'progress', main:'ปิยะวัฒน์ ต.', sub:'อรวรรณ ส.'},
-  {title:'ชุดปฏิบัติการหุ่นยนต์อุตสาหกรรม', college:'วิทยาลัยเทคนิคพิษณุโลก', value:'4,200,000 บาท', pct:31, done:5, total:16, near:1, over:8, date:'03/08/2569', day:17, status:'overdue', main:'วีระพล จ.', sub:'นิชากร ป.'},
-  {title:'ชุดครุภัณฑ์งานเชื่อมโลหะ', college:'วิทยาลัยการอาชีพนครนายก', value:'1,180,000 บาท', pct:100, done:16, total:16, near:0, over:0, date:'10/07/2569', day:0, status:'done', main:'ภานุพงศ์ ค.', sub:'รัตนา ส.'},
-  {title:'ชุดระบบคอมพิวเตอร์ไฟฟ้าแบบแยกส่วน', college:'วิทยาลัยเทคนิคนครศรีธรรมราช', value:'2,090,000 บาท', pct:12, done:2, total:16, near:0, over:8, date:'25/07/2569', day:30, status:'overdue', main:'กิตติ ว.', sub:'สุดารัตน์ ม.'},
-  {title:'ห้องปฏิบัติการสาขาวิชาเทคโนโลยีไฟฟ้า', college:'วิทยาลัยเทคนิคพิจิตร', value:'1,520,000 บาท', pct:50, done:8, total:16, near:5, over:0, date:'30/08/2569', day:12, status:'progress', main:'ชัยวัฒน์ บ.', sub:'เบญจมาศ ก.'},
-  {title:'ชุดครุภัณฑ์งานปูนและก่อสร้าง', college:'วิทยาลัยเทคนิคสันกำแพง', value:'690,000 บาท', pct:100, done:16, total:16, near:0, over:0, date:'05/07/2569', day:0, status:'done', main:'ประสิทธิ์ ล.', sub:'วันเพ็ญ ส.'},
-  {title:'ครุภัณฑ์ระบบโสตทัศนูปกรณ์', college:'วิทยาลัยอาชีวศึกษาเชียงใหม่', value:'1,330,000 บาท', pct:31, done:5, total:16, near:2, over:5, date:'01/08/2569', day:35, status:'overdue', main:'ดนัย ก.', sub:'อาภรณ์ ท.'},
+  {title:'ชุดห้องปฏิบัติการคอมพิวเตอร์', college:'วิทยาลัยเทคนิคอุทัยธานี', value:'1,250,000 บาท', pct:75, done:12, total:16, near:3, over:0, watch:2, date:'15/08/2569', day:10, status:'progress', main:'สมชาย ว.', sub:'นภา ก.'},
+  {title:'ชุดปฏิบัติการเทคโนโลยีการโรงแรม', college:'วิทยาลัยอาชีวศึกษาภูเก็ต', value:'2,480,000 บาท', pct:75, done:12, total:16, near:2, over:4, watch:0, date:'02/08/2569', day:20, status:'overdue', main:'ปกรณ์ ส.', sub:'ดารณี อ.'},
+  {title:'ครุภัณฑ์งานไฟฟ้ากำลัง', college:'วิทยาลัยเทคนิคอุดรธานี', value:'980,000 บาท', pct:75, done:12, total:16, near:4, over:0, watch:0, date:'20/08/2569', day:5, status:'progress', main:'อนุชา ท.', sub:'ศิริพร ม.'},
+  {title:'ชุดเครื่องมือช่างยนต์', college:'วิทยาลัยการอาชีพเดชอุดม', value:'1,640,000 บาท', pct:31, done:5, total:16, near:5, over:2, watch:3, date:'22/08/2569', day:3, status:'progress', main:'ขจรศักดิ์ ส.', sub:'จารุณี ท.'},
+  {title:'ระบบเครือข่ายคอมพิวเตอร์แม่ข่าย', college:'วิทยาลัยเทคนิคมีนบุรี', value:'3,150,000 บาท', pct:31, done:5, total:16, near:3, over:5, watch:4, date:'05/08/2569', day:10, status:'overdue', main:'ธนวัฒน์ พ.', sub:'พิมพ์ใจ ร.'},
+  {title:'ครุภัณฑ์ห้องปฏิบัติการวิทยาศาสตร์', college:'วิทยาลัยสารพัดช่างชลบุรี', value:'760,000 บาท', pct:31, done:5, total:16, near:2, over:1, watch:0, date:'28/08/2569', day:15, status:'progress', main:'ปิยะวัฒน์ ต.', sub:'อรวรรณ ส.'},
+  {title:'ชุดปฏิบัติการหุ่นยนต์อุตสาหกรรม', college:'วิทยาลัยเทคนิคพิษณุโลก', value:'4,200,000 บาท', pct:31, done:5, total:16, near:1, over:8, watch:0, date:'03/08/2569', day:17, status:'overdue', main:'วีระพล จ.', sub:'นิชากร ป.'},
+  {title:'ชุดครุภัณฑ์งานเชื่อมโลหะ', college:'วิทยาลัยการอาชีพนครนายก', value:'1,180,000 บาท', pct:100, done:16, total:16, near:0, over:0, watch:0, date:'10/07/2569', day:0, status:'done', main:'ภานุพงศ์ ค.', sub:'รัตนา ส.'},
+  {title:'ชุดระบบคอมพิวเตอร์ไฟฟ้าแบบแยกส่วน', college:'วิทยาลัยเทคนิคนครศรีธรรมราช', value:'2,090,000 บาท', pct:12, done:2, total:16, near:0, over:8, watch:5, date:'25/07/2569', day:30, status:'overdue', main:'กิตติ ว.', sub:'สุดารัตน์ ม.'},
+  {title:'ห้องปฏิบัติการสาขาวิชาเทคโนโลยีไฟฟ้า', college:'วิทยาลัยเทคนิคพิจิตร', value:'1,520,000 บาท', pct:50, done:8, total:16, near:5, over:0, watch:2, date:'30/08/2569', day:12, status:'progress', main:'ชัยวัฒน์ บ.', sub:'เบญจมาศ ก.'},
+  {title:'ชุดครุภัณฑ์งานปูนและก่อสร้าง', college:'วิทยาลัยเทคนิคสันกำแพง', value:'690,000 บาท', pct:100, done:16, total:16, near:0, over:0, watch:0, date:'05/07/2569', day:0, status:'done', main:'ประสิทธิ์ ล.', sub:'วันเพ็ญ ส.'},
+  {title:'ครุภัณฑ์ระบบโสตทัศนูปกรณ์', college:'วิทยาลัยอาชีวศึกษาเชียงใหม่', value:'1,330,000 บาท', pct:31, done:5, total:16, near:2, over:5, watch:1, date:'01/08/2569', day:35, status:'overdue', main:'ดนัย ก.', sub:'อาภรณ์ ท.'},
 ];
+
+// ===== WATCH SUMMARY (สรุปรายการเฝ้าระวัง ข้ามทุกโปรเจค) =====
+const WNAME_POOL=['เครื่องคอมพิวเตอร์สำหรับงานประมวลผล','แว่น VR เชื่อมต่อโปรแกรม 3 มิติ','กระดานอัจฉริยะการเรียนการสอน','โต๊ะ-เก้าอี้ปฏิบัติการ','ระบบงานไฟฟ้าภายในห้อง','ชุดเซิร์ฟเวอร์แม่ข่าย','อุปกรณ์เครือข่าย Switch/Router','เครื่องมือวัดดิจิทัล','ชุดหุ่นยนต์แขนกลอุตสาหกรรม','เครื่องเชื่อมโลหะ CO2','ระบบโสตทัศน์เสียง-ภาพ','ชุดทดลองวงจรไฟฟ้า-อิเล็กทรอนิกส์'];
+const WTAGS=['LongLead-PO','LongLead-PR','LongLead-Material'];
+// ผู้ใช้ปัจจุบัน (สำหรับสาธิตสิทธิ์การเพิ่มบันทึก) — เพิ่ม Note ได้เฉพาะ ผู้รับผิดชอบโปรเจค/ผู้สั่งการ/ผู้รับคำสั่งการ
+const ME_USER='ปิยะวัฒน์ ต.';
+const ASSIGNEES=['ปิยะวัฒน์ ต.','วิชัย น.','มานพ ส.'];
+const dueKey=(s)=>{const p=String(s).split('/').map(Number);return p[2]*10000+p[1]*100+p[0];};
+const NOTE_POOL=[
+  'ผู้ขายแจ้งของล็อตนี้ต้องนำเข้า รอคิวเรือประมาณ 3 สัปดาห์',
+  'ประสานฝ่ายพัสดุเร่งทำ PR แล้ว รอเลขที่เอกสาร',
+  'ยืนยันสเปกกับผู้ใช้งานแล้ว ปรับรุ่นตามที่ร้องขอ',
+  'ติดตามใบเสนอราคาเพิ่มอีก 1 ราย เพื่อเปรียบเทียบ',
+  'แจ้งเตือนใกล้ครบกำหนดส่งมอบ ขอให้เร่งรัดผู้ขาย',
+  'รออนุมัติเปลี่ยนแปลงยี่ห้อจากคณะกรรมการ',
+];
+function buildWatchItems(){
+  const out=[]; let k=0;
+  PM.forEach((p,pi)=>{
+    const n=p.watch||0;
+    for(let i=0;i<n;i++){
+      const nc=(pi+i)%3; // 0,1,2 notes
+      const notes=Array.from({length:nc}).map((_,j)=>({by:j%2?'นภา ก.':p.main,at:'1'+(2-j)+'/06/2569',t:NOTE_POOL[(k+j)%NOTE_POOL.length]}));
+      const assignee=ASSIGNEES[k%ASSIGNEES.length];
+      const related=[p.main,p.sub,assignee].includes(ME_USER);
+      out.push({
+        id:'w'+(k++),
+        name:WNAME_POOL[(pi*3+i)%WNAME_POOL.length],
+        owner:p.main,
+        commander:p.sub, assignee,
+        related,
+        due:p.date, dueK:dueKey(p.date), day:p.day, pstatus:p.status,
+        project:p.title, college:p.college,
+        tag:WTAGS[(pi+i)%WTAGS.length],
+        notes,
+      });
+    }
+  });
+  return out.sort((a,b)=>a.dueK-b.dueK);
+}
+const WATCH_TOTAL=PM.reduce((s,d)=>s+(d.watch||0),0);
+const TAGTONE2={'LongLead-PO':['#e3f3f0','#0e8c7d','#bfe6db'],'LongLead-PR':['#eaf1fe','#3b6fd4','#cdddf8'],'LongLead-Material':['#fdf3d6','#a9870a','#f0e0a8']};
+const uniq=(arr)=>arr.filter((v,i)=>arr.indexOf(v)===i);
+
+function WatchSummary({onClose}){
+  const seed=React.useMemo(()=>buildWatchItems(),[]);
+  const [ALL,setALL]=useState(seed);
+  const ME=ME_USER;
+  const [openNote,setOpenNote]=useState(null); // row id
+  const [noteInput,setNoteInput]=useState({});
+  const addNote=(id)=>{const it=ALL.find(x=>x.id===id);if(!it||!it.related)return;const t=(noteInput[id]||'').trim();if(!t)return;setALL(a=>a.map(x=>x.id!==id?x:{...x,notes:[...(x.notes||[]),{by:ME,at:'\u0e27\u0e31\u0e19\u0e19\u0e35\u0e49',t}]}));setNoteInput(n=>({...n,[id]:''}));};
+  const [fOwner,setFOwner]=useState('');
+  const [fProject,setFProject]=useState('');
+  const [fCollege,setFCollege]=useState('');
+  const [fTag,setFTag]=useState('');
+  const [fDue,setFDue]=useState('all');
+  const owners=uniq(ALL.map(x=>x.owner));
+  const projects=uniq(ALL.map(x=>x.project));
+  const colleges=uniq(ALL.map(x=>x.college));
+  const tags=uniq(ALL.map(x=>x.tag));
+  const duePass=(x)=>fDue==='all'?true:fDue==='overdue'?x.pstatus==='overdue':x.pstatus!=='overdue'&&x.day<=Number(fDue);
+  const rows=ALL.filter(x=>(!fOwner||x.owner===fOwner)&&(!fProject||x.project===fProject)&&(!fCollege||x.college===fCollege)&&(!fTag||x.tag===fTag)&&duePass(x));
+  const reset=()=>{setFOwner('');setFProject('');setFCollege('');setFTag('');setFDue('all');};
+
+  const COLS=['ชื่อรายการ','ผู้รับผิดชอบ (คำสั่งการ)','ครบกำหนด','โปรเจค','วิทยาลัย','สถานะ Tag'];
+  const exportExcel=()=>{
+    let html='<html><head><meta charset="utf-8"></head><body><table border="1"><tr>'+COLS.map(c=>'<th>'+c+'</th>').join('')+'</tr>';
+    rows.forEach(r=>{html+='<tr><td>'+r.name+'</td><td>'+r.owner+'</td><td>'+r.due+'</td><td>'+r.project+'</td><td>'+r.college+'</td><td>'+r.tag+'</td></tr>';});
+    html+='</table></body></html>';
+    const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel;charset=utf-8'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='สรุปรายการเฝ้าระวัง.xls';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  };
+  const exportPDF=()=>{
+    const w=window.open('','_blank');if(!w)return;
+    let html='<html><head><meta charset="utf-8"><title>สรุปรายการเฝ้าระวัง</title><style>body{font-family:"IBM Plex Sans Thai",sans-serif;padding:28px;color:#1f2733}h1{font-size:19px}table{width:100%;border-collapse:collapse;font-size:12px;margin-top:14px}th{background:#15a08f;color:#fff;text-align:left;padding:8px 10px}td{padding:7px 10px;border-bottom:1px solid #e7eaef}tr:nth-child(even) td{background:#f7f9fb}</style></head><body><h1>สรุปรายการเฝ้าระวัง ('+rows.length+' รายการ)</h1><table><tr>'+COLS.map(c=>'<th>'+c+'</th>').join('')+'</tr>';
+    rows.forEach(r=>{html+='<tr><td>'+r.name+'</td><td>'+r.owner+'</td><td>'+r.due+'</td><td>'+r.project+'</td><td>'+r.college+'</td><td>'+r.tag+'</td></tr>';});
+    html+='</table><script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script></body></html>';
+    w.document.write(html);w.document.close();
+  };
+
+  const Sel=({value,onChange,placeholder,opts})=>(
+    <div style={{position:'relative',display:'inline-flex',alignItems:'center'}}>
+      <select value={value} onChange={e=>onChange(e.target.value)} style={{appearance:'none',WebkitAppearance:'none',border:'1px solid '+(value?primary:'#e3e7ec'),background:value?primarySoft:'#fff',color:value?primary:'#5a6473',borderRadius:9,padding:'8px 30px 8px 12px',fontSize:12.5,fontWeight:600,fontFamily:'inherit',cursor:'pointer',outline:'none'}}>
+        <option value="">{placeholder}</option>
+        {opts.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
+      </select>
+      <i className="bi bi-chevron-down" style={{position:'absolute',right:11,fontSize:12,color:value?primary:'#9aa3af',pointerEvents:'none'}}></i>
+    </div>
+  );
+  const anyFilter=fOwner||fProject||fCollege||fTag||fDue!=='all';
+  const tagChip=(t)=>{const[bg,fg,bd]=TAGTONE2[t]||['#f1f3f6','#5a6473','#e3e7ec'];return <span style={{display:'inline-flex',alignItems:'center',gap:5,background:bg,color:fg,border:'1px solid '+bd,borderRadius:99,padding:'2px 10px',fontSize:11.5,fontWeight:700}}><i className="bi bi-tag-fill" style={{fontSize:10}}></i>{t}</span>;};
+
+  return (
+   <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.45)',zIndex:80,display:'flex',flexDirection:'column',padding:24}}>
+    <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,flex:1,display:'flex',flexDirection:'column',overflow:'hidden',boxShadow:'0 24px 60px rgba(16,24,40,.28)'}}>
+      {/* HEADER */}
+      <div style={{display:'flex',alignItems:'center',gap:13,padding:'18px 24px',borderBottom:'1px solid #eef0f4'}}>
+        <div style={{width:38,height:38,borderRadius:11,background:'#fff7e8',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-shield-check" style={{fontSize:20,color:'#f59e0b'}}></i></div>
+        <div>
+          <div style={{fontWeight:700,fontSize:17}}>สรุปรายการเฝ้าระวัง</div>
+          <div style={{fontSize:12.5,color:'#8a93a3',marginTop:1}}>ทุกโปรเจค · เรียงตามวันครบกำหนดใกล้สุด</div>
+        </div>
+        <div style={{flex:1}}></div>
+        <button onClick={exportExcel} style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid #cfe8d6',background:'#eafaf0',color:'#1f9d57',borderRadius:9,padding:'8px 14px',fontSize:13,fontWeight:700}}><i className="bi bi-file-earmark-excel" style={{fontSize:16}}></i>Excel</button>
+        <button onClick={exportPDF} style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid #f6d3d0',background:'#fdecec',color:'#d8513a',borderRadius:9,padding:'8px 14px',fontSize:13,fontWeight:700}}><i className="bi bi-file-earmark-pdf" style={{fontSize:16}}></i>PDF</button>
+        <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',border:'none'}}><i className="bi bi-x-lg" style={{fontSize:16,color:'#5a6473'}}></i></button>
+      </div>
+
+      {/* FILTER BAR */}
+      <div style={{display:'flex',alignItems:'center',gap:9,padding:'13px 24px',borderBottom:'1px solid #f3f5f8',flexWrap:'wrap'}}>
+        <span style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:12.5,fontWeight:700,color:'#8a93a3'}}><i className="bi bi-funnel" style={{fontSize:15}}></i>กรอง</span>
+        <Sel value={fOwner} onChange={setFOwner} placeholder="ผู้รับผิดชอบ" opts={owners.map(o=>({v:o,l:o}))}/>
+        <Sel value={fProject} onChange={setFProject} placeholder="โปรเจค" opts={projects.map(o=>({v:o,l:o}))}/>
+        <Sel value={fCollege} onChange={setFCollege} placeholder="วิทยาลัย" opts={colleges.map(o=>({v:o,l:o}))}/>
+        <Sel value={fTag} onChange={setFTag} placeholder="สถานะ Tag" opts={tags.map(o=>({v:o,l:o}))}/>
+        <Sel value={fDue==='all'?'':fDue} onChange={v=>setFDue(v||'all')} placeholder="ครบกำหนด" opts={[{v:'7',l:'ภายใน 7 วัน'},{v:'15',l:'ภายใน 15 วัน'},{v:'30',l:'ภายใน 30 วัน'},{v:'overdue',l:'เกินกำหนด'}]}/>
+        {anyFilter && <button onClick={reset} style={{display:'inline-flex',alignItems:'center',gap:5,border:'none',background:'transparent',color:'#d8513a',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-arrow-counterclockwise" style={{fontSize:14}}></i>ล้างตัวกรอง</button>}
+        <div style={{flex:1}}></div>
+        <span style={{fontSize:12.5,color:'#8a93a3'}}>แสดง <b style={{color:'#1f2733'}}>{rows.length}</b> / {ALL.length} รายการ</span>
+      </div>
+
+      {/* TABLE */}
+      <div style={{flex:1,overflow:'auto',background:'#fafbfc'}}>
+        <table style={{width:'100%',borderCollapse:'separate',borderSpacing:0,fontSize:13}}>
+          <thead>
+            <tr style={{position:'sticky',top:0,zIndex:2}}>
+              {COLS.map((c,i)=><th key={i} style={{textAlign:'left',padding:'11px 16px',background:'#f1f3f7',color:'#5a6473',fontWeight:700,fontSize:12,whiteSpace:'nowrap',borderBottom:'1px solid #e7eaef'}}>{c}</th>)}
+              <th style={{textAlign:'right',padding:'11px 16px',background:'#f1f3f7',color:'#5a6473',fontWeight:700,fontSize:12,whiteSpace:'nowrap',borderBottom:'1px solid #e7eaef'}}>บันทึก</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r,i)=>{const overdue=r.pstatus==='overdue';const nc=(r.notes||[]).length;const open=openNote===r.id;return (
+              <React.Fragment key={r.id}>
+              <tr style={{background:open?'#fbfdfc':'#fff'}}>
+                <td style={{padding:'12px 16px',borderBottom:open?'none':'1px solid #f1f3f6',fontWeight:600,color:'#2b3440',minWidth:240}}>{r.name}</td>
+                <td style={{padding:'12px 16px',borderBottom:open?'none':'1px solid #f1f3f6',whiteSpace:'nowrap'}}><span style={{display:'inline-flex',alignItems:'center',gap:7}}><span style={{width:24,height:24,borderRadius:'50%',background:'#0e8c7d',color:'#fff',display:'inline-flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:10,flex:'none'}}>{String(r.owner||'?').trim().charAt(0)}</span>{r.owner}</span></td>
+                <td style={{padding:'12px 16px',borderBottom:open?'none':'1px solid #f1f3f6',whiteSpace:'nowrap'}}><span style={{display:'inline-flex',alignItems:'center',gap:8,color:'#3a4452',fontWeight:500}}><i className={'bi '+(overdue?'bi-calendar-x':'bi-calendar-event')} style={{fontSize:13,color:overdue?'#d8513a':'#9aa3af'}}></i>{r.due}<span style={{display:'inline-flex',alignItems:'center',gap:4,borderRadius:99,padding:'2px 9px',fontSize:11.5,fontWeight:700,background:overdue?'#fdecec':'#eafaf0',color:overdue?'#d8513a':'#1f9d57'}}>{overdue?'เกินมา '+r.day+' วัน':'อีก '+r.day+' วัน'}</span></span></td>
+                <td style={{padding:'12px 16px',borderBottom:open?'none':'1px solid #f1f3f6',color:'#3a4452',minWidth:200}}>{r.project}</td>
+                <td style={{padding:'12px 16px',borderBottom:open?'none':'1px solid #f1f3f6',color:'#5a6473',whiteSpace:'nowrap'}}>{r.college}</td>
+                <td style={{padding:'12px 16px',borderBottom:open?'none':'1px solid #f1f3f6',whiteSpace:'nowrap'}}>{tagChip(r.tag)}</td>
+                <td style={{padding:'12px 16px',borderBottom:open?'none':'1px solid #f1f3f6',textAlign:'right',whiteSpace:'nowrap'}}>
+                  <button onClick={()=>setOpenNote(open?null:r.id)} title="Note List" style={{display:'inline-flex',alignItems:'center',gap:6,border:'1px solid '+(open?primary:'#e3e7ec'),background:open?primarySoft:'#fff',color:open?primary:'#5a6473',borderRadius:8,padding:'6px 11px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-journal-text" style={{fontSize:14}}></i>{nc>0&&<span style={{minWidth:17,height:17,borderRadius:99,background:open?primary:'#eef0f4',color:open?'#fff':'#7b8595',fontSize:10.5,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{nc}</span>}<i className={'bi '+(open?'bi-chevron-up':'bi-chevron-down')} style={{fontSize:11}}></i></button>
+                </td>
+              </tr>
+              {open && (
+                <tr style={{background:'#fbfdfc'}}>
+                  <td colSpan={7} style={{padding:'0 16px 16px',borderBottom:'1px solid #f1f3f6'}}>
+                    <div style={{background:'#fff',border:'1px solid #eef0f4',borderRadius:11,padding:'14px 16px'}}>
+                      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}><i className="bi bi-journal-text" style={{fontSize:15,color:primary}}></i><span style={{fontWeight:700,fontSize:13}}>Note List</span><span style={{fontSize:11,color:'#fff',background:'#9aa3af',borderRadius:99,padding:'1px 8px',fontWeight:700}}>Activity log</span><span style={{fontSize:12,color:'#9aa3af'}}>· {nc} บันทึก</span></div>
+                      <div style={{fontSize:11.5,color:'#9aa3af',marginBottom:11,display:'flex',flexWrap:'wrap',gap:'2px 6px'}}>ผู้เกี่ยวข้อง: <b style={{color:'#5a6473'}}>{r.owner}</b> (ผู้รับผิดชอบโปรเจค) · <b style={{color:'#5a6473'}}>{r.commander}</b> (ผู้สั่งการ) · <b style={{color:'#5a6473'}}>{r.assignee}</b> (ผู้รับคำสั่งการ)</div>
+                      {nc===0 && <div style={{fontSize:12.5,color:'#aeb6c2',padding:'4px 0 12px'}}>ยังไม่มีบันทึก</div>}
+                      {(r.notes||[]).map((n,idx)=>(
+                        <div key={idx} style={{display:'flex',gap:10,padding:'9px 0',borderTop:idx?'1px solid #f1f3f6':'none'}}>
+                          <span style={{width:26,height:26,borderRadius:'50%',background:'#4f46e5',color:'#fff',display:'inline-flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:11,flex:'none'}}>{String(n.by||'?').trim().charAt(0)}</span>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{display:'flex',alignItems:'center',gap:8}}><span style={{fontWeight:700,fontSize:12.5}}>{n.by}</span><span style={{fontSize:11.5,color:'#aeb6c2'}}>{n.at}</span></div>
+                            <div style={{fontSize:13,color:'#3a4452',lineHeight:1.55,marginTop:2}}>{n.t}</div>
+                          </div>
+                        </div>
+                      ))}
+                      {r.related ? (
+                      <div style={{display:'flex',gap:9,alignItems:'center',marginTop:nc?10:0,paddingTop:nc?10:0,borderTop:nc?'1px solid #f1f3f6':'none'}}>
+                        <span style={{width:26,height:26,borderRadius:'50%',background:'#0e8c7d',color:'#fff',display:'inline-flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:11,flex:'none'}}>{ME.charAt(0)}</span>
+                        <input value={noteInput[r.id]||''} onChange={e=>setNoteInput(n=>({...n,[r.id]:e.target.value}))} onKeyDown={e=>{if(e.key==='Enter')addNote(r.id);}} placeholder="เพิ่มบันทึก..." style={{flex:1,border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 12px',fontSize:13,fontFamily:'inherit',outline:'none'}}/>
+                        <button onClick={()=>addNote(r.id)} style={{display:'inline-flex',alignItems:'center',gap:6,background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 15px',fontSize:13,fontWeight:700,cursor:'pointer',whiteSpace:'nowrap'}}><i className="bi bi-plus-lg" style={{fontSize:13}}></i>เพิ่ม</button>
+                      </div>
+                      ) : (
+                      <div style={{display:'flex',alignItems:'center',gap:9,marginTop:nc?10:0,paddingTop:nc?12:2,borderTop:nc?'1px solid #f1f3f6':'none',color:'#9aa3af',fontSize:12.5}}><i className="bi bi-lock" style={{fontSize:14}}></i>เฉพาะผู้เกี่ยวข้อง (ผู้รับผิดชอบโปรเจค / ผู้สั่งการ / ผู้รับคำสั่งการ) เท่านั้นที่เพิ่มบันทึกได้</div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )}
+              </React.Fragment>
+            );})}
+            {rows.length===0 && <tr><td colSpan={7} style={{padding:'56px 0',textAlign:'center',color:'#aeb6c2'}}><i className="bi bi-search" style={{fontSize:32,color:'#cfd6e0'}}></i><div style={{marginTop:10,fontSize:13.5}}>ไม่พบรายการตามตัวกรอง</div></td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+   </div>
+  );
+}
+
 function PMCard({d}){
   const overdue=d.status==='overdue', done=d.status==='done';
   const barColor=done?'#22b96a':'#5b8def';
   const chipBg=overdue?'#fdecec':'#eafaf0', chipInk=overdue?'#d8513a':'#1f9d57';
   const chipLabel=done?'เสร็จแล้ว':(overdue?'เกิน '+d.day+' วัน':'อีก '+d.day+' วัน');
+  const hasWatch=d.watch>0;
   return (
-    <a href="user-virtual-meeting-group.html?tab=todo" className="grp-card" style={{textDecoration:'none',color:'inherit',background:'#fff',border:'1px solid #eceef2',borderRadius:13,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'14px 15px',display:'flex',flexDirection:'column',gap:9,cursor:'pointer'}}>
-      <div style={{fontWeight:700,fontSize:14,lineHeight:1.35,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{d.title}</div>
+    <a href="user-virtual-meeting-group.html?tab=watch" className="grp-card" style={{position:'relative',textDecoration:'none',color:'inherit',background:'#fff',border:'1px solid '+(hasWatch?'#f4c84b':'#eceef2'),borderRadius:13,boxShadow:hasWatch?'0 0 0 3px rgba(244,176,32,.16),0 1px 2px rgba(16,24,40,.04)':'0 1px 2px rgba(16,24,40,.04)',padding:'14px 15px',display:'flex',flexDirection:'column',gap:9,cursor:'pointer'}}>
+      {hasWatch && <div style={{position:'absolute',top:-10,right:12,display:'inline-flex',alignItems:'center',gap:5,background:'#f59e0b',color:'#fff',borderRadius:99,padding:'4px 11px 4px 9px',fontSize:11.5,fontWeight:800,boxShadow:'0 3px 8px rgba(217,119,6,.35)'}}>{ms('visibility',14,'#fff')}เฝ้าระวัง {d.watch}</div>}
+      <div style={{fontWeight:700,fontSize:14,lineHeight:1.35,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',paddingRight:hasWatch?96:0}}>{d.title}</div>
       <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#5a6473',minWidth:0}}>{ms('account_balance',16,'#9aa3af')}<span style={{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{d.college}</span></div>
       <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#5a6473'}}><span style={{fontWeight:700,color:'#9aa3af',width:16,textAlign:'center',flex:'none'}}>฿</span><span>{d.value}</span></div>
       <div style={{display:'flex',alignItems:'center',gap:9}}>
@@ -174,6 +360,7 @@ function App(){
   const [q,setQ]=useState('');
   const [mode,setMode]=useState('normal');
   const [pmFilter,setPmFilter]=useState('progress');
+  const [showSummary,setShowSummary]=useState(false);
   const pmList=pmFilter==='all'?PM:PM.filter(d=>d.status===pmFilter);
   const pmCount=(k)=>PM.filter(d=>d.status===k).length;
 
@@ -243,23 +430,27 @@ function App(){
           </div>
 
           {/* MODE BAR */}
-          <div style={{display:'flex',alignItems:'flex-start',gap:12,marginBottom:16,flexWrap:'wrap'}}>
-            {mode==='easypm' && <div style={{display:'inline-flex',alignItems:'center',gap:7,fontSize:13.5,fontWeight:700,color:'#3a4452',paddingTop:5}}>{ms('swap_vert',18,'#8a93a3')}ครุภัณฑ์ 69 <span style={{color:'#9aa3af',fontWeight:500}}>(12)</span></div>}
-            <div style={{flex:1}}></div>
-            <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:10}}>
+          <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+              <div style={{display:'inline-flex',alignItems:'center',gap:7,fontSize:13.5,fontWeight:700,color:'#3a4452'}}>{ms('swap_vert',18,'#8a93a3')}ครุภัณฑ์ 69 <span style={{color:'#9aa3af',fontWeight:500}}>(12)</span></div>
+              <div style={{flex:1}}></div>
               <div style={{display:'inline-flex',background:'#eef1f5',borderRadius:10,padding:3,gap:2}}>
                 {[['normal','view_list','โหมดทั่วไป'],['easypm','grid_view','โหมด Easy PM']].map(([k,ic,lb])=>{const a=mode===k;return (
                   <button key={k} onClick={()=>setMode(k)} style={{display:'inline-flex',alignItems:'center',gap:6,border:'none',borderRadius:8,padding:'7px 14px',fontSize:13,fontWeight:700,cursor:'pointer',background:a?'#fff':'transparent',color:a?primary:'#5a6473',boxShadow:a?'0 1px 3px rgba(16,24,40,.12)':'none'}}>{ms(ic,17,a?primary:'#8a93a3')}{lb}</button>
                 );})}
               </div>
-              {mode==='easypm' && (
+            </div>
+            {mode==='easypm' && (
+              <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+                <button onClick={()=>setShowSummary(true)} style={{display:'inline-flex',alignItems:'center',gap:8,border:'1px solid #f3c969',background:'#fff8ea',color:'#b97d09',borderRadius:10,padding:'7px 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-shield-check" style={{fontSize:16,color:'#f59e0b'}}></i>สรุปรายการเฝ้าระวัง<span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',minWidth:20,height:20,padding:'0 6px',borderRadius:99,background:'#f59e0b',color:'#fff',fontSize:11.5,fontWeight:800}}>{WATCH_TOTAL}</span></button>
+                <div style={{flex:1}}></div>
                 <div style={{display:'inline-flex',gap:6,flexWrap:'wrap',justifyContent:'flex-end'}}>
                   {[['all','ทั้งหมด',null],['progress','กำลังดำเนินการ','progress'],['overdue','เกินสัญญา','overdue'],['done','เสร็จแล้ว',null]].map(([k,lb,cntKey])=>{const a=pmFilter===k;const cnt=cntKey?pmCount(cntKey):null;const badgeBg=k==='overdue'?(a?'#d8513a':'#fdecec'):(a?primary:primarySoft);const badgeInk=k==='overdue'?(a?'#fff':'#d8513a'):(a?'#fff':primary);return (
                     <button key={k} onClick={()=>setPmFilter(k)} style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid '+(a?primary:'#e3e7ec'),background:a?primarySoft:'#fff',color:a?primary:'#5a6473',borderRadius:99,padding:'5px 13px',fontSize:12.5,fontWeight:a?700:600,cursor:'pointer'}}>{lb}{cnt!=null && <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',minWidth:18,height:18,padding:'0 5px',borderRadius:99,background:badgeBg,color:badgeInk,fontSize:11,fontWeight:700,lineHeight:1}}>{cnt}</span>}</button>
                   );})}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {mode==='easypm' ? (
@@ -356,6 +547,7 @@ function App(){
        </div>
       </div>
     </div>
+    {showSummary && <WatchSummary onClose={()=>setShowSummary(false)}/>}
    </div>
   );
 }
