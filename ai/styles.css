@@ -59,7 +59,7 @@ body.light-theme .orb { opacity: 0.15; }
     z-index: 1;
     max-width: 1200px;
     height: 100vh;
-    height: 100dvh; /* Mobile viewport height support */
+    height: 100dvh;
     margin: 0 auto;
     padding: 16px;
     display: flex;
@@ -123,7 +123,7 @@ body.light-theme .btn-icon:hover { background: rgba(0, 0, 0, 0.08); }
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    min-height: 0; /* Important for flex child to not overflow */
+    min-height: 0;
     overflow: hidden;
     margin-bottom: 12px;
 }
@@ -188,14 +188,19 @@ body.light-theme .btn-edit:hover { background: rgba(0, 0, 0, 0.08); }
 .timer-row {
     display: flex; align-items: center; justify-content: space-between;
     background: var(--bg-glass); border: 1px solid var(--border-glass);
-    padding: 6px 10px; border-radius: var(--radius-sm); gap: 6px;
+    padding: 5px 10px; border-radius: var(--radius-sm); gap: 6px;
 }
 
 .row-label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); flex: none; }
 
+.row-time-group {
+    display: flex; flex-direction: column; align-items: flex-end; justify-content: center;
+    flex: 1; min-width: 0; margin: 0 6px;
+}
+
 .row-countdown {
-    font-size: 1.05rem; font-weight: 800; font-variant-numeric: tabular-nums;
-    letter-spacing: 0.5px; text-align: right; flex: 1; min-width: 0;
+    font-size: 1.02rem; font-weight: 800; font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px; text-align: right; line-height: 1.15;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .claude-color { color: var(--claude-secondary); }
@@ -204,8 +209,14 @@ body.light-theme .btn-edit:hover { background: rgba(0, 0, 0, 0.08); }
 .v0-color { color: var(--v0-secondary); }
 .expired-text { color: var(--success) !important; font-size: 0.85rem; }
 
+.row-target-time {
+    font-size: 0.72rem; font-weight: 600; color: var(--text-secondary);
+    line-height: 1.15; text-align: right; margin-top: 1px;
+}
+body.light-theme .row-target-time { color: var(--text-muted); }
+
 .btn-quick-sm {
-    padding: 3px 8px; font-size: 0.72rem; font-weight: 700;
+    padding: 4px 8px; font-size: 0.72rem; font-weight: 700;
     border-radius: 6px; border: 1px solid var(--border-glass);
     background: rgba(255, 255, 255, 0.08); color: var(--text-primary);
     cursor: pointer; flex: none; transition: all 0.2s ease;
@@ -232,7 +243,7 @@ body.light-theme .expiry-row { background: rgba(0, 0, 0, 0.02); }
 
 /* ===== Responsive Mobile (Stack 1 column or 2x2 filling 100dvh) ===== */
 @media (max-width: 768px) {
-    .app-container { padding: 10px; }
+    .app-container { padding: 8px; }
     .header { padding: 8px 12px; margin-bottom: 8px; }
     .logo-text h1 { font-size: 1.1rem; }
     .current-time { font-size: 0.72rem; }
@@ -243,21 +254,22 @@ body.light-theme .expiry-row { background: rgba(0, 0, 0, 0.02); }
     .dashboard {
         grid-template-columns: 1fr;
         grid-template-rows: repeat(4, minmax(0, 1fr));
-        gap: 8px; margin-bottom: 8px;
+        gap: 6px; margin-bottom: 6px;
     }
     
-    .ai-card { padding: 10px 12px; border-radius: var(--radius-md); }
+    .ai-card { padding: 8px 10px; border-radius: var(--radius-md); }
     .card-header { margin-bottom: 4px; }
-    .brand-icon { width: 30px; height: 30px; border-radius: 8px; }
-    .brand-icon svg { width: 16px; height: 16px; }
-    .brand-info h2 { font-size: 0.95rem; }
-    .plan-badge { font-size: 0.65rem; }
+    .brand-icon { width: 28px; height: 28px; border-radius: 8px; }
+    .brand-icon svg { width: 15px; height: 15px; }
+    .brand-info h2 { font-size: 0.92rem; }
+    .plan-badge { font-size: 0.62rem; }
     .btn-edit { width: 26px; height: 26px; font-size: 0.75rem; }
     
-    .timer-row { padding: 4px 8px; gap: 4px; }
+    .timer-row { padding: 4px 6px; gap: 4px; }
     .row-label { font-size: 0.72rem; }
     .row-countdown { font-size: 0.92rem; }
-    .btn-quick-sm { padding: 2px 6px; font-size: 0.68rem; }
+    .row-target-time { font-size: 0.68rem; }
+    .btn-quick-sm { padding: 3px 6px; font-size: 0.68rem; }
     .expiry-date-text { font-size: 0.75rem; }
     .expiry-pill { font-size: 0.68rem; padding: 1px 6px; }
     

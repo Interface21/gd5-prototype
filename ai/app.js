@@ -1,4 +1,4 @@
-// ===== AI Usage & Reset Tracker - Main Application (Compact Single View) =====
+// ===== AI Usage & Reset Tracker - Main Application (Actual Time & Countdown) =====
 
 const DEFAULT_DATA = {
     claude: { hourResetTime: null, weekResetTime: null, expiryDate: null },
@@ -87,6 +87,39 @@ function formatShortDate(isoString) {
     });
 }
 
+// ===== Target Clock Time Formatter ("วันนี้ 19.17 น.", "พรุ่งนี้ 02.30 น.") =====
+function formatTargetClockTime(isoString) {
+    if (!isoString) return 'ยังไม่ได้ตั้งค่า';
+    const target = new Date(isoString);
+    if (isNaN(target.getTime())) return 'ยังไม่ได้ตั้งค่า';
+    const now = new Date();
+    if (target <= now) return 'พร้อมใช้งาน';
+
+    const hours = String(target.getHours()).padStart(2, '0');
+    const minutes = String(target.getMinutes()).padStart(2, '0');
+    const timeStr = `${hours}.${minutes} น.`;
+
+    const nowMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const targetMid = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+    const diffDays = Math.round((targetMid - nowMid) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+        return `วันนี้ ${timeStr}`;
+    } else if (diffDays === 1) {
+        return `พรุ่งนี้ ${timeStr}`;
+    } else if (diffDays === 2) {
+        return `มะรืนนี้ ${timeStr}`;
+    } else {
+        const shortDate = target.toLocaleDateString('th-TH', {
+            timeZone: appData.settings?.timezone || 'Asia/Bangkok',
+            weekday: 'short',
+            day: 'numeric',
+            month: 'short'
+        });
+        return `${shortDate} ${timeStr}`;
+    }
+}
+
 function getCountdown(targetIso) {
     if (!targetIso) return { text: '--:--:--', totalSeconds: 0, expired: false, notSet: true };
     const now = new Date();
@@ -157,17 +190,25 @@ function updateAICard(key) {
     // 1. Hour Limit
     const hourCd = getCountdown(data.hourResetTime);
     const hourCountdownEl = document.getElementById(`${key}HourCountdown`);
+    const hourTargetEl = document.getElementById(`${key}HourTarget`);
     if (hourCountdownEl) {
         hourCountdownEl.textContent = hourCd.text;
         hourCountdownEl.classList.toggle('expired-text', hourCd.expired);
+    }
+    if (hourTargetEl) {
+        hourTargetEl.textContent = hourCd.expired ? '' : formatTargetClockTime(data.hourResetTime);
     }
 
     // 2. Weekly Limit
     const weekCd = getCountdown(data.weekResetTime);
     const weekCountdownEl = document.getElementById(`${key}WeekCountdown`);
+    const weekTargetEl = document.getElementById(`${key}WeekTarget`);
     if (weekCountdownEl) {
         weekCountdownEl.textContent = weekCd.text;
         weekCountdownEl.classList.toggle('expired-text', weekCd.expired);
+    }
+    if (weekTargetEl) {
+        weekTargetEl.textContent = weekCd.expired ? '' : formatTargetClockTime(data.weekResetTime);
     }
 
     // 3. Expiry

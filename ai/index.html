@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="AI Reset Tracker Dashboard - นับถอยหลัง Reset ลิมิต AI ในหน้าเดียว">
-    <title>AI Reset Tracker (Single View)</title>
+    <meta name="description" content="AI Reset Tracker Dashboard - ติดตามเวลา Reset จริงและเวลานับถอยหลังของ AI ในหน้าเดียว">
+    <title>AI Reset Tracker (Actual Time & Countdown)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -99,13 +99,19 @@
                     <!-- Short window -->
                     <div class="timer-row">
                         <span class="row-label">⏱️ 5h Limit</span>
-                        <span class="row-countdown claude-color" id="claudeHourCountdown">--:--:--</span>
+                        <div class="row-time-group">
+                            <span class="row-countdown claude-color" id="claudeHourCountdown">--:--:--</span>
+                            <span class="row-target-time" id="claudeHourTarget">--</span>
+                        </div>
                         <button class="btn-quick-sm" onclick="quickAdd('claude', 'hour', 5)">+5h</button>
                     </div>
                     <!-- Weekly window -->
                     <div class="timer-row">
                         <span class="row-label">📊 Weekly</span>
-                        <span class="row-countdown claude-color" id="claudeWeekCountdown">--:--:--</span>
+                        <div class="row-time-group">
+                            <span class="row-countdown claude-color" id="claudeWeekCountdown">--:--:--</span>
+                            <span class="row-target-time" id="claudeWeekTarget">--</span>
+                        </div>
                         <button class="btn-quick-sm" onclick="quickAdd('claude', 'week', 168)">+7d</button>
                     </div>
                     <!-- Expiry -->
@@ -138,13 +144,19 @@
                     <!-- Short window -->
                     <div class="timer-row">
                         <span class="row-label">⏱️ Daily Limit</span>
-                        <span class="row-countdown gemini-color" id="geminiHourCountdown">--:--:--</span>
+                        <div class="row-time-group">
+                            <span class="row-countdown gemini-color" id="geminiHourCountdown">--:--:--</span>
+                            <span class="row-target-time" id="geminiHourTarget">--</span>
+                        </div>
                         <button class="btn-quick-sm" onclick="quickAdd('gemini', 'hour', 24)">+24h</button>
                     </div>
                     <!-- Weekly window -->
                     <div class="timer-row">
                         <span class="row-label">📊 Weekly</span>
-                        <span class="row-countdown gemini-color" id="geminiWeekCountdown">--:--:--</span>
+                        <div class="row-time-group">
+                            <span class="row-countdown gemini-color" id="geminiWeekCountdown">--:--:--</span>
+                            <span class="row-target-time" id="geminiWeekTarget">--</span>
+                        </div>
                         <button class="btn-quick-sm" onclick="quickAdd('gemini', 'week', 168)">+7d</button>
                     </div>
                     <!-- Expiry -->
@@ -177,13 +189,19 @@
                     <!-- Short window -->
                     <div class="timer-row">
                         <span class="row-label">⏱️ 3h Limit</span>
-                        <span class="row-countdown chatgpt-color" id="chatgptHourCountdown">--:--:--</span>
+                        <div class="row-time-group">
+                            <span class="row-countdown chatgpt-color" id="chatgptHourCountdown">--:--:--</span>
+                            <span class="row-target-time" id="chatgptHourTarget">--</span>
+                        </div>
                         <button class="btn-quick-sm" onclick="quickAdd('chatgpt', 'hour', 3)">+3h</button>
                     </div>
                     <!-- Weekly window -->
                     <div class="timer-row">
                         <span class="row-label">📊 Weekly</span>
-                        <span class="row-countdown chatgpt-color" id="chatgptWeekCountdown">--:--:--</span>
+                        <div class="row-time-group">
+                            <span class="row-countdown chatgpt-color" id="chatgptWeekCountdown">--:--:--</span>
+                            <span class="row-target-time" id="chatgptWeekTarget">--</span>
+                        </div>
                         <button class="btn-quick-sm" onclick="quickAdd('chatgpt', 'week', 168)">+7d</button>
                     </div>
                     <!-- Expiry -->
@@ -217,13 +235,19 @@
                     <!-- Short window -->
                     <div class="timer-row">
                         <span class="row-label">⏱️ Daily Limit</span>
-                        <span class="row-countdown v0-color" id="v0HourCountdown">--:--:--</span>
+                        <div class="row-time-group">
+                            <span class="row-countdown v0-color" id="v0HourCountdown">--:--:--</span>
+                            <span class="row-target-time" id="v0HourTarget">--</span>
+                        </div>
                         <button class="btn-quick-sm" onclick="quickAdd('v0', 'hour', 24)">+24h</button>
                     </div>
                     <!-- Weekly window -->
                     <div class="timer-row">
                         <span class="row-label">📊 Weekly</span>
-                        <span class="row-countdown v0-color" id="v0WeekCountdown">--:--:--</span>
+                        <div class="row-time-group">
+                            <span class="row-countdown v0-color" id="v0WeekCountdown">--:--:--</span>
+                            <span class="row-target-time" id="v0WeekTarget">--</span>
+                        </div>
                         <button class="btn-quick-sm" onclick="quickAdd('v0', 'week', 168)">+7d</button>
                     </div>
                     <!-- Expiry -->
@@ -238,7 +262,7 @@
 
         <!-- Compact Footer -->
         <footer class="footer">
-            <p>💡 กด ✏️ เพื่อตั้งเวลา Reset หรือปุ่ม +ชั่วโมง/+วัน เพื่อต่อเวลาถอยหลังทันที</p>
+            <p>💡 บอกทั้งเวลา Reset จริง (เช่น พรุ่งนี้ 02.30 น.) และเวลานับถอยหลังในหน้าเดียว</p>
         </footer>
     </div>
 
@@ -253,7 +277,7 @@
                 <p style="line-height: 1.6; font-size: 0.9rem; color: var(--text-secondary);">
                     <strong style="color: var(--text-primary);">ถาม:</strong> ทุก AI มีการ Reset เวลาที่คงที่ถูกต้องไหม? ถ้า Limit ไม่หมด หรือหมด ก็จะนับถอยหลังตลอดเวลา?<br><br>
                     <strong style="color: var(--text-primary);">ตอบ:</strong> AI แต่ละตัวใช้ระบบที่ต่างกัน เช่น <strong>Claude Pro</strong> และ <strong>ChatGPT Pro</strong> ใช้ระบบ <em>Rolling Window (เช่น 5 ชม. หรือ 3 ชม.)</em> โดยเริ่มนับถอยหลังตั้งแต่ข้อความแรกที่ส่งในรอบนั้น ไม่ได้รีเซ็ตตามเวลาคงที่ของนาฬิกาโลก ส่วน <strong>Gemini</strong> และ <strong>v0</strong> มักมีโควต้ารายวันหรือสัปดาห์<br><br>
-                    เนื่องจากเราไม่ได้ Sync ข้อมูลอัตโนมัติ คุณสามารถกดปุ่มด่วน <strong>+5h, +3h, +24h หรือ +7d</strong> เมื่อเริ่มใช้งานหรือเมื่อลิมิตรีเซ็ต เพื่อให้นับถอยหลังรอบใหม่ได้อย่างต่อเนื่องในหน้าเดียวครับ!
+                    ระบบนี้จะแสดงทั้ง <strong>เวลานับถอยหลัง</strong> และ <strong>เวลาจริงของนาฬิกา (เช่น วันนี้ 19.17 น. หรือ พรุ่งนี้ 02.30 น.)</strong> ให้คุณเห็นควบคู่กันทันทีครับ!
                 </p>
             </div>
             <div class="modal-footer">
