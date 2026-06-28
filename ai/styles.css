@@ -256,8 +256,12 @@ body.light-theme .modal { background: #ffffff; }
 
 .form-group { margin-bottom: 12px; }
 .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; }
-.form-group input, .form-group select { width: 100%; padding: 8px 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.88rem; outline: none; }
+.form-group input, .form-group select { width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.88rem; outline: none; cursor: pointer; transition: all 0.2s; }
+.form-group input:hover, .form-group select:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.08); }
 body.light-theme .form-group input, body.light-theme .form-group select { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.15); }
+body.light-theme .form-group input:hover, body.light-theme .form-group select:hover { background: rgba(0,0,0,0.08); }
+.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator, .form-group input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(0.8); }
+body.light-theme .form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator, body.light-theme .form-group input[type="date"]::-webkit-calendar-picker-indicator { filter: none; }
 
 .quick-form-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .btn-quick-form { padding: 4px 8px; font-size: 0.72rem; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 6px; color: var(--text-secondary); cursor: pointer; }

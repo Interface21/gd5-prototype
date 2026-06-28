@@ -275,7 +275,7 @@ function buildEditForm(key) {
         <div class="form-section-title"><i class="bi bi-clock-history"></i> รอบเวลาสั้น (Hour/Daily Limit)</div>
         <div class="form-group">
             <label>เวลา Reset รอบถัดไป</label>
-            <input type="datetime-local" id="editHourReset">
+            <input type="datetime-local" id="editHourReset" onclick="try { this.showPicker(); } catch(e){}" style="cursor: pointer;" title="คลิกเพื่อเลือกวันและเวลา">
             <div class="quick-form-buttons">
                 <button type="button" class="btn-quick-form" onclick="setQuickFormDate('editHourReset', 3)">+3 ชม.</button>
                 <button type="button" class="btn-quick-form" onclick="setQuickFormDate('editHourReset', 5)">+5 ชม.</button>
@@ -287,7 +287,7 @@ function buildEditForm(key) {
         <div class="form-section-title" style="margin-top: 20px;"><i class="bi bi-calendar-week"></i> รอบสัปดาห์ (Weekly Limit)</div>
         <div class="form-group">
             <label>เวลา Reset รอบสัปดาห์ถัดไป</label>
-            <input type="datetime-local" id="editWeekReset">
+            <input type="datetime-local" id="editWeekReset" onclick="try { this.showPicker(); } catch(e){}" style="cursor: pointer;" title="คลิกเพื่อเลือกวันและเวลา">
             <div class="quick-form-buttons">
                 <button type="button" class="btn-quick-form" onclick="setQuickFormDate('editWeekReset', 168)">+7 วัน</button>
                 <button type="button" class="btn-quick-form" onclick="setQuickFormDate('editWeekReset', 336)">+14 วัน</button>
@@ -298,7 +298,7 @@ function buildEditForm(key) {
         <div class="form-section-title" style="margin-top: 20px;"><i class="bi bi-calendar-check"></i> วันหมดอายุ Subscription</div>
         <div class="form-group">
             <label>วันที่หมดอายุรอบบิล</label>
-            <input type="date" id="editExpiry">
+            <input type="date" id="editExpiry" onclick="try { this.showPicker(); } catch(e){}" style="cursor: pointer;" title="คลิกเพื่อเลือกวันที่">
         </div>
     `;
 }
