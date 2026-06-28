@@ -3,266 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="AI Reset Tracker Dashboard - ติดตามเวลา Reset จริงและเวลานับถอยหลังของ AI ในหน้าเดียว">
-    <title>AI Reset Tracker (Actual Time & Countdown)</title>
+    <meta name="description" content="Minimal AI Reset Tracker - เน้นดูเวลาจริงที่จะ Reset ในหน้าเดียว">
+    <title>AI Reset Tracker (Minimal Actual Time)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Background animated orbs -->
-    <div class="bg-orbs">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
-    </div>
+    <!-- Background subtle ambient glow -->
+    <div class="ambient-glow"></div>
 
-    <!-- App Container (Fixed Single Page 100dvh) -->
+    <!-- Main Fixed Single View App Container -->
     <div class="app-container">
-        <!-- Compact Header -->
+        <!-- Minimal Header -->
         <header class="header">
-            <div class="logo">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                        <path d="M2 17l10 5 10-5"/>
-                        <path d="M2 12l10 5 10-5"/>
-                    </svg>
+            <div class="brand-title">
+                <div class="logo-icon-header">
+                    <i class="bi bi-layers-fill" style="font-size: 1.2rem;"></i>
                 </div>
-                <div class="logo-text">
-                    <h1>AI Reset Tracker</h1>
-                    <span class="current-time" id="currentDateTime">🕐 --</span>
-                </div>
+                <h1>AI Reset Tracker <span class="badge-minimal">Minimal</span></h1>
+                <span class="clock-live" id="currentDateTime">--:--:--</span>
             </div>
-            <div class="header-actions">
-                <button class="btn-icon" id="faqBtn" title="คำถามที่พบบ่อย (FAQ)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
+            <div class="header-tools">
+                <button class="btn-tool" id="faqBtn" title="คำถามที่พบบ่อย">
+                    <i class="bi bi-question-circle"></i> FAQ
                 </button>
-                <button class="btn-icon" id="themeToggleBtn" title="สลับโหมด Light / Dark">
-                    <svg id="themeIconDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg id="themeIconLight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
+                <button class="btn-tool-icon" id="themeToggleBtn" title="สลับโหมดสว่าง/มืด">
+                    <i class="bi bi-moon-stars-fill" id="iconDark"></i>
+                    <i class="bi bi-sun-fill" id="iconLight" style="display:none;"></i>
                 </button>
-                <button class="btn-icon" id="refreshBtn" title="อัพเดตข้อมูล">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M23 4v6h-6"/>
-                        <path d="M1 20v-6h6"/>
-                        <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-                    </svg>
+                <button class="btn-tool-icon" id="refreshBtn" title="รีเฟรช">
+                    <i class="bi bi-arrow-clockwise"></i>
                 </button>
-                <button class="btn-icon" id="settingsBtn" title="ตั้งค่าทั่วไป">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.32 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
-                    </svg>
+                <button class="btn-tool-icon" id="settingsBtn" title="ตั้งค่า">
+                    <i class="bi bi-gear-fill"></i>
                 </button>
             </div>
         </header>
 
-        <!-- Dashboard Grid (Fit in one single screen) -->
-        <main class="dashboard">
-            <!-- 1. Claude Card -->
-            <section class="ai-card claude-card" id="claudeCard">
-                <div class="card-header">
-                    <div class="card-brand">
+        <!-- Minimal 4-Card Grid (No wasted space) -->
+        <main class="dashboard-grid">
+            <!-- 1. Claude Pro -->
+            <article class="ai-card claude-border" id="claudeCard">
+                <header class="card-top">
+                    <div class="provider-info">
                         <div class="brand-icon claude-icon">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                             </svg>
                         </div>
-                        <div class="brand-info">
+                        <div class="provider-text">
                             <h2>Claude Pro</h2>
-                            <span class="plan-badge">5h & Weekly</span>
+                            <span class="provider-sub">5h & Weekly</span>
                         </div>
                     </div>
-                    <button class="btn-edit" onclick="openEditModal('claude')" title="ตั้งเวลา Reset">✏️</button>
-                </div>
+                    <button class="btn-edit-min" onclick="openEditModal('claude')" title="ตั้งเวลา">
+                        <i class="bi bi-pencil-square"></i> แก้ไข
+                    </button>
+                </header>
 
-                <div class="timer-rows">
-                    <!-- Short window -->
-                    <div class="timer-row">
-                        <span class="row-label">⏱️ 5h Limit</span>
-                        <div class="row-time-group">
-                            <span class="row-countdown claude-color" id="claudeHourCountdown">--:--:--</span>
-                            <span class="row-target-time" id="claudeHourTarget">--</span>
+                <div class="rows-group">
+                    <!-- Short Limit -->
+                    <div class="row-min">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-clock-history"></i> 5h Limit</span>
+                            <button class="btn-add-min" onclick="quickAdd('claude', 'hour', 5)">+5 ชม.</button>
                         </div>
-                        <button class="btn-quick-sm" onclick="quickAdd('claude', 'hour', 5)">+5h</button>
-                    </div>
-                    <!-- Weekly window -->
-                    <div class="timer-row">
-                        <span class="row-label">📊 Weekly</span>
-                        <div class="row-time-group">
-                            <span class="row-countdown claude-color" id="claudeWeekCountdown">--:--:--</span>
-                            <span class="row-target-time" id="claudeWeekTarget">--</span>
+                        <div class="row-right">
+                            <span class="time-primary claude-text" id="claudeHourTarget">--</span>
+                            <span class="time-secondary" id="claudeHourCountdown">--</span>
                         </div>
-                        <button class="btn-quick-sm" onclick="quickAdd('claude', 'week', 168)">+7d</button>
                     </div>
+
+                    <!-- Weekly Limit -->
+                    <div class="row-min">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-calendar-week"></i> Weekly</span>
+                            <button class="btn-add-min" onclick="quickAdd('claude', 'week', 168)">+7 วัน</button>
+                        </div>
+                        <div class="row-right">
+                            <span class="time-primary claude-text" id="claudeWeekTarget">--</span>
+                            <span class="time-secondary" id="claudeWeekCountdown">--</span>
+                        </div>
+                    </div>
+
                     <!-- Expiry -->
-                    <div class="timer-row expiry-row">
-                        <span class="row-label">📆 Expiry</span>
-                        <span class="expiry-date-text" id="claudeExpiry">--</span>
-                        <span class="expiry-pill" id="claudeExpiryCountdown">-- วัน</span>
+                    <div class="row-min row-expiry">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-calendar-check"></i> Expiry</span>
+                        </div>
+                        <div class="row-right inline-expiry">
+                            <span class="expiry-main" id="claudeExpiry">--</span>
+                            <span class="expiry-tag" id="claudeExpiryCountdown">-- วัน</span>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </article>
 
-            <!-- 2. Gemini Pro Card -->
-            <section class="ai-card gemini-card" id="geminiCard">
-                <div class="card-header">
-                    <div class="card-brand">
+            <!-- 2. Gemini Pro -->
+            <article class="ai-card gemini-border" id="geminiCard">
+                <header class="card-top">
+                    <div class="provider-info">
                         <div class="brand-icon gemini-icon">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 3.6c1.42 0 2.76.35 3.94.97L12 8.5 8.06 4.57A8.36 8.36 0 0112 3.6zM3.6 12c0-1.42.35-2.76.97-3.94L8.5 12l-3.93 3.94A8.36 8.36 0 013.6 12zm8.4 8.4c-1.42 0-2.76-.35-3.94-.97L12 15.5l3.94 3.93A8.36 8.36 0 0112 20.4zm.71-7.11l4.72-4.72A8.36 8.36 0 0120.4 12a8.36 8.36 0 01-2.97 6.43l-4.72-4.72a.996.996 0 010-1.42z"/>
                             </svg>
                         </div>
-                        <div class="brand-info">
+                        <div class="provider-text">
                             <h2>Gemini Pro</h2>
-                            <span class="plan-badge gemini-badge">Daily & Weekly</span>
+                            <span class="provider-sub">Daily & Weekly</span>
                         </div>
                     </div>
-                    <button class="btn-edit" onclick="openEditModal('gemini')" title="ตั้งเวลา Reset">✏️</button>
-                </div>
+                    <button class="btn-edit-min" onclick="openEditModal('gemini')" title="ตั้งเวลา">
+                        <i class="bi bi-pencil-square"></i> แก้ไข
+                    </button>
+                </header>
 
-                <div class="timer-rows">
-                    <!-- Short window -->
-                    <div class="timer-row">
-                        <span class="row-label">⏱️ Daily Limit</span>
-                        <div class="row-time-group">
-                            <span class="row-countdown gemini-color" id="geminiHourCountdown">--:--:--</span>
-                            <span class="row-target-time" id="geminiHourTarget">--</span>
+                <div class="rows-group">
+                    <!-- Short Limit -->
+                    <div class="row-min">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-clock-history"></i> Daily Limit</span>
+                            <button class="btn-add-min" onclick="quickAdd('gemini', 'hour', 24)">+24 ชม.</button>
                         </div>
-                        <button class="btn-quick-sm" onclick="quickAdd('gemini', 'hour', 24)">+24h</button>
-                    </div>
-                    <!-- Weekly window -->
-                    <div class="timer-row">
-                        <span class="row-label">📊 Weekly</span>
-                        <div class="row-time-group">
-                            <span class="row-countdown gemini-color" id="geminiWeekCountdown">--:--:--</span>
-                            <span class="row-target-time" id="geminiWeekTarget">--</span>
+                        <div class="row-right">
+                            <span class="time-primary gemini-text" id="geminiHourTarget">--</span>
+                            <span class="time-secondary" id="geminiHourCountdown">--</span>
                         </div>
-                        <button class="btn-quick-sm" onclick="quickAdd('gemini', 'week', 168)">+7d</button>
                     </div>
+
+                    <!-- Weekly Limit -->
+                    <div class="row-min">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-calendar-week"></i> Weekly</span>
+                            <button class="btn-add-min" onclick="quickAdd('gemini', 'week', 168)">+7 วัน</button>
+                        </div>
+                        <div class="row-right">
+                            <span class="time-primary gemini-text" id="geminiWeekTarget">--</span>
+                            <span class="time-secondary" id="geminiWeekCountdown">--</span>
+                        </div>
+                    </div>
+
                     <!-- Expiry -->
-                    <div class="timer-row expiry-row">
-                        <span class="row-label">📆 Expiry</span>
-                        <span class="expiry-date-text" id="geminiExpiry">--</span>
-                        <span class="expiry-pill" id="geminiExpiryCountdown">-- วัน</span>
+                    <div class="row-min row-expiry">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-calendar-check"></i> Expiry</span>
+                        </div>
+                        <div class="row-right inline-expiry">
+                            <span class="expiry-main" id="geminiExpiry">--</span>
+                            <span class="expiry-tag" id="geminiExpiryCountdown">-- วัน</span>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </article>
 
-            <!-- 3. ChatGPT Pro Card -->
-            <section class="ai-card chatgpt-card" id="chatgptCard">
-                <div class="card-header">
-                    <div class="card-brand">
+            <!-- 3. ChatGPT Pro -->
+            <article class="ai-card chatgpt-border" id="chatgptCard">
+                <header class="card-top">
+                    <div class="provider-info">
                         <div class="brand-icon chatgpt-icon">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7866A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3975.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/>
                             </svg>
                         </div>
-                        <div class="brand-info">
+                        <div class="provider-text">
                             <h2>ChatGPT Pro</h2>
-                            <span class="plan-badge chatgpt-badge">3h & Weekly</span>
+                            <span class="provider-sub">3h & Weekly</span>
                         </div>
                     </div>
-                    <button class="btn-edit" onclick="openEditModal('chatgpt')" title="ตั้งเวลา Reset">✏️</button>
-                </div>
+                    <button class="btn-edit-min" onclick="openEditModal('chatgpt')" title="ตั้งเวลา">
+                        <i class="bi bi-pencil-square"></i> แก้ไข
+                    </button>
+                </header>
 
-                <div class="timer-rows">
-                    <!-- Short window -->
-                    <div class="timer-row">
-                        <span class="row-label">⏱️ 3h Limit</span>
-                        <div class="row-time-group">
-                            <span class="row-countdown chatgpt-color" id="chatgptHourCountdown">--:--:--</span>
-                            <span class="row-target-time" id="chatgptHourTarget">--</span>
+                <div class="rows-group">
+                    <!-- Short Limit -->
+                    <div class="row-min">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-clock-history"></i> 3h Limit</span>
+                            <button class="btn-add-min" onclick="quickAdd('chatgpt', 'hour', 3)">+3 ชม.</button>
                         </div>
-                        <button class="btn-quick-sm" onclick="quickAdd('chatgpt', 'hour', 3)">+3h</button>
-                    </div>
-                    <!-- Weekly window -->
-                    <div class="timer-row">
-                        <span class="row-label">📊 Weekly</span>
-                        <div class="row-time-group">
-                            <span class="row-countdown chatgpt-color" id="chatgptWeekCountdown">--:--:--</span>
-                            <span class="row-target-time" id="chatgptWeekTarget">--</span>
+                        <div class="row-right">
+                            <span class="time-primary chatgpt-text" id="chatgptHourTarget">--</span>
+                            <span class="time-secondary" id="chatgptHourCountdown">--</span>
                         </div>
-                        <button class="btn-quick-sm" onclick="quickAdd('chatgpt', 'week', 168)">+7d</button>
                     </div>
+
+                    <!-- Weekly Limit -->
+                    <div class="row-min">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-calendar-week"></i> Weekly</span>
+                            <button class="btn-add-min" onclick="quickAdd('chatgpt', 'week', 168)">+7 วัน</button>
+                        </div>
+                        <div class="row-right">
+                            <span class="time-primary chatgpt-text" id="chatgptWeekTarget">--</span>
+                            <span class="time-secondary" id="chatgptWeekCountdown">--</span>
+                        </div>
+                    </div>
+
                     <!-- Expiry -->
-                    <div class="timer-row expiry-row">
-                        <span class="row-label">📆 Expiry</span>
-                        <span class="expiry-date-text" id="chatgptExpiry">--</span>
-                        <span class="expiry-pill" id="chatgptExpiryCountdown">-- วัน</span>
+                    <div class="row-min row-expiry">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-calendar-check"></i> Expiry</span>
+                        </div>
+                        <div class="row-right inline-expiry">
+                            <span class="expiry-main" id="chatgptExpiry">--</span>
+                            <span class="expiry-tag" id="chatgptExpiryCountdown">-- วัน</span>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </article>
 
-            <!-- 4. v0 Pro Card -->
-            <section class="ai-card v0-card" id="v0Card">
-                <div class="card-header">
-                    <div class="card-brand">
+            <!-- 4. v0 Pro -->
+            <article class="ai-card v0-border" id="v0Card">
+                <header class="card-top">
+                    <div class="provider-info">
                         <div class="brand-icon v0-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="12 2 2 22 22 22" fill="currentColor" fill-opacity="0.2"/>
                                 <path d="M12 2L2 22h20L12 2z"/>
                             </svg>
                         </div>
-                        <div class="brand-info">
+                        <div class="provider-text">
                             <h2>v0 Pro</h2>
-                            <span class="plan-badge v0-badge">Vercel Quota</span>
+                            <span class="provider-sub">Vercel Quota</span>
                         </div>
                     </div>
-                    <button class="btn-edit" onclick="openEditModal('v0')" title="ตั้งเวลา Reset">✏️</button>
-                </div>
+                    <button class="btn-edit-min" onclick="openEditModal('v0')" title="ตั้งเวลา">
+                        <i class="bi bi-pencil-square"></i> แก้ไข
+                    </button>
+                </header>
 
-                <div class="timer-rows">
-                    <!-- Short window -->
-                    <div class="timer-row">
-                        <span class="row-label">⏱️ Daily Limit</span>
-                        <div class="row-time-group">
-                            <span class="row-countdown v0-color" id="v0HourCountdown">--:--:--</span>
-                            <span class="row-target-time" id="v0HourTarget">--</span>
+                <div class="rows-group">
+                    <!-- Short Limit -->
+                    <div class="row-min">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-clock-history"></i> Daily Limit</span>
+                            <button class="btn-add-min" onclick="quickAdd('v0', 'hour', 24)">+24 ชม.</button>
                         </div>
-                        <button class="btn-quick-sm" onclick="quickAdd('v0', 'hour', 24)">+24h</button>
-                    </div>
-                    <!-- Weekly window -->
-                    <div class="timer-row">
-                        <span class="row-label">📊 Weekly</span>
-                        <div class="row-time-group">
-                            <span class="row-countdown v0-color" id="v0WeekCountdown">--:--:--</span>
-                            <span class="row-target-time" id="v0WeekTarget">--</span>
+                        <div class="row-right">
+                            <span class="time-primary v0-text" id="v0HourTarget">--</span>
+                            <span class="time-secondary" id="v0HourCountdown">--</span>
                         </div>
-                        <button class="btn-quick-sm" onclick="quickAdd('v0', 'week', 168)">+7d</button>
                     </div>
+
+                    <!-- Weekly Limit -->
+                    <div class="row-min">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-calendar-week"></i> Weekly</span>
+                            <button class="btn-add-min" onclick="quickAdd('v0', 'week', 168)">+7 วัน</button>
+                        </div>
+                        <div class="row-right">
+                            <span class="time-primary v0-text" id="v0WeekTarget">--</span>
+                            <span class="time-secondary" id="v0WeekCountdown">--</span>
+                        </div>
+                    </div>
+
                     <!-- Expiry -->
-                    <div class="timer-row expiry-row">
-                        <span class="row-label">📆 Expiry</span>
-                        <span class="expiry-date-text" id="v0Expiry">--</span>
-                        <span class="expiry-pill" id="v0ExpiryCountdown">-- วัน</span>
+                    <div class="row-min row-expiry">
+                        <div class="row-left">
+                            <span class="row-title"><i class="bi bi-calendar-check"></i> Expiry</span>
+                        </div>
+                        <div class="row-right inline-expiry">
+                            <span class="expiry-main" id="v0Expiry">--</span>
+                            <span class="expiry-tag" id="v0ExpiryCountdown">-- วัน</span>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </article>
         </main>
 
-        <!-- Compact Footer -->
-        <footer class="footer">
-            <p>💡 บอกทั้งเวลา Reset จริง (เช่น พรุ่งนี้ 02.30 น.) และเวลานับถอยหลังในหน้าเดียว</p>
+        <!-- Minimal Footer -->
+        <footer class="footer-min">
+            <i class="bi bi-lightbulb-fill" style="color: var(--warn);"></i> เน้นแสดงเวลาจริงที่จะ Reset (เช่น <strong>วันนี้ 19.17 น.</strong>) เพื่อให้ทราบเวลาเป้าหมายได้ทันทีในมองเดียว
         </footer>
     </div>
 
@@ -270,18 +286,17 @@
     <div class="modal-overlay" id="faqModal">
         <div class="modal">
             <div class="modal-header">
-                <h3>❓ คำถามที่พบบ่อย (FAQ)</h3>
+                <h3><i class="bi bi-question-circle-fill"></i> คำถามที่พบบ่อย (FAQ)</h3>
                 <button class="btn-close" onclick="closeModal('faqModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <p style="line-height: 1.6; font-size: 0.9rem; color: var(--text-secondary);">
-                    <strong style="color: var(--text-primary);">ถาม:</strong> ทุก AI มีการ Reset เวลาที่คงที่ถูกต้องไหม? ถ้า Limit ไม่หมด หรือหมด ก็จะนับถอยหลังตลอดเวลา?<br><br>
-                    <strong style="color: var(--text-primary);">ตอบ:</strong> AI แต่ละตัวใช้ระบบที่ต่างกัน เช่น <strong>Claude Pro</strong> และ <strong>ChatGPT Pro</strong> ใช้ระบบ <em>Rolling Window (เช่น 5 ชม. หรือ 3 ชม.)</em> โดยเริ่มนับถอยหลังตั้งแต่ข้อความแรกที่ส่งในรอบนั้น ไม่ได้รีเซ็ตตามเวลาคงที่ของนาฬิกาโลก ส่วน <strong>Gemini</strong> และ <strong>v0</strong> มักมีโควต้ารายวันหรือสัปดาห์<br><br>
-                    ระบบนี้จะแสดงทั้ง <strong>เวลานับถอยหลัง</strong> และ <strong>เวลาจริงของนาฬิกา (เช่น วันนี้ 19.17 น. หรือ พรุ่งนี้ 02.30 น.)</strong> ให้คุณเห็นควบคู่กันทันทีครับ!
+                    <strong style="color: var(--text-primary);">ถาม:</strong> ทำไมถึงเน้นเวลาจริงมากกว่าเวลานับถอยหลัง?<br><br>
+                    <strong style="color: var(--text-primary);">ตอบ:</strong> ในการทำงานจริง เรามักต้องการรู้ว่า <em>"จะกลับมาใช้ AI ได้อีกทีตอนกี่โมง?" (เช่น วันนี้ 19.17 น. หรือ พรุ่งนี้ 02.30 น.)</em> มากกว่านั่งดูตัวเลขวินาทีนับถอยหลัง ดีไซน์ Minimal นี้จึงดึงเอาเวลาจริงขึ้นมาเป็นตัวเลขใหญ่เด่นสุดให้เห็นทันทีครับ!
                 </p>
             </div>
             <div class="modal-footer">
-                <button class="btn-primary" onclick="closeModal('faqModal')">เข้าใจแล้ว</button>
+                <button class="btn-primary" onclick="closeModal('faqModal')"><i class="bi bi-check2"></i> เข้าใจแล้ว</button>
             </div>
         </div>
     </div>
@@ -290,7 +305,7 @@
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <div class="modal-header">
-                <h3>⚙️ ตั้งค่าทั่วไป</h3>
+                <h3><i class="bi bi-gear-fill"></i> ตั้งค่าทั่วไป</h3>
                 <button class="btn-close" onclick="closeModal('settingsModal')">&times;</button>
             </div>
             <div class="modal-body">
@@ -304,14 +319,14 @@
                 <div class="form-group">
                     <label>Theme (โหมดสีหน้าจอ)</label>
                     <select id="settingTheme">
-                        <option value="dark">🌙 Dark Mode (โหมดมืด)</option>
-                        <option value="light">☀️ Light Mode (โหมดสว่าง)</option>
+                        <option value="dark">Dark Mode (โหมดมืด)</option>
+                        <option value="light">Light Mode (โหมดสว่าง)</option>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('settingsModal')">ปิด</button>
-                <button class="btn-primary" onclick="saveSettings()">บันทึก</button>
+                <button class="btn-primary" onclick="saveSettings()"><i class="bi bi-floppy-fill"></i> บันทึก</button>
             </div>
         </div>
     </div>
@@ -320,7 +335,7 @@
     <div class="modal-overlay" id="editModal">
         <div class="modal modal-lg">
             <div class="modal-header">
-                <h3 id="editModalTitle">✏️ ตั้งค่าเวลา Reset</h3>
+                <h3 id="editModalTitle"><i class="bi bi-pencil-square"></i> ตั้งค่าเวลา Reset</h3>
                 <button class="btn-close" onclick="closeModal('editModal')">&times;</button>
             </div>
             <div class="modal-body" id="editModalBody">
@@ -328,7 +343,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('editModal')">ยกเลิก</button>
-                <button class="btn-primary" id="editSaveBtn" onclick="saveEdit()">💾 บันทึก</button>
+                <button class="btn-primary" id="editSaveBtn" onclick="saveEdit()"><i class="bi bi-floppy-fill"></i> บันทึก</button>
             </div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-// ===== AI Usage & Reset Tracker - Main Application (Actual Time & Countdown) =====
+// ===== AI Usage & Reset Tracker - Minimal Actual Time Prioritized =====
 
 const DEFAULT_DATA = {
     claude: { hourResetTime: null, weekResetTime: null, expiryDate: null },
@@ -52,15 +52,15 @@ function deepMerge(target, source) {
 function applyTheme(theme) {
     if (theme === 'light') {
         document.body.classList.add('light-theme');
-        const darkIcon = document.getElementById('themeIconDark');
-        const lightIcon = document.getElementById('themeIconLight');
+        const darkIcon = document.getElementById('iconDark');
+        const lightIcon = document.getElementById('iconLight');
         if (darkIcon) darkIcon.style.display = 'none';
-        if (lightIcon) lightIcon.style.display = 'block';
+        if (lightIcon) lightIcon.style.display = 'inline-block';
     } else {
         document.body.classList.remove('light-theme');
-        const darkIcon = document.getElementById('themeIconDark');
-        const lightIcon = document.getElementById('themeIconLight');
-        if (darkIcon) darkIcon.style.display = 'block';
+        const darkIcon = document.getElementById('iconDark');
+        const lightIcon = document.getElementById('iconLight');
+        if (darkIcon) darkIcon.style.display = 'inline-block';
         if (lightIcon) lightIcon.style.display = 'none';
     }
     const themeSelect = document.getElementById('settingTheme');
@@ -72,7 +72,7 @@ function toggleTheme() {
     appData.settings.theme = current;
     applyTheme(current);
     saveData();
-    showToast(`สลับเป็น ${current === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode'} แล้ว!`, 'success');
+    showToast(`<i class="bi bi-check-circle-fill"></i> สลับเป็นโหมด${current === 'light' ? 'สว่าง' : 'มืด'}แล้ว!`, 'success');
 }
 
 function formatShortDate(isoString) {
@@ -87,11 +87,11 @@ function formatShortDate(isoString) {
     });
 }
 
-// ===== Target Clock Time Formatter ("วันนี้ 19.17 น.", "พรุ่งนี้ 02.30 น.") =====
+// ===== Primary Display: Actual Target Clock Time ("วันนี้ 19.17 น.") =====
 function formatTargetClockTime(isoString) {
-    if (!isoString) return 'ยังไม่ได้ตั้งค่า';
+    if (!isoString) return '--';
     const target = new Date(isoString);
-    if (isNaN(target.getTime())) return 'ยังไม่ได้ตั้งค่า';
+    if (isNaN(target.getTime())) return '--';
     const now = new Date();
     if (target <= now) return 'พร้อมใช้งาน';
 
@@ -116,18 +116,19 @@ function formatTargetClockTime(isoString) {
             day: 'numeric',
             month: 'short'
         });
-        return `${shortDate} ${timeStr}`;
+        return `${shortDate} • ${timeStr}`;
     }
 }
 
+// ===== Secondary Display: Countdown ("(อีก 04:20:22)") =====
 function getCountdown(targetIso) {
-    if (!targetIso) return { text: '--:--:--', totalSeconds: 0, expired: false, notSet: true };
+    if (!targetIso) return { text: 'ยังไม่ได้ตั้งค่า', totalSeconds: 0, expired: false, notSet: true };
     const now = new Date();
     const target = new Date(targetIso);
     const diff = target.getTime() - now.getTime();
 
     if (diff <= 0) {
-        return { text: '🟢 รีเซ็ตแล้ว', totalSeconds: 0, expired: true, notSet: false };
+        return { text: 'รีเซ็ตเรียบร้อยแล้ว', totalSeconds: 0, expired: true, notSet: false };
     }
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -135,14 +136,14 @@ function getCountdown(targetIso) {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    let text = '';
+    let cdStr = '';
     if (days > 0) {
-        text = `${days}d ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        cdStr = `${days} วัน ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     } else {
-        text = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        cdStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
-    return { text, totalSeconds: diff / 1000, expired: false, notSet: false };
+    return { text: `(อีก ${cdStr})`, totalSeconds: diff / 1000, expired: false, notSet: false };
 }
 
 function getDaysRemaining(dateString) {
@@ -167,7 +168,7 @@ function quickAdd(providerKey, windowType, hoursToAdd) {
     saveData();
     updateAll();
     const label = hoursToAdd >= 24 ? `${hoursToAdd / 24} วัน` : `${hoursToAdd} ชม.`;
-    showToast(`⏱️ ต่อเวลา ${providerKey.toUpperCase()} อีก ${label} แล้ว!`, 'success');
+    showToast(`<i class="bi bi-clock-history"></i> ต่อเวลา ${providerKey.toUpperCase()} อีก ${label} แล้ว!`, 'success');
 }
 
 function updateCurrentTime() {
@@ -180,7 +181,7 @@ function updateCurrentTime() {
         hour12: false,
     });
     const el = document.getElementById('currentDateTime');
-    if (el) el.textContent = `🕐 ${formatted}`;
+    if (el) el.textContent = `${formatted} น.`;
 }
 
 function updateAICard(key) {
@@ -189,26 +190,28 @@ function updateAICard(key) {
 
     // 1. Hour Limit
     const hourCd = getCountdown(data.hourResetTime);
-    const hourCountdownEl = document.getElementById(`${key}HourCountdown`);
     const hourTargetEl = document.getElementById(`${key}HourTarget`);
+    const hourCountdownEl = document.getElementById(`${key}HourCountdown`);
+    
+    if (hourTargetEl) {
+        hourTargetEl.textContent = formatTargetClockTime(data.hourResetTime);
+        hourTargetEl.classList.toggle('ready-text', hourCd.expired);
+    }
     if (hourCountdownEl) {
         hourCountdownEl.textContent = hourCd.text;
-        hourCountdownEl.classList.toggle('expired-text', hourCd.expired);
-    }
-    if (hourTargetEl) {
-        hourTargetEl.textContent = hourCd.expired ? '' : formatTargetClockTime(data.hourResetTime);
     }
 
     // 2. Weekly Limit
     const weekCd = getCountdown(data.weekResetTime);
-    const weekCountdownEl = document.getElementById(`${key}WeekCountdown`);
     const weekTargetEl = document.getElementById(`${key}WeekTarget`);
+    const weekCountdownEl = document.getElementById(`${key}WeekCountdown`);
+    
+    if (weekTargetEl) {
+        weekTargetEl.textContent = formatTargetClockTime(data.weekResetTime);
+        weekTargetEl.classList.toggle('ready-text', weekCd.expired);
+    }
     if (weekCountdownEl) {
         weekCountdownEl.textContent = weekCd.text;
-        weekCountdownEl.classList.toggle('expired-text', weekCd.expired);
-    }
-    if (weekTargetEl) {
-        weekTargetEl.textContent = weekCd.expired ? '' : formatTargetClockTime(data.weekResetTime);
     }
 
     // 3. Expiry
@@ -224,10 +227,10 @@ function updateAICard(key) {
 }
 
 function updateExpiryColor(el, days) {
-    el.classList.remove('expiry-warning', 'expiry-danger');
+    el.classList.remove('tag-warn', 'tag-danger');
     if (days !== null) {
-        if (days <= 3) el.classList.add('expiry-danger');
-        else if (days <= 7) el.classList.add('expiry-warning');
+        if (days <= 3) el.classList.add('tag-danger');
+        else if (days <= 7) el.classList.add('tag-warn');
     }
 }
 
@@ -261,7 +264,7 @@ const PROVIDER_NAMES = { claude: 'Claude Pro', gemini: 'Gemini Pro', chatgpt: 'C
 
 function openEditModal(key) {
     currentEditKey = key;
-    document.getElementById('editModalTitle').textContent = `✏️ ตั้งค่าเวลาของ ${PROVIDER_NAMES[key]}`;
+    document.getElementById('editModalTitle').innerHTML = `<i class="bi bi-pencil-square"></i> ตั้งค่าเวลาของ ${PROVIDER_NAMES[key]}`;
     document.getElementById('editModalBody').innerHTML = buildEditForm(key);
     populateForm(key);
     openModal('editModal');
@@ -269,7 +272,7 @@ function openEditModal(key) {
 
 function buildEditForm(key) {
     return `
-        <div class="form-section-title">⏱️ รอบเวลาสั้น (Hour/Daily Limit)</div>
+        <div class="form-section-title"><i class="bi bi-clock-history"></i> รอบเวลาสั้น (Hour/Daily Limit)</div>
         <div class="form-group">
             <label>เวลา Reset รอบถัดไป</label>
             <input type="datetime-local" id="editHourReset">
@@ -281,7 +284,7 @@ function buildEditForm(key) {
             </div>
         </div>
 
-        <div class="form-section-title" style="margin-top: 20px;">📊 รอบสัปดาห์ (Weekly Limit)</div>
+        <div class="form-section-title" style="margin-top: 20px;"><i class="bi bi-calendar-week"></i> รอบสัปดาห์ (Weekly Limit)</div>
         <div class="form-group">
             <label>เวลา Reset รอบสัปดาห์ถัดไป</label>
             <input type="datetime-local" id="editWeekReset">
@@ -292,7 +295,7 @@ function buildEditForm(key) {
             </div>
         </div>
 
-        <div class="form-section-title" style="margin-top: 20px;">📆 วันหมดอายุ Subscription</div>
+        <div class="form-section-title" style="margin-top: 20px;"><i class="bi bi-calendar-check"></i> วันหมดอายุ Subscription</div>
         <div class="form-group">
             <label>วันที่หมดอายุรอบบิล</label>
             <input type="date" id="editExpiry">
@@ -341,7 +344,7 @@ function saveEdit() {
     saveData();
     updateAll();
     closeModal('editModal');
-    showToast(`✅ บันทึกเวลาของ ${PROVIDER_NAMES[currentEditKey]} เรียบร้อย!`, 'success');
+    showToast(`<i class="bi bi-check-circle-fill"></i> บันทึกเวลาของ ${PROVIDER_NAMES[currentEditKey]} เรียบร้อย!`, 'success');
 }
 
 function saveSettings() {
@@ -352,14 +355,14 @@ function saveSettings() {
     saveData();
     updateAll();
     closeModal('settingsModal');
-    showToast('⚙️ บันทึกการตั้งค่าแล้ว!', 'success');
+    showToast('<i class="bi bi-check-circle-fill"></i> บันทึกการตั้งค่าแล้ว!', 'success');
 }
 
 function showToast(message, type = 'success') {
     document.querySelectorAll('.toast').forEach(t => t.remove());
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    toast.textContent = message;
+    toast.innerHTML = message;
     document.body.appendChild(toast);
     requestAnimationFrame(() => toast.classList.add('show'));
     setTimeout(() => {
@@ -383,7 +386,7 @@ function initEventListeners() {
 
     document.getElementById('refreshBtn').addEventListener('click', () => {
         updateAll();
-        showToast('🔄 อัพเดตเวลาล่าสุดแล้ว!', 'success');
+        showToast('<i class="bi bi-arrow-clockwise"></i> อัพเดตข้อมูลล่าสุดแล้ว!', 'success');
     });
 
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
