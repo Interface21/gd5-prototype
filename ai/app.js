@@ -22,11 +22,33 @@ function loadData() {
         } else {
             appData = structuredClone(DEFAULT_DATA);
         }
+        checkSyncFromUrl();
     } catch (e) {
         console.error('Failed to load data:', e);
         appData = structuredClone(DEFAULT_DATA);
     }
     applyTheme(appData.settings?.theme || 'dark');
+}
+
+function checkSyncFromUrl() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        let syncData = urlParams.get('sync') || window.location.hash.replace('#sync=', '');
+        if (syncData && syncData.startsWith('sync=')) syncData = syncData.replace('sync=', '');
+        if (syncData) {
+            const decoded = JSON.parse(decodeURIComponent(escape(atob(syncData))));
+            if (decoded && (decoded.claude || decoded.gemini)) {
+                appData = deepMerge(structuredClone(DEFAULT_DATA), decoded);
+                saveData();
+                window.history.replaceState({}, document.title, window.location.pathname);
+                setTimeout(() => {
+                    showToast('<i class="bi bi-check-circle-fill"></i> ซิงค์ข้อมูลเวลาจากเครื่องอื่นมาใช้เรียบร้อยแล้ว!', 'success');
+                }, 600);
+            }
+        }
+    } catch (e) {
+        console.error('Sync import error:', e);
+    }
 }
 
 function saveData() {
@@ -367,11 +389,32 @@ function showToast(message, type = 'success') {
     requestAnimationFrame(() => toast.classList.add('show'));
     setTimeout(() => {
         toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
 
+function openSyncModal() {
+    const jsonStr = JSON.stringify(appData);
+    const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+    const syncUrl = `${window.location.origin}${window.location.pathname}?sync=${base64}`;
+    document.getElementById('syncUrlInput').value = syncUrl;
+    
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(syncUrl)}`;
+    document.getElementById('qrCodeContainer').innerHTML = `<img src="${qrUrl}" alt="QR Code Sync" style="width: 200px; height: 200px; display: block;">`;
+    openModal('syncModal');
+}
+
+function copySyncLink() {
+    const input = document.getElementById('syncUrlInput');
+    input.select();
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('<i class="bi bi-clipboard-check"></i> คัดลอกลิงก์ซิงค์แล้ว! ส่งไปเปิดบนเครื่องอื่นได้ทันที', 'success');
+    });
+}
+
 function initEventListeners() {
+    const syncBtn = document.getElementById('syncBtn');
+    if (syncBtn) syncBtn.addEventListener('click', openSyncModal);
+
     const themeBtn = document.getElementById('themeToggleBtn');
     if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
