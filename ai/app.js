@@ -12,7 +12,11 @@ let appData = {};
 
 function loadData() {
     try {
-        const saved = localStorage.getItem('aiUsageTracker');
+        let saved = localStorage.getItem('aiUsageTracker');
+        if (!saved) {
+            const match = document.cookie.match(new RegExp('(^| )aiUsageTracker=([^;]+)'));
+            if (match) saved = decodeURIComponent(match[2]);
+        }
         if (saved) {
             const parsed = JSON.parse(saved);
             appData = deepMerge(structuredClone(DEFAULT_DATA), parsed);
@@ -40,9 +44,9 @@ function checkSyncFromUrl() {
             if (decoded && (decoded.claude || decoded.gemini)) {
                 appData = deepMerge(structuredClone(DEFAULT_DATA), decoded);
                 saveData();
-                window.history.replaceState({}, document.title, window.location.pathname);
+                window.history.replaceState({}, document.title, window.location.pathname + '#sync=' + syncData);
                 setTimeout(() => {
-                    showToast('<i class="bi bi-check-circle-fill"></i> ซิงค์ข้อมูลเวลาจากเครื่องอื่นมาใช้เรียบร้อยแล้ว!', 'success');
+                    showToast('<i class="bi bi-check-circle-fill"></i> ซิงค์สำเร็จ! (มือถือ: อย่าลืมกดเลือก "เปิดในเบราว์เซอร์ Chrome/Safari" เพื่อบันทึกถาวร)', 'success');
                 }, 600);
             }
         }
@@ -53,7 +57,11 @@ function checkSyncFromUrl() {
 
 function saveData() {
     try {
-        localStorage.setItem('aiUsageTracker', JSON.stringify(appData));
+        const jsonStr = JSON.stringify(appData);
+        localStorage.setItem('aiUsageTracker', jsonStr);
+        const d = new Date();
+        d.setTime(d.getTime() + (365*24*60*60*1000));
+        document.cookie = `aiUsageTracker=${encodeURIComponent(jsonStr)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
     } catch (e) {
         console.error('Failed to save data:', e);
     }
