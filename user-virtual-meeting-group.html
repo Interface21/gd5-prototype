@@ -754,16 +754,16 @@ function AddWatchModal({onClose,onSave,catalog}){
   const [title,setTitle]=useState('');
   const [owner,setOwner]=useState('Piyawat Takaew');
   const [due,setDue]=useState('');
-  const [proj,setProj]=useState('');
+  const CURRENT_PROJECT=WPROJECTS[0];
   const [tags,setTags]=useState([]);
   const [tagInput,setTagInput]=useState('');
   const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:9,padding:'10px 12px',fontSize:13.5,outline:'none',color:'#1f2733',fontFamily:'inherit',background:'#fff',boxSizing:'border-box'};
   const Lbl=({i,children,req})=>(<div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,fontWeight:600,color:'#5a6473',margin:'14px 0 7px'}}><i className={'bi bi-'+i} style={{fontSize:15,color:'#8a93a3'}}></i>{children}{req&&<span style={{color:'#d83a3a',fontWeight:700}}>*</span>}</div>);
   const toggleTag=(t)=>setTags(s=>s.includes(t)?s.filter(x=>x!==t):[...s,t]);
   const addNewTag=()=>{const t=tagInput.trim();if(!t)return;if(!tags.includes(t))setTags([...tags,t]);setTagInput('');};
-  const valid=title.trim()&&proj;
+  const valid=title.trim();
   const allTags=Array.from(new Set([...(catalog||[]),...tags]));
-  const submit=()=>{if(!valid)return;const pj=WPROJECTS.find(p=>p.project===proj)||{};onSave({id:'manual-'+Date.now(),title:title.trim(),group:pj.college||'',parent:proj,manual:true,owner:owner.trim()||'-',due,addedBy:'Piyawat Takaew',addedByRole:'ผู้รับผิดชอบโปรเจค',addedAt:Date.now(),tags:[...tags],notes:[]});};
+  const submit=()=>{if(!valid)return;onSave({id:'manual-'+Date.now(),title:title.trim(),group:CURRENT_PROJECT.college||'',parent:CURRENT_PROJECT.project,manual:true,owner:owner.trim()||'-',due,addedBy:'Piyawat Takaew',addedByRole:'ผู้รับผิดชอบโปรเจค',addedAt:Date.now(),tags:[...tags],notes:[]});};  
   return (
     <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.42)',display:'flex',alignItems:'flex-start',justifyContent:'center',zIndex:90,padding:'40px 16px',overflowY:'auto'}}>
       <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,width:540,maxWidth:'100%',boxShadow:'0 20px 50px rgba(16,24,40,.25)',animation:'fadeIn .15s ease'}}>
@@ -778,7 +778,7 @@ function AddWatchModal({onClose,onSave,catalog}){
         </div>
         <div style={{padding:'4px 20px 20px'}}>
           <Lbl i="card-text" req>ชื่อรายการ</Lbl>
-          <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="เช่น เครื่องสำรองไฟ UPS สำหรับห้องเซิร์ฟเวอร์" style={{...inp,background:'#f6f7f9',fontWeight:600}}/>
+          <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="เช่น เครื่องสำรองไฟ UPS สำหรับห้องเซิร์ฟเวอร์" style={{...inp,fontWeight:600}}/>
           <div style={{display:'flex',gap:14}}>
             <div style={{flex:1}}>
               <Lbl i="person">ผู้รับผิดชอบ</Lbl>
@@ -789,12 +789,7 @@ function AddWatchModal({onClose,onSave,catalog}){
               <input type="date" value={due} onChange={e=>setDue(e.target.value)} style={{...inp,cursor:'pointer'}}/>
             </div>
           </div>
-          <Lbl i="folder2-open" req>โปรเจค / วิทยาลัย</Lbl>
-          <select value={proj} onChange={e=>setProj(e.target.value)} style={{...inp,cursor:'pointer',color:proj?'#1f2733':'#9aa3af'}}>
-            <option value="">เลือกโปรเจคที่มีอยู่...</option>
-            {WPROJECTS.map(p=><option key={p.project} value={p.project}>{p.project}</option>)}
-          </select>
-          <div style={{fontSize:11.5,color:'#aab2bd',marginTop:6,display:'flex',alignItems:'center',gap:5}}><i className="bi bi-info-circle" style={{fontSize:12}}></i>รายการเฝ้าระวังต้องผูกกับโปรเจคที่มีอยู่เสมอ</div>
+
           <Lbl i="tags">Tag</Lbl>
           <div style={{display:'flex',flexWrap:'wrap',gap:7}}>
             {allTags.map(t=>{const on=tags.includes(t);const[bg,fg,bd]=tagColor(t);return (
