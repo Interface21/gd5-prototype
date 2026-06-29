@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SA-Developer — กลุ่ม — GiveDeeFive</title>
+<title>SA-Developer — กลุ่ม — GiveD5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,6 +30,13 @@ a{color:inherit;text-decoration:none}
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
+<style id="gd5-proto-style">@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}</style>
+<div id="gd5-proto-badge" style="position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;align-items:center;gap:9px;padding:10px 22px 10px 16px;background:rgba(225,235,242,0.62);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1.5px solid rgba(180,205,220,0.55);border-radius:10px;box-shadow:0 8px 32px rgba(16,24,40,0.13),0 1.5px 4px rgba(16,24,40,0.07),inset 0 1px 0 rgba(255,255,255,0.75);font-family:'IBM Plex Sans Thai',sans-serif;user-select:none;pointer-events:none;">
+  <span style="width:8px;height:8px;border-radius:50%;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
+  <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:0.8px;text-transform:uppercase">Prototype</span>
+  <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
+  <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45);letter-spacing:0.2px">GiveD5</span>
+</div>
 <div id="root"></div>
 <script type="text/plain" id="jsx-src">
 const {useState} = React;
@@ -71,7 +78,7 @@ function PostThumb({icon,tone}){
 }
 
 const VM=[
-  {title:'VM : AAR GiveDeeFive',members:18,unread:20,posts:136},
+  {title:'VM : AAR GiveD5',members:18,unread:20,posts:136},
   {title:'เคล็ดลับการเขียนแผนธุรกิจ',members:29,unread:0,posts:2},
   {title:'AI วันละ 5 นาที',members:17,unread:7,posts:22},
   {title:'VM : EDR วท.อุทัยธานี',members:15,unread:1,posts:5},
@@ -286,8 +293,108 @@ function GanttView({topics}){
   );
 }
 
+const TODO_TEMPLATES=[
+  {id:'tp1',title:'โปรเจค ครุภัณฑ์ชุดเครื่องไฟฟ้า',count:6,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้าเข้าคลัง','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp2',title:'โปรเจค ครุภัณฑ์ชุดเครื่องครัวร้อน',count:9,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่นสินค้าและยี่ห้อ','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp3',title:'โปรเจค ห้องเรียน Smart Classroom',count:35,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ออกแบบ Layout ห้องเรียน','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','สำรวจหน้างาน','จัดซื้ออุปกรณ์ Display','จัดซื้ออุปกรณ์คอมพิวเตอร์','จัดซื้ออุปกรณ์เครือข่าย','จัดซื้อระบบเสียง','งานไฟฟ้าและสายสัญญาณ','งานติดตั้ง Display','งานติดตั้งคอมพิวเตอร์','งานติดตั้งเครือข่าย','งานติดตั้งระบบเสียง','ทดสอบระบบรวม','ทำเอกสารตรวจรับ','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp4',title:'โปรเจค ครุภัณฑ์คอมพิวเตอร์และอุปกรณ์ต่อพ่วง',count:8,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ทดสอบและตรวจรับครุภัณฑ์','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp5',title:'โปรเจค ระบบกล้องวงจรปิด (CCTV)',count:7,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบ Layout','ขอใบเสนอราคาจาก Supplier/Sub','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบกล้อง CCTV','ทดสอบระบบและตรวจรับงาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp6',title:'โปรเจค ครุภัณฑ์เครื่องปรับอากาศ',count:5,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งและทดสอบระบบ','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp7',title:'โปรเจค ระบบโซล่าเซลล์',count:8,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบระบบ','ขอใบเสนอราคาจาก Supplier/Sub','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบโซล่าเซลล์','ทดสอบและตรวจรับระบบ','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp8',title:'โปรเจค งานปรับปรุงอาคารและสิ่งก่อสร้าง',count:12,topics:['แจ้งทำสัญญา','สำรวจหน้างาน','ออกแบบและทำ BOQ','ขอใบเสนอราคาจาก Sub Contractor','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','งานโครงสร้าง/ผนัง/พื้น','งานระบบไฟฟ้า','งานระบบประปาและสุขาภิบาล','งานตกแต่งภายใน','ตรวจรับงานและทำเอกสาร','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp9',title:'โปรเจค ครุภัณฑ์การแพทย์และวิทยาศาสตร์',count:10,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่น/ยี่ห้อ (ถ้ามี)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ตรวจสอบและ Calibrate ครุภัณฑ์','อบรมการใช้งาน','ติดตามการเก็บเงินตามสัญญา']},
+];
+
+const TMETA={
+  tp1:{icon:'lightning-charge-fill',accent:'#d97706',bg:'#fef3e2'},
+  tp2:{icon:'thermometer-high',accent:'#dc2626',bg:'#fdeaea'},
+  tp3:{icon:'display-fill',accent:'#15a08f',bg:'#e3f3f0'},
+  tp4:{icon:'pc-display',accent:'#3b6fd4',bg:'#eaf1fe'},
+  tp5:{icon:'camera-video-fill',accent:'#475569',bg:'#f1f3f6'},
+  tp6:{icon:'thermometer-half',accent:'#0891b2',bg:'#e0f9ff'},
+  tp7:{icon:'sun-fill',accent:'#ca8a04',bg:'#fefce8'},
+  tp8:{icon:'building-fill',accent:'#78716c',bg:'#f5f4f3'},
+  tp9:{icon:'heart-pulse-fill',accent:'#db2777',bg:'#fce7f3'},
+};
+
+function ImportTodoModal({onClose,onImport}){
+  const [q,setQ]=React.useState('');
+  const [expanded,setExpanded]=React.useState({});
+  const filtered=TODO_TEMPLATES.filter(t=>!q||t.title.includes(q));
+  const doImport=(t)=>{
+    if(!t.topics)return;
+    const tpcs=t.topics.map(title=>({id:uid(),title,inContract:true,subs:[]}));
+    onImport(tpcs);
+  };
+  const toggle=(id)=>setExpanded(s=>({...s,[id]:!s[id]}));
+  return (
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:90,padding:'28px 16px'}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:18,width:660,maxWidth:'100%',maxHeight:'86vh',display:'flex',flexDirection:'column',boxShadow:'0 24px 64px rgba(16,24,40,.28)',animation:'fadeIn .15s ease'}}>
+        {/* header */}
+        <div style={{display:'flex',alignItems:'center',gap:12,padding:'18px 22px 16px',borderBottom:'1px solid #f0f2f5',flex:'none'}}>
+          <div style={{width:40,height:40,borderRadius:11,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className="bi bi-ui-checks" style={{fontSize:20,color:primary}}></i>
+          </div>
+          <div>
+            <div style={{fontWeight:700,fontSize:15.5,color:'#1a2332'}}>ชุดรายการมาตรฐานสิ่งที่ต้องทำ</div>
+            <div style={{fontSize:12,color:'#9aa3af',marginTop:1}}>{TODO_TEMPLATES.length} ชุด · กดชื่อเพื่อดูรายการ</div>
+          </div>
+          <div style={{flex:1}}></div>
+          <div style={{position:'relative'}}>
+            <i className="bi bi-search" style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',fontSize:13,color:'#9aa3af',pointerEvents:'none'}}></i>
+            <input value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหา" style={{border:'1px solid #e3e7ec',borderRadius:9,padding:'8px 12px 8px 33px',fontSize:13,outline:'none',width:190,fontFamily:'inherit',color:'#1f2733',background:'#f6f7f9'}}/>
+          </div>
+          <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',marginLeft:6,flex:'none',border:'none',cursor:'pointer'}}>
+            <i className="bi bi-x-lg" style={{fontSize:14,color:'#5a6473'}}></i>
+          </button>
+        </div>
+        {/* list */}
+        <div style={{overflowY:'auto',flex:1}}>
+          {filtered.length===0 && <div style={{textAlign:'center',padding:'48px 0',color:'#b3bac4',fontSize:13.5}}>ไม่พบชุดรายการที่ค้นหา</div>}
+          {filtered.map((t,i)=>{
+            const m=TMETA[t.id]||{icon:'list-check',accent:'#15a08f',bg:'#e3f3f0'};
+            const open=!!expanded[t.id];
+            return (
+              <div key={t.id} style={{borderBottom:'1px solid #f4f6f8'}}>
+                {/* row */}
+                <div style={{display:'flex',alignItems:'center',gap:13,padding:'14px 22px',background:open?'#fafbfc':'#fff',cursor:'pointer'}} onClick={()=>toggle(t.id)}>
+                  <div style={{width:36,height:36,borderRadius:10,background:m.bg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+                    <i className={'bi bi-'+m.icon} style={{fontSize:18,color:m.accent}}></i>
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:600,fontSize:14,color:'#1a2332',lineHeight:1.35}}>{t.title}</div>
+                  </div>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:4,background:m.bg,color:m.accent,borderRadius:99,padding:'3px 11px',fontSize:12,fontWeight:700,flex:'none',whiteSpace:'nowrap'}}>{t.count} รายการ</span>
+                  <i className={'bi bi-chevron-'+(open?'up':'down')} style={{fontSize:13,color:'#9aa3af',flex:'none'}}></i>
+                  <button onClick={e=>{e.stopPropagation();doImport(t);}} style={{display:'inline-flex',alignItems:'center',gap:5,background:primary,color:'#fff',border:'none',borderRadius:8,padding:'8px 16px',fontSize:13,fontWeight:700,cursor:'pointer',flex:'none',whiteSpace:'nowrap'}}>
+                    <i className="bi bi-download" style={{fontSize:13}}></i>ใช้งาน
+                  </button>
+                </div>
+                {/* expanded topics */}
+                {open && t.topics && (
+                  <div style={{background:'#f7f9fb',padding:'4px 22px 16px 22px',borderTop:'1px solid #eef0f3'}}>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px 24px',paddingTop:10}}>
+                      {t.topics.map((tp,j)=>(
+                        <div key={j} style={{display:'flex',alignItems:'center',gap:8,fontSize:12.5,color:'#4b5563'}}>
+                          <span style={{width:18,height:18,borderRadius:5,background:m.bg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none',fontSize:11,fontWeight:700,color:m.accent}}>{j+1}</span>
+                          <span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{tp}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TodoPanel(){
   const [mode,setMode]=React.useState('do');   // 'do' | 'edit'
+  const [showImport,setShowImport]=React.useState(false);
   const [calView,setCalView]=React.useState(false); // false = list, true = gantt
   const [topics,setTopics]=React.useState(TD_SEED);
   const [open,setOpen]=React.useState({});
@@ -333,9 +440,8 @@ function TodoPanel(){
           <React.Fragment>
             <div style={{flex:1}}></div>
             <button onClick={()=>setModal({kind:'topic'})} title="เพิ่มหัวข้อ" style={{width:34,height:32,borderRadius:8,border:'1px solid #e7eaef',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('add',20,primary)}</button>
-            {ICONBTN('upload_file',false,null,'นำเข้า')}
-            {ICONBTN('view_column',false,null,'')}
-            {ICONBTN('check_circle',true,()=>setMode('do'),'โหมดดำเนินการ')}
+            {ICONBTN('upload_file',false,()=>setShowImport(true),'นำเข้าชุดรายการมาตรฐาน')}
+            <button onClick={()=>setMode('do')} title="เสร็จแก้ไข" style={{display:'inline-flex',alignItems:'center',gap:6,border:'none',background:primary,color:'#fff',borderRadius:9,padding:'7px 14px',fontSize:13,fontWeight:700,cursor:'pointer'}}><i className="bi bi-check2" style={{fontSize:15}}></i>เสร็จ</button>
           </React.Fragment>
         )}
       </div>
@@ -347,7 +453,7 @@ function TodoPanel(){
           <div key={t.id} style={{borderTop:ti?'1px solid #f4f6f8':'none'}}>
             {/* topic row */}
             <div className="td-row" style={{display:'flex',alignItems:'center',gap:12,padding:'13px 8px',margin:'0 -8px',borderRadius:10}}>
-              <button onClick={()=>toggleOpen(t.id)} style={{display:'flex',alignItems:'center',flex:'none'}}>{ms(complete(t)?'check_circle':'radio_button_unchecked',22,complete(t)?'#22b96a':'#c4ccd4',complete(t))}</button>
+              <button onClick={()=>toggleOpen(t.id)} style={{display:'flex',alignItems:'center',flex:'none'}}>{mode==='edit'?ms('drag_indicator',22,'#c4ccd4'):ms(complete(t)?'check_circle':'radio_button_unchecked',22,complete(t)?'#22b96a':'#c4ccd4',complete(t))}</button>
               <div onClick={()=>toggleOpen(t.id)} style={{flex:1,minWidth:0,fontWeight:600,fontSize:13.5,color:'#2b3440',cursor:'pointer'}}>{t.title}</div>
               {mode==='do' && c.total>0 && <MiniBar c={c}/>}
               {c.total>0 && <Count c={c}/>}
@@ -399,6 +505,7 @@ function TodoPanel(){
       )}
     </div>
 
+    {showImport && <ImportTodoModal onClose={()=>setShowImport(false)} onImport={(tpcs)=>{setTopics(ts=>[...ts,...tpcs]);setShowImport(false);}}/> }
     {modal && (
       <TodoModal
         data={modal}
@@ -876,9 +983,9 @@ function App(){
    <div style={{minHeight:'100vh',background:'#eef1f6'}}>
     {/* TOP BAR */}
     <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
-      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveD5"/></a>
       <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
-        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveD5</span>
       </div>
       <div style={{flex:1}}></div>
       <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>1</span></div>
@@ -896,7 +1003,7 @@ function App(){
       {/* ICON RAIL */}
       <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
         <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
-        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',false,'org-dashboard.html'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',true,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data']].map(([ic,act,url],i)=> url ? (
+        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',false,'org-dashboard.html'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',true,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data',false,'business-plan-responsible-list.html']].map(([ic,act,url],i)=> url ? (
           <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
         ) : (
           <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>

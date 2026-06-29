@@ -1,5 +1,24 @@
 # GiveDeeFive Prototype — Changelog & Conventions
 
+## 28/06/2569 — business-plan-cockpit.html: เปลี่ยน Gauge กลับ ApexCharts (revert react-d3-speedometer ที่โหลดไม่ได้)
+- react-d3-speedometer UMD โหลดผ่าน CDN ไม่ได้ → revert กลับ ApexCharts radialBar + SVG needle overlay
+
+## 28/06/2569 — business-plan-cockpit.html (ใหม่): Cockpit ความก้าวหน้าของตัวชี้วัด
+- สร้างหน้าจอ Cockpit ใหม่ แสดง KPI gauge แบบ speedometer 3 คอลัมน์
+- GaugeSVG: semi-circular arc, colored zones (RED/YELLOW/GREEN), minor ticks, needle, scale labels
+- KpiCard: header (type badge + ⓘ), gauge, KPI name, progress bar, value text
+- dropdown รอบการวัดเป้า, 2 tabs (มาตรฐานขององค์กร / ส่วนตัว)
+- อัปเดต LeftNav ใน business-plan-responsible-list.html ให้ link ไปหน้า cockpit
+
+## 28/06/2569 — business-plan-responsible-list: เพิ่ม Progress bar ตัวชี้วัด + ลบ KPI header จาก section ความก้าวหน้า
+- เพิ่ม card "ดำเนินการตามแผนงาน" แสดง progress bar + % ใต้ "สถานะของแผนธุรกิจ" ใน DetailContent
+- ลบ KPI header (จำนวน X / ไม่มีตัวชี้วัด) ออกจาก section รายงานความก้าวหน้า
+
+## 28/06/2569 — business-plan-responsible-list: ลบช่วงเวลาและประเภทงานออกจากแท็บอนุมัติแผนงานย่อย
+- ลบ `t.date` (ช่วงเวลา) ออกจาก task row ใน ApprovalContent
+- ลบ `TypeBadge` (งานกลุ่ม/งานรายบุคคล) ออกจาก task row ใน ApprovalContent
+- ลบ date span และ TypeBadge ออกจาก ApprovalModal ด้วย
+
 > เอกสารนี้อธิบายโครงสร้าง, รูปแบบโค้ด, สไตล์, และประวัติการแก้ไขของไฟล์หน้าจอ (frontend prototype)
 > เพื่อให้ผู้ร่วมพัฒนา (รวมถึง Gemini) อ่านแล้วเข้าใจและทำงานต่อในรูปแบบเดียวกันได้
 > Repo: `Interface21/gd5-prototype` (branch `main`)
@@ -10,6 +29,19 @@
 - ไอคอน/ปุ่ม Note จัดชิดขวา (คอลัมน์ บันทึก)
 - Note ลบไม่ได้ ถือเป็น Activity log (ตัดปุ่มลบออก + badge "Activity log")
 - เพิ่ม Note ได้เฉพาะผู้เกี่ยวข้อง = ผู้รับผิดชอบโปรเจค / ผู้สั่งการ / ผู้รับคำสั่งการ — แสดงรายชื่อผู้เกี่ยวข้องในแต่ละรายการ; ผู้ไม่เกี่ยวข้องเห็นข้อความล็อก เพิ่มไม่ได้ (demo: current user ปิยะวัฒน์ ต. เป็นผู้รับคำสั่งการเฉพาะบางรายการ)
+
+## ล่าสุด: สร้าง business-plan-responsible-list.html
+- หน้าใหม่สำหรับผู้รับผิดชอบแผนธุรกิจอัพเดทความก้าวหน้า
+- **List view**: sidebar nav (แผนธุรกิจที่รับผิดชอบ / Cockpit / ประเมินผล / ฯลฯ) + tabs (ทั้งหมด 10 / เป้าหมาย 2 / กลยุทธ์ 8 / อนุมัติแผนงานย่อย 5) + รายการ 10 items (2 เป้าหมาย, 3 กลยุทธ์, 5 แผนงาน) พร้อม badge ประเภท, สถานะ dot, ปุ่ม "ความก้าวหน้า", badge "รายงานผลฐานหัวหน้าแผน"
+- **Detail view**: กดปุ่มความก้าวหน้า → แสดงหน้ารายละเอียด: plan info card, สถานะของแผนธุรกิจ, ตาราง progress (6 รอบ/ค่าบันทึก/เฉลี่ย/สะสม), สรุปคำสั่งการ (stacked bar), แผนธุรกิจภายใต้
+- **Dummy data**: 10 items ครบ พร้อม reporter, action text, progress rows, children plans
+- **Link**: เพิ่ม link จาก `business-plan-detail.html` rail icon `bi-clipboard-data` → `business-plan-responsible-list.html`
+- ปุ่ม dropdown เลือกรอบปี (2024–2026)
+
+## ล่าสุด: Import TODO Template + แก้ไขไอคอน edit mode
+- `user-virtual-meeting-group.html` — เพิ่ม `ImportTodoModal`: กดปุ่ม "นำเข้า" ใน edit mode เปิด modal ชุดรายการมาตรฐาน 3 ชุดจริง (ครุภัณฑ์ไฟฟ้า 6, ครัวร้อน 9, Smart Classroom 35) + placeholder; ค้นหาได้; กด "ใช้งาน" โหลดหัวข้อเข้า TODO ทันที
+- แก้ไอคอนใน edit mode: topic row ซ้ายเปลี่ยนจาก `radio_button_unchecked` (bi-record-circle = วงกลมมีจุดกลาง) → `drag_indicator` (grip)
+- ปุ่มออกจาก edit mode เปลี่ยนเป็นปุ่ม "เสร็จ" ชัดเจน; ลบปุ่ม view_column ที่ไม่มี onClick ทิ้ง
 
 ## ล่าสุด: เพิ่มรายการเฝ้าระวังเอง (กลุ่ม VM)
 - `user-virtual-meeting-group.html` — ปุ่ม **+ เพิ่มเอง** ในหัวแท็บรายการเฝ้าระวัง → modal ฟอร์ม: ชื่อรายการ*, ผู้รับผิดชอบ, วันครบกำหนด, **โปรเจค/วิทยาลัย* (บังคับเลือกจากโปรเจคที่มีอยู่)**, Tag (เลือก/พิมพ์ใหม่)

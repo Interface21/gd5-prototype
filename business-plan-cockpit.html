@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cockpit ความก้าวหน้าของตัวชี้วัด — GiveD5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#f3f5f9;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:none;border:none;padding:0}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+.nav-item:hover{background:#f3f5f8}
+.kpi-card{transition:box-shadow .18s,transform .18s}
+.kpi-card:hover{box-shadow:0 6px 22px rgba(16,24,40,.11)!important;transform:translateY(-2px)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/d3@7/dist/d3.min.js"></script>
+</head>
+<body>
+<style id="gd5-proto-style">@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}</style>
+<div id="gd5-proto-badge" style="position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;align-items:center;gap:9px;padding:10px 22px 10px 16px;background:rgba(225,235,242,0.62);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1.5px solid rgba(180,205,220,0.55);border-radius:10px;box-shadow:0 8px 32px rgba(16,24,40,0.13),0 1.5px 4px rgba(16,24,40,0.07),inset 0 1px 0 rgba(255,255,255,0.75);font-family:'IBM Plex Sans Thai',sans-serif;user-select:none;pointer-events:none;">
+  <span style="width:8px;height:8px;border-radius:50%;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
+  <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:0.8px;text-transform:uppercase">Prototype</span>
+  <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
+  <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45);letter-spacing:0.2px">GiveD5</span>
+</div>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const primary='#15a08f', primarySoft='#e3f3f0';
+const RED='#ef4444', YEL='#f5b301', GRN='#22b96a';
+
+const KPI_LIST=[
+  {id:1,type:'พันธกิจ',typeIcon:'bi-building',typeColor:'#7c3aed',typeBg:'#ede9fe',
+   name:'ทำได้ตามแผนงานที่วางไว้',value:72,target:100,unit:'%',
+   zones:[[0,0.6,RED],[0.6,0.8,YEL],[0.8,1,GRN]]},
+  {id:2,type:'เป้าหมาย',typeIcon:'bi-bullseye',typeColor:primary,typeBg:primarySoft,
+   name:'จำนวนสถานศึกษาที่ใช้ EDR ทำการยกเลิก',value:0,target:0,unit:'แห่ง',
+   zones:[[0,1,'#d1d5db']]},
+  {id:3,type:'เป้าหมาย',typeIcon:'bi-bullseye',typeColor:primary,typeBg:primarySoft,
+   name:'ขยายผลสถานศึกษาต้นแบบในปีการศึกษา 2569',value:4,target:6,unit:'แห่ง',
+   zones:[[0,1/3,RED],[1/3,2/3,YEL],[2/3,1,GRN]]},
+  {id:4,type:'เป้าหมาย',typeIcon:'bi-people-fill',typeColor:primary,typeBg:primarySoft,
+   name:'จำนวนผู้เรียนในระบบ EDR ปี 2569',value:31500,target:50000,unit:'คน',
+   zones:[[0,0.6,RED],[0.6,0.8,YEL],[0.8,1,GRN]]},
+  {id:5,type:'เป้าหมาย',typeIcon:'bi-robot',typeColor:primary,typeBg:primarySoft,
+   name:'จัดทำครูที่ปรึกษา AI',value:55,target:100,unit:'%',
+   zones:[[0,0.6,RED],[0.6,0.8,YEL],[0.8,1,GRN]]},
+  {id:6,type:'เป้าหมาย',typeIcon:'bi-coin',typeColor:primary,typeBg:primarySoft,
+   name:'ยอดขายทั้งหมดจากครุภัณฑ์และสิ่งก่อสร้าง',value:98000000,target:150000000,unit:'บาท',
+   zones:[[0,0.6,RED],[0.6,0.8,YEL],[0.8,1,GRN]]},
+  {id:7,type:'เป้าหมาย',typeIcon:'bi-laptop',typeColor:primary,typeBg:primarySoft,
+   name:'สถานศึกษาที่ได้รับการพัฒนาด้านดิจิทัล',value:22,target:26,unit:'แห่ง',
+   zones:[[0,0.6,RED],[0.6,0.8,YEL],[0.8,1,GRN]]},
+  {id:8,type:'เป้าหมาย',typeIcon:'bi-award',typeColor:primary,typeBg:primarySoft,
+   name:'ผู้บริหารที่ผ่านการพัฒนาภาวะผู้นำ',value:61,target:80,unit:'%',
+   zones:[[0,0.6,RED],[0.6,0.8,YEL],[0.8,1,GRN]]},
+  {id:9,type:'เป้าหมาย',typeIcon:'bi-star-fill',typeColor:primary,typeBg:primarySoft,
+   name:'ความพึงพอใจของผู้รับบริการ',value:4.1,target:4.5,unit:'คะแนน',
+   zones:[[0,0.6,RED],[0.6,0.8,YEL],[0.8,1,GRN]]},
+];
+
+const ROUNDS=['เป้าหมายปี 2569 (ครึ่งปีแรก)','เป้าหมายปี 2569 (ครึ่งปีหลัง)','เป้าหมายปี 2568','เป้าหมายปี 2567'];
+
+const rail=[
+  ['bi-layout-sidebar',false,'dashboard.html'],
+  ['bi-graph-up',false,'org-dashboard.html'],
+  ['bi-arrow-down-left',false,'assignee-action-list.html'],
+  ['bi-arrow-up-right',false,'commander-action-dashboard.html'],
+  ['bi-easel',false,'user-virtual-meeting.html'],
+  ['bi-file-earmark-arrow-down',false,null],
+  ['bi-book',false,null],
+  ['bi-clipboard-data',true,'business-plan-responsible-list.html'],
+];
+
+const NAVLINKS=[
+  {label:'รายงานแผนธุรกิจที่รับผิดชอบ',active:false,href:'business-plan-responsible-list.html'},
+  {label:'Cockpit ความก้าวหน้าของตัวชี้วัด',active:true,href:'business-plan-cockpit.html'},
+  {label:'ประเมินผลงานแผนธุรกิจ',active:false,href:null,count:1},
+  null,
+  {label:'รายงานแผนธุรกิจทั้งหมดขององค์กร',active:false,href:null},
+  {label:'สถานะของแผนธุรกิจทั้งหมด',active:false,href:null},
+  {label:'สรุปผลการประเมินแผนธุรกิจ',active:false,href:null},
+];
+
+/* ──────────────────────────────────────────
+   Gauge Chart — D3.js (same engine as react-gauge-chart)
+   Semi-circle, coloured zone segments, needle, value text
+────────────────────────────────────────── */
+function GaugeChart({value,target,zones}){
+  const ref=React.useRef(null);
+
+  const fmt=n=>{
+    if(n===0)return'0';
+    if(n>=1e8)return Math.round(n/1e6)+'M';
+    if(n>=1e6)return parseFloat((n/1e6).toFixed(1))+'M';
+    if(n>=1e3)return Math.round(n/1e3)+'K';
+    return n%1!==0?parseFloat(n.toFixed(1))+'':n+'';
+  };
+
+  React.useEffect(()=>{
+    if(!ref.current||!window.d3)return;
+    const d3=window.d3;
+    const el=ref.current;
+    el.innerHTML='';
+
+    const W=el.clientWidth||240;
+    const H=Math.round(W*0.58);
+    const cx=W/2, cy=Math.round(H*0.9);
+    const ro=Math.round(W*0.43);
+    const ri=Math.round(W*0.28);
+
+    const svg=d3.select(el).append('svg')
+      .attr('width','100%').attr('height',H)
+      .attr('viewBox',`0 0 ${W} ${H}`);
+
+    /* arc generator — D3 angles: 0=12 o'clock, clockwise */
+    const arc=d3.arc().innerRadius(ri).outerRadius(ro).cornerRadius(2);
+
+    /* background track */
+    svg.append('path')
+      .attr('d',arc({startAngle:-Math.PI/2,endAngle:Math.PI/2}))
+      .attr('fill','#e9eaed')
+      .attr('transform',`translate(${cx},${cy})`);
+
+    /* coloured zone segments */
+    zones.forEach(([p1,p2,color])=>{
+      const startAngle=-Math.PI/2+p1*Math.PI;
+      const endAngle=-Math.PI/2+p2*Math.PI;
+      svg.append('path')
+        .attr('d',arc({startAngle,endAngle}))
+        .attr('fill',color)
+        .attr('transform',`translate(${cx},${cy})`);
+    });
+
+    /* needle */
+    const pct=target>0?Math.min(value/target,1):0;
+    /* math angle: 0%=left(π), 100%=right(0) */
+    const nAngle=Math.PI*(1-pct);
+    const nLen=ro-6;
+    const nx=cx+nLen*Math.cos(nAngle);
+    const ny=cy-nLen*Math.sin(nAngle);
+
+    svg.append('line')
+      .attr('x1',cx).attr('y1',cy).attr('x2',nx).attr('y2',ny)
+      .attr('stroke','#6b7280').attr('stroke-width',2.5).attr('stroke-linecap','round');
+    svg.append('circle').attr('cx',cx).attr('cy',cy).attr('r',6).attr('fill','#6b7280');
+    svg.append('circle').attr('cx',cx).attr('cy',cy).attr('r',2.5).attr('fill','white');
+
+    /* value text */
+    svg.append('text')
+      .attr('x',cx).attr('y',cy-20).attr('text-anchor','middle')
+      .attr('font-size','26px').attr('font-weight','700')
+      .attr('fill','#1a2332').attr('font-family','IBM Plex Sans Thai,sans-serif')
+      .text(fmt(value));
+
+    /* scale labels */
+    if(target>0){
+      svg.append('text').attr('x',cx).attr('y',12).attr('text-anchor','middle')
+        .attr('font-size','9px').attr('fill','#b3bac4')
+        .attr('font-family','IBM Plex Sans Thai,sans-serif').text(fmt(target*.5));
+      svg.append('text').attr('x',W-2).attr('y',cy+14).attr('text-anchor','end')
+        .attr('font-size','9px').attr('fill','#b3bac4')
+        .attr('font-family','IBM Plex Sans Thai,sans-serif').text(fmt(target));
+      svg.append('text').attr('x',2).attr('y',cy+14).attr('text-anchor','start')
+        .attr('font-size','9px').attr('fill','#b3bac4')
+        .attr('font-family','IBM Plex Sans Thai,sans-serif').text('0');
+    }
+  },[value,target,zones]);
+
+  return <div ref={ref} style={{width:'100%'}}></div>;
+}
+
+/* ──────────────────────────────────────────
+   KPI Card
+────────────────────────────────────────── */
+function KpiCard({kpi}){
+  const {type,typeIcon,typeColor,typeBg,name,value,target,unit,zones}=kpi;
+  const pct=target>0?Math.min(value/target*100,100):0;
+  const fmtFull=n=>n%1!==0?parseFloat(n.toFixed(1)).toLocaleString():n.toLocaleString();
+
+  return (
+    <div className="kpi-card" style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,
+      padding:'14px 16px 16px',boxShadow:'0 1px 4px rgba(16,24,40,.05)',display:'flex',flexDirection:'column'}}>
+
+      {/* card header */}
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:2}}>
+        <div style={{width:30,height:30,borderRadius:8,background:'#f4f6f8',display:'flex',alignItems:'center',
+          justifyContent:'center',cursor:'pointer',flex:'none'}}>
+          <i className="bi bi-sliders" style={{fontSize:14,color:'#8a93a3'}}></i>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:6}}>
+          <div style={{width:28,height:28,borderRadius:'50%',background:typeBg,display:'flex',
+            alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className={'bi '+typeIcon} style={{fontSize:14,color:typeColor}}></i>
+          </div>
+          <span style={{fontSize:12,fontWeight:600,color:'#5a6473'}}>{type}</span>
+          <i className="bi bi-info-circle" style={{fontSize:13,color:'#d1d5db',cursor:'pointer'}}></i>
+        </div>
+      </div>
+
+      {/* gauge */}
+      <div style={{padding:'0 2px',marginBottom:2}}>
+        <GaugeChart value={value} target={target} zones={zones}/>
+      </div>
+
+      {/* KPI name */}
+      <div style={{display:'flex',alignItems:'flex-start',gap:7,marginBottom:8}}>
+        <i className="bi bi-record-circle" style={{fontSize:14,color:'#9aa3af',marginTop:2,flex:'none'}}></i>
+        <span style={{fontSize:12.5,color:'#374151',lineHeight:1.45,fontWeight:500}}>{name}</span>
+      </div>
+
+      {/* progress bar */}
+      <div style={{height:5,background:'#f0f2f5',borderRadius:99,overflow:'hidden',marginBottom:8}}>
+        <div style={{width:pct+'%',height:'100%',background:primary,borderRadius:99}}></div>
+      </div>
+
+      {/* value text */}
+      <div style={{fontSize:13,color:primary,fontWeight:700}}>
+        {fmtFull(value)} จาก {target>0?fmtFull(target):'0'} {unit}
+      </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────
+   Layout Components (TopBar / NavRail / LeftNav)
+────────────────────────────────────────── */
+function TopBar(){
+  return (
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',
+      alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}>
+        <img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveD5"/>
+      </a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',
+        borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i>
+        <span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveD5</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}>
+        <i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i>
+      </div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}>
+        <i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i>
+        <span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,
+          fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',
+          justifyContent:'center',padding:'0 4px'}}>3</span>
+      </div>
+      <div style={{width:34,height:34,borderRadius:'50%',background:'#f0f2f5',display:'flex',
+        alignItems:'center',justifyContent:'center'}}>
+        <i className="bi bi-globe" style={{fontSize:18,color:'#5a6473'}}></i>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}>
+          <div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div>
+          <div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div>
+        </div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',
+          alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+  );
+}
+
+function NavRail(){
+  return (
+    <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',
+      flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',
+      top:58,height:'calc(100vh - 58px)',overflowY:'auto',flex:'none'}}>
+      <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',
+        alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+      {rail.map(([ic,act,url],i)=>url?(
+        <a href={url} key={i} style={{width:40,height:40,borderRadius:11,
+          background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i>
+        </a>
+      ):(
+        <div key={i} style={{width:40,height:40,borderRadius:11,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <i className={'bi '+ic} style={{fontSize:21,color:'#c4ccd4'}}></i>
+        </div>
+      ))}
+      <div style={{flex:1}}></div>
+      <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',
+        alignItems:'center',justifyContent:'center'}}>
+        <i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i>
+      </div>
+    </div>
+  );
+}
+
+function LeftNav(){
+  return (
+    <div style={{width:220,background:'#fff',borderRight:'1px solid #e7eaef',padding:'16px 0',
+      position:'sticky',top:58,height:'calc(100vh - 58px)',overflowY:'auto',flex:'none'}}>
+      {NAVLINKS.map((n,i)=>n===null?(
+        <div key={i} style={{height:1,background:'#f0f2f5',margin:'8px 0'}}></div>
+      ):(
+        <a key={i} href={n.href||'#'} className="nav-item"
+          style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 18px',
+            fontSize:13.5,fontWeight:n.active?700:400,color:n.active?primary:'#5a6473',
+            background:n.active?primarySoft:'transparent',
+            borderLeft:'3px solid '+(n.active?primary:'transparent'),textDecoration:'none'}}>
+          <span>{n.label}</span>
+          {n.count&&(
+            <span style={{minWidth:19,height:19,borderRadius:99,background:'#ef4444',color:'#fff',
+              fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',
+              justifyContent:'center',padding:'0 5px',flex:'none'}}>{n.count}</span>
+          )}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────
+   Main Cockpit Content
+────────────────────────────────────────── */
+function CockpitContent(){
+  const [tab,setTab]=useState(0);
+  const [roundOpen,setRoundOpen]=useState(false);
+  const [round,setRound]=useState(ROUNDS[0]);
+
+  return (
+    <div style={{flex:1,padding:'20px 26px',overflowY:'auto',height:'calc(100vh - 58px)'}}>
+
+      {/* page header */}
+      <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:22}}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <i className="bi bi-arrow-left-right" style={{fontSize:15,color:'#c4ccd4'}}></i>
+          <div style={{width:36,height:36,borderRadius:'50%',background:primarySoft,display:'flex',
+            alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className="bi bi-speedometer2" style={{fontSize:19,color:primary}}></i>
+          </div>
+          <span style={{fontWeight:700,fontSize:18,color:'#1a2332'}}>Cockpit</span>
+        </div>
+        <div style={{flex:1}}></div>
+
+        {/* round selector */}
+        <div style={{position:'relative'}}>
+          <button onClick={()=>setRoundOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:14,
+            border:'1px solid #e3e7ec',borderRadius:11,padding:'10px 16px',background:'#fff',cursor:'pointer'}}>
+            <div style={{textAlign:'left'}}>
+              <div style={{fontSize:11,color:'#9aa3af',marginBottom:2}}>รอบการวัดเป้า</div>
+              <div style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{round}</div>
+            </div>
+            <i className="bi bi-diamond" style={{fontSize:10,color:'#9aa3af'}}></i>
+          </button>
+          {roundOpen&&(
+            <div style={{position:'absolute',right:0,top:58,background:'#fff',border:'1px solid #e3e7ec',
+              borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:280,
+              overflow:'hidden',animation:'fadeIn .12s ease'}}>
+              {ROUNDS.map(r=>(
+                <div key={r} onClick={()=>{setRound(r);setRoundOpen(false);}}
+                  style={{padding:'11px 18px',fontSize:13,cursor:'pointer',
+                    fontWeight:r===round?700:400,color:r===round?primary:'#1f2733',
+                    background:r===round?primarySoft:'#fff'}}>
+                  {r}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* tabs */}
+      <div style={{display:'flex',borderBottom:'2px solid #f0f2f5',marginBottom:22}}>
+        {['Cockpit มาตรฐานขององค์กร','Cockpit ส่วนตัว'].map((t,i)=>(
+          <button key={i} onClick={()=>setTab(i)} style={{padding:'10px 20px',fontWeight:tab===i?700:400,
+            color:tab===i?primary:'#8a93a3',fontSize:14,background:'none',border:'none',
+            borderBottom:'2px solid '+(tab===i?primary:'transparent'),marginBottom:-2,
+            cursor:'pointer',whiteSpace:'nowrap'}}>
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {/* KPI grid */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16}}>
+        {KPI_LIST.map(k=><KpiCard key={k.id} kpi={k}/>)}
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  return (
+    <div style={{minHeight:'100vh',background:'#f3f5f9'}}>
+      <TopBar/>
+      <div style={{display:'flex'}}>
+        <NavRail/>
+        <LeftNav/>
+        <CockpitContent/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

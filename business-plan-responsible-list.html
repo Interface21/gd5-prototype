@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>แผนธุรกิจที่รับผิดชอบ — GiveD5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#f3f5f9;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:none;border:none;padding:0}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+.nav-item:hover{background:#f3f5f8}
+.bp-row:hover{background:#f7f9fb}
+.goal-row:hover{background:#f7f9fb}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<style id="gd5-proto-style">@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}</style>
+<div id="gd5-proto-badge" style="position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;align-items:center;gap:9px;padding:10px 22px 10px 16px;background:rgba(225,235,242,0.62);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1.5px solid rgba(180,205,220,0.55);border-radius:10px;box-shadow:0 8px 32px rgba(16,24,40,0.13),0 1.5px 4px rgba(16,24,40,0.07),inset 0 1px 0 rgba(255,255,255,0.75);font-family:'IBM Plex Sans Thai',sans-serif;user-select:none;pointer-events:none;">
+  <span style="width:8px;height:8px;border-radius:50%;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
+  <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:0.8px;text-transform:uppercase">Prototype</span>
+  <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
+  <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45);letter-spacing:0.2px">GiveD5</span>
+</div>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const ICON={"account_balance":"bank","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","add_circle":"plus-circle","arrow_back":"arrow-left","arrow_drop_down":"caret-down-fill","bar_chart":"bar-chart","bolt":"lightning-charge","calendar_today":"calendar","check":"check-lg","check_circle":"check-circle","chevron_right":"chevron-right","close":"x-lg","delete":"trash","description":"file-text","domain":"building","edit":"pencil","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","filter_list":"funnel","format_list_bulleted":"list-ul","group":"people","help":"question-circle","how_to_reg":"person-check","insights":"graph-up","leaderboard":"bar-chart-line","monitoring":"graph-up-arrow","more_vert":"three-dots-vertical","notifications":"bell","open_in_new":"box-arrow-up-right","people":"people","person":"person","push_pin":"pin-angle","search":"search","send":"send","settings":"gear","star":"star","task_alt":"check-circle","trending_up":"graph-up-arrow","verified_user":"patch-check"};
+const ICONF={"check_circle":"check-circle-fill","person":"person-fill","group":"people-fill","send":"send-fill","push_pin":"pin-angle-fill","verified_user":"patch-check-fill","star":"star-fill","notifications":"bell-fill"};
+const primary='#15a08f', primarySoft='#e3f3f0';
+const RED='#ef4444', YEL='#f5b301', GRN='#22b96a';
+const ms=(name,size,color,fill)=>{var c=(fill&&ICONF[name])||ICON[name]||'record-circle';return (<i className={'bi bi-'+(c.startsWith('bi-')?c.slice(3):c)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
+const dotC=(s)=>s==='r'?RED:s==='y'?YEL:s==='g'?GRN:'#d1d5db';
+const STLABEL={g:'บรรลุ / ปกติ',y:'เฝ้าระวัง',r:'ต่ำกว่าเกณฑ์'};
+const STBG={g:'#eafaf0',y:'#fff7e3',r:'#fdeaea'};
+
+const TYPEINFO={
+  'เป้าหมาย':{bg:'#15a08f',color:'#fff'},
+  'กลยุทธ์':{bg:'#334155',color:'#fff'},
+  'แผนงาน':{bg:'#dcfce7',color:'#166534'},
+};
+
+const ITEMS=[
+  {id:1,type:'เป้าหมาย',title:'เป้าหมาย 1.2 สรุปผลการประกวดโครงการ MOU',kpi:'จำนวน 3 แห่ง',hasKpi:true,status:'g',updatedAt:'14/06/2569 09:30',needApproval:false,period:'01/10/2568 – 30/09/2569',cmdTotal:48,cmdG:32,cmdY:11,cmdR:5,reporter:'Piyawat Takaew',reportedAt:'14/06/2569 09:30',action:'รวบรวมรายชื่อวิทยาลัยที่เข้าร่วมประกวด MOU ครบทั้ง 3 แห่ง จัดทำเอกสารสรุปผลการประกวดเรียบร้อยแล้ว รอการอนุมัติจากผู้บังคับบัญชาก่อนเผยแพร่',progress:[{date:'14/06/2569',val:'3',avg:'3.0',sum:'3',status:'g'},{date:'14/05/2569',val:'2',avg:'2.0',sum:'2',status:'g'},{date:'14/04/2569',val:'1',avg:'1.0',sum:'1',status:'y'},{date:'14/03/2569',val:null,avg:null,sum:null,status:''},{date:'14/02/2569',val:null,avg:null,sum:null,status:''},{date:'14/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'กลยุทธ์ 1.2.1 จัดกิจกรรมการประกวด MOU ระดับภาค',kpi:'จำนวน 1 กิจกรรม',status:'g'},{title:'กลยุทธ์ 1.2.2 สนับสนุนทีมงานประกวด MOU วิทยาลัย',kpi:'จำนวน 3 แห่ง',status:'g'}]},
+  {id:2,type:'เป้าหมาย',title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',hasKpi:true,status:'g',updatedAt:'14/06/2569 08:15',needApproval:false,period:'01/10/2568 – 30/09/2569',cmdTotal:112,cmdG:78,cmdY:24,cmdR:10,reporter:'Narate Boonmee',reportedAt:'14/06/2569 08:15',action:'จำนวนผู้เรียนในระบบ EDR ณ วันที่ 14 มิ.ย. 2569 อยู่ที่ 62,340 คน ซึ่งเกินเป้าหมาย 61,500 คน และยังมีแนวโน้มเพิ่มขึ้นต่อเนื่องในไตรมาสนี้',progress:[{date:'14/06/2569',val:'62,340',avg:'61,890',sum:'62,340',status:'g'},{date:'14/05/2569',val:'61,440',avg:'61,440',sum:'61,440',status:'y'},{date:'14/04/2569',val:'59,820',avg:'59,820',sum:'59,820',status:'r'},{date:'14/03/2569',val:null,avg:null,sum:null,status:''},{date:'14/02/2569',val:null,avg:null,sum:null,status:''},{date:'14/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'กลยุทธ์ 1.3.1 ขยายการลงทะเบียนนักเรียนในระบบ EDR',kpi:'จำนวน 61,500 คน',status:'g'},{title:'กลยุทธ์ 1.3.2 ลดอัตราการออกกลางคัน',kpi:'ไม่เกิน 2%',status:'g'},{title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',status:'g'}]},
+  {id:3,type:'กลยุทธ์',title:'กลยุทธ์ 2.2.2 สถานศึกษาที่ใช้ GiveD5 ทดแทน line กลุ่มในการสนับสนุนการใช้ EDR 26 แห่ง',kpi:'จำนวน 10 แห่ง',hasKpi:true,status:'y',updatedAt:'12/06/2569 14:22',needApproval:false,period:'01/04/2569 – 30/09/2569',cmdTotal:36,cmdG:18,cmdY:12,cmdR:6,reporter:'Piyawat Takaew',reportedAt:'12/06/2569 14:22',action:'มีสถานศึกษาที่เปลี่ยนมาใช้ GiveD5 แทน line แล้ว 7 แห่ง จากเป้า 10 แห่ง กำลังชักชวนอีก 3 แห่งที่เหลือ คาดว่าจะครบภายในไตรมาสนี้',progress:[{date:'12/06/2569',val:'7',avg:'6.5',sum:'7',status:'y'},{date:'12/05/2569',val:'5',avg:'5.0',sum:'5',status:'y'},{date:'12/04/2569',val:'3',avg:'3.0',sum:'3',status:'r'},{date:'12/03/2569',val:null,avg:null,sum:null,status:''},{date:'12/02/2569',val:null,avg:null,sum:null,status:''},{date:'12/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'แผนงานที่ 2.2.21 อบรมการใช้งาน GiveD5 สำหรับสถานศึกษา',kpi:'26 แห่ง',status:'g'},{title:'แผนงานที่ 2.2.22 ติดตามผลการใช้งาน GiveD5',kpi:'เดือนละ 1 ครั้ง',status:'y'}]},
+  {id:4,type:'กลยุทธ์',title:'กลยุทธ์ 2.1.3 พัฒนาคุณภาพระบบ GiveD5 ให้ตรงตามความต้องการผู้ใช้',kpi:null,hasKpi:false,status:'r',updatedAt:'10/06/2569 10:05',needApproval:false,period:'01/10/2568 – 30/09/2569',cmdTotal:24,cmdG:8,cmdY:6,cmdR:10,reporter:'Narate Boonmee',reportedAt:'10/06/2569 10:05',action:'พบปัญหาระบบ GiveD5 ตอบสนองช้าในช่วง Peak Hour ส่งผลต่อความพึงพอใจผู้ใช้ กำลังแก้ไขที่ฝั่ง Server คาดว่าจะแก้ไขได้ภายใน 2 สัปดาห์',progress:[{date:'10/06/2569',val:null,avg:null,sum:null,status:'r'},{date:'10/05/2569',val:null,avg:null,sum:null,status:'y'},{date:'10/04/2569',val:null,avg:null,sum:null,status:''},{date:'10/03/2569',val:null,avg:null,sum:null,status:''},{date:'10/02/2569',val:null,avg:null,sum:null,status:''},{date:'10/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'แผนงานที่ 2.1.31 สำรวจความต้องการผู้ใช้งาน GiveD5',kpi:'ไม่มีตัวชี้วัด',status:'r'},{title:'แผนงานที่ 2.1.32 พัฒนาฟีเจอร์ตามผลสำรวจ',kpi:'ไม่มีตัวชี้วัด',status:'r'}]},
+  {id:5,type:'กลยุทธ์',title:'กลยุทธ์ 3.1.1 เพิ่มประสิทธิภาพกระบวนการจัดซื้อจัดจ้างองค์กร',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'',updatedAt:null,needApproval:false,period:'01/10/2568 – 30/09/2569',cmdTotal:19,cmdG:12,cmdY:5,cmdR:2,reporter:'',reportedAt:'',action:'',progress:[{date:'14/06/2569',val:null,avg:null,sum:null,status:''},{date:'14/05/2569',val:null,avg:null,sum:null,status:''},{date:'14/04/2569',val:null,avg:null,sum:null,status:''},{date:'14/03/2569',val:null,avg:null,sum:null,status:''},{date:'14/02/2569',val:null,avg:null,sum:null,status:''},{date:'14/01/2569',val:null,avg:null,sum:null,status:''}],children:[]},
+  {id:6,type:'แผนงาน',title:'แผนงานที่ 1.3.21 การกำหนดมาตรฐานและการออกแบบระบบ',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'14/06/2569 11:00',needApproval:true,period:'01/07/2569 – 30/09/2569',cmdTotal:15,cmdG:10,cmdY:3,cmdR:2,reporter:'Piyawat Takaew',reportedAt:'14/06/2569 11:00',action:'ออกแบบโครงสร้างระบบเบื้องต้นเสร็จแล้ว กำลังรอการอนุมัติจากหัวหน้าทีมก่อนเริ่มพัฒนาจริง เอกสารออกแบบอยู่ระหว่างทบทวนครั้งสุดท้าย',progress:[{date:'14/06/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'14/05/2569',val:null,avg:null,sum:null,status:''},{date:'14/04/2569',val:null,avg:null,sum:null,status:''},{date:'14/03/2569',val:null,avg:null,sum:null,status:''},{date:'14/02/2569',val:null,avg:null,sum:null,status:''},{date:'14/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'เป้าหมาย 1.2 สรุปผลการประกวดโครงการ MOU',kpi:'จำนวน 3 แห่ง',status:'g'},{title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',status:'g'},{title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',status:'g'}]},
+  {id:7,type:'แผนงาน',title:'แผนงานที่ 2.2.11 สร้างเครือข่ายชุมชนผู้ใช้งาน GiveD5',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'13/06/2569 16:30',needApproval:true,period:'01/04/2569 – 30/09/2569',cmdTotal:21,cmdG:15,cmdY:4,cmdR:2,reporter:'Piyawat Takaew',reportedAt:'13/06/2569 16:30',action:'จัดตั้งกลุ่มชุมชนผู้ใช้งาน GiveD5 ใน Platform แล้ว มีสมาชิกเข้าร่วม 87 คน กำลังขยายสู่วิทยาลัยเครือข่ายเพิ่มเติมในเดือนหน้า',progress:[{date:'13/06/2569',val:'87',avg:'65',sum:'87',status:'g'},{date:'13/05/2569',val:'43',avg:'43',sum:'43',status:'g'},{date:'13/04/2569',val:null,avg:null,sum:null,status:''},{date:'13/03/2569',val:null,avg:null,sum:null,status:''},{date:'13/02/2569',val:null,avg:null,sum:null,status:''},{date:'13/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'กลยุทธ์ 2.2.1 พัฒนาระบบชุมชน GiveD5',kpi:'ตัวชี้วัดที่ตั้งไว้',status:'g'}]},
+  {id:8,type:'แผนงาน',title:'แผนงานที่ 4.1.23 จัดทำ Dashboard รายงานผลการดำเนินงาน',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'12/06/2569 09:15',needApproval:true,period:'01/05/2569 – 30/09/2569',cmdTotal:9,cmdG:6,cmdY:2,cmdR:1,reporter:'Narate Boonmee',reportedAt:'12/06/2569 09:15',action:'Dashboard version 1.0 พัฒนาเสร็จแล้ว อยู่ในขั้นทดสอบกับผู้บริหาร รอ feedback เพื่อปรับปรุงก่อน Go-live ในเดือนกรกฎาคม',progress:[{date:'12/06/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'12/05/2569',val:null,avg:null,sum:null,status:''},{date:'12/04/2569',val:null,avg:null,sum:null,status:''},{date:'12/03/2569',val:null,avg:null,sum:null,status:''},{date:'12/02/2569',val:null,avg:null,sum:null,status:''},{date:'12/01/2569',val:null,avg:null,sum:null,status:''}],children:[]},
+  {id:9,type:'แผนงาน',title:'แผนงานที่ 3.2.12 ประเมินความพร้อมใช้งานครุภัณฑ์ประจำปี',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'11/06/2569 14:00',needApproval:true,period:'01/10/2568 – 30/09/2569',cmdTotal:33,cmdG:24,cmdY:6,cmdR:3,reporter:'Piyawat Takaew',reportedAt:'11/06/2569 14:00',action:'ดำเนินการประเมินครุภัณฑ์ครบ 85% ของแผนแล้ว ยังเหลืออีก 15% ซึ่งเป็นครุภัณฑ์ที่ต้องเดินทางไปประเมินต่างจังหวัด คาดแล้วเสร็จปลายเดือนนี้',progress:[{date:'11/06/2569',val:'85%',avg:'70%',sum:'85%',status:'g'},{date:'11/05/2569',val:'60%',avg:'60%',sum:'60%',status:'g'},{date:'11/04/2569',val:'35%',avg:'35%',sum:'35%',status:'y'},{date:'11/03/2569',val:null,avg:null,sum:null,status:''},{date:'11/02/2569',val:null,avg:null,sum:null,status:''},{date:'11/01/2569',val:null,avg:null,sum:null,status:''}],children:[]},
+  {id:10,type:'แผนงาน',title:'แผนงานที่ 1.2.31 การจัดกิจกรรมประกวด MOU ระดับภาค',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'10/06/2569 09:00',needApproval:true,period:'01/02/2569 – 30/06/2569',cmdTotal:27,cmdG:20,cmdY:5,cmdR:2,reporter:'Narate Boonmee',reportedAt:'10/06/2569 09:00',action:'จัดกิจกรรมประกวด MOU ระดับภาคเรียบร้อยแล้ว มีผู้เข้าร่วม 3 วิทยาลัย ผลการตัดสินอยู่ระหว่างสรุปรายงานเพื่อส่งผู้บริหาร',progress:[{date:'10/06/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'10/05/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'10/04/2569',val:null,avg:null,sum:null,status:''},{date:'10/03/2569',val:null,avg:null,sum:null,status:''},{date:'10/02/2569',val:null,avg:null,sum:null,status:''},{date:'10/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'เป้าหมาย 1.2 สรุปผลการประกวดโครงการ MOU',kpi:'จำนวน 3 แห่ง',status:'g'}]},
+];
+
+const rail=[
+  ['bi-layout-sidebar',false,'dashboard.html'],
+  ['bi-graph-up',false,'org-dashboard.html'],
+  ['bi-arrow-down-left',false,'assignee-action-list.html'],
+  ['bi-arrow-up-right',false,'commander-action-dashboard.html'],
+  ['bi-easel',false,'user-virtual-meeting.html'],
+  ['bi-file-earmark-arrow-down',false,null],
+  ['bi-book',false,null],
+  ['bi-clipboard-data',true,'business-plan-responsible-list.html'],
+];
+
+const NAVLINKS=[
+  {label:'แผนธุรกิจที่รับผิดชอบ',active:true},
+  {label:'Cockpit ความก้าวหน้าของตัวชี้วัด',active:false,href:'business-plan-cockpit.html'},
+  {label:'ประเมินผลงานแผนธุรกิจ',active:false},
+  null,
+  {label:'แผนธุรกิจทั้งหมดขององค์กร',active:false},
+  {label:'สถานะของแผนธุรกิจทั้งหมด',active:false},
+  {label:'สรุปผลการประเมินแผนธุรกิจ',active:false},
+];
+
+const YEARS=['เป้าหมายรอบปี 2026','เป้าหมายรอบปี 2025','เป้าหมายรอบปี 2024'];
+
+function TypeBadge({type}){
+  const t=TYPEINFO[type]||{bg:'#e2e8f0',color:'#475569'};
+  return <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',background:t.bg,color:t.color,borderRadius:7,padding:'4px 11px',fontSize:12,fontWeight:700,whiteSpace:'nowrap',flex:'none'}}>{type}</span>;
+}
+
+function StatusDot({s,size}){
+  const d=size||16;
+  return <span style={{width:d,height:d,borderRadius:'50%',background:dotC(s),display:'inline-block',flex:'none'}}></span>;
+}
+
+function TopBar(){
+  return (
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}>
+        <img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveD5"/>
+      </a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i>
+        <span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveD5</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}>
+        <i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i>
+      </div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}>
+        <i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i>
+        <span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>3</span>
+      </div>
+      <div style={{width:34,height:34,borderRadius:'50%',background:'#e3f3f0',color:primary,display:'flex',alignItems:'center',justifyContent:'center',fontSize:15}}><i className="bi bi-globe"></i></div>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}>
+          <div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div>
+          <div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div>
+        </div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+  );
+}
+
+function NavRail(){
+  return (
+    <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)',overflowY:'auto',flex:'none'}}>
+      <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+      {rail.map(([ic,act,url],i)=> url ? (
+        <a href={url} key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i>
+        </a>
+      ) : (
+        <div key={i} style={{width:40,height:40,borderRadius:11,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <i className={'bi '+ic} style={{fontSize:21,color:'#c4ccd4'}}></i>
+        </div>
+      ))}
+      <div style={{flex:1}}></div>
+      <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center'}}>
+        <i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i>
+      </div>
+    </div>
+  );
+}
+
+function LeftNav(){
+  return (
+    <div style={{width:220,background:'#fff',borderRight:'1px solid #e7eaef',padding:'16px 0',position:'sticky',top:58,height:'calc(100vh - 58px)',overflowY:'auto',flex:'none'}}>
+      {NAVLINKS.map((n,i)=> n===null ? (
+        <div key={i} style={{height:1,background:'#f0f2f5',margin:'8px 0'}}></div>
+      ) : (
+        <a key={i} href={n.href||'#'} className="nav-item" style={{display:'block',padding:'10px 18px',cursor:'pointer',fontSize:13.5,fontWeight:n.active?700:400,color:n.active?primary:'#5a6473',background:n.active?primarySoft:'transparent',borderLeft:'3px solid '+(n.active?primary:'transparent'),textDecoration:'none'}}>
+          {n.label}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function ProgressBtn({count,onClick}){
+  return (
+    <button onClick={onClick} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#f4f5f7',color:'#5a6473',border:'1px solid #e7eaef',borderRadius:9,padding:'6px 12px',fontSize:12.5,fontWeight:600,cursor:'pointer',flex:'none',whiteSpace:'nowrap'}}>
+      <span style={{minWidth:19,height:19,borderRadius:99,background:'#e2e8f0',color:'#475569',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{count}</span>
+      ความก้าวหน้า
+    </button>
+  );
+}
+
+const TABS=[
+  {label:'ทั้งหมด',count:10,filter:()=>true},
+  {label:'เป้าหมาย',count:2,filter:(i)=>i.type==='เป้าหมาย'},
+  {label:'กลยุทธ์',count:3,filter:(i)=>i.type==='กลยุทธ์'},
+  {label:'แผนงาน',count:5,filter:(i)=>i.type==='แผนงาน'},
+  {label:'อนุมัติแผนงานย่อย',count:5,filter:(i)=>i.needApproval},
+];
+
+const APPROVAL_TASKS={
+  6:[
+    {id:'t61',title:'กำหนดมาตรฐานระบบ EDR เวอร์ชัน 2.0',date:'01/07/2569-30/07/2569',type:'group',detail:'จัดทำเอกสารกำหนดมาตรฐานสำหรับระบบ EDR เวอร์ชัน 2.0 ครอบคลุมมาตรฐานการรับข้อมูล การประมวลผล และการรายงานผล เพื่อให้ทุกวิทยาลัยในเครือข่ายใช้งานได้อย่างสอดคล้องกัน'},
+    {id:'t62',title:'ออกแบบโครงสร้างฐานข้อมูลใหม่',date:'01/07/2569-15/07/2569',type:'individual',detail:'ออกแบบ Schema ฐานข้อมูลใหม่รองรับการขยายตัวของระบบ EDR ให้รองรับผู้ใช้ได้มากกว่า 100,000 คน พร้อม Index ที่เหมาะสมเพื่อประสิทธิภาพสูงสุด'},
+    {id:'t63',title:'จัดทำ Technical Specification Document',date:'15/07/2569-31/07/2569',type:'individual',detail:'เขียนเอกสาร Technical Specification ครอบคลุม Architecture, API Design, Database Schema และ Security Guidelines สำหรับนักพัฒนาในทีม'},
+    {id:'t64',title:'ประชุมทบทวนมาตรฐานกับทีม',date:'05/07/2569-05/07/2569',type:'group',detail:'จัดประชุม Workshop ร่วมกับทีมพัฒนาและผู้เกี่ยวข้องเพื่อทบทวนและตกลงมาตรฐานการพัฒนาระบบก่อนเริ่ม Sprint แรก'},
+    {id:'t65',title:'ส่งมอบเอกสารมาตรฐานให้ผู้บริหาร',date:'01/08/2569-15/08/2569',type:'individual',detail:'รวบรวมและจัดส่งเอกสารมาตรฐานทั้งหมดให้ผู้บริหารระดับสูงเพื่อลงนามรับรองและประกาศใช้อย่างเป็นทางการ'},
+  ],
+  7:[
+    {id:'t71',title:'จัดตั้งกลุ่ม Community GiveD5 ใน Platform',date:'01/04/2569-30/04/2569',type:'group',detail:'สร้างกลุ่มชุมชนผู้ใช้งาน GiveD5 ใน Platform พร้อมตั้งค่า Permission กฎกลุ่ม และแต่งตั้ง Moderator เพื่อดูแลกิจกรรมในกลุ่ม'},
+    {id:'t72',title:'เชิญสมาชิกผู้ใช้งาน GiveD5 เข้าร่วมกลุ่ม',date:'01/04/2569-30/06/2569',type:'individual',detail:'ส่งคำเชิญให้กับผู้ใช้งาน GiveD5 ที่ Active ในระบบ ตั้งเป้าสมาชิกในกลุ่มไม่ต่ำกว่า 100 คนภายในไตรมาส 2'},
+    {id:'t73',title:'จัดกิจกรรม Online Meetup รายเดือน',date:'01/05/2569-30/09/2569',type:'group',detail:'จัดกิจกรรม Virtual Meetup ผ่าน GiveD5 เดือนละ 1 ครั้ง แลกเปลี่ยนความรู้และ Best Practice การใช้งานระบบ'},
+    {id:'t74',title:'รวบรวม Feedback และส่งต่อทีมพัฒนา',date:'01/06/2569-30/09/2569',type:'individual',detail:'สรุป Feedback จากสมาชิกในกลุ่มรายเดือน จัดลำดับความสำคัญและส่งให้ทีมพัฒนาพิจารณาใน Backlog'},
+  ],
+  8:[
+    {id:'t81',title:'พัฒนา Dashboard v1.0 สำหรับผู้บริหาร',date:'01/05/2569-30/06/2569',type:'individual',detail:'พัฒนา Dashboard แสดงผลการดำเนินงานหลัก ประกอบด้วย KPI ภาพรวม สถานะแผนธุรกิจ และ Trend Chart รองรับการ Filter ตามช่วงเวลา'},
+    {id:'t82',title:'ทดสอบและรับ Feedback จากผู้บริหาร',date:'01/07/2569-31/07/2569',type:'individual',detail:'นำเสนอ Dashboard ให้ผู้บริหารทดลองใช้งานจริง รวบรวม Feedback อย่างน้อย 3 รอบก่อนนำไป Go-live'},
+    {id:'t83',title:'ปรับปรุงและ Go-live Dashboard',date:'01/08/2569-31/08/2569',type:'group',detail:'แก้ไขตาม Feedback ที่ได้รับ ทดสอบความเสถียร และเปิดให้ผู้บริหารใช้งานจริงพร้อมจัดทำคู่มือการใช้งาน'},
+  ],
+  9:[
+    {id:'t91',title:'สำรวจครุภัณฑ์ในพื้นที่กรุงเทพฯ',date:'01/10/2568-31/12/2568',type:'group',detail:'สำรวจและประเมินสภาพครุภัณฑ์ในวิทยาลัยเครือข่ายพื้นที่กรุงเทพฯ ทั้ง 8 แห่ง บันทึกข้อมูลลงระบบ GiveD5'},
+    {id:'t92',title:'สำรวจครุภัณฑ์ในพื้นที่ต่างจังหวัด',date:'01/01/2569-30/04/2569',type:'group',detail:'ลงพื้นที่สำรวจวิทยาลัยต่างจังหวัด 24 แห่ง ประเมินสภาพครุภัณฑ์และจัดทำรายงานความพร้อมใช้งาน'},
+    {id:'t93',title:'จัดทำรายงานสรุปผลการประเมินครุภัณฑ์',date:'01/06/2569-30/06/2569',type:'individual',detail:'รวบรวมข้อมูลจากการสำรวจทั้งหมด จัดทำรายงานสรุปพร้อมข้อเสนอแนะการบำรุงรักษาและจัดซื้อทดแทน'},
+  ],
+  10:[
+    {id:'t101',title:'จัดเตรียมสถานที่และวัสดุการประกวด',date:'01/02/2569-28/02/2569',type:'group',detail:'ประสานงานจองสถานที่ จัดเตรียมวัสดุอุปกรณ์ ระบบโสตทัศนูปกรณ์ และเอกสารที่จำเป็นสำหรับการประกวด MOU'},
+    {id:'t102',title:'ดำเนินการประกวดและตัดสินผล MOU',date:'01/03/2569-31/03/2569',type:'group',detail:'จัดกิจกรรมการประกวด MOU ระดับภาค คัดเลือกและตัดสินผล จัดทำเอกสารรายงานผลเพื่อส่งผู้บริหาร'},
+  ],
+};
+
+function ApprovalModal({item,task,onClose,onApprove,onReject}){
+  const [showReject,setShowReject]=useState(false);
+  const [reason,setReason]=useState('');
+  const [err,setErr]=useState(false);
+  const TypeBadge=({type})=>type==='individual'
+    ?<span style={{display:'inline-flex',alignItems:'center',background:'#fce7f3',color:'#db2777',borderRadius:99,padding:'2px 9px',fontSize:11,fontWeight:600}}>งานรายบุคคล</span>
+    :<span style={{display:'inline-flex',alignItems:'center',background:'#eaf1fe',color:'#3b6fd4',borderRadius:99,padding:'2px 9px',fontSize:11,fontWeight:600}}>งานกลุ่ม</span>;
+  const doReject=()=>{
+    if(!reason.trim()){setErr(true);return;}
+    onReject(reason.trim());
+  };
+  return (
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:99998,padding:'24px 16px'}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:18,width:560,maxWidth:'100%',boxShadow:'0 24px 64px rgba(16,24,40,.28)',animation:'fadeIn .15s ease'}}>
+        {/* header */}
+        <div style={{display:'flex',alignItems:'center',gap:11,padding:'18px 22px 16px',borderBottom:'1px solid #f0f2f5'}}>
+          <div style={{width:38,height:38,borderRadius:10,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className="bi bi-clipboard-check" style={{fontSize:19,color:primary}}></i>
+          </div>
+          <div>
+            <div style={{fontWeight:700,fontSize:15.5}}>อนุมัติแผนงานย่อย</div>
+            <div style={{fontSize:12,color:'#9aa3af',marginTop:1}}>{item.title}</div>
+          </div>
+          <div style={{flex:1}}></div>
+          <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',border:'none',cursor:'pointer'}}>
+            <i className="bi bi-x-lg" style={{fontSize:14,color:'#5a6473'}}></i>
+          </button>
+        </div>
+        {/* content */}
+        <div style={{padding:'18px 22px'}}>
+          <div style={{background:'#f8f9fb',borderRadius:12,padding:'14px 16px',marginBottom:16}}>
+            <div style={{fontWeight:700,fontSize:14,color:'#1a2332',marginBottom:8}}>{task.title}</div>
+
+            <div style={{fontSize:13,color:'#4b5563',lineHeight:1.7}}>{task.detail}</div>
+          </div>
+          {!showReject ? (
+            <div style={{display:'flex',gap:10}}>
+              <button onClick={onApprove} style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:7,background:primary,color:'#fff',border:'none',borderRadius:11,padding:'12px 0',fontSize:14,fontWeight:700,cursor:'pointer'}}>
+                <i className="bi bi-check2-circle" style={{fontSize:16}}></i>อนุมัติ
+              </button>
+              <button onClick={()=>setShowReject(true)} style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:7,background:'#fdeaea',color:'#d83a3a',border:'1px solid #f6c4c4',borderRadius:11,padding:'12px 0',fontSize:14,fontWeight:700,cursor:'pointer'}}>
+                <i className="bi bi-x-circle" style={{fontSize:16}}></i>ไม่อนุมัติ
+              </button>
+            </div>
+          ) : (
+            <div>
+              <div style={{fontSize:13,fontWeight:600,color:'#d83a3a',marginBottom:8,display:'flex',alignItems:'center',gap:6}}>
+                <i className="bi bi-exclamation-circle" style={{fontSize:14}}></i>ระบุเหตุผลที่ไม่อนุมัติ <span style={{color:'#d83a3a'}}>*</span>
+              </div>
+              <textarea value={reason} onChange={e=>{setReason(e.target.value);setErr(false);}} rows={3} placeholder="กรุณาระบุเหตุผลที่ไม่อนุมัติรายการนี้..." style={{width:'100%',border:'1px solid '+(err?'#ef4444':'#e3e7ec'),borderRadius:10,padding:'10px 12px',fontSize:13,fontFamily:'inherit',outline:'none',resize:'vertical',color:'#1f2733',boxSizing:'border-box',marginBottom:err?4:12}}/>
+              {err&&<div style={{fontSize:12,color:'#ef4444',marginBottom:10}}>กรุณาระบุเหตุผลก่อนไม่อนุมัติ</div>}
+              <div style={{display:'flex',gap:10}}>
+                <button onClick={()=>setShowReject(false)} style={{flex:1,background:'#f4f6f8',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:11,padding:'11px 0',fontSize:13.5,fontWeight:600,cursor:'pointer'}}>ยกเลิก</button>
+                <button onClick={doReject} style={{flex:1,background:'#d83a3a',color:'#fff',border:'none',borderRadius:11,padding:'11px 0',fontSize:13.5,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+                  <i className="bi bi-x-circle" style={{fontSize:15}}></i>ยืนยันไม่อนุมัติ
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ApprovalContent({items}){
+  const [taskStatus,setTaskStatus]=useState({});   // key: itemId-taskId → 'approved'|'rejected'
+  const [taskReasons,setTaskReasons]=useState({});  // key: itemId-taskId → reason string
+  const [modal,setModal]=useState(null);            // {item, task}
+  const key=(iid,tid)=>iid+'-'+tid;
+  const approve=(iid,tid)=>{setTaskStatus(s=>({...s,[key(iid,tid)]:'approved'}));setModal(null);};
+  const reject=(iid,tid,reason)=>{setTaskStatus(s=>({...s,[key(iid,tid)]:'rejected'}));setTaskReasons(r=>({...r,[key(iid,tid)]:reason}));setModal(null);};
+  const getStatus=(iid,tid)=>taskStatus[key(iid,tid)]||'pending';
+  const StatusBadge=({status})=>{
+    if(status==='approved') return <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eafaf0',color:'#1f9d57',border:'1px solid #a7f3d0',borderRadius:99,padding:'3px 11px',fontSize:12,fontWeight:700,whiteSpace:'nowrap',flex:'none'}}><i className="bi bi-check2" style={{fontSize:12}}></i>อนุมัติ</span>;
+    if(status==='rejected') return <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fdeaea',color:'#d83a3a',border:'1px solid #fca5a5',borderRadius:99,padding:'3px 11px',fontSize:12,fontWeight:700,whiteSpace:'nowrap',flex:'none'}}><i className="bi bi-x" style={{fontSize:13}}></i>ไม่อนุมัติ</span>;
+    return <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff7e3',color:'#b45309',border:'1px solid #fcd34d',borderRadius:99,padding:'3px 11px',fontSize:12,fontWeight:700,whiteSpace:'nowrap',flex:'none',cursor:'pointer'}}><i className="bi bi-clock" style={{fontSize:12}}></i>รออนุมัติ</span>;
+  };
+  const TypeBadge=({type})=>type==='individual'
+    ?<span style={{display:'inline-flex',alignItems:'center',background:'#fce7f3',color:'#db2777',borderRadius:99,padding:'2px 9px',fontSize:11,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>งานรายบุคคล</span>
+    :<span style={{display:'inline-flex',alignItems:'center',background:'#eaf1fe',color:'#3b6fd4',borderRadius:99,padding:'2px 9px',fontSize:11,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>งานกลุ่ม</span>;
+  return (
+    <React.Fragment>
+      {modal && <ApprovalModal item={modal.item} task={modal.task} onClose={()=>setModal(null)} onApprove={()=>approve(modal.item.id,modal.task.id)} onReject={(r)=>reject(modal.item.id,modal.task.id,r)}/>}
+      <div style={{display:'flex',flexDirection:'column',gap:14}}>
+        {items.map(item=>{
+          const tasks=APPROVAL_TASKS[item.id]||[];
+          return (
+            <div key={item.id} style={{background:'#fff',border:'1.5px solid rgba(21,160,143,0.28)',borderRadius:14,overflow:'hidden',boxShadow:'0 1px 4px rgba(16,24,40,.05)'}}>
+              {/* header */}
+              <div style={{display:'flex',alignItems:'center',gap:11,padding:'14px 18px',borderBottom:'1px solid #f4f6f8'}}>
+                <div style={{width:32,height:32,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+                  <i className="bi bi-person-fill" style={{fontSize:16,color:primary}}></i>
+                </div>
+                <div style={{fontWeight:700,fontSize:14,color:'#1a2332'}}>{item.title}</div>
+              </div>
+              {/* tasks */}
+              <div style={{padding:'6px 18px 14px'}}>
+                {tasks.map(t=>{
+                  const st=getStatus(item.id,t.id);
+                  const rk=key(item.id,t.id);
+                  return (
+                    <div key={t.id}>
+                      <div onClick={()=>st==='pending'&&setModal({item,task:t})} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 0',borderBottom:'1px solid #f7f9fb',cursor:st==='pending'?'pointer':'default'}}>
+                        <div style={{flex:1,fontSize:13,color:'#1a2332',lineHeight:1.4}}>{t.title}</div>
+
+                        <StatusBadge status={st}/>
+                      </div>
+                      {st==='rejected'&&taskReasons[rk]&&(
+                        <div style={{display:'flex',alignItems:'flex-start',gap:7,padding:'7px 10px 8px',background:'#fef2f2',borderBottom:'1px solid #fee2e2',borderRadius:'0 0 6px 6px',marginBottom:2}}>
+                          <i className="bi bi-chat-text" style={{fontSize:13,color:'#d83a3a',marginTop:2,flex:'none'}}></i>
+                          <span style={{fontSize:12.5,color:'#b91c1c',lineHeight:1.5}}>เหตุผล: {taskReasons[rk]}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </React.Fragment>
+  );
+}
+
+function ListContent({onSelect}){
+  const [tab,setTab]=useState(0);
+  const [yearOpen,setYearOpen]=useState(false);
+  const [year,setYear]=useState(YEARS[0]);
+  const filtered=ITEMS.filter(TABS[tab].filter);
+
+  return (
+    <div style={{flex:1,padding:'22px 26px',overflowY:'auto',height:'calc(100vh - 58px)'}}>
+      {/* header */}
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+        <i className="bi bi-bar-chart-line" style={{fontSize:20,color:primary}}></i>
+        <span style={{fontWeight:700,fontSize:16}}>รายงานสถานะของแผนธุรกิจที่รับผิดชอบ</span>
+        <div style={{flex:1}}></div>
+        <div style={{position:'relative'}}>
+          <button onClick={()=>setYearOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:8,border:'1px solid #e3e7ec',borderRadius:9,padding:'8px 14px',background:'#fff',cursor:'pointer',fontSize:13,fontWeight:500}}>
+            <span>{year}</span>
+            <i className="bi bi-chevron-down" style={{fontSize:13,color:'#9aa3af'}}></i>
+          </button>
+          {yearOpen && (
+            <div style={{position:'absolute',right:0,top:42,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:200,overflow:'hidden'}}>
+              {YEARS.map(y=>(
+                <div key={y} onClick={()=>{setYear(y);setYearOpen(false);}} style={{padding:'10px 16px',fontSize:13,cursor:'pointer',fontWeight:y===year?700:400,color:y===year?primary:'#1f2733',background:y===year?primarySoft:'#fff'}}>
+                  {y}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* tabs */}
+      <div style={{display:'flex',gap:0,borderBottom:'2px solid #f0f2f5',marginBottom:18}}>
+        {TABS.map((t,i)=>(
+          <button key={i} onClick={()=>setTab(i)} style={{padding:'10px 18px',fontWeight:tab===i?700:400,color:tab===i?primary:'#8a93a3',borderBottom:'2px solid '+(tab===i?primary:'transparent'),marginBottom:-2,fontSize:13.5,background:'none',border:'none',borderBottom:'2px solid '+(tab===i?primary:'transparent'),marginBottom:-2,cursor:'pointer',whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:6}}>
+            {t.label}
+            <span style={{minWidth:20,height:20,borderRadius:99,background:tab===i?primarySoft:'#f0f2f5',color:tab===i?primary:'#9aa3af',fontSize:11.5,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 6px'}}>{t.count}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* list */}
+      {tab===4 ? (
+        <ApprovalContent items={filtered}/>
+      ) : (
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden'}}>
+        {filtered.map((item,i)=>(
+          <div key={item.id} className="bp-row" onClick={()=>onSelect(item)} style={{display:'flex',alignItems:'center',gap:14,padding:'16px 20px',borderTop:i?'1px solid #f4f6f8':'none',transition:'background .1s',cursor:'pointer'}}>
+            <TypeBadge type={item.type}/>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontWeight:600,fontSize:14,color:'#1a2332',lineHeight:1.4,marginBottom:4}}>{item.title}</div>
+              <div style={{display:'flex',alignItems:'center',gap:6,fontSize:12.5,color:'#9aa3af'}}>
+                <i className="bi bi-plus-circle" style={{fontSize:13}}></i>
+                <span>{item.hasKpi?(item.kpi||'ไม่มีตัวชี้วัด'):'ไม่มีตัวชี้วัด'}</span>
+              </div>
+            </div>
+            {item.needApproval&&(
+              <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fce7f3',color:'#db2777',borderRadius:7,padding:'4px 10px',fontSize:11.5,fontWeight:600,flex:'none',whiteSpace:'nowrap'}}>
+                <i className="bi bi-clipboard-check" style={{fontSize:12}}></i>รายงานผลฐานหัวหน้าแผน
+              </span>
+            )}
+            <ProgressBtn count={item.progress.filter(p=>p.val).length} onClick={()=>onSelect(item)}/>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:4,flex:'none'}}>
+              <StatusDot s={item.status} size={16}/>
+              <span style={{fontSize:11,color:'#b3bac4',whiteSpace:'nowrap'}}>อัพเดทล่าสุด {item.updatedAt||'dd/MM/yyyy HH:mm'}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      )}
+    </div>
+  );
+}
+
+function DetailContent({item,onBack}){
+  const [progTab,setProgTab]=useState(0);
+  const cmdFiltered=item.cmdG+item.cmdY+item.cmdR;
+  const filledProgress=item.progress.filter(p=>p.val).length;
+  const totalProgress=item.progress.length;
+  const progressPct=totalProgress>0?(filledProgress/totalProgress*100):0;
+
+  const ValPill=({val,color})=> val
+    ? <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',background:color+'22',color:color,borderRadius:7,padding:'3px 11px',fontSize:12,fontWeight:700,minWidth:72,textAlign:'center'}}>{val}</span>
+    : <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',background:'#f4f6f8',color:'#c4ccd4',borderRadius:7,padding:'3px 11px',fontSize:12,fontWeight:700,minWidth:72,textAlign:'center'}}>—</span>;
+
+  return (
+    <div style={{flex:1,overflowY:'auto',height:'calc(100vh - 58px)'}}>
+      {/* sub-header */}
+      <div style={{background:'#fff',borderBottom:'1px solid #eceef2',padding:'13px 24px',display:'flex',alignItems:'center',gap:12,position:'sticky',top:0,zIndex:20}}>
+        <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:6,color:'#5a6473',fontSize:13,fontWeight:600,padding:'6px 12px',borderRadius:8,background:'#f4f6f8',border:'1px solid #e7eaef',cursor:'pointer'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ย้อนกลับ
+        </button>
+        <div style={{flex:1,fontWeight:700,fontSize:15,color:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.title}</div>
+        <div style={{display:'flex',alignItems:'center',gap:8,flex:'none'}}>
+          <span style={{fontSize:12.5,color:'#8a93a3'}}>สถานะล่าสุด</span>
+          <StatusDot s={item.status} size={18}/>
+        </div>
+      </div>
+
+      <div style={{padding:'20px 24px',display:'flex',flexDirection:'column',gap:16}}>
+        {/* plan info card */}
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          <div style={{display:'flex',alignItems:'flex-start',gap:13,marginBottom:14}}>
+            <div style={{width:38,height:38,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+              <i className="bi bi-person-fill" style={{fontSize:19,color:primary}}></i>
+            </div>
+            <div>
+              <div style={{fontWeight:700,fontSize:14.5,color:'#1a2332',marginBottom:6,lineHeight:1.4}}>{item.title}</div>
+              <span style={{display:'inline-flex',alignItems:'center',gap:6,background:'#f1f3f6',color:'#5a6473',borderRadius:99,padding:'4px 12px',fontSize:12.5,fontWeight:500}}>
+                <i className="bi bi-calendar-event" style={{fontSize:13}}></i>{item.period}
+              </span>
+            </div>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            <div style={{height:9,background:'#f0f2f5',borderRadius:99,width:'100%'}}></div>
+            <div style={{height:9,background:'#f0f2f5',borderRadius:99,width:'86%'}}></div>
+            <div style={{height:9,background:'#f0f2f5',borderRadius:99,width:'58%'}}></div>
+          </div>
+        </div>
+
+        {/* two-col layout */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,alignItems:'start'}}>
+
+          {/* ── LEFT ── */}
+          <div style={{display:'flex',flexDirection:'column',gap:14}}>
+
+            {/* สถานะของแผนธุรกิจ */}
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+              <div style={{fontWeight:700,fontSize:14,marginBottom:14}}>สถานะของแผนธุรกิจ</div>
+              <div style={{background:item.status?STBG[item.status]||'#f8f9fa':'#f8f9fa',borderRadius:11,padding:'14px 16px'}}>
+                {item.status&&item.reporter ? (
+                  <React.Fragment>
+                    <div style={{marginBottom:12}}>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'1px solid #e3e7ec',borderRadius:99,padding:'5px 13px',fontSize:12.5,fontWeight:700,color:dotC(item.status)}}>
+                        <StatusDot s={item.status} size={10}/>สถานะล่าสุด
+                      </span>
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+                      <div style={{width:28,height:28,borderRadius:'50%',background:primary,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,flex:'none'}}>{item.reporter.charAt(0)}</div>
+                      <div>
+                        <div style={{fontSize:12.5,fontWeight:600}}>รายงานโดย : {item.reporter}</div>
+                        <div style={{fontSize:11.5,color:'#9aa3af'}}>{item.reportedAt}</div>
+                      </div>
+                    </div>
+                    <div style={{fontSize:12.5,fontWeight:700,color:'#5a6473',marginBottom:6}}>สิ่งที่ดำเนินการ</div>
+                    <div style={{fontSize:13,color:'#1a2332',lineHeight:1.7}}>{item.action}</div>
+                  </React.Fragment>
+                ) : (
+                  <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'12px 0'}}>ยังไม่มีการรายงานสถานะ</div>
+                )}
+              </div>
+            </div>
+
+            {/* Progress bar card */}
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'16px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <i className="bi bi-record-circle" style={{fontSize:22,color:primary,flex:'none'}}></i>
+                <span style={{fontWeight:600,fontSize:13.5,color:'#1a2332',flex:'none'}}>ดำเนินการตามแผนงาน</span>
+                <div style={{flex:1,height:10,background:'#e3f3f0',borderRadius:99,overflow:'hidden',margin:'0 12px'}}>
+                  <div style={{width:progressPct+'%',height:'100%',background:primary,borderRadius:99}}></div>
+                </div>
+                <span style={{fontSize:22,fontWeight:700,color:primary,flex:'none',minWidth:90,textAlign:'right'}}>{progressPct.toFixed(2)} %</span>
+              </div>
+              <div style={{paddingLeft:34,marginTop:6,fontSize:12,color:'#8a93a3'}}>{filledProgress} จาก {totalProgress} รอบ</div>
+            </div>
+
+            {/* KPI + progress table */}
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+
+              {/* tabs + add button */}
+              <div style={{display:'flex',alignItems:'center',gap:0,marginBottom:14}}>
+                {['ความก้าวหน้า','แจ้งเตือน'].map((t,i)=>(
+                  <button key={i} onClick={()=>setProgTab(i)} style={{padding:'7px 14px',fontWeight:progTab===i?700:400,color:progTab===i?primary:'#8a93a3',borderBottom:'2px solid '+(progTab===i?primary:'transparent'),fontSize:13,background:'none',border:'none',borderBottom:'2px solid '+(progTab===i?primary:'transparent'),cursor:'pointer',display:'flex',alignItems:'center',gap:5}}>
+                    <span style={{minWidth:18,height:18,borderRadius:99,background:progTab===i?primarySoft:'#f4f5f7',color:progTab===i?primary:'#9aa3af',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{i===0?item.progress.filter(p=>p.val).length:0}</span>
+                    {t}
+                  </button>
+                ))}
+                <div style={{flex:1}}></div>
+                <button style={{display:'inline-flex',alignItems:'center',gap:5,background:primarySoft,color:primary,border:'none',borderRadius:8,padding:'6px 13px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}>
+                  <i className="bi bi-plus-lg" style={{fontSize:13}}></i>เพิ่มความก้าวหน้า
+                </button>
+              </div>
+
+              {progTab===0 ? (
+                <div style={{overflowX:'auto'}}>
+                  <table style={{width:'100%',borderCollapse:'collapse',fontSize:12.5}}>
+                    <thead>
+                      <tr style={{background:'#f8f9fb'}}>
+                        {['รอบการบันทึก','ค่าที่บันทึก','ค่าเฉลี่ย','ค่าสะสม','',''].map((h,i)=>(
+                          <th key={i} style={{padding:'9px 10px',textAlign:i===0?'left':'center',fontWeight:600,color:'#8a93a3',borderBottom:'1px solid #f0f2f5',whiteSpace:'nowrap',fontSize:12}}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {item.progress.map((p,i)=>(
+                        <tr key={i} style={{borderBottom:'1px solid #f4f6f8'}}>
+                          <td style={{padding:'11px 10px',color:p.val?'#1a2332':'#c4ccd4',fontSize:12.5}}>{p.date}</td>
+                          <td style={{padding:'11px 10px',textAlign:'center'}}><ValPill val={p.val} color={GRN}/></td>
+                          <td style={{padding:'11px 10px',textAlign:'center'}}><ValPill val={p.avg} color='#3b6fd4'/></td>
+                          <td style={{padding:'11px 10px',textAlign:'center'}}><ValPill val={p.sum} color='#db2777'/></td>
+                          <td style={{padding:'11px 10px',textAlign:'center'}}>{p.status?<StatusDot s={p.status} size={12}/>:<span style={{color:'#e2e8f0',fontSize:14}}>—</span>}</td>
+                          <td style={{padding:'11px 10px',textAlign:'center'}}>
+                            <button style={{width:28,height:28,borderRadius:7,border:'1px solid #eceef2',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto',cursor:'pointer'}}>
+                              <i className="bi bi-pencil" style={{fontSize:13,color:'#9aa3af'}}></i>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'28px 0'}}>ไม่มีการแจ้งเตือน</div>
+              )}
+            </div>
+          </div>
+
+          {/* ── RIGHT ── */}
+          <div style={{display:'flex',flexDirection:'column',gap:14}}>
+
+            {/* สรุปข้อมูลคำสั่งการ */}
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+                <i className="bi bi-people-fill" style={{fontSize:19,color:primary}}></i>
+                <span style={{fontWeight:700,fontSize:14}}>สรุปข้อมูลคำสั่งการ</span>
+                <div style={{flex:1}}></div>
+                <span style={{fontSize:12,color:'#9aa3af',fontWeight:600,background:'#f4f5f7',borderRadius:99,padding:'4px 11px'}}>ทั้งหมด {item.cmdTotal} คำสั่งการ</span>
+              </div>
+              <div style={{fontSize:12.5,color:'#8a93a3',marginBottom:8}}>
+                งานตามแผนธุรกิจนี้ <span style={{fontWeight:700,color:'#1a2332'}}>{cmdFiltered}</span> คำสั่งการ
+              </div>
+              <div style={{display:'flex',height:20,borderRadius:99,overflow:'hidden',marginBottom:10}}>
+                {item.cmdG>0&&<div style={{flexGrow:item.cmdG,background:GRN}}></div>}
+                {item.cmdY>0&&<div style={{flexGrow:item.cmdY,background:YEL}}></div>}
+                {item.cmdR>0&&<div style={{flexGrow:item.cmdR,background:RED}}></div>}
+              </div>
+              <div style={{display:'flex',gap:18,flexWrap:'wrap',fontSize:12.5,color:'#3c4350',marginBottom:12}}>
+                {[[GRN,item.cmdG],[YEL,item.cmdY],[RED,item.cmdR]].map(([c,v],i)=>(
+                  <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:11,height:11,borderRadius:'50%',background:c}}></span>{v} คำสั่งการ</span>
+                ))}
+              </div>
+              <div style={{borderTop:'1px solid #f0f2f5',paddingTop:10,display:'flex',alignItems:'center',gap:7,fontSize:12,color:'#9aa3af'}}>
+                <i className="bi bi-question-circle" style={{fontSize:14,color:'#b3bac4'}}></i>
+                นับคำสั่งการที่ติดแผนงานนี้เท่านั้น
+              </div>
+            </div>
+
+            {/* แผนธุรกิจภายใต้แผนธุรกิจนี้ */}
+            {item.children&&item.children.length>0&&(
+              <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+                <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+                  <i className="bi bi-diagram-3" style={{fontSize:18,color:'#8a93a3'}}></i>
+                  <span style={{fontWeight:700,fontSize:14}}>แผนธุรกิจภายใต้แผนธุรกิจนี้</span>
+                </div>
+                <div>
+                  {item.children.map((c,i)=>(
+                    <div key={i} className="goal-row" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 0',borderTop:i?'1px solid #f4f6f8':'none',borderRadius:9,cursor:'pointer'}}>
+                      <div style={{width:32,height:32,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+                        <i className="bi bi-person-fill" style={{fontSize:15,color:primary}}></i>
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontWeight:600,fontSize:13,color:'#1a2332',lineHeight:1.35,marginBottom:3}}>{c.title}</div>
+                        <div style={{display:'flex',alignItems:'center',gap:5,fontSize:12,color:'#9aa3af'}}>
+                          <i className="bi bi-plus-circle" style={{fontSize:12}}></i>
+                          <span>{c.kpi}</span>
+                        </div>
+                      </div>
+                      <StatusDot s={c.status} size={14}/>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const [sel,setSel]=useState(null);
+  return (
+    <div style={{minHeight:'100vh',background:'#f3f5f9'}}>
+      <TopBar/>
+      <div style={{display:'flex'}}>
+        <NavRail/>
+        {sel ? (
+          <DetailContent item={sel} onBack={()=>setSel(null)}/>
+        ) : (
+          <React.Fragment>
+            <LeftNav/>
+            <ListContent onSelect={setSel}/>
+          </React.Fragment>
+        )}
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>
