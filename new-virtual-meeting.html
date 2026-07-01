@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สร้างกลุ่มใหม่ — GiveD5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.row-hover:hover{background:#f5f7fa}
+input[type="date"]{color:#1f2733}
+input[type="date"]::-webkit-calendar-picker-indicator{opacity:.5;cursor:pointer}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="gd5-proto-badge" style="position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;align-items:center;gap:9px;padding:10px 22px 10px 16px;background:rgba(225,235,242,0.62);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1.5px solid rgba(180,205,220,0.55);border-radius:10px;box-shadow:0 8px 32px rgba(16,24,40,0.13),0 1.5px 4px rgba(16,24,40,0.07);font-family:'IBM Plex Sans Thai',sans-serif;user-select:none;pointer-events:none;">
+  <span style="width:8px;height:8px;border-radius:50%;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
+  <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:0.8px;text-transform:uppercase">Prototype</span>
+  <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
+  <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45)">GiveD5</span>
+</div>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState,useRef,useEffect} = React;
+const primary='#15a08f', primarySoft='#e3f3f0';
+const AV=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
+const initial=(s)=>String(s||'?').trim().charAt(0).toUpperCase();
+const initColor=(s)=>{let h=0;for(const ch of String(s||''))h=ch.charCodeAt(0)+h;return AV[h%AV.length];};
+const Letter=({s,d,fs})=>(<div style={{width:d,height:d,borderRadius:'50%',background:initColor(s),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:fs||Math.round(d*.42),flex:'none'}}>{initial(s)}</div>);
+
+const parseNum=(s)=>parseFloat((s||'').replace(/,/g,''))||0;
+const fmtNum=(n)=>isNaN(n)||n===0?'':Math.round(n).toLocaleString('th-TH');
+const diffDays=(a,b)=>{if(!a||!b)return null;const d=Math.ceil((new Date(b)-new Date(a))/86400000);return d>0?d:null;};
+
+const MEMBERS=[
+  {name:'Anusorn Suksri',role:'ที่ปรึกษา'},
+  {name:'Bodin Muanprasat',role:'Software Engineer'},
+  {name:'Chanavee Bekaku',role:'Dev Manager'},
+  {name:'Chanon Thaiprayoo',role:'Technician'},
+  {name:'Chayanee Prajongkarn',role:'Staff'},
+  {name:'Chunhawan Houdlim',role:'ผู้จัดการแผนกสนับสนุนการขาย'},
+  {name:'Duangjan Kumsimma',role:'Canteen'},
+  {name:'IA Audit Grandats',role:'IA(ตรวจสอบ)'},
+  {name:'Idsara Wungdee',role:'Senior Implement'},
+  {name:'Jarunya Thaiprayoon',role:'Implement'},
+  {name:'Khajonsak Sukpasert',role:'SA Lead'},
+  {name:'Narate Boonmee',role:'PM'},
+  {name:'Nichagorn Prajansen',role:'Quality'},
+  {name:'Pannawat Chantharasena',role:'Implement'},
+  {name:'Piyawat Takaew',role:'SA Staff'},
+];
+const ME='Piyawat Takaew';
+
+// ===== SinglePersonPicker: เลือกได้ 1 คนเท่านั้น =====
+function SinglePersonPicker({value,onChange,excluded,placeholder}){
+  const [open,setOpen]=useState(false);
+  const [q,setQ]=useState('');
+  const ref=useRef();
+  useEffect(()=>{
+    if(!open)return;
+    const handler=(e)=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false);};
+    document.addEventListener('mousedown',handler);
+    return()=>document.removeEventListener('mousedown',handler);
+  },[open]);
+  const avail=MEMBERS.filter(m=>m.name!==value&&!(excluded||[]).includes(m.name)&&m.name.toLowerCase().includes(q.toLowerCase()));
+  return (
+    <div style={{position:'relative'}} ref={ref}>
+      <div onClick={()=>setOpen(v=>!v)} style={{display:'flex',alignItems:'center',gap:7,minHeight:38,border:'1px solid #e3e7ec',borderRadius:8,padding:'5px 10px',background:'#fff',cursor:'pointer'}}>
+        {value ? (
+          <><Letter s={value} d={22} fs={9}/><span style={{flex:1,fontSize:13,fontWeight:600,color:'#1f2733'}}>{value}</span>
+          <button onClick={e=>{e.stopPropagation();onChange('');}} style={{width:18,height:18,border:'none',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',padding:0,color:'#9aa3af',cursor:'pointer'}}><i className="bi bi-x" style={{fontSize:14,lineHeight:1}}></i></button></>
+        ) : (
+          <><i className="bi bi-search" style={{fontSize:13,color:'#b3bac4'}}></i><span style={{flex:1,fontSize:13,color:'#b3bac4'}}>{placeholder||'เลือก...'}</span></>
+        )}
+        <i className="bi bi-chevron-down" style={{fontSize:12,color:'#b3bac4',flex:'none'}}></i>
+      </div>
+      {open&&(
+        <div style={{position:'absolute',top:'calc(100% + 4px)',left:0,right:0,zIndex:40,background:'#fff',border:'1px solid #e7eaef',borderRadius:11,boxShadow:'0 8px 28px rgba(16,24,40,.16)',padding:8,animation:'fadeIn .12s ease'}}>
+          <input autoFocus value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหาชื่อ..." style={{width:'100%',border:'1px solid #e3e7ec',borderRadius:7,padding:'6px 10px',fontSize:12.5,outline:'none',marginBottom:6,fontFamily:'inherit'}}/>
+          <div style={{maxHeight:196,overflowY:'auto'}}>
+            {avail.length===0&&<div style={{fontSize:12,color:'#b3bac4',padding:'8px 10px'}}>ไม่พบรายชื่อ</div>}
+            {avail.map(m=>(
+              <button key={m.name} onClick={()=>{onChange(m.name);setOpen(false);setQ('');}} style={{display:'flex',alignItems:'center',gap:9,width:'100%',padding:'7px 9px',border:'none',background:'transparent',borderRadius:8,cursor:'pointer',textAlign:'left'}}>
+                <Letter s={m.name} d={28} fs={11}/>
+                <div style={{flex:1,minWidth:0}}><div style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{m.name}</div><div style={{fontSize:11,color:'#9aa3af'}}>{m.role}</div></div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ===== PersonPicker: multi-select chip field =====
+function PersonPicker({value,onChange,placeholder,excluded,label}){
+  const [open,setOpen]=useState(false);
+  const [q,setQ]=useState('');
+  const ref=useRef();
+  useEffect(()=>{
+    if(!open)return;
+    const handler=(e)=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false);};
+    document.addEventListener('mousedown',handler);
+    return()=>document.removeEventListener('mousedown',handler);
+  },[open]);
+  const avail=MEMBERS.filter(m=>!value.includes(m.name)&&!(excluded||[]).includes(m.name)&&m.name.toLowerCase().includes(q.toLowerCase()));
+  return (
+    <div style={{position:'relative'}} ref={ref}>
+      <div onClick={()=>setOpen(v=>!v)} style={{display:'flex',gap:5,flexWrap:'wrap',alignItems:'center',minHeight:38,border:'1px solid #e3e7ec',borderRadius:8,padding:'5px 8px',background:'#fff',cursor:'pointer'}}>
+        <i className="bi bi-search" style={{fontSize:13,color:'#b3bac4',flex:'none'}}></i>
+        {value.length===0 && <span style={{fontSize:13,color:'#b3bac4',flex:1,lineHeight:'26px'}}>{placeholder||'เลือก...'}</span>}
+        {value.map(name=>(
+          <span key={name} style={{display:'inline-flex',alignItems:'center',gap:4,background:primarySoft,color:'#0e7b6e',borderRadius:99,padding:'2px 6px 2px 3px',fontSize:12,fontWeight:600}}>
+            <Letter s={name} d={19} fs={8}/>{name}
+            <button onClick={(e)=>{e.stopPropagation();onChange(value.filter(n=>n!==name));}} style={{width:13,height:13,border:'none',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',padding:0,color:'#0e7b6e',cursor:'pointer'}}><i className="bi bi-x" style={{fontSize:12,lineHeight:1}}></i></button>
+          </span>
+        ))}
+      </div>
+      {open && (
+        <div style={{position:'absolute',top:'calc(100% + 4px)',left:0,right:0,zIndex:40,background:'#fff',border:'1px solid #e7eaef',borderRadius:11,boxShadow:'0 8px 28px rgba(16,24,40,.16)',padding:8,animation:'fadeIn .12s ease'}}>
+          <input autoFocus value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหาชื่อ..." style={{width:'100%',border:'1px solid #e3e7ec',borderRadius:7,padding:'6px 10px',fontSize:12.5,outline:'none',marginBottom:6,fontFamily:'inherit'}}/>
+          <div style={{maxHeight:196,overflowY:'auto'}}>
+            {avail.length===0 && <div style={{fontSize:12,color:'#b3bac4',padding:'8px 10px'}}>ไม่พบรายชื่อ</div>}
+            {avail.map(m=>(
+              <button key={m.name} onClick={()=>{onChange([...value,m.name]);setQ('');}} style={{display:'flex',alignItems:'center',gap:9,width:'100%',padding:'7px 9px',border:'none',background:'transparent',borderRadius:8,cursor:'pointer',textAlign:'left'}}>
+                <Letter s={m.name} d={28} fs={11}/>
+                <div style={{flex:1,minWidth:0}}><div style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{m.name}</div><div style={{fontSize:11,color:'#9aa3af'}}>{m.role}</div></div>
+              </button>
+            ))}
+          </div>
+          <div style={{height:1,background:'#f1f3f6',margin:'5px 0'}}></div>
+          <button onClick={()=>{onChange([...new Set([...value,...MEMBERS.filter(m=>!(excluded||[]).includes(m.name)&&!value.includes(m.name)).map(m=>m.name)])]);setOpen(false);}} style={{display:'flex',alignItems:'center',gap:7,width:'100%',padding:'7px 9px',border:'none',background:'transparent',borderRadius:8,cursor:'pointer',fontSize:12.5,fontWeight:700,color:primary}}>
+            <i className="bi bi-people-fill" style={{fontSize:14,color:primary}}></i>เลือกทั้งหมด
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ===== Toggle Switch =====
+function Toggle({on,onChange}){
+  return (
+    <div onClick={()=>onChange(!on)} style={{width:42,height:24,borderRadius:99,background:on?primary:'#cdd4dd',position:'relative',cursor:'pointer',flex:'none',transition:'background .2s'}}>
+      <div style={{position:'absolute',top:3,left:on?21:3,width:18,height:18,borderRadius:'50%',background:'#fff',transition:'left .18s',boxShadow:'0 1px 3px rgba(0,0,0,.2)'}}></div>
+    </div>
+  );
+}
+
+function App(){
+  const [groupName,setGroupName]=useState('');
+  const [desc,setDesc]=useState('');
+  const [allowSearch,setAllowSearch]=useState(true);
+  const [allowLeave,setAllowLeave]=useState(true);
+  const [allowShare,setAllowShare]=useState(true);
+  const [admins,setAdmins]=useState([]);
+  const [folderInput,setFolderInput]=useState('');
+  const [folders,setFolders]=useState([]);
+
+  // Easy PM
+  const [pmOn,setPmOn]=useState(false);
+  const [pm,setPm]=useState({project:'',school:'',startDate:'',signDate:'',dueDate:'',value:'',penaltyRate:'',ownersMain:'',ownersSub:[],warrantyFrom:'',warrantyTo:''});
+  const setP=(k,v)=>setPm(p=>({...p,[k]:v}));
+  // จำนวนวันส่งมอบ = วันลงนาม (หรือวันเริ่มประชุม) ถึง วันครบกำหนดสัญญา
+  const deliverDays=pm.dueDate?(pm.signDate?diffDays(pm.signDate,pm.dueDate):pm.startDate?diffDays(pm.startDate,pm.dueDate):null):null;
+  // ค่าปรับ/วัน = มูลค่าสัญญา × อัตราค่าปรับ% / 100
+  const penaltyPerDay=pm.value&&pm.penaltyRate&&parseFloat(pm.penaltyRate)>0?fmtNum(parseNum(pm.value)*parseFloat(pm.penaltyRate)/100):null;
+
+  // Members
+  const [memberTab,setMemberTab]=useState('person');
+  const [memberQ,setMemberQ]=useState('');
+  const [selected,setSelected]=useState([]);
+  const toggleMember=(name)=>setSelected(s=>s.includes(name)?s.filter(n=>n!==name):[...s,name]);
+  const filtered=MEMBERS.filter(m=>m.name.toLowerCase().includes(memberQ.toLowerCase())||m.role.toLowerCase().includes(memberQ.toLowerCase()));
+
+  const canSave=groupName.trim()&&desc.trim();
+
+  const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:8,padding:'9px 11px',fontSize:13,outline:'none',color:'#1f2733',background:'#fff',fontFamily:'inherit'};
+  const lbl={fontSize:12,fontWeight:600,color:'#5a6473',marginBottom:5,display:'block'};
+
+  const addFolder=()=>{if(folderInput.trim()){setFolders(f=>[...f,folderInput.trim()]);setFolderInput('');}};
+
+  return (
+    <div style={{minHeight:'100vh',background:'#eef1f6'}}>
+
+      {/* ===== HEADER ===== */}
+      <div style={{position:'sticky',top:0,zIndex:50,background:'#fff',borderBottom:'1px solid #e7eaef',height:58,display:'flex',alignItems:'center',padding:'0 20px',gap:14}}>
+        <a href="user-virtual-meeting.html" style={{display:'flex',alignItems:'center',gap:9,marginRight:4,textDecoration:'none'}}>
+          <div style={{width:36,height:36,borderRadius:10,background:primary,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <i className="bi bi-hand-thumbs-up-fill" style={{fontSize:18,color:'#fff'}}></i>
+          </div>
+          <span style={{fontWeight:800,fontSize:15,color:'#1a2d39',letterSpacing:.2}}>GiveD5</span>
+        </a>
+        <div style={{display:'flex',alignItems:'center',gap:8,background:'#f0f2f5',borderRadius:9,padding:'6px 13px',width:300}}>
+          <i className="bi bi-search" style={{fontSize:14,color:'#9aa3af'}}></i>
+          <input placeholder="ค้นหา GiveD5" style={{border:'none',outline:'none',background:'transparent',fontSize:13,color:'#1f2733',flex:1,fontFamily:'inherit'}}/>
+        </div>
+        <div style={{flex:1}}></div>
+        <div style={{display:'flex',alignItems:'center',gap:18}}>
+          <div style={{position:'relative'}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-6,right:-8,background:'#e53935',color:'#fff',borderRadius:99,fontSize:9,fontWeight:800,padding:'1px 4px',minWidth:16,textAlign:'center'}}>5</span></div>
+          <div style={{position:'relative'}}><i className="bi bi-chat-square-text" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-6,right:-8,background:'#e53935',color:'#fff',borderRadius:99,fontSize:9,fontWeight:800,padding:'1px 4px',minWidth:16,textAlign:'center'}}>11</span></div>
+          <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:13,color:'#9aa3af'}}></i></div>
+          <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+          <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+            <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+            <div style={{width:38,height:38,borderRadius:'50%',background:primary,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
+            <i className="bi bi-chevron-down" style={{fontSize:13,color:'#9aa3af'}}></i>
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:'flex'}}>
+        {/* ===== ICON RAIL ===== */}
+        <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)',overflowY:'auto'}}>
+          <div style={{width:34,height:34,borderRadius:'50%',background:primary,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+          {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',false,'org-dashboard.html'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',true,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down',false,''],['bi-book',false,''],['bi-clipboard-data',false,'']].map(([ic,act,url],i)=>
+            url ? (
+              <a key={i} href={url} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i>
+              </a>
+            ) : (
+              <div key={i} style={{width:40,height:40,borderRadius:11,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <i className={'bi '+ic} style={{fontSize:21,color:'#9aa3af'}}></i>
+              </div>
+            )
+          )}
+          <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}>
+            <i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i>
+          </div>
+        </div>
+
+        {/* ===== MAIN ===== */}
+        <div style={{flex:1,padding:'22px 26px',minWidth:0,overflowY:'auto',maxHeight:'calc(100vh - 58px)'}}>
+          {/* Back + title */}
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:20}}>
+            <a href="user-virtual-meeting.html" style={{display:'flex',alignItems:'center',justifyContent:'center',width:34,height:34,borderRadius:9,background:'#fff',border:'1px solid #e7eaef'}}>
+              <i className="bi bi-arrow-left" style={{fontSize:18,color:'#5a6473'}}></i>
+            </a>
+            <span style={{fontSize:18,fontWeight:800,color:'#1a2d39'}}>สร้างกลุ่มใหม่</span>
+          </div>
+
+          {/* 2-col layout */}
+          <div style={{display:'flex',gap:20,alignItems:'flex-start'}}>
+
+            {/* ===== LEFT: FORM ===== */}
+            <div style={{flex:'0 0 660px',display:'flex',flexDirection:'column',gap:16}}>
+
+              {/* GROUP FORM CARD */}
+              <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,overflow:'hidden',boxShadow:'0 1px 3px rgba(16,24,40,.05)'}}>
+                {/* Cover */}
+                <div style={{position:'relative'}}>
+                  <div style={{height:172,background:'linear-gradient(135deg,#15a08f 0%,#0b5e54 100%)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6}}>
+                    <div style={{display:'flex',alignItems:'center',gap:10}}>
+                      <i className="bi bi-hand-thumbs-up-fill" style={{fontSize:36,color:'rgba(255,255,255,.9)'}}></i>
+                      <span style={{color:'#fff',fontWeight:800,fontSize:26,letterSpacing:.3}}>GiveD5</span>
+                    </div>
+                    <span style={{color:'rgba(255,255,255,.55)',fontSize:11.5}}>Organization Culture Building Solution · Unlock hidden potentials by Connecting others</span>
+                    <div style={{background:'#f59e0b',color:'#fff',borderRadius:8,padding:'5px 16px',fontSize:12.5,fontWeight:700,marginTop:4}}>Love It</div>
+                  </div>
+                  <button style={{position:'absolute',top:10,right:10,width:32,height:32,borderRadius:'50%',background:'rgba(255,255,255,.9)',border:'none',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <i className="bi bi-pencil-fill" style={{fontSize:13,color:'#d83a3a'}}></i>
+                  </button>
+                </div>
+
+                <div style={{padding:'20px 22px',display:'flex',flexDirection:'column',gap:14}}>
+                  {/* ชื่อกลุ่ม */}
+                  <div>
+                    <label style={lbl}>ชื่อกลุ่ม <span style={{color:'#e53935'}}>*</span></label>
+                    <input value={groupName} onChange={e=>setGroupName(e.target.value.slice(0,125))} placeholder="ชื่อกลุ่ม" style={{...inp,borderColor:!groupName?'#f3c969':'#e3e7ec'}}/>
+                    <div style={{textAlign:'right',fontSize:11,color:'#9aa3af',marginTop:3}}>{groupName.length} / 125</div>
+                  </div>
+
+                  {/* วัตถุประสงค์ */}
+                  <div>
+                    <label style={lbl}>วัตถุประสงค์ของกลุ่ม <span style={{color:'#e53935'}}>*</span></label>
+                    <textarea value={desc} onChange={e=>setDesc(e.target.value)} rows={4} placeholder="วัตถุประสงค์ของกลุ่ม" style={{...inp,resize:'vertical'}}/>
+                    <div style={{fontSize:11.5,color:'#9aa3af',marginTop:3}}>ระบุวัตถุประสงค์ของกลุ่ม ข้อตกลง กระเบียบและแนวทางปฏิบัติของกลุ่ม</div>
+                  </div>
+
+                  {/* Permissions */}
+                  <div style={{display:'flex',flexDirection:'column',gap:9}}>
+                    {[[allowSearch,setAllowSearch,'อนุญาตให้ค้นหาชื่อกลุ่มได้'],[allowLeave,setAllowLeave,'อนุญาตให้ออกจากกลุ่มได้'],[allowShare,setAllowShare,'อนุญาตให้แชร์โพสต์ออกจากกลุ่มได้']].map(([v,set,label],i)=>(
+                      <label key={i} style={{display:'flex',alignItems:'center',gap:9,cursor:'pointer',fontSize:13.5,fontWeight:500,userSelect:'none'}}>
+                        <div onClick={()=>set(!v)} style={{width:20,height:20,borderRadius:5,background:v?primary:'#fff',border:'1.5px solid '+(v?primary:'#cdd4dd'),display:'flex',alignItems:'center',justifyContent:'center',flex:'none',transition:'background .15s'}}>
+                          {v&&<i className="bi bi-check" style={{fontSize:14,color:'#fff',lineHeight:1}}></i>}
+                        </div>
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+
+                  {/* ผู้ก่อตั้งกลุ่ม */}
+                  <div>
+                    <label style={lbl}>ผู้ก่อตั้งกลุ่ม</label>
+                    <div style={{display:'flex',alignItems:'center',gap:10,border:'1px solid #e3e7ec',borderRadius:8,padding:'8px 11px',background:'#fafbfc'}}>
+                      <Letter s={ME} d={28} fs={11}/><span style={{fontSize:13,fontWeight:600,flex:1}}>{ME}</span>
+                      <i className="bi bi-chevron-down" style={{fontSize:13,color:'#9aa3af'}}></i>
+                    </div>
+                  </div>
+
+                  {/* ผู้ดูแลกลุ่ม */}
+                  <div>
+                    <label style={lbl}>ผู้ดูแลกลุ่ม</label>
+                    <PersonPicker value={admins} onChange={setAdmins} placeholder="ผู้ดูแลกลุ่ม" excluded={[ME]}/>
+                    <div style={{fontSize:11.5,color:'#9aa3af',marginTop:3}}>เลือกได้มากกว่า 1</div>
+                  </div>
+
+                  {/* ชื่อโฟลเดอร์ */}
+                  <div>
+                    <label style={lbl}>ชื่อโฟลเดอร์</label>
+                    <div style={{display:'flex',gap:8}}>
+                      <input value={folderInput} onChange={e=>setFolderInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')addFolder();}} placeholder="ชื่อโฟลเดอร์" style={{...inp,flex:1}}/>
+                      <button onClick={addFolder} style={{width:38,height:38,borderRadius:8,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+                        <i className="bi bi-plus-lg" style={{fontSize:16,color:primary}}></i>
+                      </button>
+                    </div>
+                    {folders.length>0&&(
+                      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:8}}>
+                        {folders.map((f,i)=>(
+                          <span key={i} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#f1f3f6',borderRadius:7,padding:'4px 8px 4px 10px',fontSize:12.5,fontWeight:600}}>
+                            <i className="bi bi-folder" style={{fontSize:12,color:'#9aa3af'}}></i>{f}
+                            <button onClick={()=>setFolders(fs=>fs.filter((_,j)=>j!==i))} style={{width:14,height:14,border:'none',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',padding:0,color:'#9aa3af',cursor:'pointer'}}><i className="bi bi-x" style={{fontSize:12,lineHeight:1}}></i></button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* ===== EASY PM CARD ===== */}
+              <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.05)',overflow:'hidden'}}>
+                {/* Header toggle */}
+                <div onClick={()=>setPmOn(v=>!v)} style={{display:'flex',alignItems:'center',gap:12,padding:'15px 20px',cursor:'pointer',borderBottom:pmOn?'1px solid #eef1f5':'none'}}>
+                  <div style={{width:36,height:36,borderRadius:10,background:pmOn?primarySoft:'#f4f5f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',transition:'background .15s'}}>
+                    <i className="bi bi-grid-1x2-fill" style={{fontSize:17,color:pmOn?primary:'#9aa3af'}}></i>
+                  </div>
+                  <div style={{flex:1}}>
+                    <div style={{fontWeight:700,fontSize:14,color:'#1a2d39'}}>Easy PM <span style={{fontWeight:400,color:'#9aa3af',fontSize:12.5}}>(บริหารสัญญาแบบง่าย)</span></div>
+                    <div style={{fontSize:11.5,color:'#9aa3af',marginTop:1.5}}>เชื่อมโยงกลุ่มนี้กับโปรเจคครุภัณฑ์</div>
+                  </div>
+                  <Toggle on={pmOn} onChange={setPmOn}/>
+                </div>
+
+                {pmOn&&(
+                  <div style={{animation:'fadeIn .2s ease'}}>
+
+                    {/* Section: ข้อมูลโปรเจค */}
+                    <div style={{padding:'16px 20px 18px',borderBottom:'1px solid #f1f3f5'}}>
+                      <div style={{fontSize:11,fontWeight:700,color:'#9aa3af',letterSpacing:.7,textTransform:'uppercase',marginBottom:12}}>ข้อมูลโปรเจค</div>
+                      <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                        <div>
+                          <label style={lbl}>ชื่อโครงการ</label>
+                          <div style={{position:'relative'}}>
+                            <i className="bi bi-search" style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',fontSize:13,color:'#b3bac4',pointerEvents:'none'}}></i>
+                            <input value={pm.project} onChange={e=>setP('project',e.target.value)} style={{...inp,paddingLeft:32}}/>
+                          </div>
+                        </div>
+                        <div>
+                          <label style={lbl}>สถานศึกษา</label>
+                          <div style={{position:'relative'}}>
+                            <i className="bi bi-search" style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',fontSize:13,color:'#b3bac4',pointerEvents:'none'}}></i>
+                            <input value={pm.school} onChange={e=>setP('school',e.target.value)} style={{...inp,paddingLeft:32}}/>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Section: ข้อมูลสัญญา */}
+                    <div style={{padding:'16px 20px 18px',borderBottom:'1px solid #f1f3f5'}}>
+                      <div style={{fontSize:11,fontWeight:700,color:'#9aa3af',letterSpacing:.7,textTransform:'uppercase',marginBottom:12}}>ข้อมูลสัญญา</div>
+                      <div style={{display:'flex',flexDirection:'column',gap:12}}>                      
+                        {/* Dates 3-col */}
+                        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}>
+                          <div>
+                            <label style={lbl}>วันที่เริ่มประชุมโครงการ</label>
+                            <input type="date" value={pm.startDate} onChange={e=>setP('startDate',e.target.value)} style={inp}/>
+                          </div>
+                          <div>
+                            <label style={lbl}>วันที่ลงนามสัญญา</label>
+                            <input type="date" value={pm.signDate} onChange={e=>setP('signDate',e.target.value)} style={inp}/>
+                          </div>
+                          <div>
+                            <label style={lbl}>วันครบกำหนดสัญญา</label>
+                            <input type="date" value={pm.dueDate} onChange={e=>setP('dueDate',e.target.value)} style={{...inp,borderColor:pm.dueDate?'#e3e7ec':'#e3e7ec'}}/>
+                          </div>
+                        </div>
+                        {/* Deliver days result */}
+                        {deliverDays!==null&&(
+                          <div style={{display:'flex',alignItems:'center',gap:8,background:primarySoft,borderRadius:9,padding:'9px 14px'}}>
+                            <i className="bi bi-calendar-check" style={{fontSize:15,color:primary}}></i>
+                            <span style={{fontSize:13,color:'#1a2d39'}}>จำนวนวันส่งมอบ</span>
+                            <span style={{fontWeight:800,fontSize:15,color:primary}}>{deliverDays}</span>
+                            <span style={{fontSize:13,color:'#1a2d39'}}>วัน</span>
+                          </div>
+                        )}
+                        {/* Value + Penalty */}
+                        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+                          <div>
+                            <label style={lbl}>มูลค่าสัญญา (incl.vat)</label>
+                            <div style={{position:'relative'}}>
+                              <input value={pm.value} onChange={e=>setP('value',e.target.value)} placeholder="0" style={{...inp,paddingRight:40}}/>
+                              <span style={{position:'absolute',right:11,top:'50%',transform:'translateY(-50%)',fontSize:12,color:'#9aa3af',pointerEvents:'none'}}>บาท</span>
+                            </div>
+                          </div>
+                          <div>
+                            <label style={lbl}>อัตราค่าปรับ (ร้อยละ)</label>
+                            <input value={pm.penaltyRate} onChange={e=>setP('penaltyRate',e.target.value)} placeholder="0" style={inp}/>
+                          </div>
+                        </div>
+                        {/* Penalty result */}
+                        {penaltyPerDay&&(
+                          <div style={{display:'flex',alignItems:'center',gap:8,background:'#fff5f5',border:'1px solid #fecaca',borderRadius:9,padding:'9px 14px'}}>
+                            <i className="bi bi-exclamation-circle" style={{fontSize:15,color:'#d8513a'}}></i>
+                            <span style={{fontSize:13,color:'#1a2d39'}}>ค่าปรับ</span>
+                            <span style={{fontWeight:800,fontSize:15,color:'#d8513a'}}>{penaltyPerDay}</span>
+                            <span style={{fontSize:13,color:'#1a2d39'}}>บาท / วัน</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Section: ผู้รับผิดชอบ */}
+                    <div style={{padding:'16px 20px 18px',borderBottom:'1px solid #f1f3f5'}}>
+                      <div style={{fontSize:11,fontWeight:700,color:'#9aa3af',letterSpacing:.7,textTransform:'uppercase',marginBottom:12}}>ผู้รับผิดชอบโครงการ</div>
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+                        <div>
+                          <label style={lbl}>หลัก <span style={{fontSize:11,color:'#9aa3af',fontWeight:400}}>(1 คน)</span></label>
+                          <SinglePersonPicker value={pm.ownersMain} onChange={v=>setP('ownersMain',v)} excluded={pm.ownersSub} placeholder="ค้นหาผู้รับผิดชอบหลัก..."/>
+                        </div>
+                        <div>
+                          <label style={lbl}>รอง <span style={{fontSize:11,color:'#9aa3af',fontWeight:400}}>(เพิ่มได้หลายคน)</span></label>
+                          <PersonPicker value={pm.ownersSub} onChange={v=>setP('ownersSub',v)} excluded={pm.ownersMain?[pm.ownersMain]:[]} placeholder="ค้นหาผู้รับผิดชอบรอง..."/>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Section: ประกันคุณภาพ */}
+                    <div style={{padding:'16px 20px 18px'}}>
+                      <div style={{fontSize:11,fontWeight:700,color:'#9aa3af',letterSpacing:.7,textTransform:'uppercase',marginBottom:12}}>ประกันคุณภาพ / แจ้งซ่อม</div>
+                      <div>
+                        <label style={lbl}>ช่วงวันที่รับประกันคุณภาพ/แจ้งซ่อม</label>
+                        <div style={{display:'flex',alignItems:'center',gap:8}}>
+                          <input type="date" value={pm.warrantyFrom} onChange={e=>setP('warrantyFrom',e.target.value)} style={{...inp,flex:1}}/>
+                          <span style={{color:'#9aa3af',fontSize:16,flex:'none',fontWeight:300}}>—</span>
+                          <input type="date" value={pm.warrantyTo} onChange={e=>setP('warrantyTo',e.target.value)} style={{...inp,flex:1}}/>
+                          <i className="bi bi-calendar-week" style={{fontSize:18,color:'#9aa3af',flex:'none'}}></i>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+              </div>
+
+              {/* ===== ACTION BUTTONS ===== */}
+              <div style={{display:'flex',justifyContent:'flex-end',gap:10,paddingBottom:32}}>
+                <a href="user-virtual-meeting.html" style={{display:'inline-flex',alignItems:'center',padding:'10px 24px',border:'1px solid #e3e7ec',borderRadius:10,fontSize:14,fontWeight:600,color:'#5a6473',background:'#fff',textDecoration:'none'}}>ยกเลิก</a>
+                <a href="user-virtual-meeting-group.html" style={{display:'inline-flex',alignItems:'center',padding:'10px 24px',border:'none',borderRadius:10,fontSize:14,fontWeight:700,color:'#fff',background:canSave?primary:'#cdd4dd',textDecoration:'none',pointerEvents:canSave?'auto':'none'}}>บันทึก</a>
+              </div>
+            </div>
+
+            {/* ===== RIGHT: MEMBER PANEL ===== */}
+            <div style={{flex:1,minWidth:360,position:'sticky',top:22}}>
+              <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.05)',overflow:'hidden'}}>
+
+                {/* Header */}
+                <div style={{padding:'14px 18px 0',borderBottom:'1px solid #f1f3f6'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:11}}>
+                    <i className="bi bi-people-fill" style={{fontSize:17,color:'#5a6473'}}></i>
+                    <span style={{fontWeight:700,fontSize:15}}>สมาชิกในกลุ่ม</span>
+                  </div>
+                  <div style={{display:'flex',gap:20}}>
+                    {[['person','บุคคล'],['dept','กลุ่มแผนก'],['custom','กลุ่มตั้งเอง']].map(([k,lb])=>(
+                      <button key={k} onClick={()=>setMemberTab(k)} style={{border:'none',background:'transparent',padding:'0 0 10px',fontSize:13,fontWeight:memberTab===k?700:500,color:memberTab===k?primary:'#8a93a3',borderBottom:'2.5px solid '+(memberTab===k?primary:'transparent')}}>
+                        {lb}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{display:'flex'}}>
+                  {/* Member list */}
+                  <div style={{flex:'0 0 50%',width:'50%',borderRight:'1px solid #f1f3f6',minWidth:0,overflow:'hidden'}}>
+                    <div style={{padding:'10px 12px'}}>
+                      <div style={{display:'flex',alignItems:'center',gap:7,background:'#f4f6f9',border:'1px solid #e7eaef',borderRadius:9,padding:'6px 11px'}}>
+                        <i className="bi bi-search" style={{fontSize:13,color:'#9aa3af',flex:'none'}}></i>
+                        <input value={memberQ} onChange={e=>setMemberQ(e.target.value)} placeholder="ค้นหา" style={{border:'none',outline:'none',background:'transparent',fontSize:13,flex:1,fontFamily:'inherit',color:'#1f2733'}}/>
+                      </div>
+                    </div>
+                    <div style={{maxHeight:460,overflowY:'auto'}}>
+                      {memberTab==='person' ? filtered.map(m=>{
+                        const sel=selected.includes(m.name);
+                        return (
+                          <div key={m.name} className="row-hover" onClick={()=>toggleMember(m.name)} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 14px',cursor:'pointer',background:sel?'#f0faf8':'transparent',transition:'background .1s'}}>
+                            <Letter s={m.name} d={34} fs={13}/>
+                            <div style={{flex:1,minWidth:0}}>
+                              <div style={{fontWeight:600,fontSize:13,color:'#1f2733',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.name}</div>
+                              <div style={{fontSize:11.5,color:'#9aa3af',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{m.role}</div>
+                            </div>
+                            <div style={{width:20,height:20,borderRadius:'50%',border:'2px solid '+(sel?primary:'#cdd4dd'),background:sel?primary:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',transition:'background .15s,border-color .15s'}}>
+                              {sel&&<i className="bi bi-check" style={{fontSize:12,color:'#fff',lineHeight:1}}></i>}
+                            </div>
+                          </div>
+                        );
+                      }) : (
+                        <div style={{padding:'56px 0',textAlign:'center',color:'#b3bac4'}}>
+                          <i className="bi bi-folder2-open" style={{fontSize:32,display:'block',marginBottom:8}}></i>
+                          <div style={{fontSize:13}}>ไม่มีข้อมูล</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Selected panel */}
+                  <div style={{flex:'0 0 50%',width:'50%',display:'flex',flexDirection:'column'}}>
+                    <div style={{padding:'10px 12px 8px',fontSize:11.5,fontWeight:700,color:'#5a6473',borderBottom:'1px solid #f1f3f6',lineHeight:1.4}}>รายชื่อผู้ใช้งานที่ถูกเลือก</div>
+                    <div style={{flex:1,maxHeight:490,overflowY:'auto'}}>
+                      {selected.length===0 ? (
+                        <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'36px 16px',color:'#c2cad4',textAlign:'center'}}>
+                          <i className="bi bi-person-x" style={{fontSize:34,marginBottom:8}}></i>
+                          <div style={{fontSize:12}}>ไม่พบข้อมูล</div>
+                        </div>
+                      ) : selected.map(name=>{
+                        const m=MEMBERS.find(x=>x.name===name)||{name,role:''};
+                        return (
+                          <div key={name} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 10px',borderBottom:'1px solid #f8f9fb'}}>
+                            <Letter s={name} d={28} fs={10}/>
+                            <div style={{flex:1,minWidth:0}}>
+                              <div style={{fontSize:12,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{name}</div>
+                              <div style={{fontSize:10.5,color:'#9aa3af'}}>{m.role}</div>
+                            </div>
+                            <button onClick={()=>toggleMember(name)} style={{width:20,height:20,borderRadius:'50%',border:'none',background:'#fdecec',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',cursor:'pointer'}}>
+                              <i className="bi bi-x" style={{fontSize:13,color:'#d83a3a',lineHeight:1}}></i>
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

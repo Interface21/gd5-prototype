@@ -134,7 +134,7 @@ const PM=[
   {title:'ครุภัณฑ์ระบบโสตทัศนูปกรณ์', college:'วิทยาลัยอาชีวศึกษาเชียงใหม่', value:'1,330,000 บาท', pct:31, done:5, total:16, near:2, over:5, watch:1, date:'01/08/2569', day:35, status:'overdue', main:'ดนัย ก.', sub:'อาภรณ์ ท.'},
 ];
 
-// ===== WATCH SUMMARY (สรุปรายการเฝ้าระวัง ข้ามทุกโปรเจค) =====
+// ===== WATCH SUMMARY (สรุปรายการต้องติดตาม ข้ามทุกโปรเจค) =====
 const WNAME_POOL=['เครื่องคอมพิวเตอร์สำหรับงานประมวลผล','แว่น VR เชื่อมต่อโปรแกรม 3 มิติ','กระดานอัจฉริยะการเรียนการสอน','โต๊ะ-เก้าอี้ปฏิบัติการ','ระบบงานไฟฟ้าภายในห้อง','ชุดเซิร์ฟเวอร์แม่ข่าย','อุปกรณ์เครือข่าย Switch/Router','เครื่องมือวัดดิจิทัล','ชุดหุ่นยนต์แขนกลอุตสาหกรรม','เครื่องเชื่อมโลหะ CO2','ระบบโสตทัศน์เสียง-ภาพ','ชุดทดลองวงจรไฟฟ้า-อิเล็กทรอนิกส์'];
 const WTAGS=['LongLead-PO','LongLead-PR','LongLead-Material'];
 // ผู้ใช้ปัจจุบัน (สำหรับสาธิตสิทธิ์การเพิ่มบันทึก) — เพิ่ม Note ได้เฉพาะ ผู้รับผิดชอบโปรเจค/ผู้สั่งการ/ผู้รับคำสั่งการ
@@ -203,11 +203,11 @@ function WatchSummary({onClose}){
     rows.forEach(r=>{html+='<tr><td>'+r.name+'</td><td>'+r.owner+'</td><td>'+r.due+'</td><td>'+r.project+'</td><td>'+r.college+'</td><td>'+r.tag+'</td></tr>';});
     html+='</table></body></html>';
     const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel;charset=utf-8'});
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='สรุปรายการเฝ้าระวัง.xls';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='สรุปรายการต้องติดตาม.xls';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
   };
   const exportPDF=()=>{
     const w=window.open('','_blank');if(!w)return;
-    let html='<html><head><meta charset="utf-8"><title>สรุปรายการเฝ้าระวัง</title><style>body{font-family:"IBM Plex Sans Thai",sans-serif;padding:28px;color:#1f2733}h1{font-size:19px}table{width:100%;border-collapse:collapse;font-size:12px;margin-top:14px}th{background:#15a08f;color:#fff;text-align:left;padding:8px 10px}td{padding:7px 10px;border-bottom:1px solid #e7eaef}tr:nth-child(even) td{background:#f7f9fb}</style></head><body><h1>สรุปรายการเฝ้าระวัง ('+rows.length+' รายการ)</h1><table><tr>'+COLS.map(c=>'<th>'+c+'</th>').join('')+'</tr>';
+    let html='<html><head><meta charset="utf-8"><title>สรุปรายการต้องติดตาม</title><style>body{font-family:"IBM Plex Sans Thai",sans-serif;padding:28px;color:#1f2733}h1{font-size:19px}table{width:100%;border-collapse:collapse;font-size:12px;margin-top:14px}th{background:#15a08f;color:#fff;text-align:left;padding:8px 10px}td{padding:7px 10px;border-bottom:1px solid #e7eaef}tr:nth-child(even) td{background:#f7f9fb}</style></head><body><h1>สรุปรายการต้องติดตาม ('+rows.length+' รายการ)</h1><table><tr>'+COLS.map(c=>'<th>'+c+'</th>').join('')+'</tr>';
     rows.forEach(r=>{html+='<tr><td>'+r.name+'</td><td>'+r.owner+'</td><td>'+r.due+'</td><td>'+r.project+'</td><td>'+r.college+'</td><td>'+r.tag+'</td></tr>';});
     html+='</table><script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script></body></html>';
     w.document.write(html);w.document.close();
@@ -232,7 +232,7 @@ function WatchSummary({onClose}){
       <div style={{display:'flex',alignItems:'center',gap:13,padding:'18px 24px',borderBottom:'1px solid #eef0f4'}}>
         <div style={{width:38,height:38,borderRadius:11,background:'#fff7e8',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-shield-check" style={{fontSize:20,color:'#f59e0b'}}></i></div>
         <div>
-          <div style={{fontWeight:700,fontSize:17}}>สรุปรายการเฝ้าระวัง</div>
+          <div style={{fontWeight:700,fontSize:17}}>สรุปรายการต้องติดตาม</div>
           <div style={{fontSize:12.5,color:'#8a93a3',marginTop:1}}>ทุกโปรเจค · เรียงตามวันครบกำหนดใกล้สุด</div>
         </div>
         <div style={{flex:1}}></div>
@@ -324,8 +324,8 @@ function PMCard({d}){
   const chipLabel=done?'เสร็จแล้ว':(overdue?'เกิน '+d.day+' วัน':'อีก '+d.day+' วัน');
   const hasWatch=d.watch>0;
   return (
-    <a href="user-virtual-meeting-group.html?tab=watch" className="grp-card" style={{position:'relative',textDecoration:'none',color:'inherit',background:'#fff',border:'1px solid '+(hasWatch?'#f4c84b':'#eceef2'),borderRadius:13,boxShadow:hasWatch?'0 0 0 3px rgba(244,176,32,.16),0 1px 2px rgba(16,24,40,.04)':'0 1px 2px rgba(16,24,40,.04)',padding:'14px 15px',display:'flex',flexDirection:'column',gap:9,cursor:'pointer'}}>
-      {hasWatch && <div style={{position:'absolute',top:-10,right:12,display:'inline-flex',alignItems:'center',gap:5,background:'#f59e0b',color:'#fff',borderRadius:99,padding:'4px 11px 4px 9px',fontSize:11.5,fontWeight:800,boxShadow:'0 3px 8px rgba(217,119,6,.35)'}}>{ms('visibility',14,'#fff')}เฝ้าระวัง {d.watch}</div>}
+    <a href="user-virtual-meeting-group.html?tab=watch" className="grp-card" style={{position:'relative',textDecoration:'none',color:'inherit',background:'#fff',border:'1px solid '+(hasWatch?'#fca5a5':'#eceef2'),borderRadius:13,boxShadow:hasWatch?'0 0 0 3px rgba(229,57,53,.10),0 1px 2px rgba(16,24,40,.04)':'0 1px 2px rgba(16,24,40,.04)',padding:'14px 15px',display:'flex',flexDirection:'column',gap:9,cursor:'pointer'}}>
+      {hasWatch && <div style={{position:'absolute',top:-10,right:12,display:'inline-flex',alignItems:'center',gap:5,background:'#e53935',color:'#fff',borderRadius:99,padding:'4px 11px 4px 9px',fontSize:11.5,fontWeight:800,boxShadow:'0 3px 8px rgba(229,57,53,.35)'}}><i className="bi bi-exclamation-circle-fill" style={{fontSize:13,lineHeight:1}}></i>ต้องติดตาม {d.watch}</div>}
       <div style={{fontWeight:700,fontSize:14,lineHeight:1.35,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',paddingRight:hasWatch?96:0}}>{d.title}</div>
       <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#5a6473',minWidth:0}}>{ms('account_balance',16,'#9aa3af')}<span style={{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{d.college}</span></div>
       <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#5a6473'}}><span style={{fontWeight:700,color:'#9aa3af',width:16,textAlign:'center',flex:'none'}}>฿</span><span>{d.value}</span></div>
@@ -433,7 +433,7 @@ function App(){
               <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="ค้นหากลุ่มของคุณ" style={{border:'none',outline:'none',fontSize:13,width:200,background:'transparent',color:'#1f2733'}}/>
               <button style={{background:primary,color:'#fff',border:'none',borderRadius:8,padding:'6px 16px',fontSize:13,fontWeight:600}}>ค้นหา</button>
             </div>
-            <button title="สร้างกลุ่มใหม่" style={{width:38,height:38,borderRadius:'50%',border:'1.5px solid '+primary,background:'#fff',color:primary,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('add',23,primary)}</button>
+            <a href="new-virtual-meeting.html" title="สร้างกลุ่มใหม่" style={{width:38,height:38,borderRadius:'50%',border:'1.5px solid '+primary,background:'#fff',color:primary,display:'flex',alignItems:'center',justifyContent:'center',flex:'none',textDecoration:'none'}}>{ms('add',23,primary)}</a>
           </div>
 
           {/* MODE BAR */}
@@ -449,7 +449,7 @@ function App(){
             </div>
             {mode==='easypm' && (
               <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
-                <button onClick={()=>setShowSummary(true)} style={{display:'inline-flex',alignItems:'center',gap:8,border:'1px solid #f3c969',background:'#fff8ea',color:'#b97d09',borderRadius:10,padding:'7px 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-shield-check" style={{fontSize:16,color:'#f59e0b'}}></i>สรุปรายการเฝ้าระวัง<span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',minWidth:20,height:20,padding:'0 6px',borderRadius:99,background:'#f59e0b',color:'#fff',fontSize:11.5,fontWeight:800}}>{WATCH_TOTAL}</span></button>
+                <button onClick={()=>setShowSummary(true)} style={{display:'inline-flex',alignItems:'center',gap:8,border:'1px solid #fca5a5',background:'#fff1f1',color:'#c0392b',borderRadius:10,padding:'7px 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-exclamation-circle-fill" style={{fontSize:16,color:'#e53935'}}></i>สรุปรายการต้องติดตาม<span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',minWidth:20,height:20,padding:'0 6px',borderRadius:99,background:'#e53935',color:'#fff',fontSize:11.5,fontWeight:800}}>{WATCH_TOTAL}</span></button>
                 <div style={{flex:1}}></div>
                 <div style={{display:'inline-flex',gap:6,flexWrap:'wrap',justifyContent:'flex-end'}}>
                   {[['all','ทั้งหมด',null],['progress','กำลังดำเนินการ','progress'],['overdue','เกินสัญญา','overdue'],['done','เสร็จแล้ว',null]].map(([k,lb,cntKey])=>{const a=pmFilter===k;const cnt=cntKey?pmCount(cntKey):null;const badgeBg=k==='overdue'?(a?'#d8513a':'#fdecec'):(a?primary:primarySoft);const badgeInk=k==='overdue'?(a?'#fff':'#d8513a'):(a?'#fff':primary);return (

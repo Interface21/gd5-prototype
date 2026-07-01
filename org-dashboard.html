@@ -42,6 +42,8 @@ const primary='#15a08f', primarySoft='#e3f3f0';
 const RED='#ef4444', YEL='#f5b301', GRN='#22b96a';
 const ms=(name,size,color,fill)=>{var c=(fill&&ICONF[name])||ICON[name]||'bi-record-circle';return (<i className={'bi '+(/^bi-/.test(c)?c:'bi-'+c)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
 const dotC=(s)=> s==='r'?RED : s==='y'?YEL : GRN;
+const glossBg=(hex)=>'radial-gradient(circle at 32% 24%, rgba(255,255,255,.95), rgba(255,255,255,.22) 32%, rgba(255,255,255,0) 52%), radial-gradient(circle at 70% 82%, rgba(0,0,0,.35), rgba(0,0,0,0) 58%), '+hex;
+const glossShadow='inset 0 -2px 3px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,.45), 0 1px 2px rgba(0,0,0,.22)';
 const INITC=['#15a08f','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
 const initial=(s)=>String(s||'?').trim().charAt(0).toUpperCase();
 const initColor=(s)=>{let h=0;for(const ch of String(s||''))h=ch.charCodeAt(0)+h;return INITC[h%INITC.length];};
@@ -89,6 +91,7 @@ const QUARTERS={
     {status:'y',goal:4,strat:7,plan:22},{status:'g',goal:6,strat:6,plan:35},{status:'y',goal:3,strat:10,plan:30},{status:'y',goal:3,strat:10,plan:33}]},
 };
 const QKEYS=['Q1','Q2','Q3','Q4'];
+const LATEST='Q2';
 
 function Donut({segments,size}){
   // segments: [{v,color}]; renders SVG donut
@@ -112,15 +115,17 @@ function StatusDots({status,n,seed,size}){
 
 const STLABEL={g:'บรรลุ / ปกติ',y:'เฝ้าระวัง',r:'ต่ำกว่าเกณฑ์'};
 const LEVELS=[['goal','เป้าหมาย'],['strat','กลยุทธ์'],['plan','แผนปฏิบัติการ']];
+function kpiFor(seed,n){const a=[];let x=seed*7919+104729;for(let i=0;i<n;i++){x=(x*7919+104729)%233280;a.push(x/233280<0.45);}return a;}
 function itemsFor(mi,li,n,q){
   const arr=gridFor(mi*40+li*13+QKEYS.indexOf(q)*5,n);
+  const kpis=kpiFor(mi*40+li*13+QKEYS.indexOf(q)*5+500,n);
   const lab=LEVELS[li][1];
   const desc={
     0:'ตัวชี้วัดเป้าหมายของพันธกิจ ประเมินจากผลลัพธ์ที่กำหนดไว้ในรอบไตรมาสนี้',
     1:'แนวทางกลยุทธ์ที่ใช้ขับเคลื่อนพันธกิจให้บรรลุเป้าหมายที่วางไว้',
     2:'งาน/กิจกรรมตามแผนปฏิบัติการที่อยู่ระหว่างดำเนินการในไตรมาสนี้',
   }[li];
-  return arr.map((s,i)=>({status:s,title:lab+'ที่ '+(i+1),desc}));
+  return arr.map((s,i)=>({status:s,title:lab+'ที่ '+(i+1),desc,hasKpi:kpis[i]}));
 }
 function ColorChip({color,n,bg}){
   return <span style={{display:'inline-flex',alignItems:'center',gap:6,background:bg,borderRadius:99,padding:'3px 11px',fontSize:12,fontWeight:700,color:'#5a6473'}}><span style={{width:10,height:10,borderRadius:'50%',background:color}}></span>{n}</span>;
@@ -153,7 +158,10 @@ function LevelBlock({mi,li,n,q,sel,onPick}){
       </div>
       <div style={{display:'flex',flexWrap:'wrap',gap:7}}>
         {items.map((it,i)=>{const on=picked&&sel.i===i;return (
-          <button key={i} title={it.title} onClick={()=>onPick(li,i)} style={{width:22,height:22,borderRadius:'50%',background:dotC(it.status),boxShadow:on?'0 0 0 2px #fff,0 0 0 4px #2b3440':'none',transform:on?'scale(1.08)':'none',transition:'transform .1s',cursor:'pointer',flex:'none'}}></button>
+          <div key={i} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
+            <button title={it.title+(it.hasKpi?' · มีตัวชี้วัด':'')} onClick={()=>onPick(li,i)} style={{width:22,height:22,borderRadius:'50%',background:dotC(it.status),boxShadow:on?'0 0 0 2px #fff,0 0 0 4px #2b3440':'none',transform:on?'scale(1.08)':'none',transition:'transform .1s',cursor:'pointer',flex:'none'}}></button>
+            <span style={{width:14,height:3,borderRadius:2,background:it.hasKpi?dotC(it.status):'transparent'}}></span>
+          </div>
         );})}
       </div>
       {picked && (
@@ -162,6 +170,7 @@ function LevelBlock({mi,li,n,q,sel,onPick}){
             <span style={{width:12,height:12,borderRadius:'50%',background:dotC(picked.status),flex:'none'}}></span>
             <span style={{fontWeight:700,fontSize:13.5}}>{picked.title}</span>
             <span style={{fontSize:11,fontWeight:700,color:dotC(picked.status),background:SOFTBG[picked.status],borderRadius:99,padding:'2px 9px'}}>{STLABEL[picked.status]}</span>
+            {picked.hasKpi&&<span style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:11,fontWeight:700,color:'#5a6473',background:'#eef1f5',borderRadius:99,padding:'2px 9px'}}><span style={{width:12,height:3,borderRadius:2,background:dotC(picked.status),flex:'none'}}></span>มีตัวชี้วัด</span>}
           </div>
           <div style={{fontSize:12.5,color:'#5a6473',lineHeight:1.6}}>{picked.desc}</div>
         </div>
@@ -172,7 +181,8 @@ function LevelBlock({mi,li,n,q,sel,onPick}){
 
 function MissionStatusModal({q,setQ,onClose}){
   const [sel,setSel]=useState({});  // {missionIndex: {li,i}}
-  const Q=QUARTERS[q];
+  const rq=q==='latest'?LATEST:q;
+  const Q=QUARTERS[rq];
   const pick=(mi,li,i)=>setSel(s=>({...s,[mi]:(s[mi]&&s[mi].li===li&&s[mi].i===i)?null:{li,i}}));
   return (
     <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.45)',zIndex:80,display:'flex',flexDirection:'column',padding:'26px'}}>
@@ -187,6 +197,7 @@ function MissionStatusModal({q,setQ,onClose}){
           <div style={{flex:1}}></div>
           <div style={{display:'flex',background:'#f1f3f7',borderRadius:10,padding:3,gap:2}}>
             {QKEYS.map(k=>{const a=q===k;return <button key={k} onClick={()=>{setQ(k);setSel({});}} style={{borderRadius:7,padding:'7px 15px',fontSize:12.5,fontWeight:700,background:a?primary:'transparent',color:a?'#fff':'#5a6473',transition:'all .12s'}}>{k}</button>;})}
+            <button onClick={()=>{setQ('latest');setSel({});}} style={{borderRadius:7,padding:'7px 15px',fontSize:12.5,fontWeight:700,background:q==='latest'?primary:'transparent',color:q==='latest'?'#fff':'#5a6473',transition:'all .12s'}}>ล่าสุด</button>
           </div>
           <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('close',19,'#5a6473')}</button>
         </div>
@@ -199,13 +210,14 @@ function MissionStatusModal({q,setQ,onClose}){
           <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:10,height:10,borderRadius:'50%',background:GRN}}></span>บรรลุ/ปกติ</span>
           <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:10,height:10,borderRadius:'50%',background:YEL}}></span>เฝ้าระวัง</span>
           <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:10,height:10,borderRadius:'50%',background:RED}}></span>ต่ำกว่าเกณฑ์</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:7,paddingLeft:14,borderLeft:'1px solid #e7eaef',color:'#5a6473'}}><span style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2}}><span style={{width:10,height:10,borderRadius:'50%',background:'#9aa3af'}}></span><span style={{width:12,height:2,borderRadius:2,background:'#9aa3af'}}></span></span>มีตัวชี้วัด</span>
         </div>
 
         {/* CARDS */}
         <div style={{flex:1,overflowY:'auto',padding:22,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:18,background:'#fafbfc'}}>
           {Q.missions.map((m,i)=>{
             const parts=MNAMES[i].split(' : ');const mlabel=parts[0];const mname=parts.slice(1).join(' : ');
-            const agg=aggFor(i,q);const total=agg.g+agg.y+agg.r;
+            const agg=aggFor(i,rq);const total=agg.g+agg.y+agg.r;
             return (
             <div key={i} style={{border:'1px solid #eceef2',borderRadius:14,padding:20,background:'#fff'}}>
               {/* mission heading */}
@@ -230,10 +242,11 @@ function MissionStatusModal({q,setQ,onClose}){
 }
 
 function App(){
-  const [q,setQ]=useState('Q3');
+  const [q,setQ]=useState('latest');
   const [modal,setModal]=useState(false);
   const [cmdTab,setCmdTab]=useState('add');
-  const Q=QUARTERS[q];
+  const rq=q==='latest'?LATEST:q;
+  const Q=QUARTERS[rq];
 
   const rail=[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',true,'org-dashboard.html'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',false,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data',false,'business-plan-responsible-list.html']];
 
@@ -357,7 +370,7 @@ function App(){
                   </div>
                   <div style={{background:'#fafbfc',borderTop:'1px solid #f1f3f6',padding:'11px 14px'}}>
                     <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:9,fontSize:11.5,color:'#5a6473',fontWeight:600}}>{ms('desktop_windows',16,'#9aa3af')}ข้อมูลสรุปสถานะจากเป้าหมาย</div>
-                    <StatusDots status={m.status} n={m.goal} seed={i*5+QKEYS.indexOf(q)} size={13}/>
+                    <StatusDots status={m.status} n={m.goal} seed={i*5+QKEYS.indexOf(rq)} size={13}/>
                   </div>
                 </a>
               ))}

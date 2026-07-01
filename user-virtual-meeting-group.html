@@ -43,6 +43,8 @@ const {useState} = React;
 const ICON={"account_balance":"bank","account_balance_wallet":"wallet2","payments":"cash-coin","local_shipping":"truck","error":"exclamation-circle","report":"flag","picture_as_pdf":"file-earmark-pdf","restaurant":"egg-fried","android":"android2","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","add_circle":"plus-circle","add_task":"plus-square","arrow_back":"arrow-left","arrow_drop_down":"caret-down-fill","arrow_drop_up":"caret-up-fill","assignment":"clipboard","attach_file":"paperclip","autorenew":"arrow-repeat","back_hand":"hand-index","bar_chart":"bar-chart","bolt":"lightning-charge","bookmark":"bookmark","bookmark_add":"bookmark-plus","calendar_month":"calendar3","calendar_today":"calendar","campaign":"megaphone","cancel":"x-circle","chat_bubble_outline":"chat","check":"check-lg","check_box":"check-square","check_box_outline_blank":"square","check_circle":"check-circle","checklist":"list-check","chevron_right":"chevron-right","close":"x-lg","content_copy":"files","delete":"trash","description":"file-text","desktop_windows":"display","domain":"building","done_all":"check2-all","donut_small":"pie-chart","download":"download","drag_indicator":"grip-vertical","ecg_heart":"activity","edit":"pencil","edit_note":"pencil-square","engineering":"tools","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","favorite":"heart","filter_alt_off":"funnel","filter_list":"funnel","format_list_bulleted":"list-ul","forum":"chat-square-text","grid_view":"grid","group":"people","group_add":"person-plus","groups":"people","help":"question-circle","hourglass_bottom":"hourglass-bottom","hourglass_empty":"hourglass","hourglass_top":"hourglass-top","how_to_reg":"person-check","image":"image","inbox":"inbox","ink_eraser":"eraser","insert_chart":"bar-chart","insights":"graph-up","inventory_2":"box-seam","keyboard_arrow_down":"chevron-down","keyboard_arrow_up":"chevron-up","leaderboard":"bar-chart-line","list":"list","lock":"lock","low_priority":"sort-down","menu_book":"book","monitor_heart":"activity","monitoring":"graph-up-arrow","more_vert":"three-dots-vertical","move_up":"arrow-up-square","note_add":"file-earmark-plus","open_in_full":"arrows-fullscreen","open_in_new":"box-arrow-up-right","outbox":"box-arrow-up","palette":"palette","person":"person","play_arrow":"play-fill","play_circle":"play-circle","playlist_add":"list-task","playlist_add_check":"list-check","power_settings_new":"power","public":"globe","push_pin":"pin-angle","radio_button_unchecked":"circle","reply":"reply","search":"search","search_off":"search","send":"send","shield_lock":"shield-lock","shield_person":"shield-check","signpost":"signpost-2","sort":"sort-down","speed":"speedometer2","support":"life-preserver","swap_vert":"arrow-down-up","task_alt":"check2-circle","title":"type","touch_app":"hand-index","trending_up":"graph-up-arrow","tune":"sliders","unfold_more":"chevron-expand","upload_file":"file-earmark-arrow-up","verified_user":"patch-check","videocam":"camera-video","view_agenda":"card-heading","visibility":"eye","volunteer_activism":"hand-heart","waving_hand":"emoji-smile"};
 const ICONF={"check_circle":"check-circle-fill","favorite":"heart-fill","person":"person-fill","groups":"people-fill","group":"people-fill","play_circle":"play-circle-fill","lock":"lock-fill","send":"send-fill","push_pin":"pin-angle-fill","verified_user":"patch-check-fill","shield_person":"shield-fill-check","inbox":"inbox-fill","waving_hand":"emoji-smile-fill","fact_check":"ui-checks"};
 const primary='#15a08f', primarySoft='#e3f3f0';
+const CSTATUS={green:'#22b573',yellow:'#f5b301',red:'#ef4444'};
+const STATUS={unack:{label:'ยังไม่รับทราบ',bg:'#fef3e6',color:'#c77d1a',dot:'#e8920c'},inprogress:{label:'กำลังดำเนินการ',bg:'#eaf1fe',color:'#3b6fd4',dot:'#3b82f6'},closing:{label:'ขอปิดงาน',bg:'#e4f3ef',color:'#0e8c7d',dot:'#15a08f'},closed:{label:'ปิดงาน',bg:'#e7f6ee',color:'#1f9d57',dot:'#22b573'}};
 const ms=(name,size,color,fill)=>{var c=(fill&&ICONF[name])||ICON[name]||'bi-record-circle';return (<i className={'bi '+(/^bi-/.test(c)?c:'bi-'+c)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
 const AV=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
 const AVB=['b6e3f4','c0aede','d1d4f9','ffd5dc','ffdfbf','c7f0d8','f7d9c4','d3e4f5'];
@@ -89,20 +91,23 @@ const POSTS=[
   {who:'Piyawat Takaew',role:'SA Staff',date:'18 ธ.ค. 2025, 13:07 น.',title:'5 วิธีง่ายๆ เผาผลาญไขมัน',excerpt:'1.มื้อเช้าอย่าเริ่มด้วยแป้ง ให้เริ่มด้วยโปรตีน จะทำให้เราอิ่มนาน ไม่ทำให้น้ำตาลขึ้นเร็ว...',icon:'restaurant',tone:'amber',views:3,reacts:2,comments:0},
   {who:'Piyawat Takaew',role:'SA Staff',date:'4 พ.ย. 2025, 8:25 น.',title:'Win 11 LDPlayer ตั้งค่า Bypass ติดตั้ง APK',excerpt:'วิธีตั้งค่าให้ติดตั้งไฟล์ APK บน Windows 11 ผ่าน LDPlayer...',icon:'android',tone:'teal',views:5,reacts:1,comments:1},
 ];
-const TABS=[{key:'talk',label:'พูดคุย'},{key:'members',label:'สมาชิกในกลุ่ม'},{key:'invite',label:'รอตอบรับคำเชิญ'},{key:'overview',label:'ภาพรวมกลุ่ม'},{key:'verify',label:'ตรวจสอบโพสต์'},{key:'todo',label:'TODO'},{key:'watch',label:'เฝ้าระวัง'}];
+const TABS=[{key:'talk',label:'พูดคุย'},{key:'members',label:'สมาชิกในกลุ่ม'},{key:'invite',label:'รอตอบรับคำเชิญ'},{key:'overview',label:'ภาพรวมกลุ่ม'},{key:'verify',label:'ตรวจสอบโพสต์'},{key:'todo',label:'TODO'},{key:'watch',label:'ต้องติดตาม'}];
 
-// ===== Watch list (รายการเฝ้าระวัง) — shared store =====
+// ===== Watch list (รายการต้องติดตาม) — shared store =====
 const WKEY='gd5_vm_watch';            // watched items
 const TAGKEY='gd5_watch_tags';        // tag catalog, shared across all VM groups
 const WATCH_SEED=[
-  {id:'po-chulabhorn-0-4:quote:4',title:'โต๊ะวางเครื่องคอมพิวเตอร์พร้อมเก้าอี้',group:'ใบเสนอราคา',parent:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',href:'assignee-action-inprogress-checklist.html',addedBy:'Piyawat Takaew',addedByRole:'SA Staff',addedAt:Date.now()-1000*60*60*26,tags:['LongLead-PO'],notes:[{by:'Piyawat Takaew',at:Date.now()-1000*60*60*25,t:'รอยืนยันสเปกขาโต๊ะกับผู้ขายก่อนออก PO'}]},
-  {id:'po-chulabhorn-0-4:quote:1',title:'แว่น VR แว่นตาอัจฉริยะเสมือนจริงสำหรับเชื่อมต่อโปรแกรม',group:'ใบเสนอราคา',parent:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',href:'assignee-action-inprogress-checklist.html',addedBy:'Narate Boonmee',addedByRole:'PM',addedAt:Date.now()-1000*60*60*4,tags:['LongLead-PR'],notes:[]},
+  {id:'po-chulabhorn-0-4:quote:4',title:'โต๊ะวางเครื่องคอมพิวเตอร์พร้อมเก้าอี้',group:'ใบเสนอราคา',parent:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',href:'assignee-action-inprogress-checklist.html',addedBy:'Piyawat Takaew',addedByRole:'SA Staff',addedAt:Date.now()-1000*60*60*26,due:'2026-08-15',tags:['LongLead-PO'],notes:[{by:'Piyawat Takaew',at:Date.now()-1000*60*60*25,t:'รอยืนยันสเปกขาโต๊ะกับผู้ขายก่อนออก PO'}]},
+  {id:'po-chulabhorn-0-4:quote:1',title:'แว่น VR แว่นตาอัจฉริยะเสมือนจริงสำหรับเชื่อมต่อโปรแกรม',group:'ใบเสนอราคา',parent:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',href:'assignee-action-inprogress-checklist.html',addedBy:'Narate Boonmee',addedByRole:'PM',addedAt:Date.now()-1000*60*60*4,due:'2026-07-10',tags:['LongLead-PR'],notes:[]},
 ];
-const loadWatch=()=>{try{const a=JSON.parse(localStorage.getItem(WKEY)||'null');if(a&&a.length)return a;}catch(_){}return WATCH_SEED;};
+const SEED_DUE={'po-chulabhorn-0-4:quote:4':'2026-08-15','po-chulabhorn-0-4:quote:1':'2026-07-10'};
+const loadWatch=()=>{try{const a=JSON.parse(localStorage.getItem(WKEY)||'null');if(a&&a.length)return a.map(w=>({...w,due:w.due||SEED_DUE[w.id]||''}));}catch(_){}return WATCH_SEED;};
 const loadTags=()=>{try{const a=JSON.parse(localStorage.getItem(TAGKEY)||'null');if(a&&a.length)return a;}catch(_){}return ['LongLead-PO','LongLead-PR'];};
 const saveWatch=(a)=>{try{localStorage.setItem(WKEY,JSON.stringify(a));}catch(_){}};
 const saveTags=(a)=>{try{localStorage.setItem(TAGKEY,JSON.stringify(a));}catch(_){}};
 const relTime=(ts)=>{const s=(Date.now()-ts)/1000;if(s<60)return 'เมื่อสักครู่';if(s<3600)return Math.floor(s/60)+' นาทีที่แล้ว';if(s<86400)return Math.floor(s/3600)+' ชั่วโมงที่แล้ว';const d=Math.floor(s/86400);if(d<30)return d+' วันที่แล้ว';return new Date(ts).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'});};
+const fmtDate=(s)=>{if(!s)return '';const p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;};
+const daysLeft=(s)=>{if(!s)return null;let t;if(/^\d{4}-\d{2}-\d{2}$/.test(s)){t=new Date(s);}else if(/^\d{2}\/\d{2}\/\d{4}$/.test(s)){const[dd,mm,yy]=s.split('/');t=new Date(yy+'-'+mm+'-'+dd);}else return null;const n=new Date();n.setHours(0,0,0,0);t.setHours(0,0,0,0);return Math.ceil((t-n)/86400000);};
 const TAGTONE=['#e3f3f0|#0e8c7d|#bfe6db','#eaf1fe|#3b6fd4|#cdddf8','#fdf3d6|#a9870a|#f0e0a8','#f3e8fd|#7c3aed|#e2cdf7','#fde9e7|#d8513a|#f6cfca'];
 const tagColor=(t)=>{let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return TAGTONE[h%TAGTONE.length].split('|');};
 
@@ -117,12 +122,12 @@ const TD_SEED=[
   {id:uid(),title:'แจ้งทำสัญญา',inContract:true,subs:[
     sub('เอกสารมอบอำนาจ',true,'12/05/2026',0,'left',true,null),
     sub('Catalog สินค้าที่ยื่นเสนอราคา',true,'12/05/2026',0,'left',true,null),
-    sub('หลักประกันสัญญา',false,'18/05/2026',10,'left',true,{label:'ที่กำลังดำเนินการ',count:'5/12'}),
-    sub('สำรวจหน้างาน',false,'02/05/2026',10,'over',true,{label:'ที่กำลังดำเนินการ',count:''}),
+    sub('หลักประกันสัญญา',false,'18/05/2026',10,'left',true,{label:'ที่กำลังดำเนินการ',count:'5/12',statusKey:'inprogress',colorStatus:'yellow'}),
+    sub('สำรวจหน้างาน',false,'02/05/2026',10,'over',true,{label:'ที่กำลังดำเนินการ',count:'',statusKey:'inprogress',colorStatus:'red'}),
     sub('เอกสารอื่นๆ ที่วิทยาลัยขอตามหนังสือแจ้ง',false,'15/05/2026',10,'over',true,{avatar:true}),
   ]},
   {id:uid(),title:'ขอใบเสนอราคาจาก Supplier/Sub Contractor',inContract:true,subs:[
-    sub('งานที่มีใบเสนอราคาอยู่ และมีการสั่งซื้อประจำ',false,'12/05/2026',10,'left',true,{label:'ที่กำลังดำเนินการ',count:'10/35'}),
+    sub('งานที่มีใบเสนอราคาอยู่ และมีการสั่งซื้อประจำ',false,'12/05/2026',10,'left',true,{label:'ที่กำลังดำเนินการ',count:'10/35',statusKey:'inprogress',colorStatus:'green'}),
     sub('งานที่ต้องหาใบเสนอราคาใหม่ งานเฉพาะทางเทคนิค',false,'12/05/2026',10,'left',true,{avatar:true}),
     sub('งานติดตั้งระบบไฟฟ้า',false,'12/05/2026',10,'left',true,{avatar:true}),
   ]},
@@ -399,6 +404,8 @@ function TodoPanel(){
   const [topics,setTopics]=React.useState(TD_SEED);
   const [open,setOpen]=React.useState({});
   const [modal,setModal]=React.useState(null);
+  const [hovSubId,setHovSubId]=React.useState(null);
+  const [confirmDel,setConfirmDel]=React.useState(null);
 
   const cnt=(t)=>({done:t.subs.filter(s=>s.done).length,total:t.subs.length});
   const complete=(t)=>{const c=cnt(t);return c.total>0&&c.done===c.total;};
@@ -414,6 +421,7 @@ function TodoPanel(){
   const editTopic=(id,d)=>setTopics(ts=>ts.map(t=>t.id!==id?t:{...t,title:d.title,inContract:d.inContract}));
   const addSub=(tid,d)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,subs:[...t.subs,sub(d.title||'รายการใหม่',false,'',0,'left',d.inContract,null)]}));
   const editSub=(tid,sid,d)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,subs:t.subs.map(s=>s.id!==sid?s:{...s,title:d.title,inContract:d.inContract})}));
+  const moveSub=(tid,si,dir)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,subs:(()=>{const a=[...t.subs],j=si+dir;if(j<0||j>=a.length)return a;const x=a[si];a[si]=a[j];a[j]=x;return a;})()}));
 
   const Count=({c})=>{const done=c.total&&c.done===c.total;return <span style={{minWidth:30,textAlign:'right',color:done?'#22b573':'#aab2bd',fontWeight:600,fontSize:12,flex:'none'}}>{c.done}/{c.total||0}</span>;};
   const MiniBar=({c})=>{const p=c.total?c.done/c.total*100:0,done=p>=100;return <span style={{width:96,height:5,background:'#eef1f5',borderRadius:99,overflow:'hidden',flex:'none'}}><span style={{display:'block',height:'100%',borderRadius:99,background:done?'#22b573':'#15a08f',width:p+'%'}}></span></span>;};
@@ -458,15 +466,23 @@ function TodoPanel(){
               {mode==='do' && c.total>0 && <MiniBar c={c}/>}
               {c.total>0 && <Count c={c}/>}
               {mode==='edit' ? (
+                confirmDel&&confirmDel.type==='topic'&&confirmDel.id===t.id ? (
+                  <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fdeaea',borderRadius:9,padding:'4px 10px',flex:'none'}}>
+                    <span style={{fontSize:12,color:'#d83a3a',fontWeight:600}}>ลบหัวข้อนี้?</span>
+                    <button onClick={()=>{delTopic(t.id);setConfirmDel(null);}} style={{background:'#d83a3a',color:'#fff',border:'none',borderRadius:6,padding:'3px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>ยืนยัน</button>
+                    <button onClick={()=>setConfirmDel(null)} style={{background:'#f1f3f6',color:'#5a6473',border:'none',borderRadius:6,padding:'3px 10px',fontSize:12,fontWeight:600,cursor:'pointer'}}>ยกเลิก</button>
+                  </div>
+                ) : (
                 <div style={{display:'flex',alignItems:'center',gap:6,flex:'none'}}>
                   <button onClick={()=>setModal({kind:'sub',topicId:t.id})} title="เพิ่มรายการ" style={{width:28,height:28,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('add',17,primary)}</button>
-                  <button onClick={()=>toggleOpen(t.id)} title="กาง/ยุบ" style={{width:28,height:28,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('swap_vert',17,'#8a93a3')}</button>
-                  <button onClick={()=>delTopic(t.id)} title="ลบ" style={{width:28,height:28,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('delete',17,'#d83a3a')}</button>
+                  <button onClick={()=>setConfirmDel({type:'topic',id:t.id})} title="ลบ" style={{width:28,height:28,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('delete',17,'#d83a3a')}</button>
                   <div style={{display:'flex',flexDirection:'column'}}>
                     <button onClick={()=>moveTopic(ti,-1)} style={{height:14,display:'flex',alignItems:'center',color:'#9aa3af'}}>{ms('keyboard_arrow_up',16,'#9aa3af')}</button>
                     <button onClick={()=>moveTopic(ti,1)} style={{height:14,display:'flex',alignItems:'center',color:'#9aa3af'}}>{ms('keyboard_arrow_down',16,'#9aa3af')}</button>
                   </div>
+                  <button onClick={()=>toggleOpen(t.id)} style={{flex:'none',width:28,height:28,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',background:isOpen?'#cde2df':'#ebebeb',border:'none'}}>{ms(isOpen?'expand_less':'expand_more',18,isOpen?'#4e9b92':'#2b3440')}</button>
                 </div>
+                )
               ) : (
                 <button onClick={()=>toggleOpen(t.id)} style={{flex:'none',width:34,height:34,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',marginLeft:2,background:isOpen?'#cde2df':'#ebebeb',border:'none'}}>{ms(isOpen?'expand_less':'expand_more',21,isOpen?'#4e9b92':'#2b3440')}</button>
               )}
@@ -474,25 +490,81 @@ function TodoPanel(){
             {/* subs */}
             {isOpen && t.subs.length>0 && (
               <div style={{paddingLeft:14,paddingBottom:8}}>
-                {t.subs.map(s=>(
-                  <div key={s.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 8px',borderRadius:9,background:s.done?'#f1faf4':'transparent',marginBottom:3,flexWrap:'wrap'}}>
+                {t.subs.map((s,si)=>{
+                  const isLinked=s.op&&s.op.label;
+                  const isHov=hovSubId===s.id;
+                  const sc=isLinked?(STATUS[s.op.statusKey||'inprogress']||STATUS.inprogress):STATUS.inprogress;
+                  const cp=isLinked&&s.op.count?s.op.count.split('/').map(Number):null;
+                  const clClr=!cp?null:cp[0]===cp[1]?{text:'#1f9d57',bg:'#eaf6f3'}:cp[0]>0?{text:'#b07012',bg:'#fff3df'}:{text:'#d83a3a',bg:'#fdeaea'};
+                  const overClr='#d8513a';
+                  const leftClr='#c77d1a';
+                  const dClr=s.daysType==='over'?overClr:leftClr;
+                  return (
+                  <div key={s.id} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 8px',borderRadius:9,background:s.done?'#f1faf4':'transparent',marginBottom:3,flexWrap:'wrap'}}>
+                    {/* checkbox */}
                     <button onClick={()=>mode==='do'&&toggleDone(t.id,s.id)} style={{display:'flex',cursor:mode==='do'?'pointer':'default',flex:'none'}}>{ms(s.done?'check_box':'check_box_outline_blank',20,s.done?'#22b573':'#c2cad4',s.done)}</button>
+                    {/* title */}
                     <div style={{flex:'1 1 180px',minWidth:140,fontSize:13,color:s.done?'#6b7785':'#2b3440',textDecoration:s.done?'line-through':'none'}}>{s.title}</div>
-                    {s.date && <Pill bg={s.daysType==='over'?'#fdeaea':'#e9f6ee'} color={s.daysType==='over'?'#d8513a':'#1f9d57'} icon="event">{s.date}</Pill>}
-                    {mode==='do' && s.days>0 && <Pill bg={s.daysType==='over'?'#fdeaea':'#fff3df'} color={s.daysType==='over'?'#d8513a':'#c77d1a'} icon="hourglass_top">{s.daysType==='over'?'เกิน':'เหลือ'} {s.days} วัน</Pill>}
+                    {/* date / days pill */}
+                    {mode==='do' && (
+                      s.done ? (
+                        s.date && <Pill bg="#e9f6ee" color="#1f9d57" icon="event">{s.date}</Pill>
+                      ) : s.date ? (
+                        <span
+                          onMouseEnter={()=>setHovSubId(s.id)}
+                          onMouseLeave={()=>setHovSubId(null)}
+                          style={{display:'inline-flex',alignItems:'center',gap:4,
+                            background:isHov?(s.daysType==='over'?'#fdeaea':'#e9f6ee'):(s.daysType==='over'?'#fdeaea':'#fff3df'),
+                            color:isHov?(s.daysType==='over'?overClr:'#1f9d57'):dClr,
+                            borderRadius:7,padding:'3px 9px',fontSize:11,fontWeight:600,whiteSpace:'nowrap',flex:'none',cursor:'default',transition:'background .15s,color .15s'}}
+                        >
+                          {isHov
+                            ? <React.Fragment>{ms('event',13,s.daysType==='over'?overClr:'#1f9d57')}{s.date}</React.Fragment>
+                            : <React.Fragment>{ms('hourglass_top',13,dClr)}{s.daysType==='over'?'เกิน':'เหลือ'} {s.days} วัน</React.Fragment>
+                          }
+                        </span>
+                      ) : null
+                    )}
+                    {/* ในสัญญา/นอกสัญญา */}
                     <Pill bg={s.inContract?'#eaf1fe':'#f1f3f6'} color={s.inContract?'#3b6fd4':'#8a93a3'}>{s.inContract?'ในสัญญา':'นอกสัญญา'}</Pill>
+                    {/* command area */}
                     {mode==='do' ? (
-                      s.op ? (s.op.avatar ? <div style={{width:24,height:24,borderRadius:'50%',background:AV[3],flex:'none'}}></div> :
-                        <span style={{display:'inline-flex',alignItems:'center',gap:5,flex:'none'}}><span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eaf1fe',color:'#3b6fd4',borderRadius:7,padding:'4px 10px',fontSize:11,fontWeight:600}}>{ms('autorenew',14,'#3b6fd4')}{s.op.label}</span>{s.op.count && <span style={{fontSize:11,color:'#9aa3af',fontWeight:600}}>{s.op.count}</span>}</span>)
-                      : <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eaf1fe',color:'#3b6fd4',borderRadius:7,padding:'4px 10px',fontSize:11,fontWeight:600,flex:'none'}}>{ms('play_circle',14,'#3b6fd4')}ดูสถานะ</span>
+                      s.done ? (
+                        <React.Fragment>
+                          <span style={{width:9,height:9,borderRadius:'50%',background:'#22b573',flex:'none',display:'inline-block'}}></span>
+                          <a href="assignee-action-inprogress.html" style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eaf6f3',color:'#0e8c7d',borderRadius:7,padding:'4px 10px',fontSize:11,fontWeight:600,flex:'none',textDecoration:'none'}}>{ms('play_circle',13,'#0e8c7d')}ดูคำสั่งการ</a>
+                        </React.Fragment>
+                      ) : isLinked ? (
+                        <React.Fragment>
+                          <span style={{display:'inline-flex',alignItems:'center',gap:6,background:sc.bg,color:sc.color,borderRadius:7,padding:'3px 11px',fontSize:12,fontWeight:600,flex:'none'}}><span style={{width:7,height:7,borderRadius:'50%',background:sc.dot,flex:'none'}}></span>{sc.label}</span>
+                          {cp && clClr && <span style={{display:'inline-flex',alignItems:'center',gap:4,background:clClr.bg,color:clClr.text,borderRadius:99,padding:'2px 8px',fontSize:11,fontWeight:700,flex:'none',border:'1.5px solid '+clClr.text+'55'}}><i className="bi bi-list-check" style={{fontSize:11,color:clClr.text,marginRight:2}}></i>{cp[0]}/{cp[1]}</span>}
+                          {isLinked&&s.op.colorStatus&&<span style={{width:10,height:10,borderRadius:'50%',background:CSTATUS[s.op.colorStatus]||'#ccc',flex:'none',display:'inline-block'}}></span>}
+                          <a href="assignee-action-inprogress.html" style={{display:'inline-flex',alignItems:'center',gap:4,background:sc.bg,color:sc.color,borderRadius:7,padding:'4px 10px',fontSize:11,fontWeight:600,flex:'none',textDecoration:'none'}}>{ms('open_in_new',12,sc.color)}ดูคำสั่งการ</a>
+                        </React.Fragment>
+                      ) : (
+                        <a href="create-command.html" style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff3df',color:'#b07012',borderRadius:7,padding:'4px 10px',fontSize:11,fontWeight:600,flex:'none',textDecoration:'none'}}>{ms('bolt',13,'#b07012')}สั่งการ</a>
+                      )
                     ) : (
+                      confirmDel&&confirmDel.type==='sub'&&confirmDel.id===s.id ? (
+                        <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fdeaea',borderRadius:9,padding:'4px 10px',flex:'none'}}>
+                          <span style={{fontSize:12,color:'#d83a3a',fontWeight:600}}>ลบรายการนี้?</span>
+                          <button onClick={()=>{delSub(t.id,s.id);setConfirmDel(null);}} style={{background:'#d83a3a',color:'#fff',border:'none',borderRadius:6,padding:'3px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>ยืนยัน</button>
+                          <button onClick={()=>setConfirmDel(null)} style={{background:'#f1f3f6',color:'#5a6473',border:'none',borderRadius:6,padding:'3px 10px',fontSize:12,fontWeight:600,cursor:'pointer'}}>ยกเลิก</button>
+                        </div>
+                      ) : (
                       <div style={{display:'flex',alignItems:'center',gap:6,flex:'none'}}>
-                        <button onClick={()=>setModal({kind:'sub',topicId:t.id,id:s.id,title:s.title,inContract:s.inContract})} style={{width:26,height:26,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('edit',15,'#3b6fd4')}</button>
-                        <button onClick={()=>delSub(t.id,s.id)} style={{width:26,height:26,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('delete',15,'#d83a3a')}</button>
+                        <button onClick={()=>setModal({kind:'sub',topicId:t.id})} title="เพิ่มรายการ" style={{width:26,height:26,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('add',15,primary)}</button>
+                        <button onClick={()=>setConfirmDel({type:'sub',topicId:t.id,id:s.id})} title="ลบ" style={{width:26,height:26,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('delete',15,'#d83a3a')}</button>
+                        <div style={{display:'flex',flexDirection:'column'}}>
+                          <button onClick={()=>moveSub(t.id,si,-1)} style={{height:13,display:'flex',alignItems:'center',color:'#9aa3af'}}>{ms('keyboard_arrow_up',15,'#9aa3af')}</button>
+                          <button onClick={()=>moveSub(t.id,si,1)} style={{height:13,display:'flex',alignItems:'center',color:'#9aa3af'}}>{ms('keyboard_arrow_down',15,'#9aa3af')}</button>
+                        </div>
                       </div>
+                      )
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -518,6 +590,7 @@ function TodoPanel(){
   );
 }
 
+const CONTRACT_TEAM=['Piyawat Takaew','Narate Boonmee','Nichagorn Prajansen','Pannawat Chantharasena','Khajonsak Sukpasert','Jarunya Thaiprayoon'];
 function ContractCard(){
   const [edit,setEdit]=useState(false);
   const [c,setC]=useState({
@@ -529,12 +602,13 @@ function ContractCard(){
     penalty:'12,500',
     kickoff:'05/05/2026',
     ownerMain:'Piyawat Takaew',
-    ownerSub:'Narate Boonmee',
+    ownersSub:['Narate Boonmee'],
     overDays:'0',
     penaltyTotal:'0',
   });
   const [draft,setDraft]=useState(c);
-  const start=()=>{setDraft(c);setEdit(true);};
+  const [ownerMenu,setOwnerMenu]=useState(false);
+  const start=()=>{setDraft(c);setEdit(true);setOwnerMenu(false);};
   const save=()=>{setC(draft);setEdit(false);};
   const set=(k,v)=>setDraft(d=>({...d,[k]:v}));
   const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:7,padding:'6px 9px',fontSize:12.5,outline:'none',color:'#1f2733',fontFamily:'inherit',background:'#fff'};
@@ -577,15 +651,44 @@ function ContractCard(){
         {ms('engineering',18,'#9aa3af')}
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontSize:11.5,color:'#9aa3af',marginBottom:edit?5:3}}>ผู้รับผิดชอบโครงการ</div>
-          {edit ? (
-            <div style={{display:'flex',flexDirection:'column',gap:6}}>
-              <input value={draft.ownerMain} onChange={(e)=>set('ownerMain',e.target.value)} style={inp} placeholder="หลัก"/>
-              <input value={draft.ownerSub} onChange={(e)=>set('ownerSub',e.target.value)} style={inp} placeholder="รอง"/>
+{edit ? (
+            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              {/* หลัก — single */}
+              <div>
+                <div style={{fontSize:11,color:'#9aa3af',marginBottom:4}}>หลัก <span style={{fontSize:10}}>(1 คน)</span></div>
+                <select value={draft.ownerMain||''} onChange={e=>set('ownerMain',e.target.value)} style={{width:'100%',border:'1px solid #e3e7ec',borderRadius:7,padding:'7px 10px',fontSize:12.5,outline:'none',color:'#1f2733',background:'#fff',fontFamily:'inherit'}}>
+                  <option value="">-- เลือก --</option>
+                  {CONTRACT_TEAM.filter(n=>!(draft.ownersSub||[]).includes(n)).map(n=><option key={n} value={n}>{n}</option>)}
+                </select>
+              </div>
+              {/* รอง — multi chips */}
+              <div>
+                <div style={{fontSize:11,color:'#9aa3af',marginBottom:4}}>รอง <span style={{fontSize:10}}>(เพิ่มได้หลายคน)</span></div>
+                <div style={{display:'flex',gap:5,flexWrap:'wrap',alignItems:'center'}}>
+                  {(draft.ownersSub||[]).map(name=>(
+                    <span key={name} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#e3f3f0',color:'#0e7b6e',borderRadius:99,padding:'3px 6px 3px 3px',fontSize:12,fontWeight:600}}>
+                      <Letter s={name} d={20} fs={8}/>{name}
+                      <button onClick={()=>set('ownersSub',(draft.ownersSub||[]).filter(n=>n!==name))} style={{width:14,height:14,border:'none',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#0e7b6e',padding:0}}><i className="bi bi-x" style={{fontSize:12,lineHeight:1}}></i></button>
+                    </span>
+                  ))}
+                  <button onClick={()=>setOwnerMenu(v=>!v)} style={{display:'inline-flex',alignItems:'center',gap:4,border:'1px dashed #cdd4dd',background:'#fff',borderRadius:99,padding:'3px 10px',fontSize:12,fontWeight:600,color:'#5a6473',cursor:'pointer'}}><i className="bi bi-plus-lg" style={{fontSize:11}}></i>เพิ่ม</button>
+                  {ownerMenu&&(
+                    <div style={{position:'absolute',marginTop:4,zIndex:30,width:230,background:'#fff',border:'1px solid #e7eaef',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.14)',padding:8,animation:'fadeIn .12s ease'}}>
+                      <div style={{fontSize:11,fontWeight:700,color:'#9aa3af',padding:'3px 7px 7px'}}>เลือกจากทีม</div>
+                      {CONTRACT_TEAM.filter(n=>n!==draft.ownerMain&&!(draft.ownersSub||[]).includes(n)).map(name=>(
+                        <button key={name} onClick={()=>{set('ownersSub',[...(draft.ownersSub||[]),name]);setOwnerMenu(false);}} style={{display:'flex',alignItems:'center',gap:8,width:'100%',padding:'6px 7px',border:'none',background:'transparent',borderRadius:8,cursor:'pointer',fontSize:12.5,textAlign:'left'}}>
+                          <Letter s={name} d={24} fs={9}/><span style={{color:'#2b3440'}}>{name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           ) : (
-            <div style={{fontSize:12.5,color:'#2b3440'}}>
-              <div style={{display:'flex',gap:6,marginBottom:2}}><span style={{color:'#9aa3af',minWidth:34}}>หลัก</span><span style={{fontWeight:600}}>{c.ownerMain}</span></div>
-              <div style={{display:'flex',gap:6}}><span style={{color:'#9aa3af',minWidth:34}}>รอง</span><span style={{fontWeight:600}}>{c.ownerSub}</span></div>
+            <div style={{display:'flex',flexDirection:'column',gap:5,marginTop:2}}>
+              {c.ownerMain&&<div style={{display:'flex',gap:5,alignItems:'center'}}><span style={{fontSize:11,color:'#9aa3af',minWidth:28}}>หลัก</span><span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#f1f3f6',borderRadius:99,padding:'2px 9px 2px 3px',fontSize:12.5,fontWeight:600}}><Letter s={c.ownerMain} d={20} fs={8}/>{c.ownerMain}</span></div>}
+              {(c.ownersSub||[]).length>0&&<div style={{display:'flex',gap:5,alignItems:'center',flexWrap:'wrap'}}><span style={{fontSize:11,color:'#9aa3af',minWidth:28}}>รอง</span>{(c.ownersSub||[]).map(name=>(<span key={name} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#f1f3f6',borderRadius:99,padding:'2px 9px 2px 3px',fontSize:12.5,fontWeight:600}}><Letter s={name} d={20} fs={8}/>{name}</span>))}</div>}
             </div>
           )}
         </div>
@@ -742,7 +845,7 @@ function VerifyPanel(){
   );
 }
 
-// โปรเจค/วิทยาลัยที่มีอยู่ (สำหรับเพิ่มรายการเฝ้าระวังเอง — ต้องผูกกับโปรเจคเสมอ)
+// โปรเจค/วิทยาลัยที่มีอยู่ (สำหรับเพิ่มรายการต้องติดตามเอง — ต้องผูกกับโปรเจคเสมอ)
 const WPROJECTS=[
   {project:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',college:'วท.จุฬาภรณ์'},
   {project:'ครุภัณฑ์ห้องปฏิบัติการคอมพิวเตอร์ - วท.เชียงใหม่',college:'วท.เชียงใหม่'},
@@ -770,7 +873,7 @@ function AddWatchModal({onClose,onSave,catalog}){
         <div style={{display:'flex',alignItems:'center',gap:10,padding:'16px 20px',borderBottom:'1px solid #f1f3f6'}}>
           <div style={{width:34,height:34,borderRadius:9,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-shield-plus" style={{fontSize:18,color:primary}}></i></div>
           <div>
-            <div style={{fontWeight:700,fontSize:16}}>เพิ่มรายการเฝ้าระวังเอง</div>
+            <div style={{fontWeight:700,fontSize:16}}>เพิ่มรายการต้องติดตามเอง</div>
             <div style={{fontSize:11.5,color:'#9aa3af',marginTop:1}}>สำหรับรายการนอกเหนือคำสั่งการ ที่เพิ่มมาทีหลัง</div>
           </div>
           <div style={{flex:1}}></div>
@@ -804,7 +907,7 @@ function AddWatchModal({onClose,onSave,catalog}){
         </div>
         <div style={{display:'flex',gap:10,justifyContent:'flex-end',padding:'14px 20px',borderTop:'1px solid #f1f3f6'}}>
           <button onClick={onClose} style={{border:'1px solid #e3e7ec',background:'#fff',borderRadius:10,padding:'10px 18px',fontSize:13.5,fontWeight:600,color:'#5a6473',cursor:'pointer'}}>ยกเลิก</button>
-          <button onClick={submit} disabled={!valid} style={{border:'none',background:valid?primary:'#cdd4dd',color:'#fff',borderRadius:10,padding:'10px 20px',fontSize:13.5,fontWeight:700,cursor:valid?'pointer':'not-allowed',display:'inline-flex',alignItems:'center',gap:7}}><i className="bi bi-plus-lg" style={{fontSize:14}}></i>เพิ่มเข้ารายการเฝ้าระวัง</button>
+          <button onClick={submit} disabled={!valid} style={{border:'none',background:valid?primary:'#cdd4dd',color:'#fff',borderRadius:10,padding:'10px 20px',fontSize:13.5,fontWeight:700,cursor:valid?'pointer':'not-allowed',display:'inline-flex',alignItems:'center',gap:7}}><i className="bi bi-plus-lg" style={{fontSize:14}}></i>เพิ่มเข้ารายการต้องติดตาม</button>
         </div>
       </div>
     </div>
@@ -852,7 +955,7 @@ function WatchPanel(){
     <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
       <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
         <i className="bi bi-shield-check" style={{fontSize:21,color:primary}}></i>
-        <span style={{fontWeight:700,fontSize:16}}>รายการเฝ้าระวัง</span>
+        <span style={{fontWeight:700,fontSize:16}}>รายการต้องติดตาม</span>
         <span style={{minWidth:22,height:22,borderRadius:99,background:primarySoft,color:primary,fontSize:12,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 7px'}}>{items.length}</span>
         <div style={{flex:1}}></div>
         {canAdd && <button onClick={()=>setShowAdd(true)} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:primary,color:'#fff',borderRadius:10,padding:'9px 15px',fontSize:13,fontWeight:700,cursor:'pointer',boxShadow:'0 1px 2px rgba(21,160,143,.3)'}}><i className="bi bi-plus-lg" style={{fontSize:14}}></i>เพิ่มเอง</button>}
@@ -863,7 +966,7 @@ function WatchPanel(){
     {items.length===0 ? (
       <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'64px 0',textAlign:'center',color:'#aeb6c2'}}>
         <i className="bi bi-bookmark-x" style={{fontSize:42,color:'#cfd6e0'}}></i>
-        <div style={{marginTop:12,fontSize:13.5}}>ยังไม่มีรายการเฝ้าระวัง</div>
+        <div style={{marginTop:12,fontSize:13.5}}>ยังไม่มีรายการต้องติดตาม</div>
         <div style={{marginTop:4,fontSize:12.5}}>กดไอคอนเฝ้าติดตามท้ายรายการใน Checklist ของคำสั่งการ</div>
       </div>
     ) : items.map(w=>{
@@ -880,16 +983,14 @@ function WatchPanel(){
               {w.manual && <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fef3e2',color:'#b97d09',border:'1px solid #f3d79a',borderRadius:99,padding:'2px 10px',fontSize:11,fontWeight:700,flex:'none'}}><i className="bi bi-hand-index-thumb" style={{fontSize:11}}></i>เพิ่มเอง</span>}
             </div>
             <div style={{display:'flex',alignItems:'center',gap:8,marginTop:6,flexWrap:'wrap'}}>
-              {w.group && <span style={{background:primarySoft,color:'#0e8c7d',borderRadius:7,padding:'2px 9px',fontSize:11.5,fontWeight:700}}>{w.group}</span>}
-              <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12.5,color:'#8a93a3'}}><i className="bi bi-folder2-open" style={{fontSize:13}}></i>{w.parent}</span>
-              {w.due && <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,color:'#b45309',background:'#fff7e8',borderRadius:7,padding:'2px 9px'}}><i className="bi bi-calendar-event" style={{fontSize:12}}></i>ครบกำหนด {w.due}</span>}
+              {w.due && (()=>{const dl=daysLeft(w.due);const over=dl!==null&&dl<0;const warn=dl!==null&&dl>=0&&dl<=7;return (<><span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,color:over?'#d8513a':'#b45309',background:over?'#fdecec':'#fff7e8',borderRadius:7,padding:'2px 9px'}}><i className="bi bi-calendar-event" style={{fontSize:12}}></i>{fmtDate(w.due)}</span>{dl!==null&&<span style={{display:'inline-flex',alignItems:'center',gap:4,background:over?'#fdecec':warn?'#fdf3d6':'#f0faf6',color:over?'#d8513a':warn?'#a9870a':'#1f9d57',borderRadius:7,padding:'2px 9px',fontSize:11.5,fontWeight:700}}>{over?'เกินมา '+Math.abs(dl)+' วัน':'อีก '+dl+' วัน'}</span>}</>);})()}
             </div>
           </div>
           <div style={{display:'flex',alignItems:'center',gap:8,flex:'none'}}>
             {w.manual
               ? <span title="รายการนี้เพิ่มเอง ไม่มีคำสั่งการต้นทาง" style={{display:'inline-flex',alignItems:'center',gap:6,background:'#f4f5f7',color:'#8a93a3',borderRadius:9,padding:'7px 13px',fontSize:12.5,fontWeight:700}}><i className="bi bi-slash-circle" style={{fontSize:14}}></i>ไม่มีคำสั่งการ</span>
               : <a href={(w.href||'#')} title="ย้อนกลับไปคำสั่งการ" style={{display:'inline-flex',alignItems:'center',gap:6,background:'#eaf1fe',color:'#3b6fd4',borderRadius:9,padding:'7px 13px',fontSize:12.5,fontWeight:700}}><i className="bi bi-arrow-return-left" style={{fontSize:14}}></i>ไปยังคำสั่งการ</a>}
-            <button onClick={()=>remove(w.id)} title="นำออกจากรายการเฝ้าระวัง" style={{width:34,height:34,borderRadius:9,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-x-lg" style={{fontSize:15,color:'#d83a3a'}}></i></button>
+            <button onClick={()=>remove(w.id)} title="นำออกจากรายการต้องติดตาม" style={{width:34,height:34,borderRadius:9,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-x-lg" style={{fontSize:15,color:'#d83a3a'}}></i></button>
           </div>
         </div>
 
