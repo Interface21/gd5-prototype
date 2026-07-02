@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>รายละเอียดแผนธุรกิจ — GiveD5</title>
+<title>รายละเอียดแผนธุรกิจ — GiveDeeFive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -46,8 +46,8 @@ const PLANS=[
      {t:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568', kpi:'ชื่อตัวชี้วัด', s:'y'},
      {t:'เป้าหมาย 1.4 ความพึงพอใจของผู้เรียนในระบบ EDR', kpi:'ชื่อตัวชี้วัด', s:'r'},
    ]},
-  {code:'พันธกิจที่ 2 : GiveD5', date:'01/10/2568 – No end date', status:'y', total:642,
-   desc:'พัฒนาระบบ GiveD5 ให้รองรับการมีส่วนร่วมของบุคลากรทุกระดับ ส่งเสริมวัฒนธรรมการให้และการเรียนรู้ในองค์กรอย่างต่อเนื่อง',
+  {code:'พันธกิจที่ 2 : GiveDeeFive', date:'01/10/2568 – No end date', status:'y', total:642,
+   desc:'พัฒนาระบบ GiveDeeFive ให้รองรับการมีส่วนร่วมของบุคลากรทุกระดับ ส่งเสริมวัฒนธรรมการให้และการเรียนรู้ในองค์กรอย่างต่อเนื่อง',
    inPlan:{g:54,y:88,r:71}, support:{g:120,y:96,r:62},
    gauge:0.58, gaugeLabel:'หน่วยงานที่ยังไม่เริ่มใช้งาน 3 แห่ง',
    goals:[
@@ -64,7 +64,7 @@ const PLANS=[
      {t:'เป้าหมาย 3.2 อัตราการบำรุงรักษาตามแผน', kpi:'ชื่อตัวชี้วัด', s:'r'},
      {t:'เป้าหมาย 3.3 ความถูกต้องของทะเบียนทรัพย์สิน', kpi:'ชื่อตัวชี้วัด', s:'y'},
    ]},
-  {code:'พันธกิจที่ 4 : ใช้เทคโนโลยีดิจิทัล GiveD5 และ AI', date:'01/10/2568 – No end date', status:'y', total:431,
+  {code:'พันธกิจที่ 4 : ใช้เทคโนโลยีดิจิทัล GD5 และ AI', date:'01/10/2568 – No end date', status:'y', total:431,
    desc:'นำเทคโนโลยีดิจิทัลและปัญญาประดิษฐ์มาประยุกต์ใช้กับงานขององค์กร เพื่อเพิ่มประสิทธิภาพการทำงานและการตัดสินใจบนฐานข้อมูล',
    inPlan:{g:38,y:64,r:49}, support:{g:88,y:112,r:80},
    gauge:0.64, gaugeLabel:'ระบบที่อยู่ระหว่างพัฒนา 4 ระบบ',
@@ -126,7 +126,36 @@ function App(){
   const totalCmd=P.inPlan.g+P.inPlan.y+P.inPlan.r+P.support.g+P.support.y+P.support.r;
 
   return (
-   <GD5AppShell active="business">
+   <div style={{minHeight:'100vh',background:'#f3f5f9'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>10</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+        {rail.map(([ic,act,url],i)=> url ? (
+          <a href={url} key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
+        ) : (
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
 
       {/* MAIN */}
       <div style={{flex:1,padding:'20px 24px',minWidth:0}}>
@@ -207,17 +236,16 @@ function App(){
 
        </div>
       </div>
-    </GD5AppShell>
+    </div>
+   </div>
   );
 }
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>
-(async function(){
-  var shellSrc='';
-  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
-  var pageSrc=document.getElementById('jsx-src').textContent;
-  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
+(function(){
+  var src=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
   new Function(out)();
 })();
 </script>

@@ -1,7 +1,5 @@
 # GD5 Prototype — Project Instructions
 
-- **ชื่อแบรนด์: ใช้ "GiveD5" เสมอ** — ห้ามใช้ "GiveDeeFive" หรือรูปแบบอื่น แม้รูปต้นแบบจะเขียนต่างออกไป ให้เปลี่ยนเป็น GiveD5 ทันที
-
 - **ไอคอน: ใช้ Bootstrap Icons (https://icons.getbootstrap.com/) เป็นหลักเสมอ** ทุกหน้า เรนเดอร์ผ่าน `<i class="bi bi-...">` — ห้ามใช้ Material Symbols. helper `ms()`/`ic()` map ชื่อเดิมไปเป็นคลาส `bi-*` ผ่านตาราง `ICON`/`ICONF` ต้นไฟล์
 - **ห้ามทำ dark mode** — ใช้ธีมสว่างเสมอ
 - avatar = วงกลมตัวอักษรตัวแรกของชื่อ + สีประจำตัว (CSS ล้วน)

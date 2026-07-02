@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>คำสั่งที่ได้รับ — GiveD5</title>
+<title>คำสั่งที่ได้รับ — GiveDeeFive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -55,7 +55,36 @@ function App(){
   );
 
   return (
-   <GD5AppShell active="received">
+   <div style={{minHeight:'100vh',background:'#eef1f6'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center',textDecoration:'none'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>7</span></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>10</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6}}>P</div>
+        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',false,'org-dashboard.html'],['bi-arrow-down-left',true,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',false,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data',false,'business-plan-responsible-list.html']].map(([ic,act,url],i)=> url ? (
+          <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
+        ) : (
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
 
       {/* MAIN */}
       <div style={{flex:1,padding:22,minWidth:0}}>
@@ -63,7 +92,7 @@ function App(){
 
         {/* HEADER */}
         <div style={{display:'flex',alignItems:'center',gap:13,marginBottom:18}}>
-          <a href="assignee-action-list.html" style={{textDecoration:'none',width:38,height:38,borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',color:'#3a4452'}}>{ms('arrow_back',26)}</a>
+          <a href="user-today-job.html" style={{textDecoration:'none',width:38,height:38,borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',color:'#3a4452'}}>{ms('arrow_back',26)}</a>
           <div style={{fontWeight:700,fontSize:21}}>คำสั่งที่ได้รับ</div>
           <div style={{flex:1}}></div>
           <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'none',color:'#5a6473',fontSize:13.5,fontWeight:600}}>{ms('visibility',19,'#5a6473')}ภาพรวมคำสั่งการ</button>
@@ -79,7 +108,7 @@ function App(){
               <div style={{flex:'none',marginTop:2}}>{ms('format_list_bulleted',22,'#9aa3af')}</div>
               <div style={{flex:1,minWidth:0,fontSize:13.5,color:'#3a4452',lineHeight:1.7}}>
                 <div style={{fontWeight:600,color:'#1f2733',marginBottom:6}}>รายละเอียด</div>
-                <p style={{margin:'0 0 12px'}}>เพื่อเป็นการขับเคลื่อนนโยบายสนับสนุนการใช้ AI เข้ามาช่วยในงานประจำ จึงอยากขอรบกวนให้ทุกคน ประยุกต์ใช้ AI 3 ตัว ที่ได้รับความนิยมและน่าเชื่อถือในท้องตลาด (ChatGPT, Gemini, Claude) กับงานประจำของตัวเอง และแชร์ประสบการณ์ ผ่าน Post บน GiveD5 โดยอยากให้มีการแชร์อย่างน้อยคนละ 2 โพสต์ครับ ก่อนสิ้นปีครับ</p>
+                <p style={{margin:'0 0 12px'}}>เพื่อเป็นการขับเคลื่อนนโยบายสนับสนุนการใช้ AI เข้ามาช่วยในงานประจำ จึงอยากขอรบกวนให้ทุกคน ประยุกต์ใช้ AI 3 ตัว ที่ได้รับความนิยมและน่าเชื่อถือในท้องตลาด (ChatGPT, Gemini, Claude) กับงานประจำของตัวเอง และแชร์ประสบการณ์ ผ่าน Post บน GiveDeeFive โดยอยากให้มีการแชร์อย่างน้อยคนละ 2 โพสต์ครับ ก่อนสิ้นปีครับ</p>
                 <p style={{margin:'0 0 12px'}}>ส่วนใครที่ถนัดหรือใช้ AI ยี่ห้ออื่นอยู่ สามารถแชร์ได้เช่นกันครับ</p>
                 <p style={{margin:0}}>ในการรายงานความก้าวหน้า ให้นำลิงก์ของโพสต์ที่แชร์ มาแปะให้ด้วยนะครับ</p>
               </div>
@@ -224,17 +253,16 @@ function App(){
         </div>
        </div>
       </div>
-    </GD5AppShell>
+    </div>
+   </div>
   );
 }
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>
-(async function(){
-  var shellSrc='';
-  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
-  var pageSrc=document.getElementById('jsx-src').textContent;
-  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
   new Function(out)();
 })();
 </script>

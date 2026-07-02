@@ -27,13 +27,6 @@ a{color:inherit;text-decoration:none}
 <script src="https://unpkg.com/d3@7/dist/d3.min.js"></script>
 </head>
 <body>
-<style id="gd5-proto-style">@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}</style>
-<div id="gd5-proto-badge" style="position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;align-items:center;gap:9px;padding:10px 22px 10px 16px;background:rgba(225,235,242,0.62);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1.5px solid rgba(180,205,220,0.55);border-radius:10px;box-shadow:0 8px 32px rgba(16,24,40,0.13),0 1.5px 4px rgba(16,24,40,0.07),inset 0 1px 0 rgba(255,255,255,0.75);font-family:'IBM Plex Sans Thai',sans-serif;user-select:none;pointer-events:none;">
-  <span style="width:8px;height:8px;border-radius:50%;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
-  <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:0.8px;text-transform:uppercase">Prototype</span>
-  <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
-  <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45);letter-spacing:0.2px">GiveD5</span>
-</div>
 <div id="root"></div>
 <script type="text/plain" id="jsx-src">
 const {useState} = React;
@@ -70,7 +63,12 @@ const KPI_LIST=[
    zones:[[0,0.6,RED],[0.6,0.8,YEL],[0.8,1,GRN]]},
 ];
 
-const ROUNDS=['เป้าหมายปี 2569 (ครึ่งปีแรก)','เป้าหมายปี 2569 (ครึ่งปีหลัง)','เป้าหมายปี 2568','เป้าหมายปี 2567'];
+const ROUNDS=[
+  {id:'r1',label:'เป้าหมายปี 2569 (ครึ่งปีแรก)'},
+  {id:'r2',label:'เป้าหมายปี 2569 (ครึ่งปีหลัง)'},
+  {id:'r3',label:'เป้าหมายปี 2568 (ทั้งปี)'},
+  {id:'r4',label:'เป้าหมายปี 2567 (ทั้งปี)'},
+];
 
 const rail=[
   ['bi-layout-sidebar',false,'dashboard.html'],
@@ -88,7 +86,7 @@ const NAVLINKS=[
   {label:'Cockpit ความก้าวหน้าของตัวชี้วัด',active:true,href:'business-plan-cockpit.html'},
   {label:'ประเมินผลงานแผนธุรกิจ',active:false,href:null,count:1},
   null,
-  {label:'รายงานแผนธุรกิจทั้งหมดขององค์กร',active:false,href:null},
+  {label:'รายงานแผนธุรกิจทั้งหมดขององค์กร',active:false,href:'business-plan-org-report.html'},
   {label:'สถานะของแผนธุรกิจทั้งหมด',active:false,href:null},
   {label:'สรุปผลการประเมินแผนธุรกิจ',active:false,href:null},
 ];
@@ -331,7 +329,7 @@ function LeftNav(){
 function CockpitContent(){
   const [tab,setTab]=useState(0);
   const [roundOpen,setRoundOpen]=useState(false);
-  const [round,setRound]=useState(ROUNDS[0]);
+  const [round,setRound]=useState(ROUNDS[0].id);
 
   return (
     <div style={{flex:1,padding:'20px 26px',overflowY:'auto',height:'calc(100vh - 58px)'}}>
@@ -350,24 +348,21 @@ function CockpitContent(){
 
         {/* round selector */}
         <div style={{position:'relative'}}>
-          <button onClick={()=>setRoundOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:14,
+          <button onClick={()=>setRoundOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:8,
             border:'1px solid #e3e7ec',borderRadius:11,padding:'10px 16px',background:'#fff',cursor:'pointer'}}>
-            <div style={{textAlign:'left'}}>
-              <div style={{fontSize:11,color:'#9aa3af',marginBottom:2}}>รอบการวัดเป้า</div>
-              <div style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{round}</div>
-            </div>
-            <i className="bi bi-diamond" style={{fontSize:10,color:'#9aa3af'}}></i>
+            <span style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{ROUNDS.find(r=>r.id===round).label}</span>
+            <i className="bi bi-chevron-down" style={{fontSize:11,color:'#9aa3af'}}></i>
           </button>
           {roundOpen&&(
             <div style={{position:'absolute',right:0,top:58,background:'#fff',border:'1px solid #e3e7ec',
               borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:280,
-              overflow:'hidden',animation:'fadeIn .12s ease'}}>
+              overflow:'hidden'}}>
               {ROUNDS.map(r=>(
-                <div key={r} onClick={()=>{setRound(r);setRoundOpen(false);}}
+                <div key={r.id} onClick={()=>{setRound(r.id);setRoundOpen(false);}}
                   style={{padding:'11px 18px',fontSize:13,cursor:'pointer',
-                    fontWeight:r===round?700:400,color:r===round?primary:'#1f2733',
-                    background:r===round?primarySoft:'#fff'}}>
-                  {r}
+                    fontWeight:r.id===round?700:400,color:r.id===round?primary:'#1f2733',
+                    background:r.id===round?primarySoft:'#fff'}}>
+                  {r.label}
                 </div>
               ))}
             </div>
@@ -397,23 +392,21 @@ function CockpitContent(){
 
 function App(){
   return (
-    <div style={{minHeight:'100vh',background:'#f3f5f9'}}>
-      <TopBar/>
-      <div style={{display:'flex'}}>
-        <NavRail/>
-        <LeftNav/>
-        <CockpitContent/>
-      </div>
-    </div>
+    <GD5AppShell active="business">
+      <LeftNav/>
+      <CockpitContent/>
+    </GD5AppShell>
   );
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>
-(function(){
-  var src=document.getElementById('jsx-src').textContent;
-  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
+(async function(){
+  var shellSrc='';
+  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
+  var pageSrc=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
   new Function(out)();
 })();
 </script>

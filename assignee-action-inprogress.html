@@ -25,13 +25,6 @@ a{color:inherit}
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-<style id="gd5-proto-style">@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}</style>
-<div id="gd5-proto-badge" style="position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;align-items:center;gap:9px;padding:10px 22px 10px 16px;background:rgba(225,235,242,0.62);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1.5px solid rgba(180,205,220,0.55);border-radius:10px;box-shadow:0 8px 32px rgba(16,24,40,0.13),0 1.5px 4px rgba(16,24,40,0.07),inset 0 1px 0 rgba(255,255,255,0.75);font-family:'IBM Plex Sans Thai',sans-serif;user-select:none;pointer-events:none;">
-  <span style="width:8px;height:8px;border-radius:50%;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
-  <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:0.8px;text-transform:uppercase">Prototype</span>
-  <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
-  <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45);letter-spacing:0.2px">GiveD5</span>
-</div>
 <div id="root"></div>
 <script type="text/plain" id="jsx-src">
 const {useState} = React;
@@ -68,36 +61,7 @@ function App(){
   );
 
   return (
-   <div style={{minHeight:'100vh',background:'#eef1f6'}}>
-    {/* TOP BAR */}
-    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
-      <a href="dashboard.html" style={{display:'flex',alignItems:'center',textDecoration:'none'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveD5"/></a>
-      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
-        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveD5</span>
-      </div>
-      <div style={{flex:1}}></div>
-      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>7</span></div>
-      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>10</span></div>
-      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
-      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
-      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
-        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
-        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
-        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
-      </div>
-    </div>
-
-    <div style={{display:'flex'}}>
-      {/* ICON RAIL */}
-      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
-        <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6}}>P</div>
-        {[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',false,'org-dashboard.html'],['bi-arrow-down-left',true,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',false,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data',false,'business-plan-responsible-list.html']].map(([ic,act,url],i)=> url ? (
-          <a href={url} key={i} style={{textDecoration:'none',width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
-        ) : (
-          <div key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></div>
-        ))}
-        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
-      </div>
+   <GD5AppShell active="received">
 
       {/* MAIN */}
       <div style={{flex:1,padding:22,minWidth:0}}>
@@ -266,16 +230,17 @@ function App(){
         </div>
        </div>
       </div>
-    </div>
-   </div>
+    </GD5AppShell>
   );
 }
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>
-(function(){
-  var src = document.getElementById('jsx-src').textContent;
-  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+(async function(){
+  var shellSrc='';
+  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
+  var pageSrc=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
   new Function(out)();
 })();
 </script>

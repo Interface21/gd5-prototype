@@ -31,6 +31,7 @@
       line-height: 1.5;
       font-weight: 400;
     }
+    @keyframes gd5dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(.85); } }
 
     /* ===== Header ===== */
     .q-header {
@@ -74,13 +75,6 @@
   </style>
 </head>
 <body>
-<style id="gd5-proto-style">@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}</style>
-<div id="gd5-proto-badge" style="position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;align-items:center;gap:9px;padding:10px 22px 10px 16px;background:rgba(225,235,242,0.62);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1.5px solid rgba(180,205,220,0.55);border-radius:10px;box-shadow:0 8px 32px rgba(16,24,40,0.13),0 1.5px 4px rgba(16,24,40,0.07),inset 0 1px 0 rgba(255,255,255,0.75);font-family:'IBM Plex Sans Thai',sans-serif;user-select:none;pointer-events:none;">
-  <span style="width:8px;height:8px;border-radius:50%;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
-  <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:0.8px;text-transform:uppercase">Prototype</span>
-  <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
-  <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45);letter-spacing:0.2px">GiveD5</span>
-</div>
   <div id="q-app">
     <q-layout view="hHh LpR fFf">
 
@@ -96,6 +90,13 @@
               <q-icon name="bi-search" color="grey-6"></q-icon>
             </template>
           </q-input>
+
+          <div class="row items-center q-ml-md" style="gap:9px;padding:7px 16px 7px 11px;background:rgba(225,235,242,0.62);border:1.5px solid rgba(180,205,220,0.55);border-radius:9px;user-select:none;">
+            <span style="width:8px;height:8px;border-radius:4px;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
+            <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:.8px;text-transform:uppercase">Prototype</span>
+            <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
+            <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45);letter-spacing:.2px">GiveD5</span>
+          </div>
 
           <q-space></q-space>
 
@@ -118,6 +119,66 @@
               </div>
               <q-avatar size="36px" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
               <q-icon name="bi-chevron-down" color="grey-6" size="16px" class="q-ml-xs"></q-icon>
+
+              <q-menu anchor="bottom right" self="top right" :offset="[0, 8]">
+                <q-list style="min-width: 250px" padding>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar><q-icon name="bi-gift-fill" color="primary"></q-icon></q-item-section>
+                    <q-item-section class="text-primary text-weight-medium" style="text-decoration:underline;">ให้รางวัลได้อีก</q-item-section>
+                    <q-item-section side>
+                      <div class="text-center">
+                        <div class="text-primary text-weight-bold" style="font-size:16px;line-height:1;">46</div>
+                        <div class="text-grey-6" style="font-size:10px;">ครั้ง</div>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar><q-icon name="bi-people-fill" color="grey-7"></q-icon></q-item-section>
+                    <q-item-section>ดูโปรไฟล์ทั้งหมด</q-item-section>
+                    <q-item-section side><q-icon name="bi-chevron-right" size="12px" color="grey-5"></q-icon></q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar><q-icon name="bi-gear" color="grey-7"></q-icon></q-item-section>
+                    <q-item-section>ตั้งค่าโปรไฟล์</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple tag="a" href="pa-my.html">
+                    <q-item-section avatar><q-icon name="bi-shield-lock-fill" color="primary"></q-icon></q-item-section>
+                    <q-item-section class="text-primary text-weight-medium">ผู้ดูแลระบบ</q-item-section>
+                  </q-item>
+
+                  <q-separator class="q-my-xs"></q-separator>
+                  <q-item clickable v-ripple tag="a" href="pa-my.html">
+                    <q-item-section avatar><q-icon name="bi-clipboard-data-fill" color="primary"></q-icon></q-item-section>
+                    <q-item-section class="text-primary text-weight-medium">ประเมินผลงาน (PA)</q-item-section>
+                  </q-item>
+
+                  <q-separator class="q-my-xs"></q-separator>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar><q-icon name="bi-question-circle" color="grey-7"></q-icon></q-item-section>
+                    <q-item-section>ศูนย์ช่วยเหลือ</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar><q-icon name="bi-sun" color="grey-7"></q-icon></q-item-section>
+                    <q-item-section>ธีมของแอป : กลางวัน</q-item-section>
+                    <q-item-section side><q-icon name="bi-chevron-right" size="12px" color="grey-5"></q-icon></q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar><q-icon name="bi-globe2" color="grey-7"></q-icon></q-item-section>
+                    <q-item-section>ภาษา : ไทย</q-item-section>
+                    <q-item-section side><q-icon name="bi-chevron-right" size="12px" color="grey-5"></q-icon></q-item-section>
+                  </q-item>
+
+                  <q-separator class="q-my-xs"></q-separator>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar><q-icon name="bi-headset" color="grey-7"></q-icon></q-item-section>
+                    <q-item-section>ติดต่อเจ้าหน้าที่</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar><q-icon name="bi-box-arrow-right" color="negative"></q-icon></q-item-section>
+                    <q-item-section class="text-negative">ออกจากระบบ</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
             </div>
           </div>
         </q-toolbar>
@@ -126,7 +187,68 @@
       <!-- ===== LEFT DRAWER (เมนูซ้าย) ===== -->
       <q-drawer v-model="leftDrawerOpen" show-if-above mini :mini-width="60" class="bg-white" style="border-right: 1px solid #ededed;">
         <div class="q-pt-md q-pb-sm text-center">
-          <q-avatar size="34px" class="cursor-pointer" style="background:#15a08f;color:#fff;font-weight:700">P</q-avatar>
+          <q-avatar size="34px" class="cursor-pointer" style="background:#15a08f;color:#fff;font-weight:700">
+            P
+            <q-menu anchor="bottom left" self="top left" :offset="[8, 4]">
+              <q-list style="min-width: 250px" padding>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar><q-icon name="bi-gift-fill" color="primary"></q-icon></q-item-section>
+                  <q-item-section class="text-primary text-weight-medium" style="text-decoration:underline;">ให้รางวัลได้อีก</q-item-section>
+                  <q-item-section side>
+                    <div class="text-center">
+                      <div class="text-primary text-weight-bold" style="font-size:16px;line-height:1;">46</div>
+                      <div class="text-grey-6" style="font-size:10px;">ครั้ง</div>
+                    </div>
+                  </q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar><q-icon name="bi-people-fill" color="grey-7"></q-icon></q-item-section>
+                  <q-item-section>ดูโปรไฟล์ทั้งหมด</q-item-section>
+                  <q-item-section side><q-icon name="bi-chevron-right" size="12px" color="grey-5"></q-icon></q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar><q-icon name="bi-gear" color="grey-7"></q-icon></q-item-section>
+                  <q-item-section>ตั้งค่าโปรไฟล์</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple tag="a" href="pa-my.html">
+                  <q-item-section avatar><q-icon name="bi-shield-lock-fill" color="primary"></q-icon></q-item-section>
+                  <q-item-section class="text-primary text-weight-medium">ผู้ดูแลระบบ</q-item-section>
+                </q-item>
+
+                <q-separator class="q-my-xs"></q-separator>
+                <q-item clickable v-ripple tag="a" href="pa-my.html">
+                  <q-item-section avatar><q-icon name="bi-clipboard-data-fill" color="primary"></q-icon></q-item-section>
+                  <q-item-section class="text-primary text-weight-medium">ประเมินผลงาน (PA)</q-item-section>
+                </q-item>
+
+                <q-separator class="q-my-xs"></q-separator>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar><q-icon name="bi-question-circle" color="grey-7"></q-icon></q-item-section>
+                  <q-item-section>ศูนย์ช่วยเหลือ</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar><q-icon name="bi-sun" color="grey-7"></q-icon></q-item-section>
+                  <q-item-section>ธีมของแอป : กลางวัน</q-item-section>
+                  <q-item-section side><q-icon name="bi-chevron-right" size="12px" color="grey-5"></q-icon></q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar><q-icon name="bi-globe2" color="grey-7"></q-icon></q-item-section>
+                  <q-item-section>ภาษา : ไทย</q-item-section>
+                  <q-item-section side><q-icon name="bi-chevron-right" size="12px" color="grey-5"></q-icon></q-item-section>
+                </q-item>
+
+                <q-separator class="q-my-xs"></q-separator>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar><q-icon name="bi-headset" color="grey-7"></q-icon></q-item-section>
+                  <q-item-section>ติดต่อเจ้าหน้าที่</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section avatar><q-icon name="bi-box-arrow-right" color="negative"></q-icon></q-item-section>
+                  <q-item-section class="text-negative">ออกจากระบบ</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-avatar>
         </div>
         <div class="q-mt-sm">
           <div class="drawer-item active"><q-icon name="bi-layout-sidebar" size="22px"></q-icon></div>

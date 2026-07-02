@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สั่งการ — สร้างคำสั่งการใหม่ — GiveDeeFive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:none;border:none}
+input,textarea,select{font-family:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+@keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fld{border:1px solid #e3e7ee;border-radius:12px;background:#fff;transition:border-color .15s, box-shadow .15s}
+.fld:focus-within{border-color:#15a08f;box-shadow:0 0 0 3px rgba(21,160,143,.10)}
+.ghost:hover{background:#f3f5f8}
+.tealbtn:hover{background:#118a7b}
+.coralbtn:hover{background:#ec6373}
+.bluebtn:hover{background:#2c72c0}
+.addbtn:hover{background:#e3f3f0;border-color:#bfe6df;color:#0f8475}
+.tbtn:hover{background:#eef1f5}
+.typecard:hover{border-color:#cdd5df;box-shadow:0 6px 20px rgba(16,24,40,.07)}
+.wkbtn:hover{filter:brightness(1.04)}
+.editor:empty:before{content:attr(data-ph);color:#aab2be}
+.editor:focus{outline:none}
+.person:hover{background:#f7f9fb}
+.rmchip:hover{color:#d83a3a}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState, useRef} = React;
+const ICON={"account_balance":"bank","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","add_circle":"plus-circle","add_task":"plus-square","arrow_back":"arrow-left","arrow_drop_down":"caret-down-fill","arrow_drop_up":"caret-up-fill","assignment":"clipboard","attach_file":"paperclip","autorenew":"arrow-repeat","back_hand":"hand-index","bar_chart":"bar-chart","bolt":"lightning-charge","bookmark":"bookmark","bookmark_add":"bookmark-plus","calendar_month":"calendar3","calendar_today":"calendar","campaign":"megaphone","cancel":"x-circle","chat_bubble_outline":"chat","check":"check-lg","check_box":"check-square","check_box_outline_blank":"square","check_circle":"check-circle","checklist":"list-check","chevron_right":"chevron-right","close":"x-lg","content_copy":"files","delete":"trash","description":"file-text","desktop_windows":"display","domain":"building","done_all":"check2-all","donut_small":"pie-chart","download":"download","drag_indicator":"grip-vertical","ecg_heart":"activity","edit":"pencil","edit_note":"pencil-square","engineering":"tools","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","favorite":"heart","filter_alt_off":"funnel","filter_list":"funnel","format_list_bulleted":"list-ul","forum":"chat-square-text","grid_view":"grid","group":"people","group_add":"person-plus","groups":"people","help":"question-circle","hourglass_bottom":"hourglass-bottom","hourglass_empty":"hourglass","hourglass_top":"hourglass-top","how_to_reg":"person-check","image":"image","inbox":"inbox","ink_eraser":"eraser","insert_chart":"bar-chart","insights":"graph-up","inventory_2":"box-seam","keyboard_arrow_down":"chevron-down","keyboard_arrow_up":"chevron-up","leaderboard":"bar-chart-line","list":"list","lock":"lock","low_priority":"sort-down","menu_book":"book","monitor_heart":"activity","monitoring":"graph-up-arrow","more_vert":"three-dots-vertical","move_up":"arrow-up-square","note_add":"file-earmark-plus","open_in_full":"arrows-fullscreen","open_in_new":"box-arrow-up-right","outbox":"box-arrow-up","palette":"palette","person":"person","play_arrow":"play-fill","my_location":"bullseye","person_add":"person-plus","play_circle":"play-circle","playlist_add":"list-task","playlist_add_check":"list-check","power_settings_new":"power","public":"globe","push_pin":"pin-angle","radio_button_unchecked":"circle","reply":"reply","search":"search","search_off":"search","send":"send","shield_lock":"shield-lock","shield_person":"shield-check","signpost":"signpost-2","sort":"sort-down","speed":"speedometer2","support":"life-preserver","swap_vert":"arrow-down-up","task_alt":"check2-circle","title":"type","touch_app":"hand-index","trending_up":"graph-up-arrow","tune":"sliders","unfold_more":"chevron-expand","upload_file":"file-earmark-arrow-up","verified_user":"patch-check","videocam":"camera-video","view_agenda":"card-heading","visibility":"eye","volunteer_activism":"hand-heart","waving_hand":"emoji-smile"};
+const ICONF={"check_circle":"check-circle-fill","favorite":"heart-fill","person":"person-fill","groups":"people-fill","group":"people-fill","play_circle":"play-circle-fill","lock":"lock-fill","send":"send-fill","push_pin":"pin-angle-fill","verified_user":"patch-check-fill","shield_person":"shield-fill-check","inbox":"inbox-fill","waving_hand":"emoji-smile-fill","fact_check":"ui-checks"};
+const primary='#15a08f', primarySoft='#e3f3f0', coral='#f1717f', blue='#2f7fd6', orange='#f1763b';
+const ms=(name,size,color,fill)=>{var c=(fill&&ICONF[name])||ICON[name]||'bi-record-circle';return (<i className={'bi '+(/^bi-/.test(c)?c:'bi-'+c)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
+const AV=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
+const initial=(s)=>String(s||'?').trim().charAt(0).toUpperCase();
+const initColor=(s)=>{let h=0;for(const ch of String(s||''))h=ch.charCodeAt(0)+h;return AV[h%AV.length];};
+const Letter=({s,d})=>(<div style={{width:d,height:d,borderRadius:'50%',background:initColor(s),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:Math.round(d*0.4),flex:'none'}}>{initial(s)}</div>);
+
+const PEOPLE=[
+  {n:'Anusorn Suksri',r:'ที่ปรึกษา',jobs:12},
+  {n:'Bodin Muanprasat',r:'Software Engineer',jobs:23},
+  {n:'Chanavee Bekaku',r:'Dev Manager',jobs:22},
+  {n:'Chanon Thaiprayoo',r:'Technician',jobs:124},
+  {n:'Chayanee Prajongkarn',r:'Staff',jobs:17},
+  {n:'Chunhawan Houdlim',r:'ผู้จัดการแผนกสนับสนุนการขาย',jobs:9},
+  {n:'Narate Boonmee',r:'Software Engineer',jobs:31},
+  {n:'Sunthan Mongkol',r:'QA Engineer',jobs:7},
+  {n:'Wandee Klaharn',r:'QA Engineer',jobs:5},
+];
+
+/* ---- rich text toolbar ---- */
+function Toolbar({onCmd}){
+  const [size,setSize]=useState('3');
+  const btns=[['bi-type-bold','bold'],['bi-type-italic','italic'],['bi-type-underline','underline'],['bi-type-strikethrough','strikeThrough']];
+  return (
+    <div style={{display:'flex',alignItems:'center',gap:4,padding:'7px 10px',borderBottom:'1px solid #eef0f4'}}>
+      <select value={size} onChange={(e)=>{setSize(e.target.value);onCmd('fontSize',e.target.value);}}
+        style={{border:'1px solid #e3e7ee',borderRadius:8,padding:'5px 8px',fontSize:13,color:'#46505f',background:'#fff',outline:'none',marginRight:4}}>
+        <option value="2">เล็ก</option><option value="3">ปกติ</option><option value="5">ใหญ่</option>
+      </select>
+      <div style={{width:1,height:20,background:'#e7eaef',margin:'0 4px'}}></div>
+      {btns.map(([ic,cmd])=>(
+        <button key={cmd} onMouseDown={(e)=>{e.preventDefault();onCmd(cmd);}} className="tbtn" style={{width:32,height:32,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'#46505f'}}><i className={'bi '+ic} style={{fontSize:16}}></i></button>
+      ))}
+      <div style={{width:1,height:20,background:'#e7eaef',margin:'0 4px'}}></div>
+      {[['bi-list-ol','insertOrderedList'],['bi-list-ul','insertUnorderedList']].map(([ic,cmd])=>(
+        <button key={cmd} onMouseDown={(e)=>{e.preventDefault();onCmd(cmd);}} className="tbtn" style={{width:32,height:32,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'#46505f'}}><i className={'bi '+ic} style={{fontSize:16}}></i></button>
+      ))}
+    </div>
+  );
+}
+
+/* ---- work-type banner ---- */
+function WorkBanner({type}){
+  const indiv=type==='individual';
+  return (
+    <div style={{display:'flex',alignItems:'center',gap:14,background:indiv?blue:coral,color:'#fff',borderRadius:13,padding:'15px 20px'}}>
+      <span style={{width:40,height:40,borderRadius:'50%',background:'rgba(255,255,255,.22)',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms(indiv?'person':'groups',24,'#fff',true)}</span>
+      <div>
+        <div style={{fontWeight:700,fontSize:15.5}}>{indiv?'งานรายบุคคล':'งานรายกลุ่ม'}</div>
+        <div style={{fontSize:12.5,opacity:.9,marginTop:1}}>{indiv?'ให้ผู้รับผิดชอบแต่ละคน ดำเนินการในส่วนของตนเองให้แล้วเสร็จ':'ให้ผู้รับผิดชอบทุกคน ร่วมกันทำงานเพื่อบรรลุเป้าหมายส่วนรวม'}</div>
+      </div>
+    </div>
+  );
+}
+
+/* ---- stepper ---- */
+function Stepper({steps, current}){
+  return (
+    <div style={{display:'flex',alignItems:'flex-start',padding:'18px 26px',borderBottom:'1px solid #eef0f4'}}>
+      {steps.map((s,i)=>{
+        const done=i<current, active=i===current;
+        const cc=done?primary:active?orange:'#fff';
+        const ic=done?'check':active?s.icon:s.icon;
+        return (
+          <React.Fragment key={i}>
+            <div style={{display:'flex',alignItems:'center',gap:11,flex:'none'}}>
+              <span style={{width:36,height:36,borderRadius:'50%',background:cc,border:done||active?'none':'2px solid #d7dde6',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms(ic,20,(done||active)?'#fff':'#aab2be',true)}</span>
+              <div style={{lineHeight:1.25}}>
+                <div style={{fontWeight:700,fontSize:14.5,color:active?orange:done?'#1f2733':'#9aa3af'}}>{s.label}</div>
+                <div style={{fontSize:11.5,color:'#9aa3af'}}>{s.sub}</div>
+              </div>
+            </div>
+            {i<steps.length-1 && <div style={{flex:1,height:2,background:'#e7eaef',margin:'17px 14px 0'}}></div>}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
+const inputStyle={width:'100%',border:'none',outline:'none',background:'transparent',fontSize:14.5,color:'#1f2733',padding:'13px 15px'};
+
+/* ============ TYPE SELECTION SCREEN ============ */
+function TypeCard({head, icon, desc, steps, onPick}){
+  return (
+    <div className="typecard" style={{flex:1,border:'1px solid #e7eaef',borderRadius:16,padding:'26px 26px 24px',background:'#fff',transition:'all .18s',display:'flex',flexDirection:'column'}}>
+      <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:12}}>
+        {ms(icon,28,primary)}
+        <span style={{fontWeight:700,fontSize:18}}>{head}</span>
+      </div>
+      <div style={{fontSize:13.5,color:'#5a6473',lineHeight:1.6,marginBottom:20}}>{desc}</div>
+      <div style={{display:'flex',alignItems:'center',gap:7,fontSize:13,fontWeight:700,color:'#46505f',marginBottom:14}}>{ms('signpost',19,'#9aa3af')}ขั้นตอนการสั่งการ</div>
+      <div style={{display:'flex',flexDirection:'column',gap:15,marginBottom:24}}>
+        {steps.map((s,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'flex-start',gap:13}}>
+            <span style={{marginTop:1,flex:'none'}}>{ms(s.icon,21,'#9aa3af')}</span>
+            <div style={{lineHeight:1.3}}>
+              <div style={{fontWeight:600,fontSize:14}}>{i+1}. {s.t}</div>
+              <div style={{fontSize:12.5,color:'#9aa3af',marginTop:1}}>{s.d}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{display:'flex',alignItems:'center',gap:7,fontSize:13,fontWeight:700,color:'#46505f',marginBottom:12}}>{ms('help',18,'#9aa3af')}คุณต้องการสั่งการงานแบบไหน</div>
+      <button onClick={()=>onPick('individual')} className="wkbtn" style={{display:'flex',alignItems:'center',gap:14,background:blue,color:'#fff',borderRadius:13,padding:'14px 18px',marginBottom:10,textAlign:'left',transition:'filter .15s'}}>
+        {ms('person',24,'#fff',true)}
+        <div><div style={{fontWeight:700,fontSize:15}}>งานรายบุคคล</div><div style={{fontSize:12,opacity:.9}}>ให้ผู้รับผิดชอบแต่ละคน ดำเนินการในส่วนของตนเองให้แล้วเสร็จ</div></div>
+      </button>
+      <button onClick={()=>onPick('group')} className="wkbtn" style={{display:'flex',alignItems:'center',gap:14,background:coral,color:'#fff',borderRadius:13,padding:'14px 18px',textAlign:'left',transition:'filter .15s'}}>
+        {ms('groups',24,'#fff',true)}
+        <div><div style={{fontWeight:700,fontSize:15}}>งานรายกลุ่ม</div><div style={{fontSize:12,opacity:.9}}>ให้ผู้รับผิดชอบทุกคน ร่วมกันทำงานเพื่อบรรลุเป้าหมายส่วนรวม</div></div>
+      </button>
+    </div>
+  );
+}
+
+function App(){
+  const [screen,setScreen]=useState('type');   // 'type' | 'wizard'
+  const [mode,setMode]=useState('simple');      // 'simple' | 'goal'
+  const [workType,setWorkType]=useState('individual');
+  const [step,setStep]=useState(0);
+
+  // create-step fields
+  const [cmdType,setCmdType]=useState('day');
+  const [title,setTitle]=useState('');
+  const [period,setPeriod]=useState('');
+  const [startDate,setStartDate]=useState('2026-06-25');
+  const [endDate,setEndDate]=useState('');
+  const [checks,setChecks]=useState([]);
+  const edRef=useRef(null);
+  const cmd=(c,v)=>{ if(edRef.current) edRef.current.focus(); document.execCommand(c,false,v); };
+
+  // goal-step fields
+  const [goalNum,setGoalNum]=useState('');
+  const [unit,setUnit]=useState('');
+  const [reportType,setReportType]=useState('cumulative');
+  const [freq,setFreq]=useState('once');
+
+  // assignee-step
+  const [box,setBox]=useState('TO');
+  const [grp,setGrp]=useState('person');
+  const [search,setSearch]=useState('');
+  const [sel,setSel]=useState([]);
+
+  const STEPS = mode==='goal'
+    ? [{icon:'edit',label:'สร้างคำสั่ง',sub:'กำหนดรายละเอียดคำสั่งการ'},{icon:'my_location',label:'ตั้งเป้าหมาย',sub:'กำหนดเป้าหมายและการรายงานผล'},{icon:'person_add',label:'ผู้รับผิดชอบ',sub:'กำหนดผู้รับคำสั่งการ'},{icon:'done_all',label:'ยืนยัน',sub:'ตรวจสอบและยืนยันคำสั่งการ'}]
+    : [{icon:'edit',label:'สร้างคำสั่ง',sub:'กำหนดรายละเอียดคำสั่งการ'},{icon:'person_add',label:'ผู้รับผิดชอบ',sub:'กำหนดผู้รับคำสั่งการ'},{icon:'done_all',label:'ยืนยัน',sub:'ตรวจสอบและยืนยันคำสั่งการ'}];
+
+  const stepKey = STEPS[step].label;
+  const isLast = step===STEPS.length-1;
+
+  const pick=(wt)=>{ setWorkType(wt); setScreen('wizard'); setStep(0); };
+  const next=()=>{ if(!isLast) setStep(s=>s+1); };
+  const back=()=>{ if(step===0){ setScreen('type'); } else setStep(s=>s-1); };
+  const toggleSel=(n)=>setSel(a=>a.includes(n)?a.filter(x=>x!==n):[...a,n]);
+
+  const peopleView=PEOPLE.filter(p=>!search||p.n.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div style={{minHeight:'100vh',position:'relative'}}>
+      {/* dimmed app behind */}
+      <div style={{position:'fixed',inset:0,filter:'blur(1.5px)',opacity:.5,pointerEvents:'none'}}>
+        <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:14,padding:'0 18px'}}>
+          <div style={{width:34,height:34,borderRadius:9,background:primary,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:800}}>G</div>
+          <div style={{width:300,height:34,borderRadius:10,background:'#f0f2f5'}}></div>
+        </div>
+        <div style={{display:'flex'}}><div style={{width:60,height:'calc(100vh - 58px)',background:'#fff',borderRight:'1px solid #e7eaef'}}></div></div>
+      </div>
+      <div style={{position:'fixed',inset:0,background:'rgba(17,24,39,.42)',animation:'fadeIn .2s ease'}}></div>
+
+      {/* modal */}
+      <div style={{position:'fixed',inset:0,display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
+        <div style={{width:'100%',maxWidth:1180,maxHeight:'92vh',background:'#fff',borderRadius:18,boxShadow:'0 24px 70px rgba(16,24,40,.28)',display:'flex',flexDirection:'column',overflow:'hidden',animation:'modalIn .25s cubic-bezier(.2,.7,.3,1)'}}>
+
+          {/* header */}
+          <div style={{display:'flex',alignItems:'center',gap:12,padding:'15px 22px',borderBottom:'1px solid #eef0f4',flex:'none'}}>
+            <div style={{width:30,height:30,borderRadius:8,background:'#fde7ea',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('campaign',20,coral)}</div>
+            <span style={{fontSize:16.5,fontWeight:700}}>สั่งการ</span>
+            <div style={{flex:1}}></div>
+            <a href="commander-action-list.html" className="ghost" style={{width:36,height:36,borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',color:'#8a93a3'}}>{ms('close',22,'#8a93a3')}</a>
+          </div>
+
+          {screen==='type' ? (
+            /* ===== TYPE SELECTION ===== */
+            <div style={{overflowY:'auto',overflowX:'hidden',padding:'24px 28px 30px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:18}}>{ms('help',22,'#9aa3af')}<span style={{fontSize:16,fontWeight:600,color:'#46505f'}}>เลือกประเภทที่คุณจะสั่งการ</span></div>
+              <div style={{display:'flex',gap:24,alignItems:'stretch'}}>
+                <TypeCard head="แบบง่าย (ไม่ต้องรายงานความก้าวหน้า)" icon="task_alt"
+                  desc={'เหมาะสำหรับงานที่วัดผลเป็นแค่ "เสร็จ" หรือ "ไม่เสร็จ" ผู้รับงานจะรายงานผลครั้งเดียวเมื่อปิดงาน'}
+                  steps={[{icon:'edit',t:'สร้างคำสั่ง',d:'กำหนดรายละเอียดคำสั่งการ'},{icon:'person_add',t:'ผู้รับผิดชอบ',d:'กำหนดผู้รับคำสั่งการ'},{icon:'done_all',t:'ยืนยัน',d:'ตรวจสอบและยืนยันคำสั่งการ'}]}
+                  onPick={(wt)=>{setMode('simple');pick(wt);}}/>
+                <TypeCard head="ตั้งเป้าหมาย (รายงานความก้าวหน้า)" icon="my_location"
+                  desc={'เหมาะสำหรับงานที่ต้องติดตามผลเป็นตัวเลข (เช่น ยอดขาย, จำนวนเอกสาร) ผู้รับงานต้องรายงานผลตามรอบเวลาที่คุณกำหนด'}
+                  steps={[{icon:'edit',t:'สร้างคำสั่ง',d:'กำหนดรายละเอียดคำสั่งการ'},{icon:'my_location',t:'ตั้งเป้าหมาย',d:'กำหนดเป้าหมายและการรายงานผล'},{icon:'person_add',t:'ผู้รับผิดชอบ',d:'กำหนดผู้รับคำสั่งการ'},{icon:'done_all',t:'ยืนยัน',d:'ตรวจสอบและยืนยันคำสั่งการ'}]}
+                  onPick={(wt)=>{setMode('goal');pick(wt);}}/>
+              </div>
+            </div>
+          ) : (
+            /* ===== WIZARD ===== */
+            <React.Fragment>
+              {/* action bar */}
+              <div style={{display:'flex',alignItems:'center',gap:14,padding:'13px 24px',borderBottom:'1px solid #eef0f4',flex:'none'}}>
+                <button onClick={back} className="ghost" style={{display:'inline-flex',alignItems:'center',gap:7,background:'#6b7280',color:'#fff',borderRadius:10,padding:'9px 18px',fontSize:14,fontWeight:600}}>{ms('arrow_back',19,'#fff')}กลับ</button>
+                <div style={{flex:1}}></div>
+                {stepKey==='สร้างคำสั่ง' && (
+                  <div style={{textAlign:'right',fontSize:12.5,color:coral,fontWeight:600,lineHeight:1.7,marginRight:6}}>
+                    <div>· กรุณากำหนดรายละเอียดคำสั่งการให้มากกว่า 4 ตัวอักษรขึ้นไป</div>
+                    <div>· กรุณาเลือกวันที่เริ่มต้นและวันที่แล้วเสร็จ</div>
+                  </div>
+                )}
+                {stepKey==='ตั้งเป้าหมาย' && <div style={{fontSize:13,color:coral,fontWeight:600,marginRight:6}}>· คุณกำหนดเป้าหมายเท่ากับ {goalNum||0}</div>}
+                {stepKey==='ผู้รับผิดชอบ' && <div style={{fontSize:13,color:coral,fontWeight:600,marginRight:6}}>เลือกผู้รับคำสั่ง</div>}
+                {isLast ? (
+                  <button className="tealbtn" style={{display:'inline-flex',alignItems:'center',gap:7,background:primary,color:'#fff',borderRadius:10,padding:'9px 22px',fontSize:14.5,fontWeight:700,boxShadow:'0 2px 8px rgba(21,160,143,.28)'}}>{ms('check_circle',19,'#fff')}ยืนยันสั่งการ</button>
+                ) : (
+                  <button onClick={next} className="bluebtn" style={{display:'inline-flex',alignItems:'center',gap:7,background:blue,color:'#fff',borderRadius:10,padding:'9px 22px',fontSize:14.5,fontWeight:700,boxShadow:'0 2px 8px rgba(47,127,214,.28)'}}>{ms('play_arrow',20,'#fff',true)}ต่อไป</button>
+                )}
+                <a href="commander-action-list.html" className="coralbtn" style={{display:'inline-flex',alignItems:'center',gap:7,background:coral,color:'#fff',borderRadius:10,padding:'9px 20px',fontSize:14.5,fontWeight:700}}>{ms('cancel',19,'#fff')}ยกเลิก</a>
+              </div>
+
+              <Stepper steps={STEPS} current={step}/>
+
+              <div style={{overflowY:'auto',overflowX:'hidden',padding:'20px 26px 28px',flex:1}}>
+                <div style={{marginBottom:18}}><WorkBanner type={workType}/></div>
+
+                {/* ---------- STEP: CREATE ---------- */}
+                {stepKey==='สร้างคำสั่ง' && (
+                  <div>
+                    {/* command type */}
+                    <div className="fld" style={{padding:'16px 18px',marginBottom:18}}>
+                      <div style={{fontSize:13.5,fontWeight:600,color:'#46505f',marginBottom:12}}>ประเภทการสั่งการ</div>
+                      <div style={{display:'flex',gap:14,flexWrap:'wrap'}}>
+                        {[['day','งานประจำวัน (Day to day)'],['strategic','งานตามแผนธุรกิจ (Strategic)']].map(([k,l])=>{
+                          const a=cmdType===k;
+                          return (
+                            <button key={k} onClick={()=>setCmdType(k)} style={{display:'inline-flex',alignItems:'center',gap:9,borderRadius:99,padding:a?'8px 18px 8px 10px':'8px 18px',background:a?primary:'#fff',border:a?'none':'1.5px solid #d7dde6',color:a?'#fff':'#5a6473',fontSize:14,fontWeight:600}}>
+                              {a?ms('check_circle',20,'#fff',true):<span style={{width:18,height:18,borderRadius:'50%',border:'2px solid #cfd6e0',display:'inline-block'}}></span>}
+                              {l}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* title */}
+                    <div style={{marginBottom:18}}>
+                      <div className="fld" style={{display:'flex',alignItems:'center'}}>
+                        <input value={title} maxLength={255} onChange={(e)=>setTitle(e.target.value)} placeholder="ชื่อเรื่อง" style={inputStyle}/>
+                      </div>
+                      <div style={{display:'flex',justifyContent:'space-between',marginTop:6}}>
+                        <span style={{fontSize:11.5,color:'#aab2be'}}>ต้องการตัวอักษร 4 ตัวขึ้นไป</span>
+                        <span style={{fontSize:12,color:title.length>0&&title.length<4?'#d8743a':'#aab2be'}}>{title.length} / 255</span>
+                      </div>
+                    </div>
+
+                    {/* scope */}
+                    <div style={{fontWeight:700,fontSize:15.5,margin:'4px 0 10px'}}>ขอบเขตงาน</div>
+                    <div style={{fontSize:13.5,fontWeight:600,color:'#46505f',marginBottom:8}}>รายละเอียดการสั่งการ</div>
+                    <div className="fld" style={{overflow:'hidden',marginBottom:6}}>
+                      <Toolbar onCmd={cmd}/>
+                      <div ref={edRef} className="editor" contentEditable suppressContentEditableWarning data-ph="รายละเอียดการสั่งการ" style={{minHeight:90,padding:'14px 15px',fontSize:14.5,lineHeight:1.6}}></div>
+                    </div>
+                    <div style={{fontSize:11.5,color:'#aab2be',marginBottom:20}}>ต้องการตัวอักษร 4 ตัวขึ้นไป <span style={{color:coral}}>*</span></div>
+
+                    {/* two columns: docs/period | checklist */}
+                    <div style={{display:'flex',gap:20,alignItems:'flex-start',flexWrap:'wrap'}}>
+                      <div style={{flex:'1 1 380px',minWidth:300}}>
+                        <div className="fld" style={{display:'flex',alignItems:'center',gap:12,padding:'14px 16px',marginBottom:14}}>
+                          {ms('attach_file',20,'#5a6473')}
+                          <span style={{flex:1,fontSize:13,color:'#5a6473',lineHeight:1.4}}>เอกสารสนับสนุนการสั่งการ เช่น Mindmap, Block Diagram, รูปตัวอย่าง เป็นต้น</span>
+                          <button className="addbtn" style={{display:'inline-flex',alignItems:'center',gap:5,border:'1px solid #e3e7ee',color:'#5a6473',borderRadius:9,padding:'7px 13px',fontSize:13,fontWeight:600,flex:'none'}}><i className="bi bi-plus-lg" style={{fontSize:13}}></i>เพิ่มรูปภาพ/ไฟล์</button>
+                        </div>
+                        <div className="fld" style={{display:'flex',alignItems:'center',gap:12,padding:'14px 16px',marginBottom:4,cursor:'pointer'}}>
+                          {ms('content_copy',20,'#5a6473')}
+                          <span style={{flex:1,fontSize:14,color:'#8a93a3'}}>เอกสารประกอบการส่งงาน</span>
+                          {ms('unfold_more',20,'#9aa3af')}
+                        </div>
+                        <div style={{fontSize:11.5,color:'#aab2be',marginBottom:14}}>เลือกได้มากกว่า 1</div>
+                        <div className="fld" style={{display:'flex',alignItems:'center',gap:12,padding:'14px 16px',marginBottom:20,cursor:'pointer'}}>
+                          {ms('menu_book',20,'#5a6473')}
+                          <span style={{flex:1,fontSize:14,color:'#46505f',fontWeight:600}}>แนะนำเอกสาร WI</span>
+                          {ms('chevron_right',22,'#9aa3af')}
+                        </div>
+
+                        <div style={{fontSize:13.5,fontWeight:600,color:'#46505f',marginBottom:8}}>ช่วงเวลาดำเนินการ</div>
+                        <div className="fld" style={{display:'flex',alignItems:'center',gap:10,padding:'4px 14px',marginBottom:12}}>
+                          <select value={period} onChange={(e)=>setPeriod(e.target.value)} style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:14,color:period?'#1f2733':'#8a93a3',padding:'11px 0',appearance:'none',cursor:'pointer'}}>
+                            <option value="">ดำเนินการให้เสร็จภายใน</option>
+                            <option>ภายใน 3 วัน</option><option>ภายใน 7 วัน</option><option>ภายใน 14 วัน</option><option>ภายใน 30 วัน</option>
+                          </select>
+                          {ms('unfold_more',20,'#9aa3af')}
+                        </div>
+                        <div style={{display:'flex',alignItems:'center',gap:10}}>
+                          <div className="fld" style={{flex:1,padding:'8px 14px'}}>
+                            <div style={{fontSize:10.5,color:'#aab2be'}}>วันที่เริ่มต้น <span style={{color:coral}}>*</span></div>
+                            <input type="date" value={startDate} onChange={(e)=>setStartDate(e.target.value)} style={{border:'none',outline:'none',background:'transparent',fontSize:14,color:'#1f2733',width:'100%',fontFamily:'inherit'}}/>
+                          </div>
+                          <span style={{color:'#aab2be'}}>×</span>
+                          <div className="fld" style={{flex:1,padding:'8px 14px'}}>
+                            <div style={{fontSize:10.5,color:'#aab2be'}}>วันที่แล้วเสร็จ <span style={{color:coral}}>*</span></div>
+                            <input type="date" value={endDate} onChange={(e)=>setEndDate(e.target.value)} style={{border:'none',outline:'none',background:'transparent',fontSize:14,color:'#1f2733',width:'100%',fontFamily:'inherit'}}/>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* checklist */}
+                      <div style={{flex:'1 1 380px',minWidth:300}}>
+                        <div style={{border:'1px solid #e7eaef',borderRadius:14,padding:'16px 18px',minHeight:300}}>
+                          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14}}>
+                            <span style={{width:22,height:22,borderRadius:6,background:primary,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-check" style={{color:'#fff',fontSize:15}}></i></span>
+                            <span style={{fontSize:14.5,fontWeight:700,flex:1}}>รายการตรวจสอบ (ถ้ามี)</span>
+                            <button onClick={()=>{const v=window.prompt('ชื่อชุดรายการตรวจสอบ');if(v&&v.trim())setChecks(a=>[...a,v.trim()]);}} className="tealbtn" style={{display:'inline-flex',alignItems:'center',gap:6,background:primary,color:'#fff',borderRadius:9,padding:'7px 14px',fontSize:13,fontWeight:600}}><i className="bi bi-plus-lg" style={{fontSize:13}}></i>เพิ่มชุดรายการ</button>
+                            <button className="tbtn" style={{width:32,height:32,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'#0f8475'}}>{ms('bookmark_add',20,'#0f8475')}</button>
+                            <button className="tbtn" style={{width:32,height:32,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',color:'#3b6fd4'}}>{ms('bookmark',20,'#3b6fd4')}</button>
+                          </div>
+                          {checks.length===0 ? (
+                            <div style={{textAlign:'center',color:'#b3bac4',fontSize:13,padding:'48px 0'}}>{ms('checklist',40,'#dfe4ea')}<div style={{marginTop:8}}>ยังไม่มีรายการตรวจสอบ</div></div>
+                          ) : (
+                            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                              {checks.map((c,i)=>(
+                                <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',background:'#f7f9fb',borderRadius:9}}>
+                                  <span style={{width:18,height:18,borderRadius:5,border:'2px solid #cfd6e0',flex:'none'}}></span>
+                                  <span style={{flex:1,fontSize:13.5}}>{c}</span>
+                                  <button onClick={()=>setChecks(a=>a.filter((_,j)=>j!==i))} className="rmchip" style={{color:'#aab2be',display:'flex'}}><i className="bi bi-x" style={{fontSize:18}}></i></button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ---------- STEP: GOAL ---------- */}
+                {stepKey==='ตั้งเป้าหมาย' && (
+                  <div className="fld" style={{padding:'22px 22px 24px'}}>
+                    <div style={{display:'flex',gap:22,flexWrap:'wrap',marginBottom:24}}>
+                      <div style={{flex:'1 1 300px'}}>
+                        <div style={{fontSize:13.5,fontWeight:600,color:'#46505f',marginBottom:8}}>เป้าหมายรายบุคคล <span style={{color:'#9aa3af',fontWeight:400}}>(สามารถเปลี่ยนแต่ละบุคคลได้)</span></div>
+                        <div className="fld"><input value={goalNum} onChange={(e)=>setGoalNum(e.target.value.replace(/[^0-9.]/g,''))} placeholder="ระบุเป้าตัวเลขเป้าหมาย" style={inputStyle}/></div>
+                      </div>
+                      <div style={{flex:'1 1 300px'}}>
+                        <div style={{fontSize:13.5,fontWeight:600,color:'#46505f',marginBottom:8}}>หน่วยนับ</div>
+                        <div style={{display:'flex',alignItems:'center',gap:10}}>
+                          <div className="fld" style={{flex:1,display:'flex',alignItems:'center',gap:8,padding:'4px 14px'}}>
+                            <select value={unit} onChange={(e)=>setUnit(e.target.value)} style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:14,color:unit?'#1f2733':'#8a93a3',padding:'11px 0',appearance:'none',cursor:'pointer'}}>
+                              <option value="">เลือกหน่วยนับ</option><option>บาท</option><option>ชิ้น</option><option>เอกสาร</option><option>ครั้ง</option><option>ราย</option>
+                            </select>
+                            {ms('unfold_more',20,'#9aa3af')}
+                          </div>
+                          <button className="addbtn" style={{width:42,height:42,borderRadius:11,border:'1px solid #e3e7ee',color:'#5a6473',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('add',22,'#5a6473')}</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{fontSize:13.5,fontWeight:600,color:'#46505f',marginBottom:10}}>รูปแบบการรายงานความก้าวหน้า</div>
+                    <div style={{display:'flex',gap:16,flexWrap:'wrap',marginBottom:24}}>
+                      {[['cumulative','รายงานผลงานสะสม','ผลงานรวมความคืบหน้าสะสมทั้งหมด ตั้งแต่เริ่มต้นจนถึงปัจจุบัน'],['perround','รายงานผลงานรายรอบ','ผลงานความคืบหน้าที่ทำได้เพิ่มขึ้น จากการรายงานครั้งก่อน']].map(([k,t,d])=>{
+                        const a=reportType===k;
+                        return (
+                          <button key={k} onClick={()=>setReportType(k)} style={{flex:'1 1 320px',textAlign:'left',display:'flex',alignItems:'flex-start',gap:13,border:'1px solid '+(a?primary:'#e3e7ee'),background:a?'#bfe0da':'#fff',borderRadius:13,padding:'16px 18px'}}>
+                            {a?ms('check_circle',24,'#0f8475',true):<span style={{width:22,height:22,borderRadius:'50%',border:'2px solid #cfd6e0',flex:'none',marginTop:1}}></span>}
+                            <div><div style={{fontWeight:700,fontSize:14.5,color:a?'#0c5d52':'#1f2733'}}>{t}</div><div style={{fontSize:12.5,color:a?'#2d6e63':'#8a93a3',marginTop:3,lineHeight:1.45}}>{d}</div></div>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div style={{fontSize:13.5,fontWeight:600,color:'#46505f',marginBottom:8}}>ความถี่ในการรายงานความก้าวหน้า</div>
+                    <div className="fld" style={{display:'flex',alignItems:'center',gap:10,padding:'4px 14px',maxWidth:520}}>
+                      <select value={freq} onChange={(e)=>setFreq(e.target.value)} style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:14,color:'#1f2733',padding:'12px 0',appearance:'none',cursor:'pointer'}}>
+                        <option value="once">ครั้งเดียวเมื่อส่งงาน</option><option value="daily">ทุกวัน</option><option value="weekly">ทุกสัปดาห์</option><option value="monthly">ทุกเดือน</option>
+                      </select>
+                      {ms('unfold_more',20,'#9aa3af')}
+                    </div>
+                  </div>
+                )}
+
+                {/* ---------- STEP: ASSIGNEE ---------- */}
+                {stepKey==='ผู้รับผิดชอบ' && (
+                  <div style={{display:'flex',gap:22,alignItems:'flex-start',flexWrap:'wrap'}}>
+                    {/* picker */}
+                    <div style={{flex:'1 1 360px',minWidth:300}}>
+                      <div style={{display:'flex',background:'#f3f5f8',borderRadius:11,padding:4,marginBottom:16}}>
+                        {['TO','CC','BCC'].map(b=>(
+                          <button key={b} onClick={()=>setBox(b)} style={{flex:1,padding:'9px 0',borderRadius:8,fontSize:13.5,fontWeight:700,background:box===b?'#fff':'transparent',color:box===b?primary:'#8a93a3',boxShadow:box===b?'0 1px 3px rgba(16,24,40,.08)':'none'}}>{b}</button>
+                        ))}
+                      </div>
+                      <div style={{display:'flex',gap:22,marginBottom:14,borderBottom:'1px solid #eef0f4'}}>
+                        {[['person','บุคคล'],['dept','กลุ่มแผนก'],['custom','กลุ่มตั้งเอง']].map(([k,l])=>(
+                          <button key={k} onClick={()=>setGrp(k)} style={{padding:'0 0 10px',fontSize:13.5,fontWeight:grp===k?700:600,color:grp===k?primary:'#8a93a3',borderBottom:'2.5px solid '+(grp===k?primary:'transparent')}}>{l}</button>
+                        ))}
+                      </div>
+                      <div className="fld" style={{display:'flex',alignItems:'center',gap:10,padding:'9px 13px',marginBottom:12}}>
+                        <span style={{width:20,height:20,borderRadius:5,border:'2px solid '+(sel.length===peopleView.length&&peopleView.length?primary:'#cfd6e0'),background:sel.length===peopleView.length&&peopleView.length?primary:'#fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flex:'none'}} onClick={()=>setSel(sel.length===peopleView.length?[]:peopleView.map(p=>p.n))}>{sel.length===peopleView.length&&peopleView.length>0&&<i className="bi bi-check" style={{color:'#fff',fontSize:14}}></i>}</span>
+                        <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="เลือกผู้รับคำสั่ง" style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:14}}/>
+                        {ms('search',20,'#9aa3af')}
+                      </div>
+                      <div style={{maxHeight:340,overflowY:'auto'}}>
+                        {peopleView.map((p,i)=>{
+                          const on=sel.includes(p.n);
+                          return (
+                            <div key={i} className="person" onClick={()=>toggleSel(p.n)} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 8px',borderRadius:10,cursor:'pointer'}}>
+                              <Letter s={p.n} d={40}/>
+                              <div style={{flex:1,minWidth:0}}>
+                                <div style={{fontWeight:700,fontSize:14}}>{p.n}</div>
+                                <div style={{fontSize:12,color:'#8a93a3'}}>{p.r}</div>
+                                <span style={{display:'inline-block',marginTop:4,fontSize:11,color:'#8a93a3',background:'#f0f2f5',borderRadius:7,padding:'2px 9px'}}>{p.jobs} งานที่ทำอยู่</span>
+                              </div>
+                              <span style={{width:20,height:20,borderRadius:5,border:'2px solid '+(on?primary:'#cfd6e0'),background:on?primary:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{on&&<i className="bi bi-check" style={{color:'#fff',fontSize:14}}></i>}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* selected */}
+                    <div style={{flex:'1 1 360px',minWidth:300}}>
+                      <div style={{border:'1px solid #e7eaef',borderRadius:14,padding:'18px 20px',minHeight:400}}>
+                        <div style={{display:'flex',justifyContent:'space-between',marginBottom:16}}>
+                          <span style={{fontSize:13.5,fontWeight:700,color:'#46505f'}}>ผู้รับคำสั่ง</span>
+                          <span style={{fontSize:12.5,color:'#8a93a3'}}>{mode==='goal'?'เป้าหมายรายบุคคล':'รายบุคคล'}</span>
+                        </div>
+                        {sel.length===0 ? (
+                          <div style={{textAlign:'center',padding:'60px 0',color:'#b3bac4'}}>
+                            {ms('inbox',64,'#dfe4ea',true)}
+                            <div style={{marginTop:12,fontSize:13.5}}>กรุณาเลือกผู้รับคำสั่งอย่างน้อย 1 คน</div>
+                          </div>
+                        ) : (
+                          <div style={{display:'flex',flexDirection:'column',gap:9}}>
+                            {sel.map((n,i)=>{
+                              const p=PEOPLE.find(x=>x.n===n)||{n,r:''};
+                              return (
+                                <div key={i} style={{display:'flex',alignItems:'center',gap:11,padding:'10px 12px',background:'#f7f9fb',borderRadius:11}}>
+                                  <Letter s={n} d={36}/>
+                                  <div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:13.5}}>{n}</div><div style={{fontSize:11.5,color:'#8a93a3'}}>{p.r}</div></div>
+                                  {mode==='goal' && <input placeholder={goalNum||'เป้าหมาย'} style={{width:90,border:'1px solid #e3e7ee',borderRadius:8,padding:'6px 10px',fontSize:13,outline:'none'}}/>}
+                                  <button onClick={()=>toggleSel(n)} className="rmchip" style={{color:'#aab2be',display:'flex'}}><i className="bi bi-x" style={{fontSize:19}}></i></button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ---------- STEP: CONFIRM ---------- */}
+                {stepKey==='ยืนยัน' && (
+                  <div style={{maxWidth:760,margin:'0 auto'}}>
+                    <div style={{textAlign:'center',marginBottom:22}}>
+                      <span style={{width:64,height:64,borderRadius:'50%',background:primarySoft,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{ms('fact_check',34,primary,true)}</span>
+                      <div style={{fontWeight:700,fontSize:18,marginTop:12}}>ตรวจสอบและยืนยันคำสั่งการ</div>
+                      <div style={{fontSize:13,color:'#8a93a3',marginTop:3}}>กรุณาตรวจสอบรายละเอียดก่อนยืนยันการสั่งการ</div>
+                    </div>
+                    <div style={{border:'1px solid #e7eaef',borderRadius:14,overflow:'hidden'}}>
+                      {[
+                        ['ประเภทงาน', workType==='individual'?'งานรายบุคคล':'งานรายกลุ่ม'],
+                        ['รูปแบบ', mode==='goal'?'ตั้งเป้าหมาย (รายงานความก้าวหน้า)':'แบบง่าย (ไม่ต้องรายงานความก้าวหน้า)'],
+                        ['ประเภทการสั่งการ', cmdType==='day'?'งานประจำวัน (Day to day)':'งานตามแผนธุรกิจ (Strategic)'],
+                        ['ชื่อเรื่อง', title||'—'],
+                        ...(mode==='goal'?[['เป้าหมาย', (goalNum||'0')+' '+(unit||'หน่วย')],['การรายงาน', (reportType==='cumulative'?'ผลงานสะสม':'ผลงานรายรอบ')+' · '+({once:'ครั้งเดียวเมื่อส่งงาน',daily:'ทุกวัน',weekly:'ทุกสัปดาห์',monthly:'ทุกเดือน'}[freq])]]:[]),
+                        ['ช่วงเวลา', (startDate||'—')+'  ถึง  '+(endDate||'—')],
+                        ['ผู้รับคำสั่ง', sel.length?sel.join(', '):'ยังไม่ได้เลือก'],
+                      ].map(([k,v],i)=>(
+                        <div key={i} style={{display:'flex',gap:16,padding:'14px 20px',borderBottom:i<7?'1px solid #f0f2f5':'none',background:i%2?'#fafbfc':'#fff'}}>
+                          <span style={{width:150,flex:'none',fontSize:13.5,color:'#8a93a3',fontWeight:600}}>{k}</span>
+                          <span style={{fontSize:14,color:'#1f2733',fontWeight:600}}>{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </React.Fragment>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

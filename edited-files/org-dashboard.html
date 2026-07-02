@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard องค์กร — GiveD5</title>
+<title>Dashboard องค์กร — GiveDeeFive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -35,8 +35,6 @@ const primary='#15a08f', primarySoft='#e3f3f0';
 const RED='#ef4444', YEL='#f5b301', GRN='#22b96a';
 const ms=(name,size,color,fill)=>{var c=(fill&&ICONF[name])||ICON[name]||'bi-record-circle';return (<i className={'bi '+(/^bi-/.test(c)?c:'bi-'+c)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
 const dotC=(s)=> s==='r'?RED : s==='y'?YEL : GRN;
-const glossBg=(hex)=>'radial-gradient(circle at 32% 24%, rgba(255,255,255,.95), rgba(255,255,255,.22) 32%, rgba(255,255,255,0) 52%), radial-gradient(circle at 70% 82%, rgba(0,0,0,.35), rgba(0,0,0,0) 58%), '+hex;
-const glossShadow='inset 0 -2px 3px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,.45), 0 1px 2px rgba(0,0,0,.22)';
 const INITC=['#15a08f','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
 const initial=(s)=>String(s||'?').trim().charAt(0).toUpperCase();
 const initColor=(s)=>{let h=0;for(const ch of String(s||''))h=ch.charCodeAt(0)+h;return INITC[h%INITC.length];};
@@ -54,9 +52,9 @@ const ORG=[
 const METRICS=['POST','PRIZE_GIVE','D_ENGAGE','D_LEARN','D_ACT','D_KEEP','D_USE'];
 const TEAM_HEALTH=[
   {team:'พันธกิจที่ 1 : EDR',vals:[['0','0'],['0','0'],['0','0'],['0','0'],['0','0'],['0','0'],['0','0']]},
-  {team:'พันธกิจที่ 2 : GiveD5',vals:[['0.11','0'],['0.14','0'],['0.62','0.11',false],['0.05','0'],['0','0'],['0','0'],['0','0']]},
+  {team:'พันธกิจที่ 2 : GiveDeeFive',vals:[['0.11','0'],['0.14','0'],['0.62','0.11',false],['0.05','0'],['0','0'],['0','0'],['0','0']]},
   {team:'พันธกิจที่ 3 : ครุภัณฑ์',vals:[['0.05','0'],['0','0'],['0','0'],['0','0'],['0.05','0'],['0','0'],['0','0']]},
-  {team:'พันธกิจที่ 4 : ใช้เทคโนโลยีดิจิทัล GiveD5 และ AI',vals:[['0.05','0'],['0.27','0'],['0.89','0.02',true],['0','0'],['0','0'],['0','0'],['0','0']]},
+  {team:'พันธกิจที่ 4 : ใช้เทคโนโลยีดิจิทัล GD5 และ AI',vals:[['0.05','0'],['0.27','0'],['0.89','0.02',true],['0','0'],['0','0'],['0','0'],['0','0']]},
 ];
 const STANDOUT=[
   {n:'Phinit Butta',r:'SSO'},{n:'Nichagorn Prajansen',r:'staff'},{n:'Nichagorn Prajansen',r:'staff'},
@@ -71,7 +69,7 @@ const AUDIT=[
 ];
 
 // ---- PER-QUARTER BUSINESS-PLAN HEALTH ----
-const MNAMES=['พันธกิจที่ 1 : EDR','พันธกิจที่ 2 : GiveD5','พันธกิจที่ 3 : ครุภัณฑ์','พันธกิจที่ 4 : ใช้เทคโนโลยีดิจิทัล GiveD5 และ AI'];
+const MNAMES=['พันธกิจที่ 1 : EDR','พันธกิจที่ 2 : GiveDeeFive','พันธกิจที่ 3 : ครุภัณฑ์','พันธกิจที่ 4 : ใช้เทคโนโลยีดิจิทัล GD5 และ AI'];
 function gridFor(seed,n){const a=[];let x=seed*9301+49297;for(let i=0;i<n;i++){x=(x*9301+49297)%233280;const r=x/233280;a.push(r<0.62?'r':r<0.85?'y':'g');}return a;}
 const QUARTERS={
   Q1:{label:'ไตรมาส 1',period:'ม.ค. – มี.ค. 2569',orgPct:42.1,missions:[
@@ -84,7 +82,6 @@ const QUARTERS={
     {status:'y',goal:4,strat:7,plan:22},{status:'g',goal:6,strat:6,plan:35},{status:'y',goal:3,strat:10,plan:30},{status:'y',goal:3,strat:10,plan:33}]},
 };
 const QKEYS=['Q1','Q2','Q3','Q4'];
-const LATEST='Q2';
 
 function Donut({segments,size}){
   // segments: [{v,color}]; renders SVG donut
@@ -108,53 +105,34 @@ function StatusDots({status,n,seed,size}){
 
 const STLABEL={g:'บรรลุ / ปกติ',y:'เฝ้าระวัง',r:'ต่ำกว่าเกณฑ์'};
 const LEVELS=[['goal','เป้าหมาย'],['strat','กลยุทธ์'],['plan','แผนปฏิบัติการ']];
-function kpiFor(seed,n){const a=[];let x=seed*7919+104729;for(let i=0;i<n;i++){x=(x*7919+104729)%233280;a.push(x/233280<0.45);}return a;}
 function itemsFor(mi,li,n,q){
   const arr=gridFor(mi*40+li*13+QKEYS.indexOf(q)*5,n);
-  const kpis=kpiFor(mi*40+li*13+QKEYS.indexOf(q)*5+500,n);
   const lab=LEVELS[li][1];
   const desc={
     0:'ตัวชี้วัดเป้าหมายของพันธกิจ ประเมินจากผลลัพธ์ที่กำหนดไว้ในรอบไตรมาสนี้',
     1:'แนวทางกลยุทธ์ที่ใช้ขับเคลื่อนพันธกิจให้บรรลุเป้าหมายที่วางไว้',
     2:'งาน/กิจกรรมตามแผนปฏิบัติการที่อยู่ระหว่างดำเนินการในไตรมาสนี้',
   }[li];
-  return arr.map((s,i)=>({status:s,title:lab+'ที่ '+(i+1),desc,hasKpi:kpis[i]}));
+  return arr.map((s,i)=>({status:s,title:lab+'ที่ '+(i+1),desc}));
 }
 function ColorChip({color,n,bg}){
   return <span style={{display:'inline-flex',alignItems:'center',gap:6,background:bg,borderRadius:99,padding:'3px 11px',fontSize:12,fontWeight:700,color:'#5a6473'}}><span style={{width:10,height:10,borderRadius:'50%',background:color}}></span>{n}</span>;
 }
-const SOFTBG={g:'#eafaf0',y:'#fff7e3',r:'#fdeaea'};
-function Seg({g,y,r,h}){
-  const t=(g+y+r)||1, H=h||8;
-  const part=(v,c)=> v>0 ? <div key={c} style={{flex:v,background:c}}></div> : null;
-  return <div style={{display:'flex',height:H,borderRadius:99,overflow:'hidden',background:'#eef1f5'}}>{part(g,GRN)}{part(y,YEL)}{part(r,RED)}</div>;
-}
-function CountRow({g,y,r,gap}){
-  const Item=({c,n})=> <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,color:'#5a6473'}}><span style={{width:8,height:8,borderRadius:'50%',background:c}}></span>{n}</span>;
-  return <div style={{display:'flex',gap:gap||13}}>{g>0&&<Item c={GRN} n={g}/>}{y>0&&<Item c={YEL} n={y}/>}{r>0&&<Item c={RED} n={r}/>}</div>;
-}
-function aggFor(mi,q){
-  const a={g:0,y:0,r:0};
-  LEVELS.forEach((lv,li)=>{itemsFor(mi,li,QUARTERS[q].missions[mi][lv[0]],q).forEach(it=>a[it.status]++);});
-  return a;
-}
-
 function LevelBlock({mi,li,n,q,sel,onPick}){
   const items=itemsFor(mi,li,n,q);
   const c={g:0,y:0,r:0};items.forEach(it=>c[it.status]++);
   const picked=sel&&sel.li===li?items[sel.i]:null;
   return (
-    <div style={{marginTop:18}}>
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
-        <span style={{fontSize:12.5,fontWeight:600,color:'#3a424f'}}>{LEVELS[li][1]}</span>
-        <CountRow g={c.g} y={c.y} r={c.r}/>
+    <div style={{marginBottom:18}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,paddingBottom:9,borderBottom:'1px solid #eef0f4',marginBottom:12,flexWrap:'wrap'}}>
+        <span style={{fontSize:12.5,fontWeight:700,color:'#5a6473',background:'#f1f3f6',borderRadius:99,padding:'4px 13px'}}>{LEVELS[li][1]}</span>
+        {c.g>0&&<ColorChip color={GRN} n={c.g} bg="#eafaf0"/>}
+        {c.y>0&&<ColorChip color={YEL} n={c.y} bg="#fff7e3"/>}
+        {c.r>0&&<ColorChip color={RED} n={c.r} bg="#fdeaea"/>}
       </div>
-      <div style={{display:'flex',flexWrap:'wrap',gap:7}}>
+      <div style={{display:'flex',flexWrap:'wrap',gap:11}}>
         {items.map((it,i)=>{const on=picked&&sel.i===i;return (
-          <div key={i} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
-            <button title={it.title+(it.hasKpi?' · มีตัวชี้วัด':'')} onClick={()=>onPick(li,i)} style={{width:22,height:22,borderRadius:'50%',background:dotC(it.status),boxShadow:on?'0 0 0 2px #fff,0 0 0 4px #2b3440':'none',transform:on?'scale(1.08)':'none',transition:'transform .1s',cursor:'pointer',flex:'none'}}></button>
-            <span style={{width:14,height:3,borderRadius:2,background:it.hasKpi?dotC(it.status):'transparent'}}></span>
-          </div>
+          <button key={i} title={it.title} onClick={()=>onPick(li,i)} style={{width:38,height:38,borderRadius:'50%',background:dotC(it.status),border:on?'3px solid #2b3440':'3px solid transparent',transition:'transform .1s',transform:on?'scale(1.08)':'none',cursor:'pointer'}}></button>
         );})}
       </div>
       {picked && (
@@ -162,8 +140,7 @@ function LevelBlock({mi,li,n,q,sel,onPick}){
           <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
             <span style={{width:12,height:12,borderRadius:'50%',background:dotC(picked.status),flex:'none'}}></span>
             <span style={{fontWeight:700,fontSize:13.5}}>{picked.title}</span>
-            <span style={{fontSize:11,fontWeight:700,color:dotC(picked.status),background:SOFTBG[picked.status],borderRadius:99,padding:'2px 9px'}}>{STLABEL[picked.status]}</span>
-            {picked.hasKpi&&<span style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:11,fontWeight:700,color:'#5a6473',background:'#eef1f5',borderRadius:99,padding:'2px 9px'}}><span style={{width:12,height:3,borderRadius:2,background:dotC(picked.status),flex:'none'}}></span>มีตัวชี้วัด</span>}
+            <span style={{fontSize:11,fontWeight:700,color:dotC(picked.status),background:picked.status==='g'?'#eafaf0':picked.status==='y'?'#fff7e3':'#fdeaea',borderRadius:99,padding:'2px 9px'}}>{STLABEL[picked.status]}</span>
           </div>
           <div style={{fontSize:12.5,color:'#5a6473',lineHeight:1.6}}>{picked.desc}</div>
         </div>
@@ -174,60 +151,37 @@ function LevelBlock({mi,li,n,q,sel,onPick}){
 
 function MissionStatusModal({q,setQ,onClose}){
   const [sel,setSel]=useState({});  // {missionIndex: {li,i}}
-  const rq=q==='latest'?LATEST:q;
-  const Q=QUARTERS[rq];
+  const Q=QUARTERS[q];
   const pick=(mi,li,i)=>setSel(s=>({...s,[mi]:(s[mi]&&s[mi].li===li&&s[mi].i===i)?null:{li,i}}));
   return (
     <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.45)',zIndex:80,display:'flex',flexDirection:'column',padding:'26px'}}>
-      <div onClick={(e)=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,flex:1,display:'flex',flexDirection:'column',overflow:'hidden',boxShadow:'0 24px 60px rgba(16,24,40,.28)'}}>
-
-        {/* HEADER */}
-        <div style={{display:'flex',alignItems:'center',gap:14,padding:'18px 24px',borderBottom:'1px solid #eef0f4'}}>
-          <div style={{minWidth:0}}>
-            <div style={{fontWeight:700,fontSize:17,letterSpacing:'-.01em'}}>สถานะของแผนธุรกิจทั้งหมด</div>
-            <div style={{fontSize:12.5,color:'#8a93a3',marginTop:2}}>{Q.label} · {Q.period}</div>
-          </div>
+      <div onClick={(e)=>e.stopPropagation()} style={{background:'#fff',borderRadius:14,flex:1,display:'flex',flexDirection:'column',overflow:'hidden',boxShadow:'0 20px 50px rgba(16,24,40,.3)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,padding:'14px 20px',borderBottom:'1px solid #eef0f4',flexWrap:'wrap'}}>
+          <span style={{display:'flex',gap:6}}><span style={{width:11,height:11,borderRadius:'50%',background:'#ff5f57'}}></span><span style={{width:11,height:11,borderRadius:'50%',background:'#febc2e'}}></span><span style={{width:11,height:11,borderRadius:'50%',background:'#28c840'}}></span></span>
+          <div style={{fontWeight:700,fontSize:15}}>สถานะของแผนธุรกิจทั้งหมด</div>
+          <span style={{fontSize:12.5,color:'#8a93a3'}}>· {Q.label} ({Q.period})</span>
           <div style={{flex:1}}></div>
-          <div style={{display:'flex',background:'#f1f3f7',borderRadius:10,padding:3,gap:2}}>
-            {QKEYS.map(k=>{const a=q===k;return <button key={k} onClick={()=>{setQ(k);setSel({});}} style={{borderRadius:7,padding:'7px 15px',fontSize:12.5,fontWeight:700,background:a?primary:'transparent',color:a?'#fff':'#5a6473',transition:'all .12s'}}>{k}</button>;})}
-            <button onClick={()=>{setQ('latest');setSel({});}} style={{borderRadius:7,padding:'7px 15px',fontSize:12.5,fontWeight:700,background:q==='latest'?primary:'transparent',color:q==='latest'?'#fff':'#5a6473',transition:'all .12s'}}>ล่าสุด</button>
+          {/* Q toggle inside modal */}
+          <div style={{display:'flex',background:'#eef1f5',borderRadius:9,padding:3,gap:2}}>
+            {QKEYS.map(k=>{const a=q===k;return <button key={k} onClick={()=>{setQ(k);setSel({});}} style={{borderRadius:7,padding:'6px 13px',fontSize:12.5,fontWeight:700,background:a?primary:'transparent',color:a?'#fff':'#5a6473'}}>{k}</button>;})}
           </div>
-          <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('close',19,'#5a6473')}</button>
+          <button onClick={onClose} style={{width:32,height:32,borderRadius:8,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('close',19,'#5a6473')}</button>
         </div>
-
-        {/* SUB-BAR: hint + org overall + legend */}
-        <div style={{display:'flex',alignItems:'center',gap:14,padding:'11px 24px',borderBottom:'1px solid #f3f5f8',fontSize:12,color:'#8a93a3',flexWrap:'wrap'}}>
-          <span style={{display:'inline-flex',alignItems:'center',gap:7}}>{ms('back_hand',15,'#aab2bf')}คลิกที่จุดสถานะเพื่อดูรายละเอียด</span>
-          <span style={{display:'inline-flex',alignItems:'center',gap:7,paddingLeft:14,borderLeft:'1px solid #e7eaef',color:'#5a6473'}}>ภาพรวมองค์กร <b style={{color:'#1f2733',fontSize:13.5}}>{Q.orgPct}%</b> บรรลุเกณฑ์</span>
+        <div style={{display:'flex',alignItems:'center',gap:18,padding:'9px 20px',borderBottom:'1px solid #f3f5f8',fontSize:12,color:'#8a93a3'}}>
+          {ms('touch_app',17,'#9aa3af')}<span>คลิกที่จุดสถานะเพื่อดูรายละเอียดแผนธุรกิจ</span>
           <div style={{flex:1}}></div>
-          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:10,height:10,borderRadius:'50%',background:GRN}}></span>บรรลุ/ปกติ</span>
-          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:10,height:10,borderRadius:'50%',background:YEL}}></span>เฝ้าระวัง</span>
-          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:10,height:10,borderRadius:'50%',background:RED}}></span>ต่ำกว่าเกณฑ์</span>
-          <span style={{display:'inline-flex',alignItems:'center',gap:7,paddingLeft:14,borderLeft:'1px solid #e7eaef',color:'#5a6473'}}><span style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2}}><span style={{width:10,height:10,borderRadius:'50%',background:'#9aa3af'}}></span><span style={{width:12,height:2,borderRadius:2,background:'#9aa3af'}}></span></span>มีตัวชี้วัด</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:11,height:11,borderRadius:'50%',background:GRN}}></span>บรรลุ/ปกติ</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:11,height:11,borderRadius:'50%',background:YEL}}></span>เฝ้าระวัง</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:11,height:11,borderRadius:'50%',background:RED}}></span>ต่ำกว่าเกณฑ์</span>
         </div>
-
-        {/* CARDS */}
-        <div style={{flex:1,overflowY:'auto',padding:22,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:18,background:'#fafbfc'}}>
-          {Q.missions.map((m,i)=>{
-            const parts=MNAMES[i].split(' : ');const mlabel=parts[0];const mname=parts.slice(1).join(' : ');
-            const agg=aggFor(i,rq);const total=agg.g+agg.y+agg.r;
-            return (
-            <div key={i} style={{border:'1px solid #eceef2',borderRadius:14,padding:20,background:'#fff'}}>
-              {/* mission heading */}
-              <div style={{minHeight:48}}>
-                <div style={{fontSize:11,fontWeight:700,letterSpacing:'.5px',color:'#9aa3af'}}>{mlabel.toUpperCase()}</div>
-                <div style={{fontWeight:700,fontSize:14.5,lineHeight:1.3,marginTop:3}}>{mname}</div>
-              </div>
-              {/* overall health */}
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',margin:'14px 0 8px'}}>
-                <span style={{display:'inline-flex',alignItems:'center',gap:7,fontSize:12,fontWeight:700,whiteSpace:'nowrap',color:dotC(m.status),background:SOFTBG[m.status],borderRadius:99,padding:'4px 11px',flex:'none'}}><span style={{width:9,height:9,borderRadius:'50%',background:dotC(m.status),flex:'none'}}></span>{STLABEL[m.status]}</span>
-                <span style={{fontSize:11.5,color:'#9aa3af',whiteSpace:'nowrap'}}>{total} รายการ</span>
-              </div>
-              <Seg g={agg.g} y={agg.y} r={agg.r} h={8}/>
-              {/* levels */}
+        <div style={{flex:1,overflowY:'auto',padding:18,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16}}>
+          {Q.missions.map((m,i)=>(
+            <div key={i} style={{border:'1px solid #eceef2',borderRadius:12,padding:'16px 16px 20px'}}>
+              <div style={{fontWeight:700,fontSize:13.5,minHeight:38,lineHeight:1.35}}>{MNAMES[i]}</div>
+              <div style={{width:34,height:34,borderRadius:'50%',background:dotC(m.status),margin:'6px 0 18px'}}></div>
               {LEVELS.map((lv,li)=>(<LevelBlock key={li} mi={i} li={li} n={m[lv[0]]} q={q} sel={sel[i]} onPick={(li2,idx)=>pick(i,li2,idx)}/>))}
             </div>
-          );})}
+          ))}
         </div>
       </div>
     </div>
@@ -235,18 +189,46 @@ function MissionStatusModal({q,setQ,onClose}){
 }
 
 function App(){
-  const [q,setQ]=useState('latest');
+  const [q,setQ]=useState('Q3');
   const [modal,setModal]=useState(false);
   const [cmdTab,setCmdTab]=useState('add');
-  const rq=q==='latest'?LATEST:q;
-  const Q=QUARTERS[rq];
+  const Q=QUARTERS[q];
 
   const rail=[['bi-layout-sidebar',false,'dashboard.html'],['bi-graph-up',true,'org-dashboard.html'],['bi-arrow-down-left',false,'assignee-action-list.html'],['bi-arrow-up-right',false,'commander-action-dashboard.html'],['bi-easel',false,'user-virtual-meeting.html'],['bi-file-earmark-arrow-down'],['bi-book'],['bi-clipboard-data',false,'business-plan-responsible-list.html']];
 
   const Card=({children,pad,style})=>(<div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:pad||'16px 18px',...style}}>{children}</div>);
 
   return (
-   <GD5AppShell active="org">
+   <div style={{minHeight:'100vh',background:'#f3f5f9'}}>
+    {/* TOP BAR */}
+    <div style={{height:58,background:'#fff',borderBottom:'1px solid #e7eaef',display:'flex',alignItems:'center',gap:18,padding:'0 18px',position:'sticky',top:0,zIndex:30}}>
+      <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}><img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveDeeFive"/></a>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:10,padding:'9px 12px',width:280}}>
+        <i className="bi bi-search" style={{fontSize:16,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveDeeFive</span>
+      </div>
+      <div style={{flex:1}}></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-bell" style={{fontSize:21,color:'#5a6473'}}></i></div>
+      <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}><i className="bi bi-chat" style={{fontSize:21,color:'#5a6473'}}></i><span style={{position:'absolute',top:-2,right:-2,background:'#ef4444',color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:17,height:17,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>10</span></div>
+      <div style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473'}}><i className="bi bi-globe" style={{fontSize:18}}></i><span style={{fontSize:13}}>ไทย</span><i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i></div>
+      <i className="bi bi-moon" style={{fontSize:20,color:'#5a6473'}}></i>
+      <div style={{display:'flex',alignItems:'center',gap:10,paddingLeft:10,borderLeft:'1px solid #e7eaef'}}>
+        <div style={{lineHeight:1.2,textAlign:'right'}}><div style={{fontWeight:700,fontSize:13.5}}>Piyawat Takaew</div><div style={{fontSize:11.5,color:'#8a93a3'}}>SA Staff</div></div>
+        <div style={{width:38,height:38,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>P</div>
+        <i className="bi bi-chevron-down" style={{fontSize:14,color:'#9aa3af'}}></i>
+      </div>
+    </div>
+
+    <div style={{display:'flex'}}>
+      {/* ICON RAIL */}
+      <div style={{width:60,background:'#fff',borderRight:'1px solid #e7eaef',display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'14px 0',position:'sticky',top:58,height:'calc(100vh - 58px)'}}>
+        <div style={{width:34,height:34,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,marginBottom:6,flex:'none'}}>P</div>
+        {rail.map(([ic,act,url],i)=> url ? (
+          <a href={url} key={i} style={{width:40,height:40,borderRadius:11,background:act?primarySoft:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:act?primary:'#9aa3af'}}></i></a>
+        ) : (
+          <div key={i} style={{width:40,height:40,borderRadius:11,background:'transparent',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+ic} style={{fontSize:21,color:'#9aa3af'}}></i></div>
+        ))}
+        <div style={{width:36,height:36,borderRadius:'50%',background:'#f0f2f5',display:'flex',alignItems:'center',justifyContent:'center',marginTop:4}}><i className="bi bi-chevron-down" style={{fontSize:18,color:'#5a6473'}}></i></div>
+      </div>
 
       {/* MAIN */}
       <div style={{flex:1,padding:'20px 24px',minWidth:0}}>
@@ -334,7 +316,7 @@ function App(){
                   </div>
                   <div style={{background:'#fafbfc',borderTop:'1px solid #f1f3f6',padding:'11px 14px'}}>
                     <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:9,fontSize:11.5,color:'#5a6473',fontWeight:600}}>{ms('desktop_windows',16,'#9aa3af')}ข้อมูลสรุปสถานะจากเป้าหมาย</div>
-                    <StatusDots status={m.status} n={m.goal} seed={i*5+QKEYS.indexOf(rq)} size={13}/>
+                    <StatusDots status={m.status} n={m.goal} seed={i*5+QKEYS.indexOf(q)} size={13}/>
                   </div>
                 </a>
               ))}
@@ -402,17 +384,18 @@ function App(){
 
        </div>
       </div>
-    </GD5AppShell>
+    </div>
+
+    {modal && <MissionStatusModal q={q} setQ={setQ} onClose={()=>setModal(false)}/>}
+   </div>
   );
 }
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>
-(async function(){
-  var shellSrc='';
-  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
-  var pageSrc=document.getElementById('jsx-src').textContent;
-  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
+(function(){
+  var src=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
   new Function(out)();
 })();
 </script>

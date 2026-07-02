@@ -26,13 +26,6 @@ a{color:inherit;text-decoration:none}
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-<style id="gd5-proto-style">@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}</style>
-<div id="gd5-proto-badge" style="position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;align-items:center;gap:9px;padding:10px 22px 10px 16px;background:rgba(225,235,242,0.62);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1.5px solid rgba(180,205,220,0.55);border-radius:10px;box-shadow:0 8px 32px rgba(16,24,40,0.13),0 1.5px 4px rgba(16,24,40,0.07),inset 0 1px 0 rgba(255,255,255,0.75);font-family:'IBM Plex Sans Thai',sans-serif;user-select:none;pointer-events:none;">
-  <span style="width:8px;height:8px;border-radius:50%;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
-  <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:0.8px;text-transform:uppercase">Prototype</span>
-  <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
-  <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45);letter-spacing:0.2px">GiveD5</span>
-</div>
 <div id="root"></div>
 <script type="text/plain" id="jsx-src">
 const {useState} = React;
@@ -56,12 +49,12 @@ const ITEMS=[
   {id:2,type:'เป้าหมาย',title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',hasKpi:true,status:'g',updatedAt:'14/06/2569 08:15',needApproval:false,period:'01/10/2568 – 30/09/2569',cmdTotal:112,cmdG:78,cmdY:24,cmdR:10,reporter:'Narate Boonmee',reportedAt:'14/06/2569 08:15',action:'จำนวนผู้เรียนในระบบ EDR ณ วันที่ 14 มิ.ย. 2569 อยู่ที่ 62,340 คน ซึ่งเกินเป้าหมาย 61,500 คน และยังมีแนวโน้มเพิ่มขึ้นต่อเนื่องในไตรมาสนี้',progress:[{date:'14/06/2569',val:'62,340',avg:'61,890',sum:'62,340',status:'g'},{date:'14/05/2569',val:'61,440',avg:'61,440',sum:'61,440',status:'y'},{date:'14/04/2569',val:'59,820',avg:'59,820',sum:'59,820',status:'r'},{date:'14/03/2569',val:null,avg:null,sum:null,status:''},{date:'14/02/2569',val:null,avg:null,sum:null,status:''},{date:'14/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'กลยุทธ์ 1.3.1 ขยายการลงทะเบียนนักเรียนในระบบ EDR',kpi:'จำนวน 61,500 คน',status:'g'},{title:'กลยุทธ์ 1.3.2 ลดอัตราการออกกลางคัน',kpi:'ไม่เกิน 2%',status:'g'},{title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',status:'g'}]},
   {id:3,type:'กลยุทธ์',title:'กลยุทธ์ 2.2.2 สถานศึกษาที่ใช้ GiveD5 ทดแทน line กลุ่มในการสนับสนุนการใช้ EDR 26 แห่ง',kpi:'จำนวน 10 แห่ง',hasKpi:true,status:'y',updatedAt:'12/06/2569 14:22',needApproval:false,period:'01/04/2569 – 30/09/2569',cmdTotal:36,cmdG:18,cmdY:12,cmdR:6,reporter:'Piyawat Takaew',reportedAt:'12/06/2569 14:22',action:'มีสถานศึกษาที่เปลี่ยนมาใช้ GiveD5 แทน line แล้ว 7 แห่ง จากเป้า 10 แห่ง กำลังชักชวนอีก 3 แห่งที่เหลือ คาดว่าจะครบภายในไตรมาสนี้',progress:[{date:'12/06/2569',val:'7',avg:'6.5',sum:'7',status:'y'},{date:'12/05/2569',val:'5',avg:'5.0',sum:'5',status:'y'},{date:'12/04/2569',val:'3',avg:'3.0',sum:'3',status:'r'},{date:'12/03/2569',val:null,avg:null,sum:null,status:''},{date:'12/02/2569',val:null,avg:null,sum:null,status:''},{date:'12/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'แผนงานที่ 2.2.21 อบรมการใช้งาน GiveD5 สำหรับสถานศึกษา',kpi:'26 แห่ง',status:'g'},{title:'แผนงานที่ 2.2.22 ติดตามผลการใช้งาน GiveD5',kpi:'เดือนละ 1 ครั้ง',status:'y'}]},
   {id:4,type:'กลยุทธ์',title:'กลยุทธ์ 2.1.3 พัฒนาคุณภาพระบบ GiveD5 ให้ตรงตามความต้องการผู้ใช้',kpi:null,hasKpi:false,status:'r',updatedAt:'10/06/2569 10:05',needApproval:false,period:'01/10/2568 – 30/09/2569',cmdTotal:24,cmdG:8,cmdY:6,cmdR:10,reporter:'Narate Boonmee',reportedAt:'10/06/2569 10:05',action:'พบปัญหาระบบ GiveD5 ตอบสนองช้าในช่วง Peak Hour ส่งผลต่อความพึงพอใจผู้ใช้ กำลังแก้ไขที่ฝั่ง Server คาดว่าจะแก้ไขได้ภายใน 2 สัปดาห์',progress:[{date:'10/06/2569',val:null,avg:null,sum:null,status:'r'},{date:'10/05/2569',val:null,avg:null,sum:null,status:'y'},{date:'10/04/2569',val:null,avg:null,sum:null,status:''},{date:'10/03/2569',val:null,avg:null,sum:null,status:''},{date:'10/02/2569',val:null,avg:null,sum:null,status:''},{date:'10/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'แผนงานที่ 2.1.31 สำรวจความต้องการผู้ใช้งาน GiveD5',kpi:'ไม่มีตัวชี้วัด',status:'r'},{title:'แผนงานที่ 2.1.32 พัฒนาฟีเจอร์ตามผลสำรวจ',kpi:'ไม่มีตัวชี้วัด',status:'r'}]},
-  {id:5,type:'กลยุทธ์',title:'กลยุทธ์ 3.1.1 เพิ่มประสิทธิภาพกระบวนการจัดซื้อจัดจ้างองค์กร',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'',updatedAt:null,needApproval:false,period:'01/10/2568 – 30/09/2569',cmdTotal:19,cmdG:12,cmdY:5,cmdR:2,reporter:'',reportedAt:'',action:'',progress:[{date:'14/06/2569',val:null,avg:null,sum:null,status:''},{date:'14/05/2569',val:null,avg:null,sum:null,status:''},{date:'14/04/2569',val:null,avg:null,sum:null,status:''},{date:'14/03/2569',val:null,avg:null,sum:null,status:''},{date:'14/02/2569',val:null,avg:null,sum:null,status:''},{date:'14/01/2569',val:null,avg:null,sum:null,status:''}],children:[]},
-  {id:6,type:'แผนงาน',title:'แผนงานที่ 1.3.21 การกำหนดมาตรฐานและการออกแบบระบบ',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'14/06/2569 11:00',needApproval:true,period:'01/07/2569 – 30/09/2569',cmdTotal:15,cmdG:10,cmdY:3,cmdR:2,reporter:'Piyawat Takaew',reportedAt:'14/06/2569 11:00',action:'ออกแบบโครงสร้างระบบเบื้องต้นเสร็จแล้ว กำลังรอการอนุมัติจากหัวหน้าทีมก่อนเริ่มพัฒนาจริง เอกสารออกแบบอยู่ระหว่างทบทวนครั้งสุดท้าย',progress:[{date:'14/06/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'14/05/2569',val:null,avg:null,sum:null,status:''},{date:'14/04/2569',val:null,avg:null,sum:null,status:''},{date:'14/03/2569',val:null,avg:null,sum:null,status:''},{date:'14/02/2569',val:null,avg:null,sum:null,status:''},{date:'14/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'เป้าหมาย 1.2 สรุปผลการประกวดโครงการ MOU',kpi:'จำนวน 3 แห่ง',status:'g'},{title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',status:'g'},{title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',status:'g'}]},
-  {id:7,type:'แผนงาน',title:'แผนงานที่ 2.2.11 สร้างเครือข่ายชุมชนผู้ใช้งาน GiveD5',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'13/06/2569 16:30',needApproval:true,period:'01/04/2569 – 30/09/2569',cmdTotal:21,cmdG:15,cmdY:4,cmdR:2,reporter:'Piyawat Takaew',reportedAt:'13/06/2569 16:30',action:'จัดตั้งกลุ่มชุมชนผู้ใช้งาน GiveD5 ใน Platform แล้ว มีสมาชิกเข้าร่วม 87 คน กำลังขยายสู่วิทยาลัยเครือข่ายเพิ่มเติมในเดือนหน้า',progress:[{date:'13/06/2569',val:'87',avg:'65',sum:'87',status:'g'},{date:'13/05/2569',val:'43',avg:'43',sum:'43',status:'g'},{date:'13/04/2569',val:null,avg:null,sum:null,status:''},{date:'13/03/2569',val:null,avg:null,sum:null,status:''},{date:'13/02/2569',val:null,avg:null,sum:null,status:''},{date:'13/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'กลยุทธ์ 2.2.1 พัฒนาระบบชุมชน GiveD5',kpi:'ตัวชี้วัดที่ตั้งไว้',status:'g'}]},
-  {id:8,type:'แผนงาน',title:'แผนงานที่ 4.1.23 จัดทำ Dashboard รายงานผลการดำเนินงาน',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'12/06/2569 09:15',needApproval:true,period:'01/05/2569 – 30/09/2569',cmdTotal:9,cmdG:6,cmdY:2,cmdR:1,reporter:'Narate Boonmee',reportedAt:'12/06/2569 09:15',action:'Dashboard version 1.0 พัฒนาเสร็จแล้ว อยู่ในขั้นทดสอบกับผู้บริหาร รอ feedback เพื่อปรับปรุงก่อน Go-live ในเดือนกรกฎาคม',progress:[{date:'12/06/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'12/05/2569',val:null,avg:null,sum:null,status:''},{date:'12/04/2569',val:null,avg:null,sum:null,status:''},{date:'12/03/2569',val:null,avg:null,sum:null,status:''},{date:'12/02/2569',val:null,avg:null,sum:null,status:''},{date:'12/01/2569',val:null,avg:null,sum:null,status:''}],children:[]},
-  {id:9,type:'แผนงาน',title:'แผนงานที่ 3.2.12 ประเมินความพร้อมใช้งานครุภัณฑ์ประจำปี',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'11/06/2569 14:00',needApproval:true,period:'01/10/2568 – 30/09/2569',cmdTotal:33,cmdG:24,cmdY:6,cmdR:3,reporter:'Piyawat Takaew',reportedAt:'11/06/2569 14:00',action:'ดำเนินการประเมินครุภัณฑ์ครบ 85% ของแผนแล้ว ยังเหลืออีก 15% ซึ่งเป็นครุภัณฑ์ที่ต้องเดินทางไปประเมินต่างจังหวัด คาดแล้วเสร็จปลายเดือนนี้',progress:[{date:'11/06/2569',val:'85%',avg:'70%',sum:'85%',status:'g'},{date:'11/05/2569',val:'60%',avg:'60%',sum:'60%',status:'g'},{date:'11/04/2569',val:'35%',avg:'35%',sum:'35%',status:'y'},{date:'11/03/2569',val:null,avg:null,sum:null,status:''},{date:'11/02/2569',val:null,avg:null,sum:null,status:''},{date:'11/01/2569',val:null,avg:null,sum:null,status:''}],children:[]},
-  {id:10,type:'แผนงาน',title:'แผนงานที่ 1.2.31 การจัดกิจกรรมประกวด MOU ระดับภาค',kpi:'ตัวชี้วัดที่ตั้งไว้ในรอบการวัดผล',hasKpi:true,status:'g',updatedAt:'10/06/2569 09:00',needApproval:true,period:'01/02/2569 – 30/06/2569',cmdTotal:27,cmdG:20,cmdY:5,cmdR:2,reporter:'Narate Boonmee',reportedAt:'10/06/2569 09:00',action:'จัดกิจกรรมประกวด MOU ระดับภาคเรียบร้อยแล้ว มีผู้เข้าร่วม 3 วิทยาลัย ผลการตัดสินอยู่ระหว่างสรุปรายงานเพื่อส่งผู้บริหาร',progress:[{date:'10/06/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'10/05/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'10/04/2569',val:null,avg:null,sum:null,status:''},{date:'10/03/2569',val:null,avg:null,sum:null,status:''},{date:'10/02/2569',val:null,avg:null,sum:null,status:''},{date:'10/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'เป้าหมาย 1.2 สรุปผลการประกวดโครงการ MOU',kpi:'จำนวน 3 แห่ง',status:'g'}]},
+  {id:5,type:'กลยุทธ์',title:'กลยุทธ์ 3.1.1 เพิ่มประสิทธิภาพกระบวนการจัดซื้อจัดจ้างองค์กร',kpi:null,hasKpi:false,status:'',updatedAt:null,needApproval:false,period:'01/10/2568 – 30/09/2569',cmdTotal:19,cmdG:12,cmdY:5,cmdR:2,reporter:'',reportedAt:'',action:'',progress:[{date:'14/06/2569',val:null,avg:null,sum:null,status:''},{date:'14/05/2569',val:null,avg:null,sum:null,status:''},{date:'14/04/2569',val:null,avg:null,sum:null,status:''},{date:'14/03/2569',val:null,avg:null,sum:null,status:''},{date:'14/02/2569',val:null,avg:null,sum:null,status:''},{date:'14/01/2569',val:null,avg:null,sum:null,status:''}],children:[]},
+  {id:6,type:'แผนงาน',title:'แผนงานที่ 1.3.21 การกำหนดมาตรฐานและการออกแบบระบบ',kpi:'จำนวน 1 ฉบับ',hasKpi:true,status:'g',updatedAt:'14/06/2569 11:00',needApproval:true,period:'01/07/2569 – 30/09/2569',cmdTotal:15,cmdG:10,cmdY:3,cmdR:2,reporter:'Piyawat Takaew',reportedAt:'14/06/2569 11:00',action:'ออกแบบโครงสร้างระบบเบื้องต้นเสร็จแล้ว กำลังรอการอนุมัติจากหัวหน้าทีมก่อนเริ่มพัฒนาจริง เอกสารออกแบบอยู่ระหว่างทบทวนครั้งสุดท้าย',progress:[{date:'14/06/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'14/05/2569',val:null,avg:null,sum:null,status:''},{date:'14/04/2569',val:null,avg:null,sum:null,status:''},{date:'14/03/2569',val:null,avg:null,sum:null,status:''},{date:'14/02/2569',val:null,avg:null,sum:null,status:''},{date:'14/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'เป้าหมาย 1.2 สรุปผลการประกวดโครงการ MOU',kpi:'จำนวน 3 แห่ง',status:'g'},{title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',status:'g'},{title:'เป้าหมาย 1.3 จำนวนผู้เรียนในระบบ EDR ปี 2568',kpi:'ไม่น้อยกว่า 61,500 คน',status:'g'}]},
+  {id:7,type:'แผนงาน',title:'แผนงานที่ 2.2.11 สร้างเครือข่ายชุมชนผู้ใช้งาน GiveD5',kpi:null,hasKpi:false,status:'g',updatedAt:'13/06/2569 16:30',needApproval:true,period:'01/04/2569 – 30/09/2569',cmdTotal:21,cmdG:15,cmdY:4,cmdR:2,reporter:'Piyawat Takaew',reportedAt:'13/06/2569 16:30',action:'จัดตั้งกลุ่มชุมชนผู้ใช้งาน GiveD5 ใน Platform แล้ว มีสมาชิกเข้าร่วม 87 คน กำลังขยายสู่วิทยาลัยเครือข่ายเพิ่มเติมในเดือนหน้า',progress:[{date:'13/06/2569',val:'87',avg:'65',sum:'87',status:'g'},{date:'13/05/2569',val:'43',avg:'43',sum:'43',status:'g'},{date:'13/04/2569',val:null,avg:null,sum:null,status:''},{date:'13/03/2569',val:null,avg:null,sum:null,status:''},{date:'13/02/2569',val:null,avg:null,sum:null,status:''},{date:'13/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'กลยุทธ์ 2.2.1 พัฒนาระบบชุมชน GiveD5',kpi:'ตัวชี้วัดที่ตั้งไว้',status:'g'}]},
+  {id:8,type:'แผนงาน',title:'แผนงานที่ 4.1.23 จัดทำ Dashboard รายงานผลการดำเนินงาน',kpi:'จำนวน 1 ระบบ',hasKpi:true,status:'g',updatedAt:'12/06/2569 09:15',needApproval:true,period:'01/05/2569 – 30/09/2569',cmdTotal:9,cmdG:6,cmdY:2,cmdR:1,reporter:'Narate Boonmee',reportedAt:'12/06/2569 09:15',action:'Dashboard version 1.0 พัฒนาเสร็จแล้ว อยู่ในขั้นทดสอบกับผู้บริหาร รอ feedback เพื่อปรับปรุงก่อน Go-live ในเดือนกรกฎาคม',progress:[{date:'12/06/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'12/05/2569',val:null,avg:null,sum:null,status:''},{date:'12/04/2569',val:null,avg:null,sum:null,status:''},{date:'12/03/2569',val:null,avg:null,sum:null,status:''},{date:'12/02/2569',val:null,avg:null,sum:null,status:''},{date:'12/01/2569',val:null,avg:null,sum:null,status:''}],children:[]},
+  {id:9,type:'แผนงาน',title:'แผนงานที่ 3.2.12 ประเมินความพร้อมใช้งานครุภัณฑ์ประจำปี',kpi:'ไม่น้อยกว่า 85%',hasKpi:true,status:'g',updatedAt:'11/06/2569 14:00',needApproval:true,period:'01/10/2568 – 30/09/2569',cmdTotal:33,cmdG:24,cmdY:6,cmdR:3,reporter:'Piyawat Takaew',reportedAt:'11/06/2569 14:00',action:'ดำเนินการประเมินครุภัณฑ์ครบ 85% ของแผนแล้ว ยังเหลืออีก 15% ซึ่งเป็นครุภัณฑ์ที่ต้องเดินทางไปประเมินต่างจังหวัด คาดแล้วเสร็จปลายเดือนนี้',progress:[{date:'11/06/2569',val:'85%',avg:'70%',sum:'85%',status:'g'},{date:'11/05/2569',val:'60%',avg:'60%',sum:'60%',status:'g'},{date:'11/04/2569',val:'35%',avg:'35%',sum:'35%',status:'y'},{date:'11/03/2569',val:null,avg:null,sum:null,status:''},{date:'11/02/2569',val:null,avg:null,sum:null,status:''},{date:'11/01/2569',val:null,avg:null,sum:null,status:''}],children:[]},
+  {id:10,type:'แผนงาน',title:'แผนงานที่ 1.2.31 การจัดกิจกรรมประกวด MOU ระดับภาค',kpi:'จำนวน 1 ครั้ง',hasKpi:true,status:'g',updatedAt:'10/06/2569 09:00',needApproval:true,period:'01/02/2569 – 30/06/2569',cmdTotal:27,cmdG:20,cmdY:5,cmdR:2,reporter:'Narate Boonmee',reportedAt:'10/06/2569 09:00',action:'จัดกิจกรรมประกวด MOU ระดับภาคเรียบร้อยแล้ว มีผู้เข้าร่วม 3 วิทยาลัย ผลการตัดสินอยู่ระหว่างสรุปรายงานเพื่อส่งผู้บริหาร',progress:[{date:'10/06/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'10/05/2569',val:'1',avg:'1.0',sum:'1',status:'g'},{date:'10/04/2569',val:null,avg:null,sum:null,status:''},{date:'10/03/2569',val:null,avg:null,sum:null,status:''},{date:'10/02/2569',val:null,avg:null,sum:null,status:''},{date:'10/01/2569',val:null,avg:null,sum:null,status:''}],children:[{title:'เป้าหมาย 1.2 สรุปผลการประกวดโครงการ MOU',kpi:'จำนวน 3 แห่ง',status:'g'}]},
 ];
 
 const rail=[
@@ -76,20 +69,295 @@ const rail=[
 ];
 
 const NAVLINKS=[
-  {label:'แผนธุรกิจที่รับผิดชอบ',active:true},
-  {label:'Cockpit ความก้าวหน้าของตัวชี้วัด',active:false,href:'business-plan-cockpit.html'},
-  {label:'ประเมินผลงานแผนธุรกิจ',active:false},
+  {label:'แผนธุรกิจที่รับผิดชอบ',view:'responsible'},
+  {label:'Cockpit ความก้าวหน้าของตัวชี้วัด',href:'business-plan-cockpit.html'},
+  {label:'ประเมินผลงานแผนธุรกิจ',view:'evaluate'},
   null,
-  {label:'แผนธุรกิจทั้งหมดขององค์กร',active:false},
-  {label:'สถานะของแผนธุรกิจทั้งหมด',active:false},
-  {label:'สรุปผลการประเมินแผนธุรกิจ',active:false},
+  {label:'รายงานแผนธุรกิจทั้งหมดขององค์กร',href:'business-plan-org-report.html'},
+  {label:'สถานะของแผนธุรกิจทั้งหมด'},
+  {label:'สรุปผลการประเมินแผนธุรกิจ'},
 ];
 
-const YEARS=['เป้าหมายรอบปี 2026','เป้าหมายรอบปี 2025','เป้าหมายรอบปี 2024'];
+/* ─── รอบการวัดเป้า — ใช้ list เดียวกันทุกหน้าจอในระบบ (responsible-list, evaluate, cockpit, org-report) ─── */
+const ROUNDS=[
+  {id:'r1',label:'เป้าหมายปี 2569 (ครึ่งปีแรก)'},
+  {id:'r2',label:'เป้าหมายปี 2569 (ครึ่งปีหลัง)'},
+  {id:'r3',label:'เป้าหมายปี 2568 (ทั้งปี)'},
+  {id:'r4',label:'เป้าหมายปี 2567 (ทั้งปี)'},
+];
+
+/* ─── ประเมินผลงานแผนธุรกิจ — เฉพาะแผนที่ผู้ใช้คนนี้ถูกกำหนดให้เป็น "ผู้ประเมิน" เท่านั้น
+   (ต่างจาก ITEMS ด้านบนซึ่งคือแผนที่ผู้ใช้ "รับผิดชอบดำเนินการ" — คนละบทบาทกัน) ─── */
+const EVAL_PERIOD='01/01/2026 - 30/06/2026';
+const scoreColorFor=(item,score)=>{
+  const m=item.criteria.find(c=>c.score===score);
+  return m?m.color:'g';
+};
+const EVAL_ITEMS_SEED=[
+  {id:'e1',title:'แผนงานที่ 4.1.1.1 ใส่แผนธุรกิจเข้าระบบ GD5 ภายใน 31 มีนาคม 2569',desc:'ใส่แผนธุรกิจเข้าระบบ GD5 ภายใน 31 มีนาคม 2569',statusLabel:'ดำเนินการให้แล้วเสร็จ',
+   kpiVal:100,kpiTarget:100,kpiUnit:'%',
+   criteria:[{label:'< 100',score:1,color:'r'},{label:'>= 100',score:5,color:'g'}],
+   calculatedScore:5,confirmedScore:null,reason:'',evaluated:false,children:[]},
+  {id:'e2',title:'แผนงานที่ 2.2.11 สร้างเครือข่ายชุมชนผู้ใช้งาน GiveD5',desc:'สร้างเครือข่ายชุมชนผู้ใช้งาน GiveD5 ผ่าน Platform',statusLabel:'ดำเนินการให้แล้วเสร็จ',
+   kpiVal:78,kpiTarget:100,kpiUnit:'%',
+   criteria:[{label:'< 60',score:1,color:'r'},{label:'60 - 89',score:3,color:'y'},{label:'>= 90',score:5,color:'g'}],
+   calculatedScore:3,confirmedScore:3,reason:'',evaluated:true,
+   children:[{title:'กลยุทธ์ 2.2.1 พัฒนาระบบชุมชน GiveD5',score:4}]},
+  {id:'e3',title:'แผนงานที่ 3.2.12 ประเมินความพร้อมใช้งานครุภัณฑ์ประจำปี',desc:'ประเมินความพร้อมใช้งานครุภัณฑ์ประจำปี',statusLabel:'ดำเนินการให้แล้วเสร็จ',
+   kpiVal:85,kpiTarget:100,kpiUnit:'%',
+   criteria:[{label:'< 60',score:1,color:'r'},{label:'60 - 89',score:3,color:'y'},{label:'>= 90',score:5,color:'g'}],
+   calculatedScore:3,confirmedScore:3,reason:'',evaluated:true,children:[]},
+];
+
+function EvaluateModal({item,onClose,onSave}){
+  const [score,setScore]=useState(item.confirmedScore!=null?item.confirmedScore:item.calculatedScore);
+  const [reason,setReason]=useState(item.reason||'');
+  const changed=score!==item.calculatedScore;
+  const reasonOk=reason.trim().length>=4;
+  const canSave=!changed||reasonOk;
+  const kpiPct=item.kpiTarget>0?(item.kpiVal/item.kpiTarget*100):0;
+
+  return (
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'flex-start',justifyContent:'center',zIndex:99998,padding:'40px 16px',overflowY:'auto'}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,width:960,maxWidth:'100%',boxShadow:'0 24px 64px rgba(16,24,40,.28)',animation:'fadeIn .15s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:11,padding:'18px 22px',borderBottom:'1px solid #f0f2f5'}}>
+          <div style={{width:36,height:36,borderRadius:9,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className="bi bi-clipboard2-check" style={{fontSize:17,color:primary}}></i>
+          </div>
+          <div style={{fontWeight:700,fontSize:15}}>ประเมินผลงานแผนธุรกิจ</div>
+          <div style={{flex:1}}></div>
+          <button onClick={onClose} style={{width:32,height:32,borderRadius:8,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',border:'none',cursor:'pointer'}}>
+            <i className="bi bi-x-lg" style={{fontSize:13,color:'#5a6473'}}></i>
+          </button>
+        </div>
+
+        <div style={{padding:'16px 22px 0'}}>
+          <div style={{display:'flex',alignItems:'center',gap:10,background:'#fff8e0',border:'1px solid #fbe4a8',borderRadius:10,padding:'10px 14px',marginBottom:14}}>
+            <i className="bi bi-exclamation-triangle-fill" style={{fontSize:14,color:'#b45309',flex:'none'}}></i>
+            <span style={{fontSize:12.5,color:'#8a6b1f'}}>ขณะนี้ไม่อยู่ในช่วงการประเมินแผนธุรกิจ (ช่วงเวลาการประเมินผล {EVAL_PERIOD})</span>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',border:'1px solid #eceef2',borderRadius:11,padding:'12px 16px',marginBottom:16}}>
+            <div style={{width:44,height:44,borderRadius:9,background:'#eef0f3',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',overflow:'hidden'}}>
+              <i className="bi bi-image" style={{fontSize:18,color:'#c4ccd4'}}></i>
+            </div>
+            <div style={{minWidth:0}}>
+              <div style={{fontWeight:700,fontSize:13.5,color:'#1a2332',marginBottom:2}}>{item.title}</div>
+              <div style={{fontSize:12,color:'#9aa3af'}}>{item.desc}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{padding:'0 22px 22px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,alignItems:'start'}}>
+
+          {/* LEFT */}
+          <div style={{display:'flex',flexDirection:'column',gap:14}}>
+            <div style={{background:'#f7f9fb',border:'1px solid #eceef2',borderRadius:12,padding:'14px 16px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+                <i className="bi bi-bullseye" style={{fontSize:15,color:'#5a6473'}}></i>
+                <span style={{fontWeight:700,fontSize:13.5}}>ตัวชี้วัด (KPI)</span>
+                <div style={{flex:1}}></div>
+                <button style={{width:28,height:28,borderRadius:7,background:'#f59e0b',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <i className="bi bi-list-ul" style={{fontSize:13,color:'#fff'}}></i>
+                </button>
+                <span style={{background:'#3b82f6',color:'#fff',borderRadius:7,padding:'5px 12px',fontSize:12,fontWeight:700}}>ค่าสะสม</span>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:14}}>
+                <span style={{fontSize:12.5,color:'#5a6473',flex:'none'}}>{item.statusLabel}</span>
+                <div style={{flex:1,height:9,background:'#e3f3f0',borderRadius:99,overflow:'hidden'}}>
+                  <div style={{width:Math.min(100,kpiPct)+'%',height:'100%',background:primary,borderRadius:99}}></div>
+                </div>
+                <span style={{fontSize:19,fontWeight:700,color:primary,flex:'none'}}>{kpiPct.toFixed(2)} %</span>
+              </div>
+              <div style={{fontSize:11.5,color:'#9aa3af',marginTop:5}}>{item.kpiVal.toLocaleString()} จาก {item.kpiTarget.toLocaleString()} {item.kpiUnit}</div>
+            </div>
+
+            <div style={{background:'#f7f9fb',border:'1px solid #eceef2',borderRadius:12,padding:'14px 16px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+                <i className="bi bi-trophy" style={{fontSize:15,color:'#5a6473'}}></i>
+                <span style={{fontWeight:700,fontSize:13.5}}>คะแนนที่ได้</span>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:12}}>
+                <span style={{fontSize:12.5,color:'#5a6473',flex:1}}>จากคำนวณตามเกณฑ์การประเมินผล</span>
+                <span style={{background:GRN,color:'#fff',borderRadius:99,padding:'5px 16px',fontSize:13,fontWeight:700,minWidth:44,textAlign:'center'}}>{item.calculatedScore}</span>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <span style={{fontSize:12.5,color:primary,fontWeight:600,flex:1}}>ยืนยันคะแนน (คุณสามารถแก้ไขคะแนนได้)</span>
+                <select value={score} onChange={e=>setScore(Number(e.target.value))} style={{appearance:'none',WebkitAppearance:'none',background:changed?RED:GRN,color:'#fff',borderRadius:99,padding:'5px 26px 5px 16px',fontSize:13,fontWeight:700,border:'none',cursor:'pointer',minWidth:44,textAlign:'center',backgroundImage:'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="white"><path d="M4 6l4 4 4-4"/></svg>\')',backgroundRepeat:'no-repeat',backgroundPosition:'right 8px center',backgroundSize:12}}>
+                  {[1,2,3,4,5].map(n=><option key={n} value={n} style={{color:'#1a2332'}}>{n}</option>)}
+                </select>
+              </div>
+              {changed&&(
+                <div style={{marginTop:14}}>
+                  <div style={{display:'flex',alignItems:'center',gap:6,fontSize:12.5,fontWeight:600,color:'#3a4452',marginBottom:8}}>
+                    <i className="bi bi-pencil-square" style={{fontSize:13,color:primary}}></i>เหตุผลที่ให้คะแนนนี้
+                  </div>
+                  <textarea value={reason} onChange={e=>setReason(e.target.value.slice(0,255))} rows={3} placeholder="ระบุเหตุผลที่ปรับคะแนน..." style={{width:'100%',border:'1.5px solid '+(reasonOk?primary:'#dde1e8'),borderRadius:9,padding:'10px 12px',fontSize:13,fontFamily:'inherit',outline:'none',resize:'vertical',color:'#1f2733',boxSizing:'border-box'}}/>
+                  <div style={{display:'flex',justifyContent:'space-between',marginTop:4}}>
+                    <span style={{fontSize:11,color:reasonOk?'#9aa3af':'#d83a3a'}}>ต้องการตัวอักษร 4 ขึ้นไป *</span>
+                    <span style={{fontSize:11,color:'#b3bac4'}}>{reason.length} / 255</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT */}
+          <div style={{display:'flex',flexDirection:'column',gap:14}}>
+            <div style={{background:'#f7f9fb',border:'1px solid #eceef2',borderRadius:12,padding:'14px 16px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+                <i className="bi bi-balance-scale" style={{fontSize:15,color:'#5a6473'}}></i>
+                <span style={{fontWeight:700,fontSize:13.5}}>เกณฑ์การประเมินผล</span>
+              </div>
+              <div style={{display:'flex',fontSize:11.5,fontWeight:700,color:'#8a93a3',padding:'0 4px 8px'}}>
+                <div style={{flex:1}}>เกณฑ์ตรวจสอบ</div>
+                <div style={{width:70,textAlign:'center'}}>คะแนน</div>
+              </div>
+              {item.criteria.map((c,i)=>(
+                <div key={i} style={{display:'flex',alignItems:'center',padding:'9px 4px',borderTop:'1px solid #eceef2'}}>
+                  <div style={{flex:1,fontSize:13,color:'#1a2332'}}>{c.label}</div>
+                  <div style={{width:70,display:'flex',alignItems:'center',justifyContent:'center',gap:7}}>
+                    <span style={{fontSize:13,color:'#1a2332',fontWeight:600}}>{c.score}</span>
+                    <StatusDot s={c.color} size={12}/>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{background:'#f7f9fb',border:'1px solid #eceef2',borderRadius:12,padding:'14px 16px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:item.children.length?12:0}}>
+                <i className="bi bi-check-circle" style={{fontSize:15,color:'#5a6473'}}></i>
+                <span style={{fontWeight:700,fontSize:13.5}}>ผลการประเมินภายใต้แผนธุรกิจนี้</span>
+              </div>
+              {item.children.length===0?(
+                <div style={{fontSize:12.5,color:'#b3bac4',textAlign:'center',padding:'10px 0'}}>แผนธุรกิจนี้ไม่มีแผนย่อย</div>
+              ):(
+                <div>
+                  {item.children.map((c,i)=>(
+                    <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 4px',borderTop:i?'1px solid #eceef2':'none'}}>
+                      <div style={{flex:1,fontSize:13,color:'#1a2332'}}>{c.title}</div>
+                      <span style={{background:dotC(scoreColorFor(item,c.score)),color:'#fff',borderRadius:99,padding:'3px 13px',fontSize:12.5,fontWeight:700,minWidth:34,textAlign:'center'}}>{c.score}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div style={{display:'flex',gap:10,padding:'0 22px 22px'}}>
+          <button onClick={onClose} style={{flex:1,background:'#f4f6f8',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:11,padding:'11px 0',fontSize:13.5,fontWeight:600,cursor:'pointer'}}>ยกเลิก</button>
+          <button onClick={()=>canSave&&onSave({confirmedScore:score,reason:changed?reason.trim():''})} disabled={!canSave} style={{flex:1,background:canSave?primary:'#c7ccd4',color:'#fff',border:'none',borderRadius:11,padding:'11px 0',fontSize:13.5,fontWeight:700,cursor:canSave?'pointer':'default',display:'flex',alignItems:'center',justifyContent:'center',gap:7}}>
+            <i className="bi bi-check-lg" style={{fontSize:15}}></i>บันทึกผลการประเมิน
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EvaluateListView({items,setItems}){
+  const [tab,setTab]=useState('all');
+  const [openId,setOpenId]=useState(null);
+  const [round,setRound]=useState(ROUNDS[0].id);
+  const [roundOpen,setRoundOpen]=useState(false);
+
+  const doneCount=items.filter(x=>x.evaluated).length;
+  const totalCount=items.length;
+  const pct=totalCount>0?Math.round(doneCount/totalCount*100):0;
+  const filtered=items.filter(x=>tab==='all'?true:tab==='done'?x.evaluated:!x.evaluated);
+  const openItem=items.find(x=>x.id===openId);
+
+  const TABS=[
+    {key:'all',label:'ทั้งหมด',icon:'bi-list-ul'},
+    {key:'done',label:'ประเมินผลแล้ว',icon:'bi-check-circle'},
+    {key:'pending',label:'รอประเมิน',icon:'bi-clock'},
+  ];
+
+  return (
+    <div style={{flex:1,padding:'22px 26px',overflowY:'auto',height:'calc(100vh - 58px)'}}>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+        <i className="bi bi-clipboard2-check" style={{fontSize:20,color:primary}}></i>
+        <span style={{fontWeight:700,fontSize:16}}>ประเมินผลงานแผนธุรกิจ</span>
+        <div style={{flex:1}}></div>
+        <div style={{position:'relative'}}>
+          <button onClick={()=>setRoundOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:8,border:'1px solid #e3e7ec',borderRadius:11,padding:'10px 16px',background:'#fff',cursor:'pointer'}}>
+            <span style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{ROUNDS.find(r=>r.id===round).label}</span>
+            <i className="bi bi-chevron-down" style={{fontSize:11,color:'#9aa3af'}}></i>
+          </button>
+          {roundOpen&&(
+            <div style={{position:'absolute',right:0,top:58,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:240,overflow:'hidden'}}>
+              {ROUNDS.map(r=>(
+                <div key={r.id} onClick={()=>{setRound(r.id);setRoundOpen(false);}} style={{padding:'11px 18px',fontSize:13,cursor:'pointer',fontWeight:r.id===round?700:400,color:r.id===round?primary:'#1f2733',background:r.id===round?primarySoft:'#fff'}}>{r.label}</div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div style={{display:'flex',alignItems:'center',gap:24,flexWrap:'wrap',marginBottom:18}}>
+        <div style={{display:'flex',gap:0,borderBottom:'2px solid #f0f2f5'}}>
+          {TABS.map(t=>(
+            <button key={t.key} onClick={()=>setTab(t.key)} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 16px',fontWeight:tab===t.key?700:400,color:tab===t.key?primary:'#8a93a3',borderBottom:'2px solid '+(tab===t.key?primary:'transparent'),marginBottom:-2,fontSize:13,background:'none',border:'none',borderBottomWidth:2,borderBottomColor:tab===t.key?primary:'transparent',borderBottomStyle:'solid',cursor:'pointer',whiteSpace:'nowrap'}}>
+              <i className={'bi '+t.icon} style={{fontSize:13}}></i>{t.label}
+            </button>
+          ))}
+        </div>
+        <div style={{flex:1}}></div>
+        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:5,minWidth:200}}>
+          <div style={{width:180,height:8,background:'#eef0f3',borderRadius:99,overflow:'hidden'}}>
+            <div style={{width:pct+'%',height:'100%',background:primary,borderRadius:99}}></div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <span style={{fontSize:11.5,color:'#8a93a3',whiteSpace:'nowrap'}}>ประเมินผลแล้ว {doneCount} จาก {totalCount} แผนธุรกิจ</span>
+            <span style={{fontSize:20,fontWeight:700,color:primary}}>{pct}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:'flex',alignItems:'center',gap:10,background:'#fff8e0',border:'1px solid #fbe4a8',borderRadius:10,padding:'10px 14px',marginBottom:16}}>
+        <i className="bi bi-exclamation-triangle-fill" style={{fontSize:14,color:'#b45309',flex:'none'}}></i>
+        <span style={{fontSize:12.5,color:'#8a6b1f'}}>ขณะนี้ไม่อยู่ในช่วงการประเมินแผนธุรกิจ (ช่วงเวลาการประเมินผล {EVAL_PERIOD})</span>
+      </div>
+
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden'}}>
+        {filtered.length===0&&<div style={{padding:'32px 20px',textAlign:'center',color:'#b3bac4',fontSize:13}}>ไม่มีรายการ</div>}
+        {filtered.map((item,i)=>(
+          <div key={item.id} className="bp-row" onClick={()=>setOpenId(item.id)} style={{display:'flex',alignItems:'center',gap:14,padding:'14px 18px',borderTop:i?'1px solid #f4f6f8':'none',cursor:'pointer'}}>
+            <div style={{width:44,height:44,borderRadius:10,background:'#eef0f3',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',overflow:'hidden'}}>
+              <i className="bi bi-image" style={{fontSize:18,color:'#c4ccd4'}}></i>
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontWeight:600,fontSize:13.5,color:'#1a2332',marginBottom:4}}>{item.title}</div>
+              <div style={{display:'flex',alignItems:'center',gap:6,fontSize:12,color:'#9aa3af'}}>
+                <i className="bi bi-bullseye" style={{fontSize:12}}></i>{item.statusLabel}
+              </div>
+            </div>
+            {item.evaluated?(
+              <div style={{width:38,height:38,borderRadius:'50%',background:dotC(scoreColorFor(item,item.confirmedScore)),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:15,flex:'none'}}>{item.confirmedScore}</div>
+            ):(
+              <div style={{width:38,height:38,borderRadius:'50%',background:'#eef0f3',color:'#b3bac4',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:18,flex:'none'}}>–</div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {openItem&&(
+        <EvaluateModal
+          item={openItem}
+          onClose={()=>setOpenId(null)}
+          onSave={(patch)=>{
+            setItems(prev=>prev.map(x=>x.id===openItem.id?{...x,...patch,evaluated:true}:x));
+            setOpenId(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}
 
 function TypeBadge({type}){
   const t=TYPEINFO[type]||{bg:'#e2e8f0',color:'#475569'};
-  return <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',background:t.bg,color:t.color,borderRadius:7,padding:'4px 11px',fontSize:12,fontWeight:700,whiteSpace:'nowrap',flex:'none'}}>{type}</span>;
+  return <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',background:t.bg,color:t.color,borderRadius:6,padding:'3px 8px',fontSize:10.5,fontWeight:700,whiteSpace:'nowrap',flex:'none'}}>{type}</span>;
 }
 
 function StatusDot({s,size}){
@@ -149,14 +417,21 @@ function NavRail(){
   );
 }
 
-function LeftNav(){
+function LeftNav({view,setView,evalPendingCount}){
   return (
     <div style={{width:220,background:'#fff',borderRight:'1px solid #e7eaef',padding:'16px 0',position:'sticky',top:58,height:'calc(100vh - 58px)',overflowY:'auto',flex:'none'}}>
       {NAVLINKS.map((n,i)=> n===null ? (
         <div key={i} style={{height:1,background:'#f0f2f5',margin:'8px 0'}}></div>
+      ) : n.view ? (
+        <a key={i} onClick={()=>setView(n.view)} className="nav-item" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 18px',cursor:'pointer',fontSize:13.5,fontWeight:view===n.view?700:400,color:view===n.view?primary:'#5a6473',background:view===n.view?primarySoft:'transparent',borderLeft:'3px solid '+(view===n.view?primary:'transparent'),textDecoration:'none'}}>
+          <span>{n.label}</span>
+          {n.view==='evaluate'&&evalPendingCount>0&&(
+            <span style={{minWidth:19,height:19,borderRadius:99,background:'#ef4444',color:'#fff',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px',flex:'none'}}>{evalPendingCount}</span>
+          )}
+        </a>
       ) : (
-        <a key={i} href={n.href||'#'} className="nav-item" style={{display:'block',padding:'10px 18px',cursor:'pointer',fontSize:13.5,fontWeight:n.active?700:400,color:n.active?primary:'#5a6473',background:n.active?primarySoft:'transparent',borderLeft:'3px solid '+(n.active?primary:'transparent'),textDecoration:'none'}}>
-          {n.label}
+        <a key={i} href={n.href||'#'} className="nav-item" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 18px',cursor:'pointer',fontSize:13.5,fontWeight:400,color:'#5a6473',background:'transparent',borderLeft:'3px solid transparent',textDecoration:'none'}}>
+          <span>{n.label}</span>
         </a>
       ))}
     </div>
@@ -165,8 +440,8 @@ function LeftNav(){
 
 function ProgressBtn({count,onClick}){
   return (
-    <button onClick={onClick} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#f4f5f7',color:'#5a6473',border:'1px solid #e7eaef',borderRadius:9,padding:'6px 12px',fontSize:12.5,fontWeight:600,cursor:'pointer',flex:'none',whiteSpace:'nowrap'}}>
-      <span style={{minWidth:19,height:19,borderRadius:99,background:'#e2e8f0',color:'#475569',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{count}</span>
+    <button onClick={onClick} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#f4f5f7',color:'#5a6473',border:'1px solid #e7eaef',borderRadius:8,padding:'4px 9px',fontSize:11,fontWeight:600,cursor:'pointer',flex:'none',whiteSpace:'nowrap'}}>
+      <span style={{minWidth:16,height:16,borderRadius:99,background:'#e2e8f0',color:'#475569',fontSize:9.5,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>{count}</span>
       ความก้าวหน้า
     </button>
   );
@@ -338,8 +613,8 @@ function ApprovalContent({items}){
 
 function ListContent({onSelect}){
   const [tab,setTab]=useState(0);
-  const [yearOpen,setYearOpen]=useState(false);
-  const [year,setYear]=useState(YEARS[0]);
+  const [roundOpen,setRoundOpen]=useState(false);
+  const [round,setRound]=useState(ROUNDS[0].id);
   const filtered=ITEMS.filter(TABS[tab].filter);
 
   return (
@@ -350,15 +625,15 @@ function ListContent({onSelect}){
         <span style={{fontWeight:700,fontSize:16}}>รายงานสถานะของแผนธุรกิจที่รับผิดชอบ</span>
         <div style={{flex:1}}></div>
         <div style={{position:'relative'}}>
-          <button onClick={()=>setYearOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:8,border:'1px solid #e3e7ec',borderRadius:9,padding:'8px 14px',background:'#fff',cursor:'pointer',fontSize:13,fontWeight:500}}>
-            <span>{year}</span>
-            <i className="bi bi-chevron-down" style={{fontSize:13,color:'#9aa3af'}}></i>
+          <button onClick={()=>setRoundOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:8,border:'1px solid #e3e7ec',borderRadius:11,padding:'10px 16px',background:'#fff',cursor:'pointer'}}>
+            <span style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{ROUNDS.find(r=>r.id===round).label}</span>
+            <i className="bi bi-chevron-down" style={{fontSize:11,color:'#9aa3af'}}></i>
           </button>
-          {yearOpen && (
-            <div style={{position:'absolute',right:0,top:42,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:200,overflow:'hidden'}}>
-              {YEARS.map(y=>(
-                <div key={y} onClick={()=>{setYear(y);setYearOpen(false);}} style={{padding:'10px 16px',fontSize:13,cursor:'pointer',fontWeight:y===year?700:400,color:y===year?primary:'#1f2733',background:y===year?primarySoft:'#fff'}}>
-                  {y}
+          {roundOpen && (
+            <div style={{position:'absolute',right:0,top:58,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:240,overflow:'hidden'}}>
+              {ROUNDS.map(r=>(
+                <div key={r.id} onClick={()=>{setRound(r.id);setRoundOpen(false);}} style={{padding:'11px 18px',fontSize:13,cursor:'pointer',fontWeight:r.id===round?700:400,color:r.id===round?primary:'#1f2733',background:r.id===round?primarySoft:'#fff'}}>
+                  {r.label}
                 </div>
               ))}
             </div>
@@ -382,24 +657,21 @@ function ListContent({onSelect}){
       ) : (
       <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden'}}>
         {filtered.map((item,i)=>(
-          <div key={item.id} className="bp-row" onClick={()=>onSelect(item)} style={{display:'flex',alignItems:'center',gap:14,padding:'16px 20px',borderTop:i?'1px solid #f4f6f8':'none',transition:'background .1s',cursor:'pointer'}}>
-            <TypeBadge type={item.type}/>
+          <div key={item.id} className="bp-row" onClick={()=>onSelect(item)} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 16px',borderTop:i?'1px solid #f4f6f8':'none',transition:'background .1s',cursor:'pointer'}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontWeight:600,fontSize:14,color:'#1a2332',lineHeight:1.4,marginBottom:4}}>{item.title}</div>
-              <div style={{display:'flex',alignItems:'center',gap:6,fontSize:12.5,color:'#9aa3af'}}>
-                <i className="bi bi-plus-circle" style={{fontSize:13}}></i>
+              <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:4}}>
+                <TypeBadge type={item.type}/>
+                <span style={{fontWeight:600,fontSize:13,color:'#1a2332',lineHeight:1.4}}>{item.title}</span>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:5,fontSize:11.5,color:'#9aa3af'}}>
+                <i className="bi bi-plus-circle" style={{fontSize:11.5}}></i>
                 <span>{item.hasKpi?(item.kpi||'ไม่มีตัวชี้วัด'):'ไม่มีตัวชี้วัด'}</span>
               </div>
             </div>
-            {item.needApproval&&(
-              <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fce7f3',color:'#db2777',borderRadius:7,padding:'4px 10px',fontSize:11.5,fontWeight:600,flex:'none',whiteSpace:'nowrap'}}>
-                <i className="bi bi-clipboard-check" style={{fontSize:12}}></i>รายงานผลฐานหัวหน้าแผน
-              </span>
-            )}
             <ProgressBtn count={item.progress.filter(p=>p.val).length} onClick={()=>onSelect(item)}/>
-            <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:4,flex:'none'}}>
-              <StatusDot s={item.status} size={16}/>
-              <span style={{fontSize:11,color:'#b3bac4',whiteSpace:'nowrap'}}>อัพเดทล่าสุด {item.updatedAt||'dd/MM/yyyy HH:mm'}</span>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:3,flex:'none'}}>
+              <StatusDot s={item.status} size={13}/>
+              <span style={{fontSize:10,color:'#b3bac4',whiteSpace:'nowrap'}}>อัพเดทล่าสุด {item.updatedAt||'dd/MM/yyyy HH:mm'}</span>
             </div>
           </div>
         ))}
@@ -616,30 +888,37 @@ function DetailContent({item,onBack}){
 }
 
 function App(){
+  const [view,setView]=useState('responsible'); // 'responsible' | 'evaluate'
   const [sel,setSel]=useState(null);
+  const [evalItems,setEvalItems]=useState(EVAL_ITEMS_SEED);
+  const evalPendingCount=evalItems.filter(x=>!x.evaluated).length;
+  const changeView=(v)=>{setView(v);setSel(null);};
   return (
-    <div style={{minHeight:'100vh',background:'#f3f5f9'}}>
-      <TopBar/>
-      <div style={{display:'flex'}}>
-        <NavRail/>
-        {sel ? (
+    <GD5AppShell active="business">
+        {view==='evaluate' ? (
+          <React.Fragment>
+            <LeftNav view={view} setView={changeView} evalPendingCount={evalPendingCount}/>
+            <EvaluateListView items={evalItems} setItems={setEvalItems}/>
+          </React.Fragment>
+        ) : sel ? (
           <DetailContent item={sel} onBack={()=>setSel(null)}/>
         ) : (
           <React.Fragment>
-            <LeftNav/>
+            <LeftNav view={view} setView={changeView} evalPendingCount={evalPendingCount}/>
             <ListContent onSelect={setSel}/>
           </React.Fragment>
         )}
-      </div>
-    </div>
+    </GD5AppShell>
   );
 }
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 <script>
-(function(){
-  var src=document.getElementById('jsx-src').textContent;
-  var out=Babel.transform(src,{presets:[['react',{runtime:'classic'}]]}).code;
+(async function(){
+  var shellSrc='';
+  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
+  var pageSrc=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
   new Function(out)();
 })();
 </script>

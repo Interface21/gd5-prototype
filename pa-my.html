@@ -26,13 +26,6 @@ a{color:inherit;text-decoration:none}
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-<style id="gd5-proto-style">@keyframes gd5dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}</style>
-<div id="gd5-proto-badge" style="position:fixed;bottom:20px;left:20px;z-index:99999;display:flex;align-items:center;gap:9px;padding:10px 22px 10px 16px;background:rgba(225,235,242,0.62);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1.5px solid rgba(180,205,220,0.55);border-radius:10px;box-shadow:0 8px 32px rgba(16,24,40,0.13),0 1.5px 4px rgba(16,24,40,0.07),inset 0 1px 0 rgba(255,255,255,0.75);font-family:'IBM Plex Sans Thai',sans-serif;user-select:none;pointer-events:none;">
-  <span style="width:8px;height:8px;border-radius:4px;background:#15a08f;flex:none;animation:gd5dot 2.4s ease-in-out infinite;box-shadow:0 0 0 3px rgba(21,160,143,0.2)"></span>
-  <span style="font-size:12px;font-weight:700;color:rgba(18,30,44,0.65);letter-spacing:0.8px;text-transform:uppercase">Prototype</span>
-  <span style="width:1px;height:13px;background:rgba(18,30,44,0.15);flex:none"></span>
-  <span style="font-size:11.5px;font-weight:500;color:rgba(18,30,44,0.45);letter-spacing:0.2px">GiveD5</span>
-</div>
 <div id="root"></div>
 <script type="text/plain" id="jsx-src">
 const {useState,useRef,useEffect} = React;
@@ -96,19 +89,38 @@ const NONBIZ_TITLES=['สนับสนุนกิจกรรมของห�
 const SELFDEV_TITLES=['เข้าร่วมอบรมพัฒนาทักษะที่เกี่ยวข้องกับงาน','ถ่ายทอดความรู้และแบ่งปันประสบการณ์ให้ทีมงาน'];
 
 const DELTA_CYCLE=[0,0,1,0,-1,2,0,1,0,0];
-function buildItems(idPrefix,titles,weightEach,seedBase,closed){
+const KPI_UNIT_CYCLE=[{unit:'%',target:100},{unit:'บาท',target:1000000},{unit:'ครั้ง',target:12},{unit:'คน',target:20}];
+const STRAT_LIST=['กลยุทธ์ที่ 1 เพิ่มส่วนแบ่งตลาด','กลยุทธ์ที่ 2 พัฒนาองค์กร','กลยุทธ์ที่ 3 ขยายเครือข่าย','กลยุทธ์ที่ 4 วิเคราะห์ตลาด'];
+const SELF_COMMENT_GOOD=['ดำเนินการได้ตามเป้าหมายที่วางไว้ ไม่มีอุปสรรคสำคัญ','ดำเนินการเกินเป้าหมายที่ตั้งไว้ ผลงานเป็นที่น่าพอใจ'];
+const SELF_COMMENT_MID=['ดำเนินการคืบหน้าได้ดี แต่ยังมีบางส่วนต้องเร่งดำเนินการเพิ่มเติม'];
+const SELF_COMMENT_LOW=['เผชิญอุปสรรคบางประการระหว่างดำเนินการ ทำให้ผลงานล่าช้ากว่าแผนเล็กน้อย'];
+const PROGRESS_NOTE_TEMPLATES=['ดำเนินการตามแผนไตรมาสแรกเรียบร้อย เป็นไปตามกำหนดเวลาที่วางไว้','ติดตามผลลัพธ์อย่างต่อเนื่อง ปรับแผนเล็กน้อยตามสถานการณ์','ประสานงานกับหน่วยงานที่เกี่ยวข้องเพื่อเร่งความคืบหน้า','สรุปผลการดำเนินงานประจำเดือน ส่งรายงานให้หัวหน้าทีมแล้ว'];
+function buildItems(idPrefix,titles,weightEach,seedBase,closed,cat,personName){
   return titles.map((title,i)=>{
     const self=2+((seedBase+i*3)%4);
-    if(!closed) return {id:idPrefix+i,title,weight:weightEach,r1:{self:{score:self,by:'ตนเอง',date:'15/06/2569'},supervisor:null,committee:null},r2:null};
+    const u=KPI_UNIT_CYCLE[(seedBase+i)%KPI_UNIT_CYCLE.length];
+    const achieved1=Math.round(u.target*(self/5));
+    const selfComment=self>=4?SELF_COMMENT_GOOD[(seedBase+i)%SELF_COMMENT_GOOD.length]:self===3?SELF_COMMENT_MID[0]:SELF_COMMENT_LOW[0];
+    const detail='ดำเนินการ'+title+' ตามแผนงานที่ได้รับมอบหมาย เพื่อสนับสนุนเป้าหมายของหน่วยงานในปีงบประมาณนี้ ติดตามความคืบหน้าเป็นระยะและรายงานผลตามรอบที่กำหนด';
+    const biz=cat==='business'?{strat:STRAT_LIST[(seedBase+i)%STRAT_LIST.length],resp:personName}:null;
+    const kpis={
+      r1:[{id:idPrefix+i+'-k1',desc:'ผลสำเร็จของ'+title,target:u.target,unit:u.unit,achieved:achieved1}],
+      r2:[{id:idPrefix+i+'-k1r2',desc:'ผลสำเร็จของ'+title,target:u.target,unit:u.unit,achieved:null}],
+    };
+    const progressNotes=[
+      {t:PROGRESS_NOTE_TEMPLATES[(seedBase+i)%PROGRESS_NOTE_TEMPLATES.length],d:'10/02/2569'},
+      {t:PROGRESS_NOTE_TEMPLATES[(seedBase+i+2)%PROGRESS_NOTE_TEMPLATES.length],d:'20/04/2569'},
+    ];
+    if(!closed) return {id:idPrefix+i,title,weight:weightEach,detail,biz,kpis,progressNotes,approvalStatus:'approved',submittedAt:'05/01/2569',r1:{self:{score:self,by:'ตนเอง',date:'15/06/2569',actual:selfComment},supervisor:null,committee:null},r2:null};
     const d1=DELTA_CYCLE[(seedBase+i)%DELTA_CYCLE.length];
     const sup=Math.max(1,Math.min(5,self+d1));
     const d2raw=DELTA_CYCLE[(seedBase+i+3)%DELTA_CYCLE.length];
     const d2=d2raw>1?1:(d2raw<0?-1:0);
     const com=Math.max(1,Math.min(5,sup+d2));
     return {
-      id:idPrefix+i,title,weight:weightEach,
+      id:idPrefix+i,title,weight:weightEach,detail,biz,kpis,progressNotes,approvalStatus:'approved',submittedAt:'05/01/2569',
       r1:{
-        self:{score:self,by:'ตนเอง',date:'15/06/2569'},
+        self:{score:self,by:'ตนเอง',date:'15/06/2569',actual:selfComment},
         supervisor:{score:sup,by:'หัวหน้าแผนก',date:'22/06/2569',note:sup===self?'ผลงานตรงตามที่ประเมินตนเอง':(sup>self?'ผลงานเกินกว่าที่ประเมินตนเองไว้':'ยังไม่ครบตามเป้าหมายที่วางไว้ทั้งหมด')},
         committee:{score:com,by:'คณะกรรมการประเมิน',date:'29/06/2569',note:com===sup?'เห็นชอบตามที่หัวหน้าแผนกประเมิน':'ปรับเทียบเคียงมาตรฐานระหว่างแผนก'},
       },
@@ -152,15 +164,34 @@ const SUMMARY_PEOPLE=[
   {id:'u6',name:'กมลชนก ศรีสุข',position:'พนักงาน',dept:'ฝ่ายบัญชีและการเงิน',closed:false,seed:17},
   {id:'u7',name:'ปิยะวัฒน์ เจริญพร',position:'Department Manager',dept:'ฝ่ายเทคโนโลยีสารสนเทศ',closed:true,seed:41},
   {id:'u8',name:'อรุณี พันธ์เจริญ',position:'พนักงาน',dept:'ฝ่ายทรัพยากรบุคคล',closed:true,seed:19},
+  {id:'u9',name:'ณัฐพล ทรัพย์เจริญ',position:'พนักงาน',dept:'ฝ่ายขาย',closed:true,seed:29},
+  {id:'u10',name:'เบญจวรรณ ไพศาล',position:'พนักงาน',dept:'ฝ่ายขาย',closed:false,seed:13},
+  {id:'u11',name:'สมพงษ์ วงศ์ทอง',position:'พนักงาน',dept:'ฝ่ายขาย',closed:true,seed:37},
 ].map(p=>({
   ...p,
   year:'2569',
   cats:[
-    {key:'business',items:buildItems('b_'+p.id+'_',BIZ_TITLES,10,p.seed,p.closed)},
-    {key:'nonBusiness',items:buildItems('n_'+p.id+'_',NONBIZ_TITLES,10,p.seed+50,p.closed)},
-    {key:'selfDev',items:buildItems('s_'+p.id+'_',SELFDEV_TITLES,10,p.seed+90,p.closed)},
+    {key:'business',items:buildItems('b_'+p.id+'_',BIZ_TITLES,10,p.seed,p.closed,'business',p.name)},
+    {key:'nonBusiness',items:buildItems('n_'+p.id+'_',NONBIZ_TITLES,10,p.seed+50,p.closed,'nonBusiness',p.name)},
+    {key:'selfDev',items:buildItems('s_'+p.id+'_',SELFDEV_TITLES,10,p.seed+90,p.closed,'selfDev',p.name)},
   ],
 }));
+
+/* PA ลูกทีม — ทีมของหัวหน้าแผนกที่ล็อกอินอยู่ (ฝ่ายขาย) เห็นเฉพาะลูกทีมของตนเอง ไม่ใช่ทั้งองค์กร */
+const MY_TEAM_DEPT='ฝ่ายขาย';
+const MY_TEAM=SUMMARY_PEOPLE.filter(p=>p.dept===MY_TEAM_DEPT&&p.position!=='หัวหน้าแผนก');
+/* จำลองรายการที่เพิ่งถูกเพิ่ม/แก้ระหว่างปี ยังไม่ได้รับอนุมัติ — คนที่ 2 (ณัฐพล) จำลอง "ส่งขออนุมัติทั้งชุด" ทีเดียวหลายรายการ ส่วนที่เหลือส่งมาทีละ 1 รายการ เพื่อโชว์ทั้ง 2 สถานการณ์ในคิวเดียวกัน */
+/* หมายเหตุ: ประเภท "อยู่ในแผนธุรกิจ" (auto:true) ดึงจากแผนธุรกิจที่อนุมัติแล้ว — ไม่ต้องยื่นขออนุมัติซ้ำ จึงไม่จำลองเป็นรายการรออนุมัติ (กรอง cat business ออกเสมอ) */
+MY_TEAM.forEach((p,i)=>{
+  if(i===1){
+    const subId='batch-'+p.id;
+    p.cats.forEach(c=>{ if(c.key==='business') return; c.items.forEach(it=>{ it.approvalStatus='pending'; it.submittedAt='28/06/2569'; it.submissionId=subId; }); });
+  }else{
+    const cNonBiz=p.cats.find(c=>c.key!=='business');
+    const it=cNonBiz&&cNonBiz.items[0];
+    if(it){ it.approvalStatus='pending'; it.submittedAt=(20+i*2)+'/06/2569'; it.submissionId='batch-'+p.id+'-'+it.id; }
+  }
+});
 
 /* ─── SEED DATA ─── */
 const SEED=[
@@ -180,6 +211,24 @@ const SEED=[
   {id:'n2',cat:'nonBusiness',title:'ปรับปรุงกระบวนการทำงานภายในแผนก',detail:'',weight:10,start:'01/01/2569',end:'30/06/2569',approved:false,biz:null,kpis:{r1:[],r2:[]},selfAssess:{r1:null,r2:null},notes:[]},
   {id:'s1',cat:'selfDev',title:'เข้าร่วมหลักสูตร Leadership Development Program',detail:'',weight:10,start:'01/03/2569',end:'31/08/2569',approved:true,approvedAt:'15/01/2569 09:30',biz:null,kpis:{r1:[],r2:[]},selfAssess:{r1:{score:4,actual:'ผ่านครบ 3/4 โมดูล อยู่ระหว่าง session สุดท้าย',achieved:'ได้นำทักษะ Coaching มาใช้สายงานจริงแล้ว feedback จากทีมดี',improve:'ต้องฝึก Public Speaking เพิ่มเติม',obstacles:'',plan:'ลงทะเบียน Toastmasters ใน H2',other:''},r2:null},notes:[]},
   {id:'s2',cat:'selfDev',title:'ศึกษาและพัฒนาทักษะด้าน Data Analytics',detail:'',weight:10,start:'01/01/2569',end:'31/12/2569',approved:false,biz:null,kpis:{r1:[],r2:[]},selfAssess:{r1:null,r2:null},notes:[]},
+];
+
+/* ─── DEPT STAFF SEED (บันทึก PA แทนบุคคลในแผนก) ─── */
+const DEPT_STAFF_SEED=[
+  {id:'e1',name:'อรุณี ชัยมงคล',position:'เจ้าหน้าที่อาวุโส',items:[
+    {id:'e1b1',cat:'business',title:'จัดทำแผนการตลาดประจำไตรมาส',detail:'',weight:30,start:'01/01/2569',end:'31/03/2569',approved:false,biz:{strat:'กลยุทธ์ที่ 1 เพิ่มส่วนแบ่งตลาด',resp:'อรุณี ชัยมงคล',role:'main'},kpis:{r1:[],r2:[]},notes:[]},
+    {id:'e1b2',cat:'business',title:'ติดตามยอดขายรายเดือน',detail:'',weight:30,start:'01/01/2569',end:'31/12/2569',approved:false,biz:{strat:'กลยุทธ์ที่ 1 เพิ่มส่วนแบ่งตลาด',resp:'อรุณี ชัยมงคล',role:'contributor'},kpis:{r1:[],r2:[]},notes:[]},
+    {id:'e1n1',cat:'nonBusiness',title:'ปรับปรุงระบบจัดเก็บเอกสารแผนก',detail:'',weight:20,start:'01/02/2569',end:'30/06/2569',approved:false,biz:null,kpis:{r1:[],r2:[]},notes:[]},
+    {id:'e1s1',cat:'selfDev',title:'อบรมหลักสูตร Data Visualization',detail:'',weight:20,start:'01/03/2569',end:'31/08/2569',approved:false,biz:null,kpis:{r1:[],r2:[]},notes:[]},
+  ]},
+  {id:'e2',name:'ธนกร วัฒนกิจ',position:'พนักงาน',items:[
+    {id:'e2b1',cat:'business',title:'ดำเนินการตามแผนกิจกรรมส่งเสริมการขาย',detail:'',weight:30,start:'01/01/2569',end:'30/06/2569',approved:false,biz:{strat:'กลยุทธ์ที่ 1 เพิ่มส่วนแบ่งตลาด',resp:'ธนกร วัฒนกิจ',role:'contributor'},kpis:{r1:[],r2:[]},notes:[]},
+    {id:'e2n1',cat:'nonBusiness',title:'จัดทำคู่มือขั้นตอนการทำงาน',detail:'',weight:20,start:'01/01/2569',end:'31/03/2569',approved:false,biz:null,kpis:{r1:[],r2:[]},notes:[]},
+  ]},
+  {id:'e3',name:'ปิยะดา แสงเดือน',position:'พนักงาน',items:[
+    {id:'e3b1',cat:'business',title:'สนับสนุนงานบริการลูกค้าตามแผนธุรกิจ',detail:'',weight:20,start:'01/01/2569',end:'31/12/2569',approved:false,biz:{strat:'กลยุทธ์ที่ 2 พัฒนาองค์กร',resp:'ปิยะดา แสงเดือน',role:'contributor'},kpis:{r1:[],r2:[]},notes:[]},
+  ]},
+  {id:'e4',name:'ศักดิ์ชัย บุญมา',position:'พนักงาน',items:[]},
 ];
 
 /* ─── DATE HELPER ─── */
@@ -227,7 +276,9 @@ function WtTag({w,approved}){
     </span>
   );
 }
-function ApvBadge({approved}){
+function ApvBadge({approved,cat}){
+  if(cat&&CAT[cat]&&CAT[cat].auto)
+    return <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eef1f5',color:'#6b7785',borderRadius:4,padding:'2px 8px',fontSize:11.5,fontWeight:700,border:'1px solid #dde1e8'}}><i className="bi bi-arrow-repeat" style={{fontSize:10}}></i>ไม่ต้องขออนุมัติ</span>;
   return approved
     ? <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#e3f3f0',color:'#0e7a6e',borderRadius:4,padding:'2px 8px',fontSize:11.5,fontWeight:700,border:'1px solid #a8d9d1'}}><i className="bi bi-check-lg" style={{fontSize:10}}></i>อนุมัติแล้ว</span>
     : <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fef3e6',color:'#b06a00',borderRadius:4,padding:'2px 8px',fontSize:11.5,fontWeight:700,border:'1px solid #f0d09a'}}><i className="bi bi-clock" style={{fontSize:10}}></i>รออนุมัติ</span>;
@@ -286,11 +337,11 @@ function ModeSwitcher({mode,setMode}){
     {id:'evaluate',icon:'bi-star',           label:'ประเมินผล',   sub:'ให้คะแนนตนเองแต่ละรอบ'},
   ];
   return (
-    <div style={{display:'flex',gap:0,background:'#f1f3f6',borderRadius:8,padding:3,width:'fit-content',marginBottom:18}}>
+    <div style={{display:'flex',gap:0,background:'#f1f3f6',borderRadius:8,padding:3,width:'100%',marginBottom:18}}>
       {tabs.map(t=>{
         const on=mode===t.id;
         return (
-          <button key={t.id} onClick={()=>setMode(t.id)} style={{display:'flex',alignItems:'center',gap:9,padding:'8px 16px',borderRadius:6,background:on?'#fff':'transparent',border:'none',cursor:'pointer',boxShadow:on?'0 1px 3px rgba(16,24,40,.1)':undefined,transition:'all .15s'}}>
+          <button key={t.id} onClick={()=>setMode(t.id)} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:9,flex:1,padding:'8px 16px',borderRadius:6,background:on?'#fff':'transparent',border:'none',cursor:'pointer',boxShadow:on?'0 1px 3px rgba(16,24,40,.1)':undefined,transition:'all .15s'}}>
             <i className={'bi '+t.icon} style={{fontSize:15,color:on?primary:'#8a93a3'}}></i>
             <div style={{textAlign:'left'}}>
               <div style={{fontWeight:700,fontSize:13,color:on?primary:'#5a6473',lineHeight:1.2}}>{t.label}</div>
@@ -314,12 +365,33 @@ function SetupView({items,onItemClick,onAddItem,setItems}){
     {icon:'bi-person',label:'สำหรับ 2 Username',sub:'รอการอนุมัติ',done:false},
     {icon:'bi-file-earmark-check',label:'ได้รับการอนุมัติ',done:false},
   ];
-  const approvedN=items.filter(x=>x.approved).length;
-  const pendingN=items.length-approvedN;
+  /* รายการประเภท "อยู่ในแผนธุรกิจ" (auto:true) ดึงมาจากแผนธุรกิจที่อนุมัติแล้ว — ไม่ต้องยื่นขออนุมัติซ้ำ จึงไม่นับรวมใน "รออนุมัติ" */
+  const needsApproval=items.filter(x=>!(CAT[x.cat]&&CAT[x.cat].auto));
+  const approvedN=needsApproval.filter(x=>x.approved).length;
+  const pendingN=needsApproval.length-approvedN;
+
+  // DEV: บล็อก "ช่วงจัดทำ PA" (แจ้งเตือน) และ "ขั้นตอนการขออนุมัติ" (stepper) ด้านล่าง
+  // ไม่ใช่ UI ที่แสดงตลอดเวลา — แสดงเฉพาะเมื่อสถานะ PA อยู่ใน "ช่วงส่งขออนุมัติ"
+  // (นับจากเปิดรอบจัดทำ PA จนถึงได้รับอนุมัติครบทุกรายการ) เงื่อนไขจริงควรอิงสถานะจาก backend
+  // เช่น pa.status === 'pending_approval' ไม่ใช่ toggle ตายตัวแบบใน prototype นี้
+  const [showSubmissionPhase,setShowSubmissionPhase]=useState(true);
 
   return (
     <div>
-      {/* phase alert */}
+      {/* DEV NOTE — คำอธิบายสำหรับนักพัฒนา ไม่ใช่ UI จริง ลบออกก่อนขึ้นโปรดักชัน */}
+      <div style={{display:'flex',alignItems:'center',gap:8,border:'1px dashed #b0b8c4',background:'#f8f9fb',borderRadius:8,padding:'7px 12px',marginBottom:10}}>
+        <i className="bi bi-code-slash" style={{fontSize:13,color:'#8a93a3',flex:'none'}}></i>
+        <span style={{fontSize:11.5,color:'#6b7785',fontFamily:'monospace',lineHeight:1.5}}>
+          DEV: กรอบด้านล่าง (แจ้งเตือน "ช่วงจัดทำ PA" + "ขั้นตอนการขออนุมัติ") <strong>ไม่แสดงตลอดเวลา</strong>
+        </span>
+        <div style={{flex:1}}></div>
+        <button onClick={()=>setShowSubmissionPhase(v=>!v)} style={{flex:'none',fontFamily:'monospace',fontSize:11,fontWeight:700,color:'#6b7785',background:'#fff',border:'1px dashed #b0b8c4',borderRadius:5,padding:'3px 9px',cursor:'pointer'}}>
+          {showSubmissionPhase?'ดูตอนไม่แสดง →':'← ดูตอนแสดง'}
+        </button>
+      </div>
+
+      {showSubmissionPhase&&<>
+      {/* phase alert — แสดงเฉพาะช่วงส่งขออนุมัติ */}
       <div style={{display:'flex',alignItems:'center',gap:10,background:'#fff8e6',border:'1px solid #f0d09a',borderRadius:8,padding:'10px 14px',marginBottom:14}}>
         <i className="bi bi-exclamation-triangle-fill" style={{fontSize:15,color:'#b06a00',flex:'none'}}></i>
         <div style={{flex:1,fontSize:13}}>
@@ -331,7 +403,7 @@ function SetupView({items,onItemClick,onAddItem,setItems}){
         </button>
       </div>
 
-      {/* Approval stepper */}
+      {/* Approval stepper — แสดงเฉพาะช่วงส่งขออนุมัติ */}
       <Card style={{marginBottom:14,padding:'13px 18px'}}>
         <div style={{fontSize:12,fontWeight:600,color:'#6b7785',marginBottom:12}}>ขั้นตอนการขออนุมัติ</div>
         <div style={{display:'flex',alignItems:'flex-start'}}>
@@ -349,6 +421,7 @@ function SetupView({items,onItemClick,onAddItem,setItems}){
           ))}
         </div>
       </Card>
+      </>}
 
       {/* header */}
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10,flexWrap:'wrap'}}>
@@ -377,7 +450,7 @@ function SetupView({items,onItemClick,onAddItem,setItems}){
                 <span style={{fontSize:12,color:'#6b7785'}}>กรอบ</span>
                 <span style={{fontWeight:700,fontSize:12.5,color:'#2b3440'}}>{CAT_WT[key]}%</span>
                 <span style={{fontSize:12,color:'#9aa3af'}}>·</span>
-                <span style={{fontSize:12,color:over?'#d83a3a':'#6b7785'}}>ใช้ไป <strong style={{color:over?'#d83a3a':primary}}>{usedWt}%</strong></span>
+                <span style={{fontSize:12,color:over?'#d83a3a':'#6b7785'}}>กำหนดแล้ว <strong style={{color:over?'#d83a3a':primary}}>{usedWt}%</strong></span>
                 {over&&<span style={{background:'#fdeaea',color:'#d83a3a',borderRadius:4,padding:'1px 6px',fontSize:11,fontWeight:700}}>เกิน!</span>}
               </div>
               {c.auto&&<span style={{display:'inline-flex',alignItems:'center',gap:4,background:primarySoft,color:primary,borderRadius:4,padding:'2px 8px',fontSize:11.5,fontWeight:600}}><i className="bi bi-arrow-repeat" style={{fontSize:10}}></i>ดึงจากแผนธุรกิจ</span>}
@@ -410,7 +483,7 @@ function SetupView({items,onItemClick,onAddItem,setItems}){
                       </div>
                       <div style={{display:'flex',alignItems:'center',gap:7,flex:'none'}}>
                         <span style={{fontSize:12.5,fontWeight:700,color:'#3a4452'}}>{item.weight}%</span>
-                        <ApvBadge approved={item.approved}/>
+                        <ApvBadge approved={item.approved} cat={item.cat}/>
                         <i className="bi bi-chevron-right" style={{fontSize:11,color:'#c4ccd4'}}></i>
                       </div>
                     </div>
@@ -505,17 +578,17 @@ function ExecuteView({items,onItemClick}){
 /* ══════════════════════════════════════════════
    SETUP — ITEM DETAIL
 ══════════════════════════════════════════════ */
-function SetupItemView({item,onBack,onEdit,onGoKpi}){
+function SetupItemView({item,onBack,onEdit,onGoKpi,backLabel}){
   const [openRounds,setOpenRounds]=useState({r1:true,r2:false});
   const kpiCount=ROUNDS.reduce((s,r)=>s+(item.kpis[r.id]||[]).length,0);
   return (
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ตั้งต้น PA
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>{backLabel||'ตั้งต้น PA'}
         </button>
         <div style={{flex:1}}></div>
-        <ApvBadge approved={item.approved}/>
+        <ApvBadge approved={item.approved} cat={item.cat}/>
         {item.approved
           ?<span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#f1f3f6',color:'#9aa3af',borderRadius:7,padding:'7px 13px',fontSize:13,fontWeight:600}}><i className="bi bi-lock-fill" style={{fontSize:12}}></i>ล็อกแล้ว</span>
           :<Btn onClick={onEdit} variant="primary"><i className="bi bi-pencil" style={{fontSize:12}}></i>แก้ไข</Btn>}
@@ -584,7 +657,9 @@ function SetupItemView({item,onBack,onEdit,onGoKpi}){
             {[
               {icon:'bi-calendar3',   content:<span style={{fontSize:12.5,color:'#5a6473'}}>ปี {PA_YEAR}</span>},
               {icon:'bi-percent',     content:<span style={{fontSize:12.5,color:'#5a6473'}}>ค่าน้ำหนัก <strong>{item.weight}%</strong></span>},
-              item.approved&&item.approvedAt
+              CAT[item.cat]&&CAT[item.cat].auto
+                ?{icon:'bi-arrow-repeat',content:<span style={{fontSize:12,color:'#6b7785',fontWeight:600}}>ดึงจากแผนธุรกิจ · ไม่ต้องขออนุมัติ</span>}
+                :item.approved&&item.approvedAt
                 ?{icon:'bi-calendar-check',content:<div><div style={{fontSize:11,color:'#9aa3af'}}>ได้รับอนุมัติเมื่อ</div><div style={{fontSize:12,color:primary,fontWeight:600}}>{item.approvedAt}</div></div>}
                 :{icon:'bi-clock',content:<span style={{fontSize:12,color:'#b06a00',fontWeight:600}}>รอการอนุมัติ</span>},
               item.start?{icon:'bi-calendar-range',content:<div><div style={{fontSize:11,color:'#9aa3af'}}>ช่วงเวลา</div><div style={{fontSize:12,color:'#2b3440'}}>{item.start} – {item.end}</div></div>}:null,
@@ -1510,6 +1585,673 @@ function SummaryListView({people,dept,setDept,year,setYear,onOpen}){
   );
 }
 
+/* ══════════════════════════════════════════════
+   DEPT STAFF LIST — บันทึก PA แทนบุคคลในแผนก
+══════════════════════════════════════════════ */
+function DeptStaffListView({staff,onOpen}){
+  const [q,setQ]=useState('');
+  const filtered=staff.filter(s=>s.name.toLowerCase().includes(q.toLowerCase()));
+  return (
+    <div>
+      <AdminListHeader title="บันทึก PA แทนบุคคลในแผนก" search={q} onSearch={setQ}/>
+      <div style={{fontSize:12.5,color:'#9aa3af',margin:'-10px 0 14px'}}>เลือกบุคคลในแผนกเพื่อบันทึก/แก้ไขรายการ PA แทน · ปี {PA_YEAR}</div>
+      <AdminListCard>
+        {filtered.length===0&&<AdminEmpty>ไม่พบบุคคล</AdminEmpty>}
+        {filtered.map((s,i)=>{
+          const totalWt=s.items.reduce((sum,x)=>sum+(x.weight||0),0);
+          const pct=Math.min(100,totalWt);
+          const status=pct===0?{label:'ยังไม่เริ่มบันทึก',bg:'#f1f3f6',c:'#8a93a3'}:pct>=100?{label:'บันทึกครบแล้ว',bg:primarySoft,c:primary}:{label:'กำลังบันทึก',bg:'#fef3e6',c:'#b06a00'};
+          return (
+            <div key={s.id} onClick={()=>onOpen(s.id)} className="pa-row" style={{display:'flex',alignItems:'center',gap:14,padding:'13px 16px',borderTop:i?'1px solid #f3f5f8':'none',cursor:'pointer',flexWrap:'wrap'}}>
+              <Avatar name={s.name}/>
+              <div style={{minWidth:150,flex:'none'}}>
+                <div style={{fontSize:13.5,fontWeight:700,color:'#2b3440'}}>{s.name}</div>
+                <div style={{fontSize:11.5,color:'#9aa3af'}}>{s.position}</div>
+              </div>
+              <div style={{flex:1,minWidth:220}}>
+                <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:5}}>
+                  <div style={{flex:1,height:6,background:'#eef1f5',borderRadius:3,overflow:'hidden'}}>
+                    <div style={{height:'100%',width:pct+'%',background:pct>=100?primary:'#3b82f6',borderRadius:3}}></div>
+                  </div>
+                  <span style={{fontSize:12.5,fontWeight:700,color:'#3a4452',flex:'none',width:36,textAlign:'right'}}>{pct}%</span>
+                </div>
+                <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
+                  {Object.entries(CAT).map(([key,c])=>{
+                    const used=s.items.filter(x=>x.cat===key).reduce((sum,x)=>sum+(x.weight||0),0);
+                    const frame=CAT_WT[key];
+                    const full=used>=frame&&frame>0;
+                    const empty=used<=0;
+                    const badge=full?{bg:'#e3f7ea',c:'#1a8a44'}:empty?{bg:'#fdeaea',c:'#d83a3a'}:{bg:'#fef3e6',c:'#b06a00'};
+                    return (
+                      <span key={key} style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:10.5,fontWeight:700,color:badge.c,background:badge.bg,borderRadius:4,padding:'2px 7px',whiteSpace:'nowrap'}}>
+                        <i className={'bi '+c.icon} style={{fontSize:9.5}}></i>{c.label} <span style={{fontWeight:800}}>{used}/{frame}%</span>
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+              <span style={{flex:'none',fontSize:11.5,fontWeight:700,color:status.c,background:status.bg,borderRadius:99,padding:'4px 11px',whiteSpace:'nowrap'}}>{status.label}</span>
+              <i className="bi bi-chevron-right" style={{fontSize:13,color:'#c4ccd4',flex:'none'}}></i>
+            </div>
+          );
+        })}
+      </AdminListCard>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════
+   PA ลูกทีม — team lead's restricted view of own team
+   (เห็นเฉพาะทีมตนเอง + คะแนนตนเอง/ลูกทีม ไม่เห็นคะแนนสรุป/คณะกรรมการ)
+══════════════════════════════════════════════ */
+function TeamListView({people,onOpen}){
+  const [q,setQ]=useState('');
+  const filtered=people.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
+  return (
+    <div>
+      <AdminListHeader title="PA ลูกทีม" search={q} onSearch={setQ}/>
+      <div style={{fontSize:12.5,color:'#9aa3af',margin:'-10px 0 14px'}}>แสดงเฉพาะลูกทีมของตนเอง · ปี {PA_YEAR}</div>
+      <AdminListCard>
+        {filtered.length===0&&<AdminEmpty>ไม่มีลูกทีม</AdminEmpty>}
+        {filtered.map((p,i)=>(
+          <div key={p.id} onClick={()=>onOpen(p.id)} className="pa-row" style={{display:'flex',alignItems:'center',gap:14,padding:'13px 16px',borderTop:i?'1px solid #f3f5f8':'none',cursor:'pointer',flexWrap:'wrap'}}>
+            <Avatar name={p.name}/>
+            <div style={{minWidth:170}}>
+              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                <span style={{fontSize:13.5,fontWeight:700,color:'#2b3440'}}>{p.name}</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:3,background:p.closed?primarySoft:'#eaf1fe',color:p.closed?'#0e7a6e':'#2b5ec7',borderRadius:4,padding:'1px 6px',fontSize:10,fontWeight:700,flex:'none'}}>
+                  <i className={'bi '+(p.closed?'bi-check-circle-fill':'bi-arrow-repeat')} style={{fontSize:8.5}}></i>{p.closed?'ประเมินแล้ว':'กำลังประเมิน'}
+                </span>
+              </div>
+              <div style={{fontSize:11.5,color:'#9aa3af'}}>{p.position}</div>
+            </div>
+            <div style={{flex:1}}></div>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap',justifyContent:'flex-end'}}>
+              {p.cats.map(c=>(
+                <span key={c.key} style={{background:CAT[c.key].lightBg,color:CAT[c.key].lightColor,borderRadius:4,padding:'2px 8px',fontSize:11,fontWeight:700,whiteSpace:'nowrap'}}>{CAT[c.key].label} · {c.items.length}</span>
+              ))}
+            </div>
+            <i className="bi bi-chevron-right" style={{fontSize:13,color:'#c4ccd4',flex:'none'}}></i>
+          </div>
+        ))}
+      </AdminListCard>
+    </div>
+  );
+}
+
+function TeamScorePill({icon,entry,tone}){
+  if(!entry) return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:3,fontSize:11,fontWeight:700,color:'#b0b8c4',background:'#f1f3f6',borderRadius:5,padding:'2px 7px',flex:'none'}}>
+      <i className={'bi '+icon} style={{fontSize:9.5}}></i>–
+    </span>
+  );
+  return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:3,fontSize:11,fontWeight:800,color:tone.c,background:tone.bg,borderRadius:5,padding:'2px 7px',flex:'none'}}>
+      <i className={'bi '+icon} style={{fontSize:9.5}}></i>{entry.score}/5
+    </span>
+  );
+}
+
+/* full-page detail for one PA item — split into "ประเมินผล" (scores) and "รายงานความก้าวหน้า" (progress) tabs to avoid repeating the same numbers twice. No committee/overall score, ever. */
+function TeamItemDetailView({person,item,catKey,onBack}){
+  const [tab,setTab]=useState('evaluate'); // evaluate | progress
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
+        <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>รายการ PA ของ {person.name}
+        </button>
+        <div style={{flex:1}}></div>
+        <div style={{display:'flex',gap:0,background:'#f1f3f6',borderRadius:7,padding:2}}>
+          <button onClick={()=>setTab('evaluate')} style={{display:'flex',alignItems:'center',gap:6,padding:'6px 12px',borderRadius:5,background:tab==='evaluate'?'#fff':'transparent',border:'none',cursor:'pointer',fontSize:12.5,fontWeight:700,color:tab==='evaluate'?primary:'#8a93a3'}}><i className="bi bi-graph-up"></i>ประเมินผล</button>
+          <button onClick={()=>setTab('progress')} style={{display:'flex',alignItems:'center',gap:6,padding:'6px 12px',borderRadius:5,background:tab==='progress'?'#fff':'transparent',border:'none',cursor:'pointer',fontSize:12.5,fontWeight:700,color:tab==='progress'?primary:'#8a93a3'}}><i className="bi bi-journal-text"></i>รายงานความก้าวหน้า</button>
+        </div>
+      </div>
+
+      <div style={{display:'flex',gap:14,alignItems:'flex-start',flexWrap:'wrap'}}>
+        <div style={{flex:1,minWidth:280,display:'flex',flexDirection:'column',gap:12}}>
+          <Card>
+            <div style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:item.detail?10:0}}>
+              <CatTag cat={catKey}/>
+              <div style={{flex:1,fontWeight:700,fontSize:15,color:'#2b3440',lineHeight:1.4}}>{item.title}</div>
+            </div>
+            {item.detail&&<div style={{fontSize:13,color:'#4a5568',lineHeight:1.7}}>{item.detail}</div>}
+          </Card>
+
+          {item.biz&&(
+            <Card>
+              <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:10,fontWeight:600,fontSize:13,color:'#3a4452'}}>
+                <i className="bi bi-bar-chart" style={{color:primary}}></i>สนับสนุนงานแผนธุรกิจ
+              </div>
+              <StratBar strat={item.biz.strat} resp={item.biz.resp}/>
+            </Card>
+          )}
+
+          {tab==='evaluate'?ROUNDS.map(r=>{
+            const rd=item[r.id];
+            return (
+              <Card key={r.id}>
+                <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap',fontWeight:600,fontSize:13,marginBottom:11,color:'#3a4452'}}>
+                  <i className="bi bi-ui-checks" style={{color:primary}}></i>
+                  <span>ประเมินผลงาน PA ครั้งที่ {r.no}</span>
+                  <span style={{fontWeight:400,color:'#9aa3af',fontSize:12}}>({r.start} – {r.end})</span>
+                </div>
+                {rd?(
+                  <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                    <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+                      <div style={{width:28,height:28,borderRadius:'50%',background:'#eaf1fe',color:'#2b5ec7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+                        <i className="bi bi-person-fill" style={{fontSize:13}}></i>
+                      </div>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:12.5,fontWeight:700,color:'#3a4452'}}>ลูกทีมประเมินตนเอง <span style={{color:'#2b5ec7'}}>{rd.self.score}/5</span></div>
+                        {rd.self.actual&&<div style={{fontSize:12,color:'#5a6473',marginTop:2,lineHeight:1.5}}>{rd.self.actual}</div>}
+                        <div style={{fontSize:10.5,color:'#b0b8c4',marginTop:2}}>{rd.self.date}</div>
+                      </div>
+                    </div>
+                    {rd.supervisor?(
+                      <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+                        <div style={{width:28,height:28,borderRadius:'50%',background:primarySoft,color:'#0e7a6e',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+                          <i className="bi bi-patch-check-fill" style={{fontSize:13}}></i>
+                        </div>
+                        <div style={{flex:1}}>
+                          <div style={{fontSize:12.5,fontWeight:700,color:'#3a4452'}}>ท่านประเมิน (หัวหน้าทีม) <span style={{color:'#0e7a6e'}}>{rd.supervisor.score}/5</span></div>
+                          {rd.supervisor.note&&<div style={{fontSize:12,color:'#5a6473',marginTop:2,lineHeight:1.5}}>{rd.supervisor.note}</div>}
+                          <div style={{fontSize:10.5,color:'#b0b8c4',marginTop:2}}>{rd.supervisor.date}</div>
+                        </div>
+                      </div>
+                    ):(
+                      <div style={{fontSize:12,color:'#b06a00',background:'#fff8e6',border:'1px solid #f0d09a',borderRadius:6,padding:'7px 11px'}}>ท่านยังไม่ได้ประเมินรอบนี้</div>
+                    )}
+                  </div>
+                ):(
+                  <div style={{fontSize:12,color:'#c7ccd4'}}>ยังไม่ถึงรอบการประเมิน</div>
+                )}
+              </Card>
+            );
+          }):(
+            <React.Fragment>
+              <Card>
+                <div style={{fontWeight:600,fontSize:13,marginBottom:11,color:'#3a4452'}}>ตัวชี้วัดและผลงานที่บันทึกเข้ามา</div>
+                {ROUNDS.map(r=>{
+                  const kpis=(item.kpis&&item.kpis[r.id])||[];
+                  return (
+                    <div key={r.id} style={{marginBottom:12}}>
+                      <div style={{fontSize:11.5,fontWeight:700,color:'#8a93a3',marginBottom:7}}>ครั้งที่ {r.no} <span style={{fontWeight:400,color:'#b0b8c4'}}>({r.start} – {r.end})</span></div>
+                      {kpis.length===0&&<div style={{color:'#c7ccd4',fontSize:12.5,padding:'2px 0'}}>ยังไม่มีตัวชี้วัด</div>}
+                      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                        {kpis.map(k=>(
+                          <div key={k.id} style={{display:'flex',alignItems:'flex-start',gap:8}}>
+                            <i className={'bi '+(k.achieved!=null?'bi-check-square-fill':'bi-square')} style={{fontSize:14,color:k.achieved!=null?primary:'#c7ccd4',marginTop:1,flex:'none'}}></i>
+                            <div style={{fontSize:13,color:'#3a4452'}}>
+                              {k.desc}
+                              <div style={{fontSize:12,color:k.achieved!=null?'#5a6473':'#c7ccd4',marginTop:2}}>
+                                {k.achieved!=null?('ผลงานที่ทำได้ '+k.achieved.toLocaleString()+' จาก '+k.target.toLocaleString()+' '+k.unit):'ยังไม่มีการบันทึกผลงาน'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </Card>
+              <Card>
+                <div style={{fontWeight:600,fontSize:13,marginBottom:10,display:'flex',alignItems:'center',gap:6,color:'#3a4452'}}>
+                  <i className="bi bi-journal-text" style={{color:primary}}></i>บันทึกความก้าวหน้า
+                </div>
+                {(!item.progressNotes||item.progressNotes.length===0)&&<div style={{color:'#c7ccd4',fontSize:12.5,textAlign:'center',padding:'6px 0'}}>ยังไม่มีบันทึกความก้าวหน้า</div>}
+                {(item.progressNotes||[]).map((n,i)=>(
+                  <div key={i} style={{border:'1px solid #eceef2',borderRadius:8,padding:'10px 12px',marginBottom:8,fontSize:13,color:'#3a4452',lineHeight:1.6}}>
+                    {n.t}<div style={{textAlign:'right',fontSize:11.5,color:'#9aa3af',marginTop:4}}>{n.d}</div>
+                  </div>
+                ))}
+              </Card>
+            </React.Fragment>
+          )}
+        </div>
+
+        <div style={{width:200,flex:'none',display:'flex',flexDirection:'column',gap:10}}>
+          <Card style={{padding:'13px 15px'}}>
+            {[
+              {icon:'bi-calendar3',content:<span style={{fontSize:12.5,color:'#5a6473'}}>ปี {person.year}</span>},
+              {icon:'bi-tag',content:<span style={{background:CAT[catKey].lightBg,color:CAT[catKey].lightColor,borderRadius:4,padding:'2px 8px',fontSize:11.5,fontWeight:700}}>{CAT[catKey].label}</span>},
+              {icon:'bi-percent',content:<span style={{fontSize:12.5,color:'#5a6473'}}>ค่าน้ำหนัก <strong>{item.weight}%</strong></span>},
+            ].map((row,i,arr)=>(
+              <div key={i} style={{display:'flex',alignItems:'flex-start',gap:9,marginBottom:i<arr.length-1?10:0}}>
+                <i className={'bi '+row.icon} style={{fontSize:13,color:'#9aa3af',marginTop:2,flex:'none'}}></i>
+                {row.content}
+              </div>
+            ))}
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TeamDetailView({person,onBack}){
+  const [openItem,setOpenItem]=useState(null); // {item,catKey}
+  if(openItem) return <TeamItemDetailView person={person} item={openItem.item} catKey={openItem.catKey} onBack={()=>setOpenItem(null)}/>;
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
+        <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>PA ลูกทีม
+        </button>
+      </div>
+
+      <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',borderRadius:10,padding:'14px 18px',marginBottom:14,flexWrap:'wrap'}}>
+        <Avatar name={person.name} size={40}/>
+        <div>
+          <div style={{fontWeight:700,fontSize:14.5,color:'#2b3440'}}>{person.name}</div>
+          <div style={{fontSize:12,color:'#9aa3af'}}>{person.position} · {person.dept}</div>
+        </div>
+      </div>
+
+      <div style={{display:'flex',alignItems:'center',gap:9,background:'#fff8e6',border:'1px solid #f0d09a',borderRadius:8,padding:'9px 13px',marginBottom:18}}>
+        <i className="bi bi-eye-slash" style={{color:'#b06a00',fontSize:14,flex:'none'}}></i>
+        <span style={{fontSize:12,color:'#8a6b3a'}}>หน้านี้แสดงเฉพาะคะแนนที่ลูกทีมประเมินตนเอง และคะแนนที่ท่านประเมินเท่านั้น — ไม่แสดงคะแนนสรุปผลรวม หรือคะแนนจากคณะกรรมการประเมิน</span>
+      </div>
+
+      {person.cats.map(c=>(
+        <div key={c.key} style={{marginBottom:20}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+            <span style={{background:CAT[c.key].bg,color:'#fff',borderRadius:4,padding:'3px 10px',fontSize:12,fontWeight:700}}>{CAT[c.key].label}</span>
+            <span style={{fontSize:12,color:'#9aa3af'}}>{c.items.reduce((s,i)=>s+i.weight,0)}% · {c.items.length} รายการ</span>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            {c.items.map(it=>(
+              <div key={it.id} onClick={()=>setOpenItem({item:it,catKey:c.key})} className="pa-row" style={{border:'1px solid #eceef2',borderRadius:9,padding:'11px 14px',cursor:'pointer'}}>
+                <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
+                  <span style={{flex:1,fontSize:13.5,fontWeight:600,color:'#2b3440'}}>{it.title}</span>
+                  <span style={{fontSize:11.5,fontWeight:700,color:'#8a93a3',background:'#f1f3f6',borderRadius:4,padding:'2px 8px',flex:'none'}}>{it.weight}%</span>
+                  <i className="bi bi-chevron-right" style={{fontSize:12,color:'#c4ccd4',flex:'none'}}></i>
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+                  <span style={{fontSize:11.5,fontWeight:600,color:'#9aa3af',flex:'none'}}>ประเมิน</span>
+                  {ROUNDS.map(r=>{
+                    const rd=it[r.id];
+                    return (
+                      <React.Fragment key={r.id}>
+                        <span style={{fontSize:10.5,fontWeight:700,color:'#6b7785',background:'#eceef2',borderRadius:4,padding:'2px 7px',flex:'none'}}>ครั้งที่ {r.no}</span>
+                        <TeamScorePill icon="bi-person-fill" entry={rd&&rd.self} tone={{c:'#2b5ec7',bg:'#eaf1fe'}}/>
+                        <TeamScorePill icon="bi-patch-check-fill" entry={rd&&rd.supervisor} tone={{c:'#0e7a6e',bg:primarySoft}}/>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════
+   พิจารณา/ประเมินผลงาน — landing menu
+══════════════════════════════════════════════ */
+function ConsiderMenuView({onGoEvaluate,onGoApprove,evalPendingCount,apprPendingCount}){
+  const CARDS=[
+    {key:'evaluate',icon:'bi-star',title:'ประเมินผลงานลูกทีม',sub:'ให้คะแนนผลงานประจำรอบของลูกทีมแต่ละคน',onClick:onGoEvaluate,badge:evalPendingCount>0?evalPendingCount+' คนรอให้คะแนน':'ให้คะแนนครบแล้ว',badgeOn:evalPendingCount>0},
+    {key:'approve',icon:'bi-check2-square',title:'อนุมัติ PA ของลูกทีม',sub:'พิจารณาอนุมัติ หรือตีกลับพร้อมเหตุผล ทีละรายการ',onClick:onGoApprove,badge:apprPendingCount>0?apprPendingCount+' รายการรออนุมัติ':'ไม่มีรายการค้าง',badgeOn:apprPendingCount>0},
+  ];
+  return (
+    <div>
+      <div style={{fontWeight:700,fontSize:17,color:'#1f2733',marginBottom:4}}>พิจารณา/ประเมินผลงาน</div>
+      <div style={{fontSize:12.5,color:'#9aa3af',marginBottom:18}}>เลือกสิ่งที่ต้องการดำเนินการในฐานะหัวหน้าทีม</div>
+      <div style={{display:'flex',gap:14,flexWrap:'wrap'}}>
+        {CARDS.map(c=>(
+          <div key={c.key} onClick={c.onClick} className="pa-row" style={{flex:'1 1 260px',minWidth:240,background:'#fff',border:'1px solid #eceef2',borderRadius:12,padding:'20px 18px',cursor:'pointer',boxShadow:'0 1px 2px rgba(16,24,40,.04)'}}>
+            <div style={{width:44,height:44,borderRadius:10,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:14}}>
+              <i className={'bi '+c.icon} style={{fontSize:20,color:primary}}></i>
+            </div>
+            <div style={{fontWeight:700,fontSize:15,color:'#2b3440',marginBottom:5}}>{c.title}</div>
+            <div style={{fontSize:12.5,color:'#6b7785',lineHeight:1.6,marginBottom:14}}>{c.sub}</div>
+            <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:11.5,fontWeight:700,color:c.badgeOn?'#b06a00':primary,background:c.badgeOn?'#fef3e6':primarySoft,borderRadius:99,padding:'4px 11px'}}>
+              <i className={'bi '+(c.badgeOn?'bi-exclamation-circle-fill':'bi-check-circle-fill')} style={{fontSize:11}}></i>{c.badge}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── ประเมินผลงานลูกทีม — list ── */
+function EvaluateTeamListView({people,onBack,onOpen}){
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4,flexWrap:'wrap'}}>
+        <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>พิจารณา/ประเมินผลงาน
+        </button>
+      </div>
+      <div style={{fontWeight:700,fontSize:17,color:'#1f2733',margin:'8px 0 4px'}}>ประเมินผลงานลูกทีม</div>
+      <div style={{fontSize:12.5,color:'#9aa3af',marginBottom:16}}>ให้คะแนนผลงานลูกทีม (รอบที่กำลังเปิดประเมิน) · ปี {PA_YEAR}</div>
+      <AdminListCard>
+        {people.map((p,i)=>{
+          const allItems=p.cats.flatMap(c=>c.items);
+          const scorable=allItems.filter(it=>it.r1);
+          const done=scorable.filter(it=>it.r1.supervisor).length;
+          const total=scorable.length;
+          const complete=total>0&&done===total;
+          const status=total===0?{label:'ยังไม่ถึงรอบประเมิน',bg:'#f1f3f6',c:'#8a93a3'}:complete?{label:'ให้คะแนนครบแล้ว',bg:primarySoft,c:primary}:{label:'รอให้คะแนน '+(total-done)+' รายการ',bg:'#fef3e6',c:'#b06a00'};
+          return (
+            <div key={p.id} onClick={()=>onOpen(p.id)} className="pa-row" style={{display:'flex',alignItems:'center',gap:14,padding:'13px 16px',borderTop:i?'1px solid #f3f5f8':'none',cursor:'pointer',flexWrap:'wrap'}}>
+              <Avatar name={p.name}/>
+              <div style={{minWidth:170}}>
+                <div style={{fontSize:13.5,fontWeight:700,color:'#2b3440'}}>{p.name}</div>
+                <div style={{fontSize:11.5,color:'#9aa3af'}}>{p.position}</div>
+              </div>
+              <div style={{flex:1}}></div>
+              {total>0&&<span style={{fontSize:12,color:'#9aa3af'}}>{done}/{total} รายการ</span>}
+              <span style={{flex:'none',fontSize:11.5,fontWeight:700,color:status.c,background:status.bg,borderRadius:99,padding:'4px 11px',whiteSpace:'nowrap'}}>{status.label}</span>
+              <i className="bi bi-chevron-right" style={{fontSize:13,color:'#c4ccd4',flex:'none'}}></i>
+            </div>
+          );
+        })}
+      </AdminListCard>
+    </div>
+  );
+}
+
+/* ── ประเมินผลงานลูกทีม — person's item list ── */
+function EvaluateTeamPersonView({person,onBack,onOpenItem}){
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14,flexWrap:'wrap'}}>
+        <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ประเมินผลงานลูกทีม
+        </button>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',borderRadius:10,padding:'14px 18px',marginBottom:18,flexWrap:'wrap'}}>
+        <Avatar name={person.name} size={40}/>
+        <div>
+          <div style={{fontWeight:700,fontSize:14.5,color:'#2b3440'}}>{person.name}</div>
+          <div style={{fontSize:12,color:'#9aa3af'}}>{person.position} · {person.dept}</div>
+        </div>
+      </div>
+      {person.cats.map(c=>(
+        <div key={c.key} style={{marginBottom:20}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+            <span style={{background:CAT[c.key].bg,color:'#fff',borderRadius:4,padding:'3px 10px',fontSize:12,fontWeight:700}}>{CAT[c.key].label}</span>
+            <span style={{fontSize:12,color:'#9aa3af'}}>{c.items.reduce((s,i)=>s+i.weight,0)}% · {c.items.length} รายการ</span>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            {c.items.map(it=>{
+              const rd=it.r1;
+              const scored=rd&&rd.supervisor;
+              return (
+                <div key={it.id} onClick={()=>onOpenItem(it.id,c.key)} className="pa-row" style={{display:'flex',alignItems:'center',gap:10,border:'1px solid #eceef2',borderRadius:9,padding:'11px 14px',cursor:'pointer',flexWrap:'wrap'}}>
+                  <div style={{flex:1,minWidth:180,fontSize:13.5,fontWeight:600,color:'#2b3440'}}>{it.title}</div>
+                  <span style={{fontSize:11.5,fontWeight:700,color:'#8a93a3',background:'#f1f3f6',borderRadius:4,padding:'2px 8px'}}>{it.weight}%</span>
+                  {rd?(
+                    <span style={{fontSize:11,fontWeight:700,color:'#2b5ec7',background:'#eaf1fe',borderRadius:5,padding:'3px 8px'}}><i className="bi bi-person-fill" style={{fontSize:9.5,marginRight:3}}></i>ตนเอง {rd.self.score}/5</span>
+                  ):(
+                    <span style={{fontSize:11,color:'#c7ccd4'}}>ยังไม่ถึงรอบ</span>
+                  )}
+                  {rd&&(scored
+                    ?<span style={{fontSize:11,fontWeight:700,color:'#0e7a6e',background:primarySoft,borderRadius:5,padding:'3px 8px'}}><i className="bi bi-patch-check-fill" style={{fontSize:9.5,marginRight:3}}></i>ท่าน {rd.supervisor.score}/5</span>
+                    :<span style={{fontSize:11.5,fontWeight:700,color:'#b06a00',background:'#fef3e6',borderRadius:5,padding:'3px 9px'}}>ให้คะแนน</span>
+                  )}
+                  <i className="bi bi-chevron-right" style={{fontSize:12,color:'#c4ccd4',flex:'none'}}></i>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── ประเมินผลงานลูกทีม — scoring form ── */
+function EvaluateTeamItemScoreView({person,item,catKey,onBack,onSave}){
+  const rd=item.r1;
+  const [score,setScore]=useState(rd&&rd.supervisor?rd.supervisor.score:null);
+  const [note,setNote]=useState(rd&&rd.supervisor?rd.supervisor.note:'');
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
+        <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>{person.name}
+        </button>
+        <div style={{flex:1}}></div>
+        <Btn variant="success" onClick={()=>score&&onSave({score,note})} style={!score?{opacity:.5,pointerEvents:'none'}:undefined}><i className="bi bi-check-lg" style={{fontSize:12}}></i>บันทึกคะแนน</Btn>
+      </div>
+
+      <div style={{display:'flex',gap:14,alignItems:'flex-start',flexWrap:'wrap'}}>
+        <div style={{flex:1,minWidth:280,display:'flex',flexDirection:'column',gap:12}}>
+          <Card>
+            <div style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:item.detail?10:0}}>
+              <CatTag cat={catKey}/>
+              <div style={{flex:1,fontWeight:700,fontSize:15,color:'#2b3440',lineHeight:1.4}}>{item.title}</div>
+            </div>
+            {item.detail&&<div style={{fontSize:13,color:'#4a5568',lineHeight:1.7}}>{item.detail}</div>}
+          </Card>
+
+          {item.biz&&(
+            <Card>
+              <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:10,fontWeight:600,fontSize:13,color:'#3a4452'}}>
+                <i className="bi bi-bar-chart" style={{color:primary}}></i>สนับสนุนงานแผนธุรกิจ
+              </div>
+              <StratBar strat={item.biz.strat} resp={item.biz.resp}/>
+            </Card>
+          )}
+
+          <Card>
+            <div style={{fontWeight:600,fontSize:13,marginBottom:10,display:'flex',alignItems:'center',gap:8}}>
+              <div style={{width:26,height:26,borderRadius:'50%',background:'#eaf1fe',color:'#2b5ec7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-person-fill" style={{fontSize:12}}></i></div>
+              <span style={{color:'#3a4452'}}>ลูกทีมประเมินตนเอง <span style={{color:'#2b5ec7'}}>{rd.self.score}/5</span></span>
+            </div>
+            {rd.self.actual&&<div style={{fontSize:12.5,color:'#5a6473',lineHeight:1.6}}>{rd.self.actual}</div>}
+            <div style={{fontSize:10.5,color:'#b0b8c4',marginTop:4}}>{rd.self.date}</div>
+          </Card>
+
+          <Card>
+            <div style={{fontWeight:700,fontSize:13,marginBottom:14,color:'#3a4452',display:'flex',alignItems:'center',gap:6}}>
+              <i className="bi bi-patch-check-fill" style={{color:'#0e7a6e'}}></i>ให้คะแนนผลงาน (ในฐานะหัวหน้าทีม)
+            </div>
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:12,fontWeight:600,color:'#6b7785',marginBottom:8}}>คะแนน <span style={{color:'#d83a3a'}}>*</span></div>
+              <div style={{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap'}}>
+                {[1,2,3,4,5].map(n=>(
+                  <button key={n} onClick={()=>setScore(n)} style={{width:56,height:56,borderRadius:7,border:'2px solid '+(score===n?primary:'#dde1e8'),background:score===n?primarySoft:'#fff',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',fontSize:17,fontWeight:700,color:score===n?primary:'#5a6473',cursor:'pointer',gap:2}}>
+                    {n}
+                    <span style={{fontSize:9,fontWeight:500,color:score===n?primary:'#b0b8c4',lineHeight:1}}>{['ต่ำ','พอใช้','ผ่าน','ดี','ดีมาก'][n-1]}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{fontSize:12,fontWeight:600,color:'#6b7785',marginBottom:6}}>ความเห็นประกอบ (ถ้ามี)</div>
+              <Txta value={note} onChange={e=>setNote(e.target.value)} placeholder="เหตุผล/ข้อสังเกตประกอบการให้คะแนน..." rows={3}/>
+            </div>
+          </Card>
+        </div>
+
+        <div style={{width:200,flex:'none',display:'flex',flexDirection:'column',gap:10}}>
+          <Card style={{padding:'13px 15px'}}>
+            {[
+              {icon:'bi-calendar3',content:<span style={{fontSize:12.5,color:'#5a6473'}}>ปี {person.year}</span>},
+              {icon:'bi-tag',content:<span style={{background:CAT[catKey].lightBg,color:CAT[catKey].lightColor,borderRadius:4,padding:'2px 8px',fontSize:11.5,fontWeight:700}}>{CAT[catKey].label}</span>},
+              {icon:'bi-percent',content:<span style={{fontSize:12.5,color:'#5a6473'}}>ค่าน้ำหนัก <strong>{item.weight}%</strong></span>},
+            ].map((row,i,arr)=>(
+              <div key={i} style={{display:'flex',alignItems:'flex-start',gap:9,marginBottom:i<arr.length-1?10:0}}>
+                <i className={'bi '+row.icon} style={{fontSize:13,color:'#9aa3af',marginTop:2,flex:'none'}}></i>
+                {row.content}
+              </div>
+            ))}
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── อนุมัติ PA ของลูกทีม — pending queue, grouped by submission batch ── */
+function ApproveTeamListView({people,onBack,onOpen}){
+  const batches=[];
+  people.forEach(p=>{
+    const bySub={};
+    p.cats.forEach(c=>{
+      if(c.key==='business') return; // ดึงจากแผนธุรกิจที่อนุมัติแล้ว ไม่ต้องยื่นขออนุมัติซ้ำ
+      c.items.forEach(it=>{
+        if(it.approvalStatus!=='pending') return;
+        const key=it.submissionId||it.id;
+        if(!bySub[key]) bySub[key]={submissionId:key,person:p,items:[],submittedAt:it.submittedAt};
+        bySub[key].items.push({...it,catKey:c.key});
+      });
+    });
+    Object.values(bySub).forEach(b=>batches.push(b));
+  });
+  const totalItems=batches.reduce((s,b)=>s+b.items.length,0);
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4,flexWrap:'wrap'}}>
+        <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>พิจารณา/ประเมินผลงาน
+        </button>
+      </div>
+      <div style={{fontWeight:700,fontSize:17,color:'#1f2733',margin:'8px 0 4px'}}>อนุมัติ PA ของลูกทีม</div>
+      <div style={{fontSize:12.5,color:'#9aa3af',marginBottom:16}}>คำขออนุมัติจากลูกทีม · {batches.length} คำขอ · รวม {totalItems} รายการ</div>
+      <AdminListCard>
+        {batches.length===0&&<AdminEmpty>ไม่มีรายการรออนุมัติ</AdminEmpty>}
+        {batches.map((b,i)=>{
+          const weightSum=b.items.reduce((s,it)=>s+(it.weight||0),0);
+          const catCounts={};
+          b.items.forEach(it=>{ catCounts[it.catKey]=(catCounts[it.catKey]||0)+1; });
+          return (
+            <div key={b.submissionId} onClick={()=>onOpen(b.person.id,b.submissionId)} className="pa-row" style={{display:'flex',alignItems:'center',gap:12,padding:'13px 16px',borderTop:i?'1px solid #f3f5f8':'none',cursor:'pointer',flexWrap:'wrap'}}>
+              <Avatar name={b.person.name} size={36}/>
+              <div style={{minWidth:150}}>
+                <div style={{fontSize:13.5,fontWeight:700,color:'#2b3440'}}>{b.person.name}</div>
+                <div style={{fontSize:11,color:'#9aa3af'}}>{b.person.position}</div>
+              </div>
+              <div style={{flex:1,minWidth:200,display:'flex',gap:6,flexWrap:'wrap'}}>
+                <span style={{fontSize:11.5,fontWeight:700,color:primary,background:primarySoft,borderRadius:99,padding:'2px 10px'}}>{b.items.length} รายการ</span>
+                {Object.entries(catCounts).map(([key,n])=>(
+                  <span key={key} style={{background:CAT[key].lightBg,color:CAT[key].lightColor,borderRadius:4,padding:'2px 8px',fontSize:11,fontWeight:700}}>{CAT[key].label} · {n}</span>
+                ))}
+              </div>
+              <span style={{fontSize:11.5,fontWeight:700,color:'#8a93a3',background:'#f1f3f6',borderRadius:4,padding:'2px 8px',flex:'none'}}>รวม {weightSum}%</span>
+              <span style={{fontSize:11,color:'#9aa3af',flex:'none'}}>ส่งเมื่อ {b.submittedAt}</span>
+              <i className="bi bi-chevron-right" style={{fontSize:13,color:'#c4ccd4',flex:'none'}}></i>
+            </div>
+          );
+        })}
+      </AdminListCard>
+    </div>
+  );
+}
+
+/* ── อนุมัติ PA ของลูกทีม — คำขอ 1 ชุด: เลือกได้หลายรายการ อนุมัติพร้อมกัน / ตีกลับทีละรายการ ── */
+function ApproveTeamBatchView({person,items,onBack,onApproveMany,onRejectOne}){
+  const [checked,setChecked]=useState(()=>Object.fromEntries(items.map(it=>[it.id,true])));
+  const [openId,setOpenId]=useState(null);
+  const [rejectItem,setRejectItem]=useState(null);
+  const [reason,setReason]=useState('');
+
+  const checkedIds=items.filter(it=>checked[it.id]).map(it=>it.id);
+  const allChecked=items.length>0&&checkedIds.length===items.length;
+  const checkedWeight=items.filter(it=>checked[it.id]).reduce((s,it)=>s+(it.weight||0),0);
+  const toggleAll=()=>{
+    const next=!allChecked;
+    setChecked(Object.fromEntries(items.map(it=>[it.id,next])));
+  };
+  const toggleOne=(id)=>setChecked(p=>({...p,[id]:!p[id]}));
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14,flexWrap:'wrap'}}>
+        <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>อนุมัติ PA ของลูกทีม
+        </button>
+      </div>
+
+      <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',borderRadius:10,padding:'14px 18px',marginBottom:14,flexWrap:'wrap'}}>
+        <Avatar name={person.name} size={40}/>
+        <div>
+          <div style={{fontWeight:700,fontSize:14.5,color:'#2b3440'}}>{person.name}</div>
+          <div style={{fontSize:12,color:'#9aa3af'}}>{person.position} · {person.dept}</div>
+        </div>
+        <div style={{flex:1}}></div>
+        <div style={{textAlign:'right'}}>
+          <div style={{fontSize:11,color:'#9aa3af'}}>ส่งขออนุมัติเมื่อ</div>
+          <div style={{fontSize:12.5,fontWeight:600,color:'#2b3440'}}>{items[0]&&items[0].submittedAt}</div>
+        </div>
+      </div>
+
+      <div style={{position:'sticky',top:0,zIndex:5,display:'flex',alignItems:'center',gap:12,background:'#fff',border:'1px solid #eceef2',borderRadius:10,padding:'11px 15px',marginBottom:12,flexWrap:'wrap',boxShadow:'0 1px 2px rgba(16,24,40,.04)'}}>
+        <label style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer',fontSize:13,fontWeight:600,color:'#3a4452'}}>
+          <input type="checkbox" checked={allChecked} onChange={toggleAll} style={{width:16,height:16,accentColor:primary,cursor:'pointer'}}/>
+          เลือกทั้งหมด
+        </label>
+        <span style={{fontSize:12.5,color:'#6b7785'}}>เลือกอยู่ {checkedIds.length}/{items.length} รายการ · น้ำหนักรวม {checkedWeight}%</span>
+        <div style={{flex:1}}></div>
+        <Btn variant="success" onClick={()=>onApproveMany(checkedIds)} style={checkedIds.length===0?{opacity:.5,pointerEvents:'none'}:undefined}>
+          <i className="bi bi-check-lg" style={{fontSize:12}}></i>อนุมัติที่เลือก ({checkedIds.length})
+        </Btn>
+      </div>
+
+      <AdminListCard>
+        {items.map((it,i)=>{
+          const open=openId===it.id;
+          return (
+            <div key={it.id} style={{borderTop:i?'1px solid #f3f5f8':'none'}}>
+              <div style={{display:'flex',alignItems:'center',gap:10,padding:'12px 15px',flexWrap:'wrap'}}>
+                <input type="checkbox" checked={!!checked[it.id]} onChange={()=>toggleOne(it.id)} style={{width:16,height:16,accentColor:primary,cursor:'pointer',flex:'none'}}/>
+                <div style={{flex:1,minWidth:180,cursor:'pointer'}} onClick={()=>setOpenId(open?null:it.id)}>
+                  <div style={{fontSize:13.5,fontWeight:600,color:'#2b3440'}}>{it.title}</div>
+                  <span style={{background:CAT[it.catKey].lightBg,color:CAT[it.catKey].lightColor,borderRadius:4,padding:'1px 7px',fontSize:10.5,fontWeight:700}}>{CAT[it.catKey].label}</span>
+                </div>
+                <span style={{fontSize:11.5,fontWeight:700,color:'#8a93a3',background:'#f1f3f6',borderRadius:4,padding:'2px 8px',flex:'none'}}>{it.weight}%</span>
+                <button onClick={()=>{setRejectItem(it);setReason('');}} title="ตีกลับรายการนี้" style={{width:30,height:30,borderRadius:6,border:'1px solid #f3c9c9',background:'#fdeaea',color:'#d83a3a',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flex:'none'}}>
+                  <i className="bi bi-x-lg" style={{fontSize:12}}></i>
+                </button>
+                <i className={'bi bi-chevron-'+(open?'up':'down')} onClick={()=>setOpenId(open?null:it.id)} style={{fontSize:12,color:'#c4ccd4',flex:'none',cursor:'pointer'}}></i>
+              </div>
+              {open&&(
+                <div style={{padding:'0 15px 15px 41px'}}>
+                  {it.detail&&<div style={{fontSize:12.5,color:'#5a6473',lineHeight:1.6,marginBottom:it.biz?10:0}}>{it.detail}</div>}
+                  {it.biz&&(
+                    <div style={{background:'#f7f9fb',border:'1px solid #eceef2',borderRadius:8,padding:'10px 12px'}}>
+                      <div style={{fontSize:11.5,fontWeight:600,color:'#5a6473',marginBottom:7,display:'flex',alignItems:'center',gap:5}}>
+                        <i className="bi bi-bar-chart" style={{color:primary}}></i>สนับสนุนงานแผนธุรกิจ
+                      </div>
+                      <StratBar strat={it.biz.strat} resp={it.biz.resp}/>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </AdminListCard>
+
+      {rejectItem&&(
+        <div onClick={()=>setRejectItem(null)} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:99998,padding:'24px 16px'}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:14,width:420,maxWidth:'100%',boxShadow:'0 24px 64px rgba(16,24,40,.28)'}}>
+            <div style={{padding:'18px 22px 14px',borderBottom:'1px solid #f0f2f5',fontWeight:700,fontSize:15}}>ตีกลับรายการ PA</div>
+            <div style={{padding:'16px 22px'}}>
+              <div style={{fontSize:12.5,color:'#6b7785',marginBottom:10}}>{rejectItem.title} — {person.name}</div>
+              <Lbl>เหตุผลที่ตีกลับ <span style={{color:'#d83a3a'}}>*</span></Lbl>
+              <Txta value={reason} onChange={e=>setReason(e.target.value)} placeholder="ระบุเหตุผล เช่น น้ำหนักไม่ถูกต้อง / ต้องระบุตัวชี้วัดเพิ่มเติม..." rows={3}/>
+            </div>
+            <div style={{display:'flex',gap:8,padding:'6px 22px 22px'}}>
+              <Btn variant="ghost" style={{flex:1,justifyContent:'center'}} onClick={()=>setRejectItem(null)}>ยกเลิก</Btn>
+              <Btn variant="danger" style={{flex:1,justifyContent:'center',opacity:reason.trim()?1:.5,pointerEvents:reason.trim()?'auto':'none'}} onClick={()=>{onRejectOne(rejectItem.id,reason.trim());setRejectItem(null);}}>ยืนยันตีกลับ</Btn>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ScoreTab({person,onOpenLog}){
   const overall=computeOverall(person);
   const cols='1fr 64px 60px 60px 60px';
@@ -1729,6 +2471,52 @@ function App(){
   const [summaryPersonId,setSummaryPersonId]=useState(null);
   const [logCtx,setLogCtx]=useState(null);
 
+  const [deptStaff,setDeptStaff]=useState(DEPT_STAFF_SEED);
+  const [deptStaffId,setDeptStaffId]=useState(null);
+  const [deptView,setDeptView]=useState('list'); // list | setup | item-view | item-edit | kpi-edit
+  const [deptSelId,setDeptSelId]=useState(null);
+  const [deptEditData,setDeptEditData]=useState(null);
+  const [deptKpiCtx,setDeptKpiCtx]=useState(null);
+  const selStaff=deptStaff.find(s=>s.id===deptStaffId);
+  const selStaffItems=selStaff?selStaff.items:[];
+  const setSelStaffItems=(updater)=>setDeptStaff(prev=>prev.map(s=>s.id===deptStaffId?{...s,items:typeof updater==='function'?updater(s.items):updater}:s));
+  const selDeptItem=selStaffItems.find(x=>x.id===deptSelId);
+  const goDeptItem=(id)=>{setDeptSelId(id);setDeptView('item-view');};
+  const goDeptAddItem=()=>{
+    const n={id:uid(),cat:'nonBusiness',title:'',detail:'',weight:0,start:'',end:'',approved:false,biz:null,kpis:{r1:[],r2:[]},notes:[]};
+    setDeptEditData(n);setDeptSelId(null);setDeptView('item-edit');
+  };
+
+  const [teamView,setTeamView]=useState('list'); // list | detail
+  const [teamPersonId,setTeamPersonId]=useState(null);
+
+  /* พิจารณา/ประเมินผลงาน: shared mutable team roster (starts from MY_TEAM seed) */
+  const [teamRoster,setTeamRoster]=useState(MY_TEAM);
+  const updateTeamItem=(personId,itemId,fn)=>{
+    setTeamRoster(prev=>prev.map(p=>p.id!==personId?p:{...p,cats:p.cats.map(c=>({...c,items:c.items.map(it=>it.id!==itemId?it:fn(it))}))}));
+  };
+  const findTeamItem=(personId,itemId)=>{
+    const p=teamRoster.find(x=>x.id===personId);
+    if(!p) return {person:null,item:null,catKey:null};
+    for(const c of p.cats){ const it=c.items.find(x=>x.id===itemId); if(it) return {person:p,item:it,catKey:c.key}; }
+    return {person:p,item:null,catKey:null};
+  };
+  const evalPendingCount=teamRoster.filter(p=>{
+    const scorable=p.cats.flatMap(c=>c.items).filter(it=>it.r1);
+    return scorable.length>0&&scorable.some(it=>!it.r1.supervisor);
+  }).length;
+  const apprPendingList=[];
+  teamRoster.forEach(p=>p.cats.forEach(c=>{ if(c.key==='business') return; c.items.forEach(it=>{ if(it.approvalStatus==='pending') apprPendingList.push({person:p,item:it,catKey:c.key}); }); }));
+
+  // ประเมินผลงานลูกทีม nav state
+  const [evalTeamView,setEvalTeamView]=useState('list'); // list | person | item
+  const [evalPersonId,setEvalPersonId]=useState(null);
+  const [evalItemId,setEvalItemId]=useState(null);
+
+  // อนุมัติ PA ของลูกทีม nav state
+  const [apprTeamView,setApprTeamView]=useState('list'); // list | batch
+  const [apprCtx,setApprCtx]=useState(null); // {personId,submissionId}
+
   const selItem=items.find(x=>x.id===selId);
 
   const goItem=(id,mode,rnd)=>{setSelId(id);setPaMode(mode);if(rnd)setInitRound(rnd);setView('item-view');};
@@ -1749,10 +2537,10 @@ function App(){
     {icon:'bi-clipboard-data',href:'pa-my.html',active:true},
   ];
   const NAV_LIST=[
-    {icon:'bi-clipboard-data',label:'PA ส่วนตัว',active:true,onClick:()=>{setView('main');setSelId(null);}},
-    {icon:'bi-people',label:'PA ลูกทีม'},
-    {icon:'bi-building',label:'PA บุคคลในแผนก'},
-    {icon:'bi-star',label:'พิจารณา/ประเมินผลงาน'},
+    {icon:'bi-clipboard-data',label:'PA ส่วนตัว',active:view!=='dept-pa'&&view!=='team-pa',onClick:()=>{setView('main');setSelId(null);}},
+    {icon:'bi-people',label:'PA ลูกทีม',active:view==='team-pa',onClick:()=>{setView('team-pa');setTeamView('list');setTeamPersonId(null);}},
+    {icon:'bi-building',label:'บันทึก PA แทนบุคคลในแผนก',active:view==='dept-pa',onClick:()=>{setView('dept-pa');setDeptView('list');setDeptStaffId(null);}},
+    {icon:'bi-star',label:'พิจารณา/ประเมินผลงาน',active:view==='consider-menu'||view==='evaluate-team'||view==='approve-team',onClick:()=>{setView('consider-menu');setEvalTeamView('list');setApprTeamView('list');}},
   ];
   const NAV_ADMIN=[
     {view:'admin-cat',label:'ประเภทข้อมูล PA'},
@@ -1832,6 +2620,117 @@ function App(){
 
             {view==='kpi-edit'&&kpiCtx&&(
               <KpiEditPanel ctx={kpiCtx} items={items} setItems={setItems} onBack={()=>setView(editData?'item-edit':'item-view')}/>
+            )}
+
+            {view==='dept-pa'&&(
+              <div>
+                {deptView==='list'&&<DeptStaffListView staff={deptStaff} onOpen={id=>{setDeptStaffId(id);setDeptSelId(null);setDeptView('setup');}}/>}
+                {deptView!=='list'&&selStaff&&(
+                  <div>
+                    <div style={{display:'flex',alignItems:'center',gap:10,background:primarySoft,border:'1px solid #b9e2da',borderRadius:8,padding:'9px 14px',marginBottom:16,flexWrap:'wrap'}}>
+                      <button onClick={()=>{setDeptView('list');setDeptStaffId(null);}} style={{display:'flex',alignItems:'center',gap:5,color:primary,fontSize:13,fontWeight:700,cursor:'pointer',border:'none',background:'none',flex:'none'}}>
+                        <i className="bi bi-arrow-left" style={{fontSize:13}}></i>รายชื่อบุคคลในแผนก
+                      </button>
+                      <div style={{width:1,height:16,background:'#a8d9d1'}}></div>
+                      <Avatar name={selStaff.name} size={26}/>
+                      <div style={{fontSize:13,color:'#0e7a6e'}}>กำลังบันทึก PA แทน <strong>{selStaff.name}</strong> <span style={{color:'#4a9c90'}}>· {selStaff.position}</span></div>
+                    </div>
+                    {deptView==='setup'&&<SetupView items={selStaffItems} onItemClick={goDeptItem} onAddItem={goDeptAddItem} setItems={setSelStaffItems}/>}
+                    {deptView==='item-view'&&selDeptItem&&(
+                      <SetupItemView item={selDeptItem} backLabel="รายการ PA" onBack={()=>setDeptView('setup')} onEdit={()=>{setDeptEditData(selDeptItem);setDeptView('item-edit');}} onGoKpi={(itemId,rId,kId)=>{setDeptKpiCtx({itemId,rId,kId});setDeptView('kpi-edit');}}/>
+                    )}
+                    {deptView==='item-edit'&&deptEditData&&(
+                      <ItemEditPanel
+                        item={deptEditData}
+                        items={selStaffItems}
+                        onBack={()=>setDeptView(deptSelId?'item-view':'setup')}
+                        onSave={d=>{
+                          setSelStaffItems(p=>p.some(x=>x.id===d.id)?p.map(x=>x.id===d.id?d:x):[...p,d]);
+                          setDeptSelId(d.id);setDeptEditData(null);setDeptView('item-view');
+                        }}
+                        onGoKpi={(itemId,rId,kId)=>{setDeptEditData(p=>({...p}));setDeptKpiCtx({itemId,rId,kId});setDeptView('kpi-edit');}}
+                      />
+                    )}
+                    {deptView==='kpi-edit'&&deptKpiCtx&&(
+                      <KpiEditPanel ctx={deptKpiCtx} items={selStaffItems} setItems={setSelStaffItems} onBack={()=>setDeptView(deptEditData?'item-edit':'item-view')}/>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {view==='team-pa'&&(
+              <div>
+                {teamView==='list'&&<TeamListView people={teamRoster} onOpen={id=>{setTeamPersonId(id);setTeamView('detail');}}/>}
+                {teamView==='detail'&&(
+                  <TeamDetailView person={teamRoster.find(p=>p.id===teamPersonId)} onBack={()=>{setTeamView('list');setTeamPersonId(null);}}/>
+                )}
+              </div>
+            )}
+
+            {view==='consider-menu'&&(
+              <ConsiderMenuView
+                evalPendingCount={evalPendingCount}
+                apprPendingCount={apprPendingList.length}
+                onGoEvaluate={()=>{setView('evaluate-team');setEvalTeamView('list');setEvalPersonId(null);setEvalItemId(null);}}
+                onGoApprove={()=>{setView('approve-team');setApprTeamView('list');setApprCtx(null);}}
+              />
+            )}
+
+            {view==='evaluate-team'&&(
+              <div>
+                {evalTeamView==='list'&&(
+                  <EvaluateTeamListView people={teamRoster} onBack={()=>setView('consider-menu')} onOpen={id=>{setEvalPersonId(id);setEvalTeamView('person');}}/>
+                )}
+                {evalTeamView==='person'&&(
+                  <EvaluateTeamPersonView person={teamRoster.find(p=>p.id===evalPersonId)} onBack={()=>{setEvalTeamView('list');setEvalPersonId(null);}} onOpenItem={(itemId)=>{setEvalItemId(itemId);setEvalTeamView('item');}}/>
+                )}
+                {evalTeamView==='item'&&(()=>{
+                  const {person,item,catKey}=findTeamItem(evalPersonId,evalItemId);
+                  if(!person||!item) return null;
+                  return (
+                    <EvaluateTeamItemScoreView
+                      person={person} item={item} catKey={catKey}
+                      onBack={()=>{setEvalTeamView('person');setEvalItemId(null);}}
+                      onSave={({score,note})=>{
+                        updateTeamItem(person.id,item.id,it=>({...it,r1:{...it.r1,supervisor:{score,note,by:'หัวหน้าแผนก',date:'02/07/2569'}}}));
+                        setEvalTeamView('person');setEvalItemId(null);
+                      }}
+                    />
+                  );
+                })()}
+              </div>
+            )}
+
+            {view==='approve-team'&&(
+              <div>
+                {apprTeamView==='list'&&(
+                  <ApproveTeamListView people={teamRoster} onBack={()=>setView('consider-menu')} onOpen={(personId,submissionId)=>{setApprCtx({personId,submissionId});setApprTeamView('batch');}}/>
+                )}
+                {apprTeamView==='batch'&&apprCtx&&(()=>{
+                  const p=teamRoster.find(x=>x.id===apprCtx.personId);
+                  if(!p) return null;
+                  const items=[];
+                  p.cats.forEach(c=>c.items.forEach(it=>{
+                    if(it.approvalStatus==='pending'&&(it.submissionId||it.id)===apprCtx.submissionId) items.push({...it,catKey:c.key});
+                  }));
+                  if(items.length===0) return null;
+                  return (
+                    <ApproveTeamBatchView
+                      person={p} items={items}
+                      onBack={()=>{setApprTeamView('list');setApprCtx(null);}}
+                      onApproveMany={(ids)=>{
+                        ids.forEach(id=>updateTeamItem(p.id,id,it=>({...it,approvalStatus:'approved'})));
+                        setApprTeamView('list');setApprCtx(null);
+                      }}
+                      onRejectOne={(itemId,reason)=>{
+                        updateTeamItem(p.id,itemId,it=>({...it,approvalStatus:'rejected',rejectReason:reason}));
+                        if(items.length<=1){ setApprTeamView('list');setApprCtx(null); }
+                      }}
+                    />
+                  );
+                })()}
+              </div>
             )}
 
             {view==='admin-cat'&&(
