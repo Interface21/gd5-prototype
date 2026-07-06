@@ -318,7 +318,7 @@ function PMCard({d}){
   const hasWatch=d.watch>0;
   return (
     <a href="user-virtual-meeting-group.html?tab=watch" className="grp-card" style={{position:'relative',textDecoration:'none',color:'inherit',background:'#fff',border:'1px solid '+(hasWatch?'#fca5a5':'#eceef2'),borderRadius:13,boxShadow:hasWatch?'0 0 0 3px rgba(229,57,53,.10),0 1px 2px rgba(16,24,40,.04)':'0 1px 2px rgba(16,24,40,.04)',padding:'14px 15px',display:'flex',flexDirection:'column',gap:9,cursor:'pointer'}}>
-      {hasWatch && <div style={{position:'absolute',top:-10,right:12,display:'inline-flex',alignItems:'center',gap:5,background:'#e53935',color:'#fff',borderRadius:99,padding:'4px 11px 4px 9px',fontSize:11.5,fontWeight:800,boxShadow:'0 3px 8px rgba(229,57,53,.35)'}}><i className="bi bi-exclamation-circle-fill" style={{fontSize:13,lineHeight:1}}></i>ต้องติดตาม {d.watch}</div>}
+      {hasWatch && <div style={{position:'absolute',top:-10,right:12,display:'inline-flex',alignItems:'center',gap:6,background:'#e53935',color:'#fff',borderRadius:99,padding:'3px 4px 3px 9px',fontSize:11.5,fontWeight:800,boxShadow:'0 3px 8px rgba(229,57,53,.35)'}}>ต้องติดตาม<span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',minWidth:19,height:19,padding:'0 5px',borderRadius:99,background:'#fff',color:'#e53935',border:'1.5px solid #ffd3d1',fontSize:11,fontWeight:800,lineHeight:1}}>{d.watch}</span></div>}
       <div style={{fontWeight:700,fontSize:14,lineHeight:1.35,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',paddingRight:hasWatch?96:0}}>{d.title}</div>
       <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#5a6473',minWidth:0}}>{ms('account_balance',16,'#9aa3af')}<span style={{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{d.college}</span></div>
       <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,color:'#5a6473'}}><span style={{fontWeight:700,color:'#9aa3af',width:16,textAlign:'center',flex:'none'}}>฿</span><span>{d.value}</span></div>
@@ -413,7 +413,7 @@ function App(){
             </div>
             {mode==='easypm' && (
               <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
-                <button onClick={()=>setShowSummary(true)} style={{display:'inline-flex',alignItems:'center',gap:8,border:'1px solid #fca5a5',background:'#fff1f1',color:'#c0392b',borderRadius:10,padding:'7px 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-exclamation-circle-fill" style={{fontSize:16,color:'#e53935'}}></i>สรุปรายการต้องติดตาม<span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',minWidth:20,height:20,padding:'0 6px',borderRadius:99,background:'#e53935',color:'#fff',fontSize:11.5,fontWeight:800}}>{WATCH_TOTAL}</span></button>
+                <button onClick={()=>setShowSummary(true)} style={{display:'inline-flex',alignItems:'center',gap:8,border:'1px solid #fca5a5',background:'#fff1f1',color:'#c0392b',borderRadius:10,padding:'7px 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-exclamation-circle-fill" style={{fontSize:16,color:'#e53935'}}></i>สรุปรายการต้องติดตาม<span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',minWidth:20,height:20,padding:'0 6px',borderRadius:99,background:'#e53935',color:'#fff',border:'1.5px solid #fff',boxShadow:'0 0 0 1px #f3b6b1',fontSize:11.5,fontWeight:800,lineHeight:1}}>{WATCH_TOTAL}</span></button>
                 <div style={{flex:1}}></div>
                 <div style={{display:'inline-flex',gap:6,flexWrap:'wrap',justifyContent:'flex-end'}}>
                   {[['all','ทั้งหมด',null],['progress','กำลังดำเนินการ','progress'],['overdue','เกินสัญญา','overdue'],['done','เสร็จแล้ว',null]].map(([k,lb,cntKey])=>{const a=pmFilter===k;const cnt=cntKey?pmCount(cntKey):null;const badgeBg=k==='overdue'?(a?'#d8513a':'#fdecec'):(a?primary:primarySoft);const badgeInk=k==='overdue'?(a?'#fff':'#d8513a'):(a?'#fff':primary);return (
@@ -517,6 +517,7 @@ function App(){
 
        </div>
       </div>
+      {showSummary && <WatchSummary onClose={()=>setShowSummary(false)}/>}
     </GD5AppShell>
   );
 }
