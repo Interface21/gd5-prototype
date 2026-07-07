@@ -82,6 +82,24 @@ function Thumb({kind,size}){
   );
 }
 
+const TodoBar=({todo})=>{
+  if(!todo||!todo.total) return null;
+  const pct=Math.round(todo.done/todo.total*100);
+  return (
+    <div style={{marginTop:11}}>
+      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:5}}>
+        {ms('checklist',15,'#8a93a3')}
+        <span style={{fontSize:11.5,color:'#8a93a3',fontWeight:600}}>สิ่งที่ต้องทำ</span>
+        <div style={{flex:1}}></div>
+        <span style={{fontSize:11.5,color:'#5a6473'}}><b style={{color:primary,fontWeight:700}}>{pct}%</b> · {todo.done}/{todo.total}</span>
+      </div>
+      <div style={{height:7,borderRadius:99,background:'#eef1f5',overflow:'hidden'}}>
+        <div style={{width:pct+'%',height:'100%',borderRadius:99,background:'linear-gradient(90deg,#15a08f,#2bc0ac)'}}></div>
+      </div>
+    </div>
+  );
+};
+
 const TABS=[
   {key:'mine',label:'กลุ่มของคุณ'},
   {key:'invite',label:'คำเชิญเข้ากลุ่ม'},
@@ -90,12 +108,14 @@ const TABS=[
 ];
 
 const FEATURED=[
-  {banner:'restricted',title:'SA-Developer',desc:'สำหรับกลุ่มพัฒนาซอฟแวร์และวิเคราะห์ระบบเ...',members:4,unread:0,posts:10,av:4,extra:0},
+  {banner:'restricted',title:'SA-Developer',desc:'สำหรับกลุ่มพัฒนาซอฟแวร์และวิเคราะห์ระบบเ...',members:4,unread:0,posts:10,av:4,extra:0,todo:{done:5,total:31}},
   {banner:'teal',title:'VM : AAR GiveD5',desc:'ใช้สำหรับพูดคุยเกี่ยวกับ GiveD5',members:18,unread:20,posts:136,av:5,extra:13},
   {banner:'teal',title:'เคล็ดลับการเขียนแผนธุรกิจ',desc:'เพื่อรวบรวมองค์ความรู้ในการเขียนแผนธุรกิจ ข...',members:29,unread:0,posts:2,av:5,extra:24},
   {banner:'teal',title:'AI วันละ 5 นาที',desc:'ศึกษาและทดลองนำ AI เริ่มจาก Automated ...',members:17,unread:7,posts:22,av:5,extra:12},
 ];
 const GROUPS=[
+  {thumb:'teal',title:'EDR วิทยาลัยเทคนิคอยุธยา',members:18,unread:2,posts:36,av:4,extra:14,href:'user-virtual-meeting-group-2.html',todo:{done:14,total:34}},
+  {thumb:'olive',title:'EDR ภาคเรียน 1/2569',members:24,unread:0,posts:48,av:4,extra:20,href:'user-virtual-meeting-group-1.html',todo:{done:9,total:52}},
   {thumb:'teal',title:'VM : EDR วท.อุทัยธานี',members:15,unread:1,posts:5,av:4,extra:10},
   {thumb:'olive',title:'VM : EDR วบท.อุดรธานี',members:14,unread:1,posts:4,av:4,extra:9},
   {thumb:'dark',title:'VM : EDR วท.อุดรธานี',members:17,unread:3,posts:3,av:4,extra:12},
@@ -416,7 +436,7 @@ function App(){
                 <button onClick={()=>setShowSummary(true)} style={{display:'inline-flex',alignItems:'center',gap:8,border:'1px solid #fca5a5',background:'#fff1f1',color:'#c0392b',borderRadius:10,padding:'7px 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-exclamation-circle-fill" style={{fontSize:16,color:'#e53935'}}></i>สรุปรายการต้องติดตาม<span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',minWidth:20,height:20,padding:'0 6px',borderRadius:99,background:'#e53935',color:'#fff',border:'1.5px solid #fff',boxShadow:'0 0 0 1px #f3b6b1',fontSize:11.5,fontWeight:800,lineHeight:1}}>{WATCH_TOTAL}</span></button>
                 <div style={{flex:1}}></div>
                 <div style={{display:'inline-flex',gap:6,flexWrap:'wrap',justifyContent:'flex-end'}}>
-                  {[['all','ทั้งหมด',null],['progress','กำลังดำเนินการ','progress'],['overdue','เกินสัญญา','overdue'],['done','เสร็จแล้ว',null]].map(([k,lb,cntKey])=>{const a=pmFilter===k;const cnt=cntKey?pmCount(cntKey):null;const badgeBg=k==='overdue'?(a?'#d8513a':'#fdecec'):(a?primary:primarySoft);const badgeInk=k==='overdue'?(a?'#fff':'#d8513a'):(a?'#fff':primary);return (
+                  {[['all','ทั้งหมด',null],['progress','กำลังดำเนินการ','progress'],['overdue','เกินกำหนด','overdue'],['done','เสร็จแล้ว',null]].map(([k,lb,cntKey])=>{const a=pmFilter===k;const cnt=cntKey?pmCount(cntKey):null;const badgeBg=k==='overdue'?(a?'#d8513a':'#fdecec'):(a?primary:primarySoft);const badgeInk=k==='overdue'?(a?'#fff':'#d8513a'):(a?'#fff':primary);return (
                     <button key={k} onClick={()=>setPmFilter(k)} style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid '+(a?primary:'#e3e7ec'),background:a?primarySoft:'#fff',color:a?primary:'#5a6473',borderRadius:99,padding:'5px 13px',fontSize:12.5,fontWeight:a?700:600,cursor:'pointer'}}>{lb}{cnt!=null && <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',minWidth:18,height:18,padding:'0 5px',borderRadius:99,background:badgeBg,color:badgeInk,fontSize:11,fontWeight:700,lineHeight:1}}>{cnt}</span>}</button>
                   );})}
                 </div>
@@ -451,9 +471,10 @@ function App(){
                     <div style={{fontSize:12.5,color:'#9aa3af',textAlign:'center',marginTop:5,lineHeight:1.5,minHeight:36}}>{g.desc}</div>
                     <div style={{fontSize:12,color:'#9aa3af',textAlign:'center',marginTop:8}}>สมาชิก {g.members} คน{g.unread>0 && <span style={{color:'#d8513a',fontWeight:600}}> · {g.unread} ยังไม่ได้อ่าน</span>} · โพสต์ {g.posts}</div>
                     <div style={{display:'flex',justifyContent:'center',marginTop:12}}><Avatars n={g.av} extra={g.extra>0?g.extra:null}/></div>
+                    <TodoBar todo={g.todo}/>
                     <div style={{flex:1}}></div>
                     <div style={{display:'flex',alignItems:'center',gap:8,marginTop:14}}>
-                      <a href="user-virtual-meeting-group.html" className="ghost-btn" style={{flex:1,textAlign:'center',border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'8px 0',fontSize:13,fontWeight:600,color:'#3a4452'}}>ดูกลุ่ม</a>
+                      <a href={g.href||"user-virtual-meeting-group.html"} className="ghost-btn" style={{flex:1,textAlign:'center',border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'8px 0',fontSize:13,fontWeight:600,color:'#3a4452'}}>ดูกลุ่ม</a>
                       <button title="ปักหมุดอยู่" style={{width:36,height:36,borderRadius:9,border:'1px solid '+primarySoft,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('push_pin',18,primary,true)}</button>
                       <IconBtn icon="chat_bubble_outline"/>
                     </div>
@@ -469,17 +490,20 @@ function App(){
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
               {groups.map((g,i)=>(
-                <div key={i} className="grp-row" style={{background:'#fff',border:'1px solid #eceef2',borderRadius:13,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'13px 15px',display:'flex',alignItems:'center',gap:13}}>
+                <div key={i} className="grp-row" style={{background:'#fff',border:'1px solid #eceef2',borderRadius:13,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'13px 15px',display:'flex',alignItems:'flex-start',gap:13}}>
                   <Thumb kind={g.thumb}/>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontWeight:700,fontSize:14.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{g.title}</div>
                     <div style={{marginTop:4}}><MetaLine m={g.members} unread={g.unread} posts={g.posts}/></div>
                     <div style={{marginTop:8}}><Avatars n={g.av} extra={g.extra}/></div>
                   </div>
-                  <div style={{display:'flex',alignItems:'center',gap:8,flex:'none'}}>
-                    <IconBtn icon="push_pin"/>
-                    <IconBtn icon="chat_bubble_outline"/>
-                    <a href="user-virtual-meeting-group.html" className="ghost-btn" style={{border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'8px 16px',fontSize:13,fontWeight:600,color:'#3a4452'}}>ดูกลุ่ม</a>
+                  <div style={{display:'flex',flexDirection:'column',gap:0,flex:'none',minWidth:g.todo?200:0}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,justifyContent:'flex-end'}}>
+                      <IconBtn icon="push_pin"/>
+                      <IconBtn icon="chat_bubble_outline"/>
+                      <a href={g.href||"user-virtual-meeting-group.html"} className="ghost-btn" style={{border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'8px 16px',fontSize:13,fontWeight:600,color:'#3a4452'}}>ดูกลุ่ม</a>
+                    </div>
+                    <TodoBar todo={g.todo}/>
                   </div>
                 </div>
               ))}

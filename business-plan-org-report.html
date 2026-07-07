@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>รายงานแผนธุรกิจทั้งหมดขององค์กร — GiveD5</title>
+<title>แผนธุรกิจทั้งหมดขององค์กร — GiveD5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -32,6 +32,7 @@ const primary='#15a08f', primarySoft='#e3f3f0';
 const RED='#ef4444', YEL='#f5b301', GRN='#22b96a', GRAY='#c7ccd4';
 const dotC=(s)=>s==='r'?RED:s==='y'?YEL:s==='g'?GRN:GRAY;
 const STLABEL={g:'บรรลุ / ปกติ',y:'เฝ้าระวัง',r:'ต่ำกว่าเกณฑ์','':'ยังไม่เริ่ม'};
+const STBG={g:'#eafaf0',y:'#fff7e3',r:'#fdeaea'};
 const AV_COLORS=['#15a08f','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
 
 function StatusDot({s,size,title:t}){
@@ -47,11 +48,11 @@ function Avatar({name,size}){
 
 /* ─── NAV (same convention as other business-plan-*.html pages) ─── */
 const NAVLINKS=[
-  {label:'รายงานแผนธุรกิจที่รับผิดชอบ',active:false,href:'business-plan-responsible-list.html'},
+  {label:'แผนธุรกิจที่รับผิดชอบ',active:false,href:'business-plan-responsible-list.html'},
   {label:'Cockpit ความก้าวหน้าของตัวชี้วัด',active:false,href:'business-plan-cockpit.html'},
   {label:'ประเมินผลงานแผนธุรกิจ',active:false,href:null,count:1},
   null,
-  {label:'รายงานแผนธุรกิจทั้งหมดขององค์กร',active:true,href:'business-plan-org-report.html'},
+  {label:'แผนธุรกิจทั้งหมดขององค์กร',active:true,href:'business-plan-org-report.html'},
   {label:'สถานะของแผนธุรกิจทั้งหมด',active:false,href:null},
   {label:'สรุปผลการประเมินแผนธุรกิจ',active:false,href:null},
 ];
@@ -85,50 +86,51 @@ const ROUNDS=[
 ];
 
 const MISSIONS_BASE=[
-  {id:'m1',title:'พันธกิจที่ 1: EDR',owner:'Pinij Ningunha',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
-    {id:'g11',title:'เป้าหมายที่ 1.1 รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ EDR',owner:'Jarunya Thaiprayoon',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
-    {id:'g12',title:'เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปี 2568 และขยายผลอีก 6 แห่ง',owner:'Thaniya Tongprasert',period:'01/01/2026 – 31/12/2026',achieved:0,target:6,unit:'แห่ง',status:'y',children:[
-      {id:'s121',title:'กลยุทธ์ 1.2.1 จัดกิจกรรมการประกวด MOU ระดับภาค',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:1,target:1,unit:'กิจกรรม',status:'g',children:[
-        {id:'p1211',title:'แผนงาน 1.2.1.1 จัดเตรียมสถานที่และวัสดุการประกวด',owner:'Thaniya Tongprasert',period:'01/02/2026 – 28/02/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
-        {id:'p1212',title:'แผนงาน 1.2.1.2 ดำเนินการประกวดและตัดสินผล MOU',owner:'Thaniya Tongprasert',period:'01/03/2026 – 31/03/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
+  {id:'m1',budget:2500000,spentSelf:100000,title:'พันธกิจที่ 1: EDR',owner:'Pinij Ningunha',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g11',budget:300000,spentSelf:120000,title:'เป้าหมายที่ 1.1 รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ EDR',owner:'Jarunya Thaiprayoon',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g12',budget:600000,spentSelf:50000,title:'เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปี 2568 และขยายผลอีก 6 แห่ง',owner:'Thaniya Tongprasert',period:'01/01/2026 – 31/12/2026',achieved:0,target:6,unit:'แห่ง',status:'y',children:[
+      {id:'s121',budget:250000,spentSelf:40000,title:'กลยุทธ์ 1.2.1 จัดกิจกรรมการประกวด MOU ระดับภาค',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:1,target:1,unit:'กิจกรรม',status:'g',children:[
+        {id:'p1211',budget:100000,spentSelf:80000,title:'แผนงาน 1.2.1.1 จัดเตรียมสถานที่และวัสดุการประกวด',owner:'Thaniya Tongprasert',period:'01/02/2026 – 28/02/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
+        {id:'p1212',budget:120000,spentSelf:95000,title:'แผนงาน 1.2.1.2 ดำเนินการประกวดและตัดสินผล MOU',owner:'Thaniya Tongprasert',period:'01/03/2026 – 31/03/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
       ]},
-      {id:'s122',title:'กลยุทธ์ 1.2.2 สนับสนุนทีมงานประกวด MOU วิทยาลัย',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:3,target:3,unit:'แห่ง',status:'g',children:[]},
+      {id:'s122',budget:200000,spentSelf:150000,title:'กลยุทธ์ 1.2.2 สนับสนุนทีมงานประกวด MOU วิทยาลัย',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:3,target:3,unit:'แห่ง',status:'g',children:[]},
     ]},
-    {id:'g13',title:'เป้าหมายที่ 1.3 เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านอาชีวศึกษา ให้มีจำนวนผู้เรียนในระบบ EDR ไม่น้อยกว่า 50,000 คน',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:50000,unit:'คน',status:'r',children:[]},
-    {id:'g14',title:'เป้าหมายที่ 1.4 นำ AI มาใช้ร่วม (Synergy) กับระบบ EDR',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[]},
+    {id:'g13',budget:800000,spentSelf:210000,title:'เป้าหมายที่ 1.3 เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านอาชีวศึกษา ให้มีจำนวนผู้เรียนในระบบ EDR ไม่น้อยกว่า 50,000 คน',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:50000,unit:'คน',status:'r',children:[]},
+    {id:'g14',budget:400000,spentSelf:0,title:'เป้าหมายที่ 1.4 นำ AI มาใช้ร่วม (Synergy) กับระบบ EDR',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[]},
   ]},
-  {id:'m2',title:'พันธกิจที่ 2: GiveD5',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
-    {id:'g21',title:'เป้าหมายที่ 2.1 พัฒนาโปรแกรม GiveD5 ในแต่ละเวอร์ชัน (Version) ให้แล้วเสร็จตามกรอบเวลาที่กำหนด',owner:'Piyawat Takaew',period:'01/01/2026 – 31/12/2026',achieved:2,target:4,unit:'เวอร์ชัน',status:'y',children:[
-      {id:'s211',title:'กลยุทธ์ 2.1.1 วางแผนและออกแบบฟีเจอร์ตาม Roadmap',owner:'Piyawat Takaew',period:'01/01/2026 – 31/03/2026',achieved:1,target:1,unit:'ฉบับ',status:'g',children:[
-        {id:'p2111',title:'แผนงาน 2.1.1.1 สำรวจความต้องการผู้ใช้งาน GiveD5',owner:'Piyawat Takaew',period:'01/01/2026 – 31/01/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
+  {id:'m2',budget:1800000,spentSelf:60000,title:'พันธกิจที่ 2: GiveD5',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g21',budget:900000,spentSelf:80000,title:'เป้าหมายที่ 2.1 พัฒนาโปรแกรม GiveD5 ในแต่ละเวอร์ชัน (Version) ให้แล้วเสร็จตามกรอบเวลาที่กำหนด',owner:'Piyawat Takaew',period:'01/01/2026 – 31/12/2026',achieved:2,target:4,unit:'เวอร์ชัน',status:'y',children:[
+      {id:'s211',budget:300000,spentSelf:120000,title:'กลยุทธ์ 2.1.1 วางแผนและออกแบบฟีเจอร์ตาม Roadmap',owner:'Piyawat Takaew',period:'01/01/2026 – 31/03/2026',achieved:1,target:1,unit:'ฉบับ',status:'g',children:[
+        {id:'p2111',budget:80000,spentSelf:65000,title:'แผนงาน 2.1.1.1 สำรวจความต้องการผู้ใช้งาน GiveD5',owner:'Piyawat Takaew',period:'01/01/2026 – 31/01/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
       ]},
-      {id:'s212',title:'กลยุทธ์ 2.1.2 พัฒนาคุณภาพระบบ GiveD5 ให้ตรงตามความต้องการผู้ใช้',owner:'Narate Boonmee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+      {id:'s212',budget:250000,spentSelf:30000,title:'กลยุทธ์ 2.1.2 พัฒนาคุณภาพระบบ GiveD5 ให้ตรงตามความต้องการผู้ใช้',owner:'Narate Boonmee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
     ]},
-    {id:'g22',title:'เป้าหมายที่ 2.2 สถานศึกษาที่ใช้ GiveD5 ทดแทนไลน์กลุ่มในการสนับสนุนการใช้ EDR',owner:'Piyawat Takaew',period:'01/04/2026 – 30/09/2026',achieved:7,target:26,unit:'แห่ง',status:'y',children:[]},
+    {id:'g22',budget:500000,spentSelf:175000,title:'เป้าหมายที่ 2.2 สถานศึกษาที่ใช้ GiveD5 ทดแทนไลน์กลุ่มในการสนับสนุนการใช้ EDR',owner:'Piyawat Takaew',period:'01/04/2026 – 30/09/2026',achieved:7,target:26,unit:'แห่ง',status:'y',children:[]},
   ]},
-  {id:'m3',title:'พันธกิจที่ 3 : ครุภัณฑ์',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
-    {id:'g31',title:'เป้าหมายที่ 3.1 ยอดขายทั้งหมดจากครุภัณฑ์และสิ่งก่อสร้างไม่น้อยกว่า 150 ล้านบาทต่อปี และมีผลกำไรไม่ต่ำกว่า 32 ล้านบาท ในปี 2569',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:150000000,unit:'บาท',status:'r',children:[]},
-    {id:'g32',title:'เป้าหมายที่ 3.2 จัดส่งมอบงานให้เป็นไปตามกำหนดส่งมอบตามสัญญา',owner:'ปอนด์',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
-    {id:'g33',title:'เป้าหมายที่ 3.3 สร้างโครงสร้างพื้นฐาน เพื่อขยายการตลาดการขายสินค้าวัตกรรม ที่เน้นด้านครุภัณฑ์',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+  {id:'m3',budget:3200000,spentSelf:0,title:'พันธกิจที่ 3 : ครุภัณฑ์',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g31',budget:1500000,spentSelf:480000,title:'เป้าหมายที่ 3.1 ยอดขายทั้งหมดจากครุภัณฑ์และสิ่งก่อสร้างไม่น้อยกว่า 150 ล้านบาทต่อปี และมีผลกำไรไม่ต่ำกว่า 32 ล้านบาท ในปี 2569',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:150000000,unit:'บาท',status:'r',children:[]},
+    {id:'g32',budget:700000,spentSelf:260000,title:'เป้าหมายที่ 3.2 จัดส่งมอบงานให้เป็นไปตามกำหนดส่งมอบตามสัญญา',owner:'ปอนด์',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g33',budget:600000,spentSelf:90000,title:'เป้าหมายที่ 3.3 สร้างโครงสร้างพื้นฐาน เพื่อขยายการตลาดการขายสินค้าวัตกรรม ที่เน้นด้านครุภัณฑ์',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
   ]},
-  {id:'m4',title:'พันธกิจที่ 4: ใช้เทคโนโลยีดิจิทัล GD5 และ AI',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
-    {id:'g41',title:'เป้าหมายที่ 4.1 สร้างวัฒนธรรมการทำงานอย่างมืออาชีพ และสร้างความผูกพัน ทั่วทั้งองค์กร',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
-    {id:'g42',title:'เป้าหมายที่ 4.2 พัฒนาระบบงานภายในองค์กรให้เป็นไปตาม (Comply) ขบวนการตรวจสอบของผู้ตรวจสอบภายนอกเพื่อเตรียมพร้อมในการยื่น Filing กับ ก.ล.ต. ในทุกไตรมาส',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
-    {id:'g43',title:'เป้าหมายที่ 4.3 ขับเคลื่อนนโยบายด้านเทคโนโลยีสารสนเทศเพื่อให้แผนธุรกิจบรรลุผลสำเร็จ',owner:'Idsara Wungdee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+  {id:'m4',budget:1200000,spentSelf:45000,title:'พันธกิจที่ 4: ใช้เทคโนโลยีดิจิทัล GD5 และ AI',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g41',budget:400000,spentSelf:110000,title:'เป้าหมายที่ 4.1 สร้างวัฒนธรรมการทำงานอย่างมืออาชีพ และสร้างความผูกพัน ทั่วทั้งองค์กร',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g42',budget:350000,spentSelf:95000,title:'เป้าหมายที่ 4.2 พัฒนาระบบงานภายในองค์กรให้เป็นไปตาม (Comply) ขบวนการตรวจสอบของผู้ตรวจสอบภายนอกเพื่อเตรียมพร้อมในการยื่น Filing กับ ก.ล.ต. ในทุกไตรมาส',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g43',budget:300000,spentSelf:70000,title:'เป้าหมายที่ 4.3 ขับเคลื่อนนโยบายด้านเทคโนโลยีสารสนเทศเพื่อให้แผนธุรกิจบรรลุผลสำเร็จ',owner:'Idsara Wungdee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
   ]},
 ];
 
 function scaleTree(nodes,mode){
   return nodes.map(n=>{
-    let achieved=n.achieved, status=n.status;
-    if(mode==='future'){ achieved=0; status=''; }
+    let achieved=n.achieved, status=n.status, spentSelf=n.spentSelf;
+    if(mode==='future'){ achieved=0; status=''; spentSelf=0; }
     if(mode==='done'){ achieved=n.target; status=n.target>0?'g':(n.status||''); }
-    return {...n,achieved,status,children:n.children?scaleTree(n.children,mode):[]};
+    return {...n,achieved,status,spentSelf,children:n.children?scaleTree(n.children,mode):[]};
   });
 }
 const DATA_BY_ROUND={ r1:MISSIONS_BASE, r2:scaleTree(MISSIONS_BASE,'future'), r3:scaleTree(MISSIONS_BASE,'done'), r4:scaleTree(MISSIONS_BASE,'done') };
 
 const flattenTree=(nodes)=>nodes.reduce((acc,n)=>acc.concat([n],flattenTree(n.children||[])),[]);
+const usedTotal=(n)=>(n.spentSelf||0)+(n.children||[]).reduce((s,c)=>s+usedTotal(c),0); // งบที่ใช้ไป = บันทึกเอง + รวมจากแผนที่อยู่ใต้ 1 ระดับ
 
 /* คำสั่งการ (work orders) สรุปทั้งองค์กร แยกตามรอบ */
 const CMD_SUMMARY_BY_ROUND={
@@ -189,12 +191,11 @@ function CmdSummarySection({data}){
   );
 }
 
-function PlanCard({node,childLabel,onClick}){
+function PlanCard({node,childLabel,onOpen,onDrill}){
   const showQty=node.target>0;
   const kids=node.children||[];
-  const clickable=!!onClick&&kids.length>0;
   return (
-    <div className="mission-card" onClick={clickable?onClick:undefined} style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'17px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',display:'flex',alignItems:'center',gap:18,flexWrap:'wrap',transition:'box-shadow .12s',cursor:clickable?'pointer':'default'}}>
+    <div className="mission-card" onClick={onOpen} style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'17px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',display:'flex',alignItems:'center',gap:18,flexWrap:'wrap',transition:'box-shadow .12s',cursor:'pointer'}}>
       <div style={{flex:1,minWidth:260}}>
         <div style={{fontWeight:700,fontSize:15,color:'#1a2332',marginBottom:8}}>{node.title}</div>
         <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
@@ -207,34 +208,250 @@ function PlanCard({node,childLabel,onClick}){
           <div style={{fontSize:12,color:'#c7ccd4'}}>ไม่มีตัวชี้วัด</div>
         )}
       </div>
-      <div style={{display:'flex',flexDirection:'column',gap:11,alignItems:'flex-end',flex:'none'}}>
+      <div style={{display:'flex',flexDirection:'column',gap:10,alignItems:'flex-end',flex:'none'}}>
         <div style={{display:'flex',alignItems:'center',gap:9}}>
           <span style={{fontSize:12,color:'#8a93a3'}}>สถานะล่าสุด</span>
           <StatusDot s={node.status} size={20}/>
         </div>
-        {childLabel&&(
+        {childLabel&&(kids.length>0?(
           <div style={{display:'flex',alignItems:'center',gap:9}}>
             <span style={{fontSize:12,color:'#8a93a3'}}>สถานะแต่ละ{childLabel}</span>
             <div style={{display:'flex',gap:6}}>
-              {kids.length>0?kids.map(c=>(
+              {kids.map(c=>(
                 <StatusDot key={c.id} s={c.status} size={13} title={c.title+' — '+(STLABEL[c.status]||STLABEL[''])}/>
-              )):<span style={{fontSize:11,color:'#c7ccd4'}}>—</span>}
+              ))}
             </div>
+            <button onClick={(e)=>{e.stopPropagation();onDrill();}} style={{display:'inline-flex',alignItems:'center',gap:6,background:primarySoft,color:primary,border:'none',borderRadius:8,padding:'6px 13px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+              ดู{childLabel} {kids.length} รายการ<i className="bi bi-chevron-right" style={{fontSize:10}}></i>
+            </button>
           </div>
-        )}
+        ):(
+          <span style={{fontSize:12,color:'#c7ccd4'}}>ไม่มีข้อมูล{childLabel}</span>
+        ))}
       </div>
-      {clickable&&<i className="bi bi-chevron-right" style={{fontSize:14,color:'#c4ccd4',flex:'none'}}></i>}
     </div>
   );
 }
 
 const LEVEL_CHILD_LABEL=['เป้าหมาย','กลยุทธ์','แผนงาน']; // ระดับที่ 0=พันธกิจ (ลูกคือเป้าหมาย), 1=เป้าหมาย (ลูกคือกลยุทธ์), 2=กลยุทธ์ (ลูกคือแผนงาน)
+const LEVEL_NAME=['พันธกิจ','เป้าหมาย','กลยุทธ์','แผนงาน'];
+
+/* หน้ารายละเอียด "ข้อมูลและสถานะ" ของแผนแต่ละรายการ — เปิดจากการคลิกการ์ด (ทุกชั้น รวมถึงแผนงานที่ไม่มีลูก) */
+function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
+  const kids=node.children||[];
+  const [logsOpen,setLogsOpen]=useState(false); // (คงไว้กันพัง — ย้าย log ไปเป็นแท็บแล้ว)
+  const [tab,setTab]=useState(0); // 0 ความก้าวหน้า | 1 รายการใช้งบประมาณ | 2 แจ้งเตือน
+  const childLabel=LEVEL_CHILD_LABEL[level]||null;
+  const hasChildren=kids.length>0; // แผนงาน (ลำดับสุดท้าย) = ไม่มีแผนย่อย → ไม่แสดง "รวมจากแผนใต้ 1 ระดับ"
+  const showQty=node.target>0;
+  const pct=showQty?Math.min(100,node.achieved/node.target*100):0;
+  const budget=node.budget||0;
+  const usedSelf=node.spentSelf||0;
+  const usedChildren=kids.reduce((s,c)=>s+usedTotal(c),0);
+  const used=usedSelf+usedChildren;
+  const bpct=budget>0?used/budget*100:0;
+  const childWord=childLabel||'แผนย่อย';
+  const bLogs=usedSelf>0?[{date:'14/06/2569',amount:usedSelf,by:node.owner,note:'บันทึกการใช้งบประมาณ'}]:[]; // mock — แปลงยอดบันทึกเองเป็นรายการ
+  return (
+    <div style={{animation:'fadeIn .15s ease'}}>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:14,flexWrap:'wrap'}}>
+        <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:6,color:'#5a6473',fontSize:13,fontWeight:600,padding:'7px 13px',borderRadius:8,background:'#fff',border:'1px solid #e3e7ec',cursor:'pointer'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ย้อนกลับ
+        </button>
+        <span style={{fontSize:12,fontWeight:700,color:'#5a6473',background:'#e9edf2',borderRadius:6,padding:'4px 11px'}}>{LEVEL_NAME[level]||'แผนธุรกิจ'}</span>
+        <div style={{flex:1}}></div>
+        <div style={{display:'flex',alignItems:'center',gap:9}}>
+          <span style={{fontSize:12.5,color:'#8a93a3'}}>สถานะล่าสุด</span>
+          <StatusDot s={node.status} size={18}/>
+          <span style={{fontSize:13,fontWeight:700,color:node.status?dotC(node.status):'#9aa3af'}}>{STLABEL[node.status]||STLABEL['']}</span>
+        </div>
+      </div>
+
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'20px 24px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',marginBottom:14}}>
+        <div style={{fontWeight:700,fontSize:16,color:'#1a2332',marginBottom:14,lineHeight:1.45}}>{node.title}</div>
+        <div style={{display:'flex',alignItems:'center',gap:28,flexWrap:'wrap'}}>
+          <div style={{display:'flex',alignItems:'center',gap:9}}>
+            <Avatar name={node.owner} size={28}/>
+            <div>
+              <div style={{fontSize:11,color:'#9aa3af',marginBottom:1}}>ผู้รับผิดชอบ</div>
+              <div style={{fontSize:13,fontWeight:600,color:'#1a2332'}}>{node.owner}</div>
+            </div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:9}}>
+            <div style={{width:28,height:28,borderRadius:'50%',background:'#eef0f3',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+              <i className="bi bi-calendar-event" style={{fontSize:13,color:'#8a93a3'}}></i>
+            </div>
+            <div>
+              <div style={{fontSize:11,color:'#9aa3af',marginBottom:1}}>ช่วงเวลาดำเนินการ</div>
+              <div style={{fontSize:13,fontWeight:600,color:'#1a2332'}}>{node.period}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,alignItems:'start'}}>
+        <div style={{display:'flex',flexDirection:'column',gap:14}}>
+        {/* สถานะของแผนธุรกิจ — โครงเดียวกับหน้าแผนธุรกิจที่รับผิดชอบ */}
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          <div style={{fontWeight:700,fontSize:14,marginBottom:14}}>สถานะของแผนธุรกิจ</div>
+          <div style={{background:node.status?(STBG[node.status]||'#f8f9fa'):'#f8f9fa',borderRadius:11,padding:'14px 16px'}}>
+            {node.status?(
+              <React.Fragment>
+                <div style={{marginBottom:12}}>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'1px solid #e3e7ec',borderRadius:99,padding:'5px 13px',fontSize:12.5,fontWeight:700,color:dotC(node.status)}}>
+                    <StatusDot s={node.status} size={10}/>{STLABEL[node.status]}
+                  </span>
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:10}}>
+                  <Avatar name={node.owner} size={28}/>
+                  <div>
+                    <div style={{fontSize:12.5,fontWeight:600}}>ผู้รับผิดชอบ : {node.owner}</div>
+                    <div style={{fontSize:11.5,color:'#9aa3af'}}>รายละเอียดการรายงานผลอยู่ในหน้าแผนธุรกิจที่รับผิดชอบของผู้รับผิดชอบ</div>
+                  </div>
+                </div>
+              </React.Fragment>
+            ):(
+              <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'12px 0'}}>ยังไม่มีการรายงานสถานะ</div>
+            )}
+          </div>
+        </div>
+
+        {/* งบประมาณ — ที่ตั้งไว้ vs ใช้ไป (ใช้ไป = รวมจากแผนใต้ 1 ระดับ + บันทึกเองในแผนนี้) */}
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+            <i className="bi bi-wallet2" style={{fontSize:15,color:'#5a6473'}}></i>
+            <span style={{fontWeight:700,fontSize:14}}>งบประมาณ</span>
+          </div>
+          {budget>0?(
+            <React.Fragment>
+              <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:10,flexWrap:'wrap'}}>
+                <span style={{fontSize:12.5,color:'#8a93a3'}}>ใช้ไป</span>
+                <span style={{fontSize:26,fontWeight:700,color:bpct>100?RED:primary}}>{used.toLocaleString()}</span>
+                <span style={{fontSize:14,color:'#8a93a3'}}>จาก {budget.toLocaleString()} บาท</span>
+                <div style={{flex:1}}></div>
+                <span style={{fontSize:18,fontWeight:700,color:bpct>100?RED:primary}}>{bpct.toFixed(1)}%</span>
+              </div>
+              <div style={{display:'flex',height:10,background:'#eef0f3',borderRadius:99,overflow:'hidden',marginBottom:12}}>
+                {hasChildren&&usedChildren>0&&<div style={{width:Math.min(100,usedChildren/budget*100)+'%',background:primary}} title={'รวมจาก'+childWord+' '+usedChildren.toLocaleString()+' บาท'}></div>}
+                {usedSelf>0&&<div style={{width:Math.min(100,usedSelf/budget*100)+'%',background:'#3b6fd4'}} title={'บันทึกเอง '+usedSelf.toLocaleString()+' บาท'}></div>}
+              </div>
+              <div style={{display:'flex',flexDirection:'column',gap:6,fontSize:12.5,color:'#3c4350'}}>
+                {hasChildren&&(
+                <div style={{display:'flex',alignItems:'center',gap:7}}>
+                  <span style={{width:10,height:10,borderRadius:3,background:primary,flex:'none'}}></span>
+                  <span style={{flex:1}}>รวมจาก{childWord}ใต้แผนนี้ (1 ระดับ)</span>
+                  <span style={{fontWeight:700}}>{usedChildren.toLocaleString()} บาท</span>
+                </div>
+                )}
+                <div style={{display:'flex',alignItems:'center',gap:7}}>
+                  <span style={{width:10,height:10,borderRadius:3,background:'#3b6fd4',flex:'none'}}></span>
+                  <span style={{flex:1}}>บันทึกเองในแผนนี้</span>
+                  <span style={{fontWeight:700}}>{usedSelf.toLocaleString()} บาท</span>
+                </div>
+              </div>
+            </React.Fragment>
+          ):(
+            <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'18px 0'}}>ไม่ได้ตั้งงบประมาณ</div>
+          )}
+        </div>
+
+        {/* ความก้าวหน้า | รายการใช้งบประมาณ | แจ้งเตือน — บล็อกแท็บ (ให้เหมือนหน้าแผนธุรกิจที่รับผิดชอบ) */}
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:0,marginBottom:14,flexWrap:'wrap'}}>
+            {['ความก้าวหน้า','รายการใช้งบประมาณ','แจ้งเตือน'].map((t,i)=>(
+              <button key={i} onClick={()=>setTab(i)} style={{padding:'7px 14px',fontWeight:tab===i?700:400,color:tab===i?primary:'#8a93a3',fontSize:13,background:'none',border:'none',borderBottom:'2px solid '+(tab===i?primary:'transparent'),cursor:'pointer',display:'flex',alignItems:'center',gap:5}}>
+                <span style={{minWidth:18,height:18,borderRadius:99,background:tab===i?primarySoft:'#f4f5f7',color:tab===i?primary:'#9aa3af',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{i===1?bLogs.length:0}</span>
+                {t}
+              </button>
+            ))}
+          </div>
+          {tab===0 ? (
+            <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'22px 14px',lineHeight:1.7}}>รายละเอียดการรายงานความก้าวหน้าอยู่ในหน้าแผนธุรกิจที่รับผิดชอบของผู้รับผิดชอบ</div>
+          ) : tab===1 ? (
+            budget<=0 ? (
+              <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'22px 0'}}>ไม่ได้ตั้งงบประมาณ</div>
+            ) : bLogs.length===0 ? (
+              <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'22px 0'}}>ยังไม่มีการบันทึกการใช้งบประมาณ</div>
+            ) : (
+              <div>
+                {bLogs.map((l,i)=>(
+                  <div key={i} style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 2px',borderBottom:i<bLogs.length-1?'1px solid #f4f6f8':'none'}}>
+                    <div style={{width:30,height:30,borderRadius:'50%',background:'#eaf0fb',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+                      <i className="bi bi-wallet2" style={{fontSize:14,color:'#3b6fd4'}}></i>
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:12.5,color:'#1a2332',fontWeight:600,lineHeight:1.4,marginBottom:2}}>{l.note}</div>
+                      <div style={{fontSize:11.5,color:'#9aa3af'}}>{l.date} · {l.by}</div>
+                    </div>
+                    <span style={{fontSize:13,fontWeight:700,color:'#3b6fd4',flex:'none'}}>{l.amount.toLocaleString()} บาท</span>
+                  </div>
+                ))}
+              </div>
+            )
+          ) : (
+            <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'22px 0'}}>ไม่มีการแจ้งเตือน</div>
+          )}
+        </div>
+        </div>
+
+        <div style={{display:'flex',flexDirection:'column',gap:14}}>
+        {/* ตัวชี้วัด (KPI) — คอลัมน์ขวา (ตำแหน่งเดียวกันทุกหน้า) */}
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+            <i className="bi bi-bullseye" style={{fontSize:15,color:'#5a6473'}}></i>
+            <span style={{fontWeight:700,fontSize:14}}>ตัวชี้วัด (KPI)</span>
+          </div>
+          {showQty?(
+            <React.Fragment>
+              <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:10}}>
+                <span style={{fontSize:26,fontWeight:700,color:primary}}>{node.achieved.toLocaleString()}</span>
+                <span style={{fontSize:14,color:'#8a93a3'}}>/ {node.target.toLocaleString()}{node.unit?' '+node.unit:''}</span>
+              </div>
+              <div style={{height:10,background:'#e3f3f0',borderRadius:99,overflow:'hidden',marginBottom:7}}>
+                <div style={{width:pct+'%',height:'100%',background:primary,borderRadius:99}}></div>
+              </div>
+              <div style={{fontSize:12,color:'#9aa3af'}}>จำนวนที่ทำได้สะสมคิดเป็น {pct.toFixed(1)}% ของเป้าหมาย</div>
+            </React.Fragment>
+          ):(
+            <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'18px 0'}}>แผนธุรกิจนี้ไม่มีตัวชี้วัด</div>
+          )}
+        </div>
+
+        {kids.length>0&&(
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
+              <i className="bi bi-diagram-3" style={{fontSize:16,color:'#8a93a3'}}></i>
+              <span style={{fontWeight:700,fontSize:14}}>{childLabel}ภายใต้แผนนี้ ({kids.length})</span>
+              <div style={{flex:1}}></div>
+              <button onClick={onDrill} style={{display:'inline-flex',alignItems:'center',gap:5,background:primarySoft,color:primary,border:'none',borderRadius:8,padding:'6px 12px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+                เปิดรายการ{childLabel}<i className="bi bi-chevron-right" style={{fontSize:10}}></i>
+              </button>
+            </div>
+            <div>
+              {kids.map((c,i)=>(
+                <div key={c.id} onClick={()=>onOpenChild(c)} style={{display:'flex',alignItems:'center',gap:11,padding:'11px 2px',borderTop:i?'1px solid #f4f6f8':'none',cursor:'pointer'}}>
+                  <StatusDot s={c.status} size={13}/>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:13,fontWeight:600,color:'#1a2332',lineHeight:1.4,marginBottom:2}}>{c.title}</div>
+                    <div style={{fontSize:11.5,color:'#9aa3af'}}>{c.owner}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function ReportContent(){
   const [round,setRound]=useState(ROUNDS[0].id);
   const [roundOpen,setRoundOpen]=useState(false);
   const [query,setQuery]=useState('');
   const [pathIds,setPathIds]=useState([]); // drill path: [missionId, goalId, strategyId]
+  const [viewStack,setViewStack]=useState([]); // เปิดดู "ข้อมูลและสถานะ" ของแผนรายการเดียว (ซ้อนกันได้เมื่อคลิกแผนลูกจากหน้ารายละเอียด)
 
   const missions=DATA_BY_ROUND[round];
   const cmdData=CMD_SUMMARY_BY_ROUND[round];
@@ -251,13 +468,14 @@ function ReportContent(){
   }
   const atRoot=chain.length===0;
   const childLabel=LEVEL_CHILD_LABEL[chain.length]||null;
+  const stackTop=viewStack.length?viewStack[viewStack.length-1]:null;
 
   const visible=useMemo(()=>{
     if(!q) return levelNodes;
     return levelNodes.filter(n=>flattenTree([n]).some(x=>x.title.toLowerCase().includes(q)||x.owner.toLowerCase().includes(q)));
   },[levelNodes,q]);
 
-  const goTo=(depth)=>setPathIds(pathIds.slice(0,depth));
+  const goTo=(depth)=>{setPathIds(pathIds.slice(0,depth));setViewStack([]);};
 
   return (
     <div style={{flex:1,padding:'24px 28px',overflowY:'auto',height:'calc(100vh - 58px)'}}>
@@ -265,7 +483,7 @@ function ReportContent(){
       {/* header */}
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:atRoot?20:12,flexWrap:'wrap'}}>
         <i className="bi bi-diagram-3" style={{fontSize:20,color:primary}}></i>
-        <span style={{fontWeight:700,fontSize:16}}>รายงานแผนธุรกิจทั้งหมดขององค์กร</span>
+        <span style={{fontWeight:700,fontSize:16}}>แผนธุรกิจทั้งหมดขององค์กร</span>
         <div style={{flex:1}}></div>
         <div style={{display:'flex',alignItems:'center',gap:8,background:'#fff',border:'1px solid #e3e7ec',borderRadius:9,padding:'8px 12px',width:280}}>
           <i className="bi bi-search" style={{fontSize:14,color:'#9aa3af'}}></i>
@@ -279,7 +497,7 @@ function ReportContent(){
           {roundOpen&&(
             <div style={{position:'absolute',right:0,top:58,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:240,overflow:'hidden'}}>
               {ROUNDS.map(r=>(
-                <div key={r.id} onClick={()=>{setRound(r.id);setRoundOpen(false);}} style={{padding:'11px 18px',fontSize:13,cursor:'pointer',fontWeight:r.id===round?700:400,color:r.id===round?primary:'#1f2733',background:r.id===round?primarySoft:'#fff'}}>
+                <div key={r.id} onClick={()=>{setRound(r.id);setRoundOpen(false);setViewStack([]);}} style={{padding:'11px 18px',fontSize:13,cursor:'pointer',fontWeight:r.id===round?700:400,color:r.id===round?primary:'#1f2733',background:r.id===round?primarySoft:'#fff'}}>
                   {r.label}
                 </div>
               ))}
@@ -288,29 +506,53 @@ function ReportContent(){
         </div>
       </div>
 
-      {/* breadcrumb — path to view the next level down (เป้าหมาย → กลยุทธ์ → แผนงาน) */}
-      {!atRoot&&(
+      {/* breadcrumb — เส้นทาง drill + รายการที่กำลังเปิดดูข้อมูลและสถานะ */}
+      {(!atRoot||viewStack.length>0)&&(
         <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap',fontSize:12.5,marginBottom:16}}>
           <span onClick={()=>goTo(0)} style={{color:primary,fontWeight:600,cursor:'pointer'}}>แผนธุรกิจทั้งหมด</span>
-          {chain.map((n,i)=>(
-            <React.Fragment key={n.id}>
-              <i className="bi bi-chevron-right" style={{fontSize:10,color:'#c4ccd4'}}></i>
-              <span onClick={()=>goTo(i+1)} style={{color:i===chain.length-1?'#1a2332':primary,fontWeight:i===chain.length-1?700:600,cursor:i===chain.length-1?'default':'pointer'}}>{n.title}</span>
-            </React.Fragment>
-          ))}
+          {chain.map((n,i)=>{
+            const isLast=i===chain.length-1&&viewStack.length===0;
+            return (
+              <React.Fragment key={n.id}>
+                <i className="bi bi-chevron-right" style={{fontSize:10,color:'#c4ccd4'}}></i>
+                <span onClick={()=>!isLast&&goTo(i+1)} style={{color:isLast?'#1a2332':primary,fontWeight:isLast?700:600,cursor:isLast?'default':'pointer'}}>{n.title}</span>
+              </React.Fragment>
+            );
+          })}
+          {viewStack.map((n,i)=>{
+            const isLast=i===viewStack.length-1;
+            return (
+              <React.Fragment key={'v'+n.id}>
+                <i className="bi bi-chevron-right" style={{fontSize:10,color:'#c4ccd4'}}></i>
+                <span onClick={()=>!isLast&&setViewStack(viewStack.slice(0,i+1))} style={{color:isLast?'#1a2332':primary,fontWeight:isLast?700:600,cursor:isLast?'default':'pointer'}}>{n.title}</span>
+              </React.Fragment>
+            );
+          })}
         </div>
       )}
 
-      {/* plan cards — current hierarchy level only; click a card to view the next level down */}
-      <div style={{display:'flex',flexDirection:'column',gap:12}}>
-        {visible.length===0?(
-          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'40px 20px',textAlign:'center',color:'#b3bac4',fontSize:13}}>ไม่พบแผนธุรกิจที่ตรงกับคำค้นหา</div>
-        ):visible.map(n=>(
-          <PlanCard key={n.id} node={n} childLabel={childLabel} onClick={()=>setPathIds([...pathIds,n.id])}/>
-        ))}
-      </div>
-
-      {atRoot&&<CmdSummarySection data={cmdData}/>}
+      {stackTop?(
+        /* หน้าข้อมูลและสถานะของแผนรายการเดียว */
+        <PlanDetail
+          node={stackTop}
+          level={chain.length+viewStack.length-1}
+          onBack={()=>setViewStack(viewStack.slice(0,-1))}
+          onOpenChild={(c)=>setViewStack([...viewStack,c])}
+          onDrill={()=>{setPathIds([...pathIds,...viewStack.map(n=>n.id)]);setViewStack([]);}}
+        />
+      ):(
+        <React.Fragment>
+          {/* plan cards — คลิกการ์ดเพื่อดูข้อมูลและสถานะ, ปุ่ม "ดู...รายการ" เพื่อ drill ลงชั้นถัดไป */}
+          <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            {visible.length===0?(
+              <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'40px 20px',textAlign:'center',color:'#b3bac4',fontSize:13}}>ไม่พบแผนธุรกิจที่ตรงกับคำค้นหา</div>
+            ):visible.map(n=>(
+              <PlanCard key={n.id} node={n} childLabel={childLabel} onOpen={()=>setViewStack([n])} onDrill={()=>setPathIds([...pathIds,n.id])}/>
+            ))}
+          </div>
+          {atRoot&&<CmdSummarySection data={cmdData}/>}
+        </React.Fragment>
+      )}
     </div>
   );
 }
