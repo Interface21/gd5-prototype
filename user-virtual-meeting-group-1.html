@@ -112,8 +112,17 @@ let _uid=100;
 const uid=()=>'x'+(++_uid);
 const sub=(title,done,date,days,daysType,inContract,op)=>({id:uid(),title,done:!!done,date:date||'',days:days||0,daysType:daysType||'left',inContract:inContract!==false,op:op||null});
 
+/* ค่าใช้จ่ายจริง (บันทึกโดยผู้รับผิดชอบต่อหัวข้อ TODO) — dd/mm/yyyy ตามรูปแบบวันที่ของไฟล์นี้ */
+const expense=(date,amount,note)=>({id:uid(),date,amount,note});
+const isoToDisp=(iso)=>{ if(!iso)return ''; const [y,m,d]=iso.split('-'); return d+'/'+m+'/'+y; };
+const dispToIso=(disp)=>{ if(!disp)return ''; const [d,m,y]=disp.split('/'); return y+'-'+m+'-'+d; };
+const TODAY_ISO='2026-07-10';
+
 const TD_SEED=[
-  {id:uid(),title:'วิทยาลัยเทคนิคอยุธยา',inContract:true,subs:[
+  {id:uid(),title:'วิทยาลัยเทคนิคอยุธยา',inContract:true,expenses:[
+    expense('28/06/2026',8500,'ค่าเดินทางประสานงานทะเบียนวิทยาลัย'),
+    expense('12/06/2026',15000,'ค่าจัดพิมพ์เอกสารและแบบฟอร์ม ศธ.02'),
+  ],subs:[
     sub('ติดตามการกำหนดช่วงระยะเวลาการอัพโหลดแผนการจัดการเรียนรู้ และบันทึกหลังการสอน(เฉพาะภาคเรียนที่ 1 และ 2 )',true,'10/05/2026',0,'left',true,null),
     sub('ตรวจสอบ/ปรับปรุง/แก้ไขข้อมูลแผนการเรียน ใน ศธ.02ออนไลน์ (กรณีวิทยาลัยปรับปรุงแผนการเรียน)',true,'12/05/2026',0,'left',true,null),
     sub('นำวิชาในแผนการเรียนเข้าตารางเรียน และกำหนดครูผู้สอน ในระบบ ศธ.02 ออนไลน์',true,'15/05/2026',0,'left',true,null),
@@ -228,6 +237,105 @@ function TodoModal({data,onClose,onSave,onDelete}){
   );
 }
 
+/* ค่าใช้จ่ายจริงของหัวข้อ TODO หนึ่งกลุ่ม — ดู/เพิ่ม/แก้ไข/ลบ (วันที่จ่าย + จ่ายค่าอะไร + จำนวนเงิน) */
+function ExpenseModal({topic,budget,onClose,onAdd,onEdit,onDelete}){
+  const [form,setForm]=React.useState(null); // {id?,date(iso),amount,note}
+  const [confirmDelId,setConfirmDelId]=React.useState(null);
+  const list=topic.expenses||[];
+  const total=list.reduce((s,e)=>s+e.amount,0);
+  const over=budget>0&&total>budget;
+  const openAdd=()=>{setForm({date:TODAY_ISO,amount:'',note:''});setConfirmDelId(null);};
+  const openEdit=(e)=>{setForm({id:e.id,date:dispToIso(e.date),amount:String(e.amount),note:e.note});setConfirmDelId(null);};
+  const amt=form?parseFloat(String(form.amount||'').replace(/,/g,'')):0;
+  const canSave=!!form&&!!form.date&&!isNaN(amt)&&amt>0&&form.note.trim()!=='';
+  const submit=()=>{
+    if(!canSave)return;
+    const payload={date:isoToDisp(form.date),amount:amt,note:form.note.trim()};
+    if(form.id){onEdit(form.id,payload);}else{onAdd(payload);}
+    setForm(null);
+  };
+  const inp={width:'100%',border:'1px solid #dde1e8',borderRadius:9,padding:'9px 11px',fontSize:13,fontFamily:'inherit',outline:'none',color:'#1f2733',boxSizing:'border-box',background:'#fff'};
+  const btn=(bg,color,border)=>({height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,background:bg,color,border:border||'none',borderRadius:11,padding:'0 16px',fontSize:12.5,fontWeight:700,cursor:'pointer'});
+  return (
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'flex-start',justifyContent:'center',zIndex:95,padding:'40px 16px',overflowY:'auto'}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,width:560,maxWidth:'100%',boxShadow:'0 24px 64px rgba(16,24,40,.28)',animation:'fadeIn .15s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:11,padding:'18px 22px',borderBottom:'1px solid #f0f2f5'}}>
+          <div style={{width:36,height:36,borderRadius:9,background:'#eaf1fe',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-wallet2" style={{fontSize:17,color:'#3b6fd4'}}></i></div>
+          <div style={{minWidth:0}}>
+            <div style={{fontWeight:700,fontSize:15}}>ค่าใช้จ่าย</div>
+            <div style={{fontSize:12,color:'#9aa3af',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{topic.title}</div>
+          </div>
+          <div style={{flex:1}}></div>
+          <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',border:'none',cursor:'pointer'}}><i className="bi bi-x-lg" style={{fontSize:14,color:'#5a6473'}}></i></button>
+        </div>
+        <div style={{padding:'16px 22px'}}>
+          <div style={{display:'flex',alignItems:'center',gap:9,background:over?'#fdeaea':'#f7f9fb',border:'1px solid '+(over?'#f6d3d0':'#eceef2'),borderRadius:11,padding:'11px 14px',marginBottom:16,flexWrap:'wrap'}}>
+            <span style={{fontSize:12.5,color:'#5a6473'}}>รวมจ่ายแล้ว</span>
+            <span style={{fontSize:17,fontWeight:700,color:over?'#d83a3a':'#3b6fd4'}}>{total.toLocaleString()}</span>
+            <span style={{fontSize:12.5,color:'#9aa3af'}}>{budget>0?('จาก '+budget.toLocaleString()+' บาท'):'บาท'} · {list.length} รายการ</span>
+          </div>
+
+          {list.length===0 && !form && (
+            <div style={{textAlign:'center',padding:'22px 0',color:'#b3bac4',fontSize:13}}>ยังไม่มีการบันทึกค่าใช้จ่ายในหัวข้อนี้</div>
+          )}
+
+          {list.map((e,i)=>(
+            confirmDelId===e.id ? (
+              <div key={e.id} style={{display:'flex',alignItems:'center',gap:8,background:'#fdeaea',borderRadius:10,padding:'10px 12px',marginBottom:8}}>
+                <span style={{fontSize:12.5,color:'#d83a3a',fontWeight:600,flex:1}}>ลบรายการนี้?</span>
+                <button onClick={()=>{onDelete(e.id);setConfirmDelId(null);}} style={btn('#d83a3a','#fff')}><i className="bi bi-check-lg" style={{fontSize:13}}></i>ยืนยัน</button>
+                <button onClick={()=>setConfirmDelId(null)} style={btn('#fff','#5a6473','1px solid #e3e7ec')}><i className="bi bi-x-lg" style={{fontSize:12}}></i>ยกเลิก</button>
+              </div>
+            ) : (form&&form.id===e.id) ? null : (
+              <div key={e.id} style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 2px',borderBottom:i<list.length-1?'1px solid #f4f6f8':'none'}}>
+                <div style={{width:30,height:30,borderRadius:'50%',background:'#eaf0fb',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-cash-coin" style={{fontSize:14,color:'#3b6fd4'}}></i></div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:12.5,color:'#9aa3af'}}>{e.date}</div>
+                  <div style={{fontSize:13,color:'#1a2332',fontWeight:600,marginTop:2,lineHeight:1.4}}>{e.note}</div>
+                </div>
+                <span style={{fontSize:13.5,fontWeight:700,color:'#3b6fd4',flex:'none',whiteSpace:'nowrap'}}>{e.amount.toLocaleString()} บาท</span>
+                <div style={{display:'flex',gap:5,flex:'none'}}>
+                  <button onClick={()=>openEdit(e)} title="แก้ไข" style={{width:26,height:26,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-pencil" style={{fontSize:12,color:'#5a6473'}}></i></button>
+                  <button onClick={()=>setConfirmDelId(e.id)} title="ลบ" style={{width:26,height:26,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-trash" style={{fontSize:12,color:'#d83a3a'}}></i></button>
+                </div>
+              </div>
+            )
+          ))}
+
+          {form && (
+            <div style={{border:'1px solid #cfe0fb',background:'#f7faff',borderRadius:12,padding:'14px 16px',marginTop:list.length?12:0}}>
+              <div style={{fontWeight:700,fontSize:13,color:'#1a2332',marginBottom:12}}>{form.id?'แก้ไขรายการค่าใช้จ่าย':'เพิ่มรายการค่าใช้จ่าย'}</div>
+              <div style={{display:'flex',gap:12,flexWrap:'wrap',marginBottom:10}}>
+                <div style={{width:160}}>
+                  <div style={{fontSize:12,color:'#5a6473',fontWeight:600,marginBottom:6}}>วันที่จ่าย</div>
+                  <input type="date" value={form.date} onChange={ev=>setForm(f=>({...f,date:ev.target.value}))} style={inp}/>
+                </div>
+                <div style={{flex:'1 1 160px'}}>
+                  <div style={{fontSize:12,color:'#5a6473',fontWeight:600,marginBottom:6}}>จำนวนเงิน (บาท)</div>
+                  <input value={form.amount} onChange={ev=>setForm(f=>({...f,amount:ev.target.value}))} placeholder="เช่น 5,000" style={inp}/>
+                </div>
+              </div>
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:12,color:'#5a6473',fontWeight:600,marginBottom:6}}>จ่ายค่าอะไร</div>
+                <input value={form.note} onChange={ev=>setForm(f=>({...f,note:ev.target.value}))} placeholder="เช่น ค่าจัดพิมพ์เอกสาร" style={inp}/>
+              </div>
+              <div style={{display:'flex',justifyContent:'flex-end',gap:9}}>
+                <button onClick={()=>setForm(null)} style={btn('#fff','#5a6473','1px solid #e3e7ec')}><i className="bi bi-x-lg" style={{fontSize:12}}></i>ยกเลิก</button>
+                {form.id && <button onClick={()=>{onDelete(form.id);setForm(null);}} style={btn('#fdeaea','#d83a3a')}><i className="bi bi-trash" style={{fontSize:12}}></i>ลบ</button>}
+                <button onClick={submit} disabled={!canSave} style={{...btn(canSave?'#3b6fd4':'#c7ccd4','#fff'),cursor:canSave?'pointer':'default'}}><i className="bi bi-check-lg" style={{fontSize:13}}></i>บันทึก</button>
+              </div>
+            </div>
+          )}
+
+          {!form && (
+            <button onClick={openAdd} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:7,width:'100%',marginTop:list.length?14:0,height:40,border:'1.5px dashed #cdd4de',borderRadius:11,background:'#fafbfc',color:'#3b6fd4',fontSize:13.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-plus-lg" style={{fontSize:16}}></i>เพิ่มรายการค่าใช้จ่าย</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GanttView({topics}){
   const [filter,setFilter]=React.useState('all'); // 'all' | topic index
   const DAY=86400000;
@@ -310,17 +418,74 @@ function GanttView({topics}){
   );
 }
 
+/* ═══════════ แผนธุรกิจ (พันธกิจ→เป้าหมาย→กลยุทธ์→แผนงาน) — ใช้กำหนดว่า VM นี้สนับสนุนแผนธุรกิจไหน ═══════════ */
+const BP_LEVELS=[
+  {key:'mission',name:'พันธกิจ',tier:1,accent:'#15a08f',icon:'bi-flag-fill'},
+  {key:'goal',name:'เป้าหมาย',tier:2,accent:'#3b6fd4',icon:'bi-bullseye'},
+  {key:'strategy',name:'กลยุทธ์',tier:3,accent:'#7338d6',icon:'bi-signpost-split-fill'},
+  {key:'plan',name:'แผนงาน',tier:4,accent:'#e0468c',icon:'bi-list-check'},
+];
+const BP_TIERKEY={1:'mission',2:'goal',3:'strategy',4:'plan'};
+const BP_LV=(k)=>BP_LEVELS.find(l=>l.key===k);
+const BP_DATA={
+  mission:[
+    {id:'m1',no:'1',title:'EDR',budget:2500000},
+    {id:'m2',no:'2',title:'GiveD5',budget:1800000},
+    {id:'m3',no:'3',title:'ครุภัณฑ์',budget:3200000},
+    {id:'m4',no:'4',title:'ใช้เทคโนโลยีดิจิทัล GD5 และ AI',budget:1200000},
+  ],
+  goal:[
+    {id:'g1',pid:'m1',no:'1.1',title:'รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ',budget:300000},
+    {id:'g2',pid:'m1',no:'1.2',title:'ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปีการศึกษา 2568',budget:600000},
+    {id:'g3',pid:'m1',no:'1.3',title:'เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านการอาชีวศึกษา',budget:800000},
+    {id:'g4',pid:'m1',no:'1.4',title:'นำ AI มาใช้ร่วม (Synergy) กับ ระบบ EDR',budget:400000},
+  ],
+  strategy:[
+    {id:'s1',pid:'g2',no:'1.2.1',title:'จัดกิจกรรมการประกวด MOU ระดับภาค',budget:250000},
+    {id:'s2',pid:'g2',no:'1.2.2',title:'สนับสนุนทีมงานประกวด MOU วิทยาลัย',budget:200000},
+    {id:'s3',pid:'g3',no:'1.3.1',title:'ขยายการลงทะเบียนนักเรียนในระบบ EDR',budget:180000},
+    {id:'s4',pid:'g3',no:'1.3.2',title:'ลดอัตราการออกกลางคัน',budget:150000},
+  ],
+  plan:[
+    {id:'p1',pid:'s1',no:'1.2.11',title:'จัดกิจกรรมประกวด MOU ระดับภาค',budget:60000},
+    {id:'p2',pid:'s2',no:'1.2.21',title:'จัดเตรียมทีมงานและวัสดุการประกวด',budget:55000},
+    {id:'p3',pid:'s3',no:'1.3.11',title:'จัดทำ Dashboard รายงานผลการดำเนินงาน',budget:90000},
+    {id:'p4',pid:'s4',no:'1.3.21',title:'จัดทำระบบเฝ้าระวังการออกกลางคัน',budget:70000},
+  ],
+};
+const bpNode=(level,id)=>(BP_DATA[level]||[]).find(x=>x.id===id);
+const bpChildrenOf=(levelKey,pid)=>(BP_DATA[levelKey]||[]).filter(x=>x.pid===pid);
+function bpChain(level,id){
+  let chain={},tier=BP_LV(level).tier,cur=bpNode(level,id);
+  if(!cur)return chain;
+  chain[level]=id;
+  while(tier>1 && cur){
+    tier--;
+    const pk=BP_TIERKEY[tier];
+    const parentId=cur.pid;
+    cur=bpNode(pk,parentId);
+    if(cur)chain[pk]=parentId;
+  }
+  return chain;
+}
+function bpBreadcrumb(level,id){
+  const chain=bpChain(level,id),tier=BP_LV(level).tier,arr=[];
+  for(let t=1;t<=tier;t++){const k=BP_TIERKEY[t];if(chain[k])arr.push({level:k,id:chain[k],it:bpNode(k,chain[k])});}
+  return arr;
+}
+const bpLabel=(level,id)=>{const it=bpNode(level,id);return it?(BP_LV(level).name+' '+it.no+': '+it.title):'';};
+
 const TODO_TEMPLATES=[
-  {id:'tp10',title:'โปรเจค ติดตามงานระบบ ศธ.02 และ EDR',count:15,topics:['ติดตามการกำหนดช่วงระยะเวลาการอัพโหลดแผนการจัดการเรียนรู้','ตรวจสอบ/ปรับปรุง/แก้ไขข้อมูลแผนการเรียน ใน ศธ.02ออนไลน์','นำวิชาในแผนการเรียนเข้าตารางเรียน และกำหนดครูผู้สอน','ติดตามการกำหนดช่วงระยะเวลาการประเมินครูผู้สอน','ติดตามการลงทะเบียนเรียน (เรียนซ้ำ/เรียนซ่อม)','Sync ข้อมูลนักศึกษาเพื่อปรับปรุงข้อมูลให้ตรงกันทั้ง 2 ระบบ','ลงทะเบียนเรียนบนระบบ ศธ.02 (กลุ่มเรียนปกติ)','ลงทะเบียนเรียนบนระบบ ศธ.02 (สำหรับนักศึกษาเรียนซ้ำ/เรียนซ่อม)','ติดตามการกำหนดช่วงระยะเวลาการประเมินครูที่ปรึกษา','ติดตามการกำหนดแบบสำรวจความเสี่ยงระหว่างภาคเรียน','ติดตามการบันทึกรายการค่าใช้จ่ายและค่าลงทะเบียนเรียน','ติดตามการกำหนดวันที่ชำระเงินค่าลงทะเบียนเรียน','ติดตามการรายงาน GPA&GPAX (5 ภาคเรียน)','ติดตามการรายงาน GPA&GPAX (จบพร้อมรุ่นและไม่พร้อมรุ่น)','ติดตามการรายงานข้อมูลนักเรียน นักศึกษา']},
-  {id:'tp1',title:'โปรเจค ครุภัณฑ์ชุดเครื่องไฟฟ้า',count:6,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้าเข้าคลัง','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp2',title:'โปรเจค ครุภัณฑ์ชุดเครื่องครัวร้อน',count:9,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่นสินค้าและยี่ห้อ','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp3',title:'โปรเจค ห้องเรียน Smart Classroom',count:35,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ออกแบบ Layout ห้องเรียน','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','สำรวจหน้างาน','จัดซื้ออุปกรณ์ Display','จัดซื้ออุปกรณ์คอมพิวเตอร์','จัดซื้ออุปกรณ์เครือข่าย','จัดซื้อระบบเสียง','งานไฟฟ้าและสายสัญญาณ','งานติดตั้ง Display','งานติดตั้งคอมพิวเตอร์','งานติดตั้งเครือข่าย','งานติดตั้งระบบเสียง','ทดสอบระบบรวม','ทำเอกสารตรวจรับ','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp4',title:'โปรเจค ครุภัณฑ์คอมพิวเตอร์และอุปกรณ์ต่อพ่วง',count:8,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ทดสอบและตรวจรับครุภัณฑ์','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp5',title:'โปรเจค ระบบกล้องวงจรปิด (CCTV)',count:7,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบ Layout','ขอใบเสนอราคาจาก Supplier/Sub','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบกล้อง CCTV','ทดสอบระบบและตรวจรับงาน','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp6',title:'โปรเจค ครุภัณฑ์เครื่องปรับอากาศ',count:5,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งและทดสอบระบบ','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp7',title:'โปรเจค ระบบโซล่าเซลล์',count:8,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบระบบ','ขอใบเสนอราคาจาก Supplier/Sub','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบโซล่าเซลล์','ทดสอบและตรวจรับระบบ','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp8',title:'โปรเจค งานปรับปรุงอาคารและสิ่งก่อสร้าง',count:12,topics:['แจ้งทำสัญญา','สำรวจหน้างาน','ออกแบบและทำ BOQ','ขอใบเสนอราคาจาก Sub Contractor','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','งานโครงสร้าง/ผนัง/พื้น','งานระบบไฟฟ้า','งานระบบประปาและสุขาภิบาล','งานตกแต่งภายใน','ตรวจรับงานและทำเอกสาร','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp9',title:'โปรเจค ครุภัณฑ์การแพทย์และวิทยาศาสตร์',count:10,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่น/ยี่ห้อ (ถ้ามี)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ตรวจสอบและ Calibrate ครุภัณฑ์','อบรมการใช้งาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp10',title:'โปรเจค ติดตามงานระบบ ศธ.02 และ EDR',bpId:'s3',count:15,topics:['ติดตามการกำหนดช่วงระยะเวลาการอัพโหลดแผนการจัดการเรียนรู้','ตรวจสอบ/ปรับปรุง/แก้ไขข้อมูลแผนการเรียน ใน ศธ.02ออนไลน์','นำวิชาในแผนการเรียนเข้าตารางเรียน และกำหนดครูผู้สอน','ติดตามการกำหนดช่วงระยะเวลาการประเมินครูผู้สอน','ติดตามการลงทะเบียนเรียน (เรียนซ้ำ/เรียนซ่อม)','Sync ข้อมูลนักศึกษาเพื่อปรับปรุงข้อมูลให้ตรงกันทั้ง 2 ระบบ','ลงทะเบียนเรียนบนระบบ ศธ.02 (กลุ่มเรียนปกติ)','ลงทะเบียนเรียนบนระบบ ศธ.02 (สำหรับนักศึกษาเรียนซ้ำ/เรียนซ่อม)','ติดตามการกำหนดช่วงระยะเวลาการประเมินครูที่ปรึกษา','ติดตามการกำหนดแบบสำรวจความเสี่ยงระหว่างภาคเรียน','ติดตามการบันทึกรายการค่าใช้จ่ายและค่าลงทะเบียนเรียน','ติดตามการกำหนดวันที่ชำระเงินค่าลงทะเบียนเรียน','ติดตามการรายงาน GPA&GPAX (5 ภาคเรียน)','ติดตามการรายงาน GPA&GPAX (จบพร้อมรุ่นและไม่พร้อมรุ่น)','ติดตามการรายงานข้อมูลนักเรียน นักศึกษา']},
+  {id:'tp1',title:'โปรเจค ครุภัณฑ์ชุดเครื่องไฟฟ้า',bpId:'m3',count:6,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้าเข้าคลัง','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp2',title:'โปรเจค ครุภัณฑ์ชุดเครื่องครัวร้อน',bpId:'m3',count:9,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่นสินค้าและยี่ห้อ','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp3',title:'โปรเจค ห้องเรียน Smart Classroom',bpId:'m3',count:35,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ออกแบบ Layout ห้องเรียน','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','สำรวจหน้างาน','จัดซื้ออุปกรณ์ Display','จัดซื้ออุปกรณ์คอมพิวเตอร์','จัดซื้ออุปกรณ์เครือข่าย','จัดซื้อระบบเสียง','งานไฟฟ้าและสายสัญญาณ','งานติดตั้ง Display','งานติดตั้งคอมพิวเตอร์','งานติดตั้งเครือข่าย','งานติดตั้งระบบเสียง','ทดสอบระบบรวม','ทำเอกสารตรวจรับ','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp4',title:'โปรเจค ครุภัณฑ์คอมพิวเตอร์และอุปกรณ์ต่อพ่วง',bpId:'m3',count:8,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ทดสอบและตรวจรับครุภัณฑ์','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp5',title:'โปรเจค ระบบกล้องวงจรปิด (CCTV)',bpId:'m3',count:7,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบ Layout','ขอใบเสนอราคาจาก Supplier/Sub','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบกล้อง CCTV','ทดสอบระบบและตรวจรับงาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp6',title:'โปรเจค ครุภัณฑ์เครื่องปรับอากาศ',bpId:'m3',count:5,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งและทดสอบระบบ','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp7',title:'โปรเจค ระบบโซล่าเซลล์',bpId:'m3',count:8,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบระบบ','ขอใบเสนอราคาจาก Supplier/Sub','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบโซล่าเซลล์','ทดสอบและตรวจรับระบบ','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp8',title:'โปรเจค งานปรับปรุงอาคารและสิ่งก่อสร้าง',bpId:'m3',count:12,topics:['แจ้งทำสัญญา','สำรวจหน้างาน','ออกแบบและทำ BOQ','ขอใบเสนอราคาจาก Sub Contractor','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','งานโครงสร้าง/ผนัง/พื้น','งานระบบไฟฟ้า','งานระบบประปาและสุขาภิบาล','งานตกแต่งภายใน','ตรวจรับงานและทำเอกสาร','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp9',title:'โปรเจค ครุภัณฑ์การแพทย์และวิทยาศาสตร์',bpId:'m3',count:10,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่น/ยี่ห้อ (ถ้ามี)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ตรวจสอบและ Calibrate ครุภัณฑ์','อบรมการใช้งาน','ติดตามการเก็บเงินตามสัญญา']},
 ];
 
 const TMETA={
@@ -336,10 +501,11 @@ const TMETA={
   tp9:{icon:'heart-pulse-fill',accent:'#db2777',bg:'#fce7f3'},
 };
 
-function ImportTodoModal({onClose,onImport}){
+function ImportTodoModal({onClose,onImport,bp,onRequestPlan}){
   const [q,setQ]=React.useState('');
   const [expanded,setExpanded]=React.useState({});
-  const filtered=TODO_TEMPLATES.filter(t=>!q||t.title.includes(q));
+  const source=bp?TODO_TEMPLATES.filter(t=>t.bpId===bp.id):[];
+  const filtered=source.filter(t=>!q||t.title.includes(q));
   const doImport=(t)=>{
     if(!t.topics)return;
     const tpcs=t.topics.map(title=>({id:uid(),title,inContract:true,subs:[]}));
@@ -353,21 +519,29 @@ function ImportTodoModal({onClose,onImport}){
           <div style={{width:40,height:40,borderRadius:11,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
             <i className="bi bi-ui-checks" style={{fontSize:20,color:primary}}></i>
           </div>
-          <div>
+          <div style={{minWidth:0}}>
             <div style={{fontWeight:700,fontSize:15.5,color:'#1a2332'}}>ชุดรายการมาตรฐานสิ่งที่ต้องทำ</div>
-            <div style={{fontSize:12,color:'#9aa3af',marginTop:1}}>{TODO_TEMPLATES.length} ชุด · กดชื่อเพื่อดูรายการ</div>
+            <div style={{fontSize:12,color:'#9aa3af',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{bp?('ตามแผนธุรกิจ: '+bpLabel(bp.level,bp.id)+' · '+source.length+' ชุด'):'กำหนดแผนธุรกิจที่สนับสนุนก่อนจึงจะนำเข้ารายการได้'}</div>
           </div>
           <div style={{flex:1}}></div>
-          <div style={{position:'relative'}}>
+          {bp && <div style={{position:'relative'}}>
             <i className="bi bi-search" style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',fontSize:13,color:'#9aa3af',pointerEvents:'none'}}></i>
             <input value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหา" style={{border:'1px solid #e3e7ec',borderRadius:9,padding:'8px 12px 8px 33px',fontSize:13,outline:'none',width:190,fontFamily:'inherit',color:'#1f2733',background:'#f6f7f9'}}/>
-          </div>
+          </div>}
           <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',marginLeft:6,flex:'none',border:'none',cursor:'pointer'}}>
             <i className="bi bi-x-lg" style={{fontSize:14,color:'#5a6473'}}></i>
           </button>
         </div>
         <div style={{overflowY:'auto',flex:1}}>
-          {filtered.length===0 && <div style={{textAlign:'center',padding:'48px 0',color:'#b3bac4',fontSize:13.5}}>ไม่พบชุดรายการที่ค้นหา</div>}
+          {!bp ? (
+            <div style={{textAlign:'center',padding:'48px 30px'}}>
+              <i className="bi bi-diagram-3" style={{fontSize:34,color:'#d7dce3'}}></i>
+              <div style={{fontSize:13.5,color:'#5a6473',marginTop:12,lineHeight:1.6}}>กลุ่มนี้ยังไม่ได้กำหนดแผนธุรกิจที่สนับสนุนไว้ ต้องกำหนดก่อนจึงจะเห็นชุดรายการมาตรฐานที่นำเข้าได้</div>
+              <button onClick={()=>{onClose();onRequestPlan&&onRequestPlan();}} style={{display:'inline-flex',alignItems:'center',gap:7,marginTop:16,background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 18px',fontSize:13.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-diagram-3-fill" style={{fontSize:14}}></i>กำหนดแผนธุรกิจ</button>
+            </div>
+          ) : filtered.length===0 && (
+            <div style={{textAlign:'center',padding:'48px 0',color:'#b3bac4',fontSize:13.5}}>{q?'ไม่พบชุดรายการที่ค้นหา':'ยังไม่มีชุดรายการมาตรฐานสำหรับแผนธุรกิจนี้'}</div>
+          )}
           {filtered.map((t,i)=>{
             const m=TMETA[t.id]||{icon:'list-check',accent:'#15a08f',bg:'#e3f3f0'};
             const open=!!expanded[t.id];
@@ -407,20 +581,165 @@ function ImportTodoModal({onClose,onImport}){
   );
 }
 
-function TodoPanel(){
+function BusinessPlanPickerModal({value,onChange,onClose}){
+  const [q,setQ]=React.useState('');
+  const [expanded,setExpanded]=React.useState(()=>{
+    if(!value)return {};
+    const bc=bpBreadcrumb(value.level,value.id),exp={};
+    bc.forEach(n=>{exp[n.id]=true;});
+    return exp;
+  });
+  const toggle=(id)=>setExpanded(s=>({...s,[id]:!s[id]}));
+  const choose=(level,id)=>{onChange({level,id});onClose();};
+  const clear=()=>{onChange(null);onClose();};
+
+  const query=q.trim().toLowerCase();
+  let results=[];
+  if(query){
+    BP_LEVELS.forEach(L=>{
+      (BP_DATA[L.key]||[]).forEach(it=>{
+        const bc=bpBreadcrumb(L.key,it.id);
+        const txt=bc.map(x=>BP_LV(x.level).name+' '+x.it.no+' '+x.it.title).join(' ').toLowerCase();
+        if(txt.includes(query))results.push({level:L.key,id:it.id,it,bc});
+      });
+    });
+  }
+
+  const rows=[];
+  const walk=(levelKey,pid,depth)=>{
+    const items=levelKey==='mission'?BP_DATA.mission:bpChildrenOf(levelKey,pid);
+    items.forEach(it=>{
+      const L=BP_LV(levelKey);
+      const kids=L.tier<4?bpChildrenOf(BP_TIERKEY[L.tier+1],it.id):[];
+      const hasKids=kids.length>0;
+      const isExp=!!expanded[it.id];
+      const isSel=value&&value.level===levelKey&&value.id===it.id;
+      rows.push(
+        <div key={levelKey+it.id} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 10px 8px '+(10+depth*20)+'px',borderRadius:8,background:isSel?primarySoft:'transparent'}}>
+          {hasKids ? (
+            <button onClick={()=>toggle(it.id)} style={{width:18,height:18,display:'flex',alignItems:'center',justifyContent:'center',flex:'none',border:'none',background:'transparent',cursor:'pointer'}}>
+              <i className={'bi '+(isExp?'bi-caret-down-fill':'bi-caret-right-fill')} style={{fontSize:9,color:'#9aa3af'}}></i>
+            </button>
+          ) : <span style={{width:18,flex:'none'}}></span>}
+          <i className={'bi '+L.icon} style={{fontSize:13,color:L.accent,flex:'none'}}></i>
+          <button onClick={()=>choose(levelKey,it.id)} style={{flex:1,minWidth:0,textAlign:'left',border:'none',background:'transparent',cursor:'pointer',padding:'2px 0',overflow:'hidden'}}>
+            <span style={{fontSize:13,fontWeight:isSel?700:600,color:isSel?primary:'#1a2332'}}>{L.name} {it.no}</span>
+            <span style={{fontSize:12.5,color:'#5a6473',marginLeft:6}}>{it.title}</span>
+          </button>
+          {hasKids && <span style={{fontSize:10.5,color:'#9aa3af',fontWeight:600,background:'#f1f3f7',borderRadius:99,padding:'1px 8px',flex:'none'}}>{kids.length}</span>}
+          {isSel && <i className="bi bi-check-lg" style={{fontSize:14,color:primary,flex:'none'}}></i>}
+        </div>
+      );
+      if(hasKids&&isExp)walk(BP_TIERKEY[L.tier+1],it.id,depth+1);
+    });
+  };
+  walk('mission',null,0);
+
+  return (
+   <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:110,padding:'28px 16px'}}>
+    <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:18,width:560,maxWidth:'100%',maxHeight:'82vh',display:'flex',flexDirection:'column',boxShadow:'0 24px 64px rgba(16,24,40,.28)',animation:'fadeIn .15s ease'}}>
+      <div style={{padding:'18px 22px 14px',borderBottom:'1px solid #f0f2f5',flex:'none'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <div style={{width:40,height:40,borderRadius:11,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className="bi bi-diagram-3-fill" style={{fontSize:19,color:primary}}></i>
+          </div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontWeight:700,fontSize:15.5,color:'#1a2332'}}>เลือกแผนธุรกิจที่สนับสนุน</div>
+            <div style={{fontSize:12,color:'#9aa3af',marginTop:1}}>เลือกได้ทุกระดับ (พันธกิจ / เป้าหมาย / กลยุทธ์ / แผนงาน)</div>
+          </div>
+          <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',border:'none',cursor:'pointer'}}>
+            <i className="bi bi-x-lg" style={{fontSize:14,color:'#5a6473'}}></i>
+          </button>
+        </div>
+        <div style={{position:'relative',marginTop:12}}>
+          <i className="bi bi-search" style={{position:'absolute',left:11,top:'50%',transform:'translateY(-50%)',fontSize:13,color:'#9aa3af',pointerEvents:'none'}}></i>
+          <input autoFocus value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหาชื่อแผนธุรกิจทุกระดับ..." style={{width:'100%',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 12px 9px 34px',fontSize:13,outline:'none',fontFamily:'inherit',color:'#1f2733',background:'#f6f7f9',boxSizing:'border-box'}}/>
+        </div>
+      </div>
+      <div style={{overflowY:'auto',flex:1,padding:8}}>
+        {query ? (
+          results.length===0 ? <div style={{textAlign:'center',padding:'40px 0',color:'#b3bac4',fontSize:13}}>ไม่พบผลลัพธ์</div> :
+          results.map(n=>{
+            const isSel=value&&value.level===n.level&&value.id===n.id;
+            return (
+              <button key={n.level+n.id} onClick={()=>choose(n.level,n.id)} style={{display:'block',width:'100%',textAlign:'left',padding:'10px 12px',borderRadius:9,border:'none',background:isSel?primarySoft:'transparent',cursor:'pointer'}}>
+                <div style={{fontSize:13.5,fontWeight:600,color:isSel?primary:'#1a2332'}}>{BP_LV(n.level).name} {n.it.no}: {n.it.title}</div>
+                <div style={{display:'flex',alignItems:'center',gap:5,marginTop:4,flexWrap:'wrap'}}>
+                  {n.bc.map((c,i)=>(<React.Fragment key={i}>{i>0&&<i className="bi bi-chevron-right" style={{fontSize:9,color:'#c4ccd4'}}></i>}<span style={{fontSize:11,color:'#9aa3af'}}>{BP_LV(c.level).name} {c.it.no}</span></React.Fragment>))}
+                </div>
+              </button>
+            );
+          })
+        ) : rows}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10,padding:'14px 22px',borderTop:'1px solid #f0f2f5',flex:'none'}}>
+        {value ? <span style={{fontSize:12.5,color:'#5a6473'}}>เลือกอยู่: <b style={{color:'#1a2332'}}>{bpLabel(value.level,value.id)}</b></span> : <span style={{fontSize:12.5,color:'#9aa3af'}}>ยังไม่ได้เลือก</span>}
+        <div style={{flex:1}}></div>
+        {value && <button onClick={clear} style={{border:'1px solid #e3e7ec',background:'#fff',color:'#8a93a3',borderRadius:9,padding:'8px 14px',fontSize:12.5,fontWeight:600,cursor:'pointer'}}>ล้างการเลือก</button>}
+      </div>
+    </div>
+   </div>
+  );
+}
+
+function BusinessPlanCard({bp,setBp}){
+  const [showPicker,setShowPicker]=React.useState(false);
+  const bc=bp?bpBreadcrumb(bp.level,bp.id):[];
+  return (
+   <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
+    <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:bp?10:8}}>
+      <i className="bi bi-diagram-3-fill" style={{fontSize:19,color:'#8a93a3'}}></i>
+      <span style={{fontWeight:600,fontSize:13.5,flex:1}}>แผนธุรกิจที่สนับสนุน</span>
+      <button onClick={()=>setShowPicker(true)} title={bp?'แก้ไข':'กำหนด'} style={{width:30,height:30,borderRadius:8,border:'1px solid #e7eaef',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+        <i className={'bi '+(bp?'bi-pencil':'bi-plus-lg')} style={{fontSize:14,color:primary}}></i>
+      </button>
+      {bp && <button onClick={()=>setBp(null)} title="ลบการกำหนด" style={{width:30,height:30,borderRadius:8,border:'1px solid #f6d9d5',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+        <i className="bi bi-trash" style={{fontSize:14,color:'#d8513a'}}></i>
+      </button>}
+    </div>
+    {bp ? (
+      <div>
+        <div style={{display:'flex',alignItems:'center',gap:5,flexWrap:'wrap',marginBottom:7}}>
+          {bc.map((c,i)=>(<React.Fragment key={i}>{i>0&&<i className="bi bi-chevron-right" style={{fontSize:9,color:'#c4ccd4'}}></i>}<span style={{display:'inline-flex',alignItems:'center',gap:4,background:BP_LV(c.level).accent+'14',color:BP_LV(c.level).accent,borderRadius:8,padding:'2px 8px',fontSize:11,fontWeight:700}}><i className={'bi '+BP_LV(c.level).icon} style={{fontSize:10}}></i>{c.it.no}</span></React.Fragment>))}
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+          <div style={{fontSize:13,fontWeight:600,color:'#2b3440',lineHeight:1.4}}>{bpNode(bp.level,bp.id).title}</div>
+          <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eaf1fe',color:'#3b6fd4',borderRadius:8,padding:'2px 9px',fontSize:11,fontWeight:700,flex:'none',whiteSpace:'nowrap'}}><i className="bi bi-calendar2-check" style={{fontSize:11}}></i>{TODO_TEMPLATES.filter(t=>t.bpId===bp.id).length} แผนงานประจำวัน</span>
+        </div>
+        <div style={{fontSize:11.5,color:'#9aa3af',marginTop:5}}>{BP_LV(bp.level).name} · TODO Template ที่นำเข้าได้จะจำกัดตามแผนนี้</div>
+      </div>
+    ) : (
+      <div style={{fontSize:12.5,color:'#9aa3af',lineHeight:1.6}}>ยังไม่ได้กำหนด — กดปุ่ม + เพื่อเลือกแผนธุรกิจที่กลุ่มนี้สนับสนุน (เลือกได้ทุกระดับ) เพื่อจำกัดชุด TODO Template ที่นำเข้าได้ให้ตรงกับแผนงานประจำวันของแผนนั้น</div>
+    )}
+    {showPicker && <BusinessPlanPickerModal value={bp} onChange={setBp} onClose={()=>setShowPicker(false)}/>}
+   </div>
+  );
+}
+
+function TodoPanel({bp,setBp}){
   const [mode,setMode]=React.useState('do');
   const [showImport,setShowImport]=React.useState(false);
+  const [showPlanPicker,setShowPlanPicker]=React.useState(false);
   const [calView,setCalView]=React.useState(false);
   const [topics,setTopics]=React.useState(TD_SEED);
   const [open,setOpen]=React.useState({});
   const [modal,setModal]=React.useState(null);
   const [hovSubId,setHovSubId]=React.useState(null);
   const [confirmDel,setConfirmDel]=React.useState(null);
+  const [expModal,setExpModal]=React.useState(null); // topic id ที่กำลังดูค่าใช้จ่าย
 
   const cnt=(t)=>({done:t.subs.filter(s=>s.done).length,total:t.subs.length});
   const complete=(t)=>{const c=cnt(t);return c.total>0&&c.done===c.total;};
   const overallN=topics.length, overallDone=topics.filter(complete).length;
   const overallPct=overallN?Math.round(overallDone/overallN*1000)/10:0;
+
+  const expTotal=(t)=>(t.expenses||[]).reduce((s,e)=>s+e.amount,0);
+  const totalExpense=topics.reduce((s,t)=>s+expTotal(t),0);
+  const bpBudget=bp?((bpNode(bp.level,bp.id)||{}).budget||0):0;
+  const overBudget=bpBudget>0&&totalExpense>bpBudget;
+  const addExpense=(tid,d)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,expenses:[expense(d.date,d.amount,d.note),...(t.expenses||[])]}));
+  const editExpense=(tid,eid,d)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,expenses:(t.expenses||[]).map(e=>e.id!==eid?e:{...e,date:d.date,amount:d.amount,note:d.note})}));
+  const delExpense=(tid,eid)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,expenses:(t.expenses||[]).filter(e=>e.id!==eid)}));
 
   const toggleOpen=(id)=>setOpen(o=>({...o,[id]:!o[id]}));
   const toggleDone=(tid,sid)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,subs:t.subs.map(s=>s.id!==sid?s:{...s,done:!s.done})}));
@@ -448,6 +767,12 @@ function TodoPanel(){
             <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,color:'#9aa3af',flex:'none'}}><span style={{color:'#22b573',fontWeight:700}}>{overallDone}</span>/{overallN} เสร็จ</span>
             <span style={{flex:'1 1 120px',maxWidth:260,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><span style={{display:'block',height:'100%',borderRadius:99,background:'#15a08f',width:overallPct+'%'}}></span></span>
             <span style={{fontSize:12.5,color:'#9aa3af',fontWeight:600}}>{overallPct} %</span>
+            {(totalExpense>0 || bpBudget>0) && (
+              <span style={{display:'inline-flex',alignItems:'center',gap:6,background:overBudget?'#fdeaea':'#eaf1fe',color:overBudget?'#d83a3a':'#3b6fd4',borderRadius:8,padding:'5px 12px',fontSize:12,fontWeight:700,flex:'none',whiteSpace:'nowrap'}}>
+                <i className="bi bi-wallet2" style={{fontSize:13}}></i>
+                {totalExpense.toLocaleString()} บาท
+              </span>
+            )}
             <div style={{flex:1}}></div>
             {ICONBTN('format_list_bulleted',!calView,()=>setCalView(false),'รายการ')}
             {ICONBTN('calendar_month',calView,()=>setCalView(true),'ปฏิทิน (Gantt)')}
@@ -472,6 +797,16 @@ function TodoPanel(){
               <div onClick={()=>toggleOpen(t.id)} style={{flex:1,minWidth:0,fontWeight:600,fontSize:13.5,color:'#2b3440',cursor:'pointer'}}>{t.title}</div>
               {mode==='do' && c.total>0 && <MiniBar c={c}/>}
               {c.total>0 && <Count c={c}/>}
+              {(()=>{const et=expTotal(t);return (
+                <button
+                  onClick={()=>bp?setExpModal(t.id):setShowPlanPicker(true)}
+                  title={bp?'บันทึกค่าใช้จ่าย':'กำหนดแผนธุรกิจก่อนจึงจะบันทึกค่าใช้จ่ายได้'}
+                  style={{display:'inline-flex',alignItems:'center',gap:6,border:'1px solid '+(et>0?'#cfe0fb':'#e7eaef'),background:et>0?'#eaf1fe':'#fff',borderRadius:8,padding:'5px 10px',fontSize:12,fontWeight:700,color:et>0?'#3b6fd4':'#9aa3af',flex:'none',cursor:'pointer',whiteSpace:'nowrap'}}
+                >
+                  <i className="bi bi-wallet2" style={{fontSize:13}}></i>
+                  {et>0?et.toLocaleString()+' บาท':'ค่าใช้จ่าย'}
+                </button>
+              );})()}
               {mode==='edit' ? (
                 confirmDel&&confirmDel.type==='topic'&&confirmDel.id===t.id ? (
                   <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fdeaea',borderRadius:9,padding:'4px 10px',flex:'none'}}>
@@ -578,7 +913,18 @@ function TodoPanel(){
       )}
     </div>
 
-    {showImport && <ImportTodoModal onClose={()=>setShowImport(false)} onImport={(tpcs)=>{setTopics(ts=>[...ts,...tpcs]);setShowImport(false);}}/> }
+    {showImport && <ImportTodoModal bp={bp} onRequestPlan={()=>setShowPlanPicker(true)} onClose={()=>setShowImport(false)} onImport={(tpcs)=>{setTopics(ts=>[...ts,...tpcs]);setShowImport(false);}}/> }
+    {showPlanPicker && <BusinessPlanPickerModal value={bp} onChange={setBp} onClose={()=>setShowPlanPicker(false)}/>}
+    {expModal && (()=>{const t=topics.find(x=>x.id===expModal);return t && (
+      <ExpenseModal
+        topic={t}
+        budget={bpBudget}
+        onClose={()=>setExpModal(null)}
+        onAdd={(d)=>addExpense(expModal,d)}
+        onEdit={(eid,d)=>editExpense(expModal,eid,d)}
+        onDelete={(eid)=>delExpense(expModal,eid)}
+      />
+    );})()}
     {modal && (
       <TodoModal
         data={modal}
@@ -1059,6 +1405,7 @@ function WatchPanel(){
 function App(){
   const [tab,setTab]=useState(()=>{const t=new URLSearchParams(location.search).get('tab');return TABS.some(x=>x.key===t)?t:'todo';});
   const [view,setView]=useState('list');
+  const [bp,setBp]=useState({level:'strategy',id:'s3'});
 
   const Card=({children,pad})=>(<div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:pad||'16px 18px'}}>{children}</div>);
 
@@ -1078,6 +1425,7 @@ function App(){
               <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'5px 0',fontSize:13,color:'#3a4452'}}>{ms('check_circle',19,primary,true)}{p[0]}</div>
             ))}
           </Card>
+          <BusinessPlanCard bp={bp} setBp={setBp}/>
           <Card>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:10}}>{ms('edit_note',21,'#8a93a3')}<span style={{fontWeight:600,fontSize:13.5}}>จำนวนโพสต์จากกลุ่ม</span><div style={{flex:1}}></div>{ms('done_all',19,primary)}</div>
             {[['ทั้งหมด',48,'#eef0f4','#3a4452'],['มีข้อสรุป',35,'#eef0f4','#3a4452'],['ยังไม่ได้อ่าน',3,'#fdeaea','#d8513a']].map((r,i)=>(
@@ -1193,7 +1541,7 @@ function App(){
             </div>
            </div>
           ) : tab==='todo' ? (
-           <TodoPanel/>
+           <TodoPanel bp={bp} setBp={setBp}/>
           ) : tab==='watch' ? (
            <WatchPanel/>
           ) : tab==='verify' ? (

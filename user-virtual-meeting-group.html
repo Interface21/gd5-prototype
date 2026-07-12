@@ -291,16 +291,73 @@ function GanttView({topics}){
   );
 }
 
+/* ═══════════ แผนธุรกิจ (พันธกิจ→เป้าหมาย→กลยุทธ์→แผนงาน) — ใช้กำหนดว่า VM นี้สนับสนุนแผนธุรกิจไหน ═══════════ */
+const BP_LEVELS=[
+  {key:'mission',name:'พันธกิจ',tier:1,accent:'#15a08f',icon:'bi-flag-fill'},
+  {key:'goal',name:'เป้าหมาย',tier:2,accent:'#3b6fd4',icon:'bi-bullseye'},
+  {key:'strategy',name:'กลยุทธ์',tier:3,accent:'#7338d6',icon:'bi-signpost-split-fill'},
+  {key:'plan',name:'แผนงาน',tier:4,accent:'#e0468c',icon:'bi-list-check'},
+];
+const BP_TIERKEY={1:'mission',2:'goal',3:'strategy',4:'plan'};
+const BP_LV=(k)=>BP_LEVELS.find(l=>l.key===k);
+const BP_DATA={
+  mission:[
+    {id:'m1',no:'1',title:'EDR'},
+    {id:'m2',no:'2',title:'GiveD5'},
+    {id:'m3',no:'3',title:'ครุภัณฑ์'},
+    {id:'m4',no:'4',title:'ใช้เทคโนโลยีดิจิทัล GD5 และ AI'},
+  ],
+  goal:[
+    {id:'g1',pid:'m1',no:'1.1',title:'รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ'},
+    {id:'g2',pid:'m1',no:'1.2',title:'ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปีการศึกษา 2568'},
+    {id:'g3',pid:'m1',no:'1.3',title:'เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านการอาชีวศึกษา'},
+    {id:'g4',pid:'m1',no:'1.4',title:'นำ AI มาใช้ร่วม (Synergy) กับ ระบบ EDR'},
+  ],
+  strategy:[
+    {id:'s1',pid:'g2',no:'1.2.1',title:'จัดกิจกรรมการประกวด MOU ระดับภาค'},
+    {id:'s2',pid:'g2',no:'1.2.2',title:'สนับสนุนทีมงานประกวด MOU วิทยาลัย'},
+    {id:'s3',pid:'g3',no:'1.3.1',title:'ขยายการลงทะเบียนนักเรียนในระบบ EDR'},
+    {id:'s4',pid:'g3',no:'1.3.2',title:'ลดอัตราการออกกลางคัน'},
+  ],
+  plan:[
+    {id:'p1',pid:'s1',no:'1.2.11',title:'จัดกิจกรรมประกวด MOU ระดับภาค'},
+    {id:'p2',pid:'s2',no:'1.2.21',title:'จัดเตรียมทีมงานและวัสดุการประกวด'},
+    {id:'p3',pid:'s3',no:'1.3.11',title:'จัดทำ Dashboard รายงานผลการดำเนินงาน'},
+    {id:'p4',pid:'s4',no:'1.3.21',title:'จัดทำระบบเฝ้าระวังการออกกลางคัน'},
+  ],
+};
+const bpNode=(level,id)=>(BP_DATA[level]||[]).find(x=>x.id===id);
+const bpChildrenOf=(levelKey,pid)=>(BP_DATA[levelKey]||[]).filter(x=>x.pid===pid);
+function bpChain(level,id){
+  let chain={},tier=BP_LV(level).tier,cur=bpNode(level,id);
+  if(!cur)return chain;
+  chain[level]=id;
+  while(tier>1 && cur){
+    tier--;
+    const pk=BP_TIERKEY[tier];
+    const parentId=cur.pid;
+    cur=bpNode(pk,parentId);
+    if(cur)chain[pk]=parentId;
+  }
+  return chain;
+}
+function bpBreadcrumb(level,id){
+  const chain=bpChain(level,id),tier=BP_LV(level).tier,arr=[];
+  for(let t=1;t<=tier;t++){const k=BP_TIERKEY[t];if(chain[k])arr.push({level:k,id:chain[k],it:bpNode(k,chain[k])});}
+  return arr;
+}
+const bpLabel=(level,id)=>{const it=bpNode(level,id);return it?(BP_LV(level).name+' '+it.no+': '+it.title):'';};
+
 const TODO_TEMPLATES=[
-  {id:'tp1',title:'โปรเจค ครุภัณฑ์ชุดเครื่องไฟฟ้า',count:6,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้าเข้าคลัง','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp2',title:'โปรเจค ครุภัณฑ์ชุดเครื่องครัวร้อน',count:9,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่นสินค้าและยี่ห้อ','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp3',title:'โปรเจค ห้องเรียน Smart Classroom',count:35,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ออกแบบ Layout ห้องเรียน','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','สำรวจหน้างาน','จัดซื้ออุปกรณ์ Display','จัดซื้ออุปกรณ์คอมพิวเตอร์','จัดซื้ออุปกรณ์เครือข่าย','จัดซื้อระบบเสียง','งานไฟฟ้าและสายสัญญาณ','งานติดตั้ง Display','งานติดตั้งคอมพิวเตอร์','งานติดตั้งเครือข่าย','งานติดตั้งระบบเสียง','ทดสอบระบบรวม','ทำเอกสารตรวจรับ','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp4',title:'โปรเจค ครุภัณฑ์คอมพิวเตอร์และอุปกรณ์ต่อพ่วง',count:8,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ทดสอบและตรวจรับครุภัณฑ์','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp5',title:'โปรเจค ระบบกล้องวงจรปิด (CCTV)',count:7,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบ Layout','ขอใบเสนอราคาจาก Supplier/Sub','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบกล้อง CCTV','ทดสอบระบบและตรวจรับงาน','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp6',title:'โปรเจค ครุภัณฑ์เครื่องปรับอากาศ',count:5,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งและทดสอบระบบ','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp7',title:'โปรเจค ระบบโซล่าเซลล์',count:8,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบระบบ','ขอใบเสนอราคาจาก Supplier/Sub','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบโซล่าเซลล์','ทดสอบและตรวจรับระบบ','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp8',title:'โปรเจค งานปรับปรุงอาคารและสิ่งก่อสร้าง',count:12,topics:['แจ้งทำสัญญา','สำรวจหน้างาน','ออกแบบและทำ BOQ','ขอใบเสนอราคาจาก Sub Contractor','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','งานโครงสร้าง/ผนัง/พื้น','งานระบบไฟฟ้า','งานระบบประปาและสุขาภิบาล','งานตกแต่งภายใน','ตรวจรับงานและทำเอกสาร','ติดตามการเก็บเงินตามสัญญา']},
-  {id:'tp9',title:'โปรเจค ครุภัณฑ์การแพทย์และวิทยาศาสตร์',count:10,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่น/ยี่ห้อ (ถ้ามี)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ตรวจสอบและ Calibrate ครุภัณฑ์','อบรมการใช้งาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp1',title:'โปรเจค ครุภัณฑ์ชุดเครื่องไฟฟ้า',bpId:'m3',count:6,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้าเข้าคลัง','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp2',title:'โปรเจค ครุภัณฑ์ชุดเครื่องครัวร้อน',bpId:'m3',count:9,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่นสินค้าและยี่ห้อ','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp3',title:'โปรเจค ห้องเรียน Smart Classroom',bpId:'m3',count:35,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ออกแบบ Layout ห้องเรียน','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','สำรวจหน้างาน','จัดซื้ออุปกรณ์ Display','จัดซื้ออุปกรณ์คอมพิวเตอร์','จัดซื้ออุปกรณ์เครือข่าย','จัดซื้อระบบเสียง','งานไฟฟ้าและสายสัญญาณ','งานติดตั้ง Display','งานติดตั้งคอมพิวเตอร์','งานติดตั้งเครือข่าย','งานติดตั้งระบบเสียง','ทดสอบระบบรวม','ทำเอกสารตรวจรับ','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp4',title:'โปรเจค ครุภัณฑ์คอมพิวเตอร์และอุปกรณ์ต่อพ่วง',bpId:'m3',count:8,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ทดสอบและตรวจรับครุภัณฑ์','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp5',title:'โปรเจค ระบบกล้องวงจรปิด (CCTV)',bpId:'m3',count:7,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบ Layout','ขอใบเสนอราคาจาก Supplier/Sub','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบกล้อง CCTV','ทดสอบระบบและตรวจรับงาน','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp6',title:'โปรเจค ครุภัณฑ์เครื่องปรับอากาศ',bpId:'m3',count:5,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งและทดสอบระบบ','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp7',title:'โปรเจค ระบบโซล่าเซลล์',bpId:'m3',count:8,topics:['แจ้งทำสัญญา','สำรวจหน้างานและออกแบบระบบ','ขอใบเสนอราคาจาก Supplier/Sub','Kick off Meeting (KOM)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','งานติดตั้งระบบโซล่าเซลล์','ทดสอบและตรวจรับระบบ','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp8',title:'โปรเจค งานปรับปรุงอาคารและสิ่งก่อสร้าง',bpId:'m3',count:12,topics:['แจ้งทำสัญญา','สำรวจหน้างาน','ออกแบบและทำ BOQ','ขอใบเสนอราคาจาก Sub Contractor','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','งานโครงสร้าง/ผนัง/พื้น','งานระบบไฟฟ้า','งานระบบประปาและสุขาภิบาล','งานตกแต่งภายใน','ตรวจรับงานและทำเอกสาร','ติดตามการเก็บเงินตามสัญญา']},
+  {id:'tp9',title:'โปรเจค ครุภัณฑ์การแพทย์และวิทยาศาสตร์',bpId:'m3',count:10,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier','ทำ Scope of Work','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่น/ยี่ห้อ (ถ้ามี)','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','ตรวจสอบและ Calibrate ครุภัณฑ์','อบรมการใช้งาน','ติดตามการเก็บเงินตามสัญญา']},
 ];
 
 const TMETA={
@@ -315,10 +372,11 @@ const TMETA={
   tp9:{icon:'heart-pulse-fill',accent:'#db2777',bg:'#fce7f3'},
 };
 
-function ImportTodoModal({onClose,onImport}){
+function ImportTodoModal({onClose,onImport,bp,onRequestPlan}){
   const [q,setQ]=React.useState('');
   const [expanded,setExpanded]=React.useState({});
-  const filtered=TODO_TEMPLATES.filter(t=>!q||t.title.includes(q));
+  const source=bp?TODO_TEMPLATES.filter(t=>t.bpId===bp.id):[];
+  const filtered=source.filter(t=>!q||t.title.includes(q));
   const doImport=(t)=>{
     if(!t.topics)return;
     const tpcs=t.topics.map(title=>({id:uid(),title,inContract:true,subs:[]}));
@@ -333,22 +391,30 @@ function ImportTodoModal({onClose,onImport}){
           <div style={{width:40,height:40,borderRadius:11,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
             <i className="bi bi-ui-checks" style={{fontSize:20,color:primary}}></i>
           </div>
-          <div>
+          <div style={{minWidth:0}}>
             <div style={{fontWeight:700,fontSize:15.5,color:'#1a2332'}}>ชุดรายการมาตรฐานสิ่งที่ต้องทำ</div>
-            <div style={{fontSize:12,color:'#9aa3af',marginTop:1}}>{TODO_TEMPLATES.length} ชุด · กดชื่อเพื่อดูรายการ</div>
+            <div style={{fontSize:12,color:'#9aa3af',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{bp?('ตามแผนธุรกิจ: '+bpLabel(bp.level,bp.id)+' · '+source.length+' ชุด'):'กำหนดแผนธุรกิจที่สนับสนุนก่อนจึงจะนำเข้ารายการได้'}</div>
           </div>
           <div style={{flex:1}}></div>
-          <div style={{position:'relative'}}>
+          {bp && <div style={{position:'relative'}}>
             <i className="bi bi-search" style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',fontSize:13,color:'#9aa3af',pointerEvents:'none'}}></i>
             <input value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหา" style={{border:'1px solid #e3e7ec',borderRadius:9,padding:'8px 12px 8px 33px',fontSize:13,outline:'none',width:190,fontFamily:'inherit',color:'#1f2733',background:'#f6f7f9'}}/>
-          </div>
+          </div>}
           <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',marginLeft:6,flex:'none',border:'none',cursor:'pointer'}}>
             <i className="bi bi-x-lg" style={{fontSize:14,color:'#5a6473'}}></i>
           </button>
         </div>
         {/* list */}
         <div style={{overflowY:'auto',flex:1}}>
-          {filtered.length===0 && <div style={{textAlign:'center',padding:'48px 0',color:'#b3bac4',fontSize:13.5}}>ไม่พบชุดรายการที่ค้นหา</div>}
+          {!bp ? (
+            <div style={{textAlign:'center',padding:'48px 30px'}}>
+              <i className="bi bi-diagram-3" style={{fontSize:34,color:'#d7dce3'}}></i>
+              <div style={{fontSize:13.5,color:'#5a6473',marginTop:12,lineHeight:1.6}}>กลุ่มนี้ยังไม่ได้กำหนดแผนธุรกิจที่สนับสนุนไว้ ต้องกำหนดก่อนจึงจะเห็นชุดรายการมาตรฐานที่นำเข้าได้</div>
+              <button onClick={()=>{onClose();onRequestPlan&&onRequestPlan();}} style={{display:'inline-flex',alignItems:'center',gap:7,marginTop:16,background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 18px',fontSize:13.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-diagram-3-fill" style={{fontSize:14}}></i>กำหนดแผนธุรกิจ</button>
+            </div>
+          ) : filtered.length===0 && (
+            <div style={{textAlign:'center',padding:'48px 0',color:'#b3bac4',fontSize:13.5}}>{q?'ไม่พบชุดรายการที่ค้นหา':'ยังไม่มีชุดรายการมาตรฐานสำหรับแผนธุรกิจนี้'}</div>
+          )}
           {filtered.map((t,i)=>{
             const m=TMETA[t.id]||{icon:'list-check',accent:'#15a08f',bg:'#e3f3f0'};
             const open=!!expanded[t.id];
@@ -390,9 +456,145 @@ function ImportTodoModal({onClose,onImport}){
   );
 }
 
-function TodoPanel(){
+function BusinessPlanPickerModal({value,onChange,onClose}){
+  const [q,setQ]=React.useState('');
+  const [expanded,setExpanded]=React.useState(()=>{
+    if(!value)return {};
+    const bc=bpBreadcrumb(value.level,value.id),exp={};
+    bc.forEach(n=>{exp[n.id]=true;});
+    return exp;
+  });
+  const toggle=(id)=>setExpanded(s=>({...s,[id]:!s[id]}));
+  const choose=(level,id)=>{onChange({level,id});onClose();};
+  const clear=()=>{onChange(null);onClose();};
+
+  const query=q.trim().toLowerCase();
+  let results=[];
+  if(query){
+    BP_LEVELS.forEach(L=>{
+      (BP_DATA[L.key]||[]).forEach(it=>{
+        const bc=bpBreadcrumb(L.key,it.id);
+        const txt=bc.map(x=>BP_LV(x.level).name+' '+x.it.no+' '+x.it.title).join(' ').toLowerCase();
+        if(txt.includes(query))results.push({level:L.key,id:it.id,it,bc});
+      });
+    });
+  }
+
+  const rows=[];
+  const walk=(levelKey,pid,depth)=>{
+    const items=levelKey==='mission'?BP_DATA.mission:bpChildrenOf(levelKey,pid);
+    items.forEach(it=>{
+      const L=BP_LV(levelKey);
+      const kids=L.tier<4?bpChildrenOf(BP_TIERKEY[L.tier+1],it.id):[];
+      const hasKids=kids.length>0;
+      const isExp=!!expanded[it.id];
+      const isSel=value&&value.level===levelKey&&value.id===it.id;
+      rows.push(
+        <div key={levelKey+it.id} style={{display:'flex',alignItems:'center',gap:6,padding:'8px 10px 8px '+(10+depth*20)+'px',borderRadius:8,background:isSel?primarySoft:'transparent'}}>
+          {hasKids ? (
+            <button onClick={()=>toggle(it.id)} style={{width:18,height:18,display:'flex',alignItems:'center',justifyContent:'center',flex:'none',border:'none',background:'transparent',cursor:'pointer'}}>
+              <i className={'bi '+(isExp?'bi-caret-down-fill':'bi-caret-right-fill')} style={{fontSize:9,color:'#9aa3af'}}></i>
+            </button>
+          ) : <span style={{width:18,flex:'none'}}></span>}
+          <i className={'bi '+L.icon} style={{fontSize:13,color:L.accent,flex:'none'}}></i>
+          <button onClick={()=>choose(levelKey,it.id)} style={{flex:1,minWidth:0,textAlign:'left',border:'none',background:'transparent',cursor:'pointer',padding:'2px 0',overflow:'hidden'}}>
+            <span style={{fontSize:13,fontWeight:isSel?700:600,color:isSel?primary:'#1a2332'}}>{L.name} {it.no}</span>
+            <span style={{fontSize:12.5,color:'#5a6473',marginLeft:6}}>{it.title}</span>
+          </button>
+          {hasKids && <span style={{fontSize:10.5,color:'#9aa3af',fontWeight:600,background:'#f1f3f7',borderRadius:99,padding:'1px 8px',flex:'none'}}>{kids.length}</span>}
+          {isSel && <i className="bi bi-check-lg" style={{fontSize:14,color:primary,flex:'none'}}></i>}
+        </div>
+      );
+      if(hasKids&&isExp)walk(BP_TIERKEY[L.tier+1],it.id,depth+1);
+    });
+  };
+  walk('mission',null,0);
+
+  return (
+   <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:110,padding:'28px 16px'}}>
+    <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:18,width:560,maxWidth:'100%',maxHeight:'82vh',display:'flex',flexDirection:'column',boxShadow:'0 24px 64px rgba(16,24,40,.28)',animation:'fadeIn .15s ease'}}>
+      <div style={{padding:'18px 22px 14px',borderBottom:'1px solid #f0f2f5',flex:'none'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <div style={{width:40,height:40,borderRadius:11,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className="bi bi-diagram-3-fill" style={{fontSize:19,color:primary}}></i>
+          </div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontWeight:700,fontSize:15.5,color:'#1a2332'}}>เลือกแผนธุรกิจที่สนับสนุน</div>
+            <div style={{fontSize:12,color:'#9aa3af',marginTop:1}}>เลือกได้ทุกระดับ (พันธกิจ / เป้าหมาย / กลยุทธ์ / แผนงาน)</div>
+          </div>
+          <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',border:'none',cursor:'pointer'}}>
+            <i className="bi bi-x-lg" style={{fontSize:14,color:'#5a6473'}}></i>
+          </button>
+        </div>
+        <div style={{position:'relative',marginTop:12}}>
+          <i className="bi bi-search" style={{position:'absolute',left:11,top:'50%',transform:'translateY(-50%)',fontSize:13,color:'#9aa3af',pointerEvents:'none'}}></i>
+          <input autoFocus value={q} onChange={e=>setQ(e.target.value)} placeholder="ค้นหาชื่อแผนธุรกิจทุกระดับ..." style={{width:'100%',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 12px 9px 34px',fontSize:13,outline:'none',fontFamily:'inherit',color:'#1f2733',background:'#f6f7f9',boxSizing:'border-box'}}/>
+        </div>
+      </div>
+      <div style={{overflowY:'auto',flex:1,padding:8}}>
+        {query ? (
+          results.length===0 ? <div style={{textAlign:'center',padding:'40px 0',color:'#b3bac4',fontSize:13}}>ไม่พบผลลัพธ์</div> :
+          results.map(n=>{
+            const isSel=value&&value.level===n.level&&value.id===n.id;
+            return (
+              <button key={n.level+n.id} onClick={()=>choose(n.level,n.id)} style={{display:'block',width:'100%',textAlign:'left',padding:'10px 12px',borderRadius:9,border:'none',background:isSel?primarySoft:'transparent',cursor:'pointer'}}>
+                <div style={{fontSize:13.5,fontWeight:600,color:isSel?primary:'#1a2332'}}>{BP_LV(n.level).name} {n.it.no}: {n.it.title}</div>
+                <div style={{display:'flex',alignItems:'center',gap:5,marginTop:4,flexWrap:'wrap'}}>
+                  {n.bc.map((c,i)=>(<React.Fragment key={i}>{i>0&&<i className="bi bi-chevron-right" style={{fontSize:9,color:'#c4ccd4'}}></i>}<span style={{fontSize:11,color:'#9aa3af'}}>{BP_LV(c.level).name} {c.it.no}</span></React.Fragment>))}
+                </div>
+              </button>
+            );
+          })
+        ) : rows}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10,padding:'14px 22px',borderTop:'1px solid #f0f2f5',flex:'none'}}>
+        {value ? <span style={{fontSize:12.5,color:'#5a6473'}}>เลือกอยู่: <b style={{color:'#1a2332'}}>{bpLabel(value.level,value.id)}</b></span> : <span style={{fontSize:12.5,color:'#9aa3af'}}>ยังไม่ได้เลือก</span>}
+        <div style={{flex:1}}></div>
+        {value && <button onClick={clear} style={{border:'1px solid #e3e7ec',background:'#fff',color:'#8a93a3',borderRadius:9,padding:'8px 14px',fontSize:12.5,fontWeight:600,cursor:'pointer'}}>ล้างการเลือก</button>}
+      </div>
+    </div>
+   </div>
+  );
+}
+
+function BusinessPlanCard({bp,setBp}){
+  const [showPicker,setShowPicker]=React.useState(false);
+  const bc=bp?bpBreadcrumb(bp.level,bp.id):[];
+  return (
+   <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
+    <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:bp?10:8}}>
+      <i className="bi bi-diagram-3-fill" style={{fontSize:19,color:'#8a93a3'}}></i>
+      <span style={{fontWeight:600,fontSize:13.5,flex:1}}>แผนธุรกิจที่สนับสนุน</span>
+      <button onClick={()=>setShowPicker(true)} title={bp?'แก้ไข':'กำหนด'} style={{width:30,height:30,borderRadius:8,border:'1px solid #e7eaef',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+        <i className={'bi '+(bp?'bi-pencil':'bi-plus-lg')} style={{fontSize:14,color:primary}}></i>
+      </button>
+      {bp && <button onClick={()=>setBp(null)} title="ลบการกำหนด" style={{width:30,height:30,borderRadius:8,border:'1px solid #f6d9d5',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+        <i className="bi bi-trash" style={{fontSize:14,color:'#d8513a'}}></i>
+      </button>}
+    </div>
+    {bp ? (
+      <div>
+        <div style={{display:'flex',alignItems:'center',gap:5,flexWrap:'wrap',marginBottom:7}}>
+          {bc.map((c,i)=>(<React.Fragment key={i}>{i>0&&<i className="bi bi-chevron-right" style={{fontSize:9,color:'#c4ccd4'}}></i>}<span style={{display:'inline-flex',alignItems:'center',gap:4,background:BP_LV(c.level).accent+'14',color:BP_LV(c.level).accent,borderRadius:8,padding:'2px 8px',fontSize:11,fontWeight:700}}><i className={'bi '+BP_LV(c.level).icon} style={{fontSize:10}}></i>{c.it.no}</span></React.Fragment>))}
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+          <div style={{fontSize:13,fontWeight:600,color:'#2b3440',lineHeight:1.4}}>{bpNode(bp.level,bp.id).title}</div>
+          <span style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eaf1fe',color:'#3b6fd4',borderRadius:8,padding:'2px 9px',fontSize:11,fontWeight:700,flex:'none',whiteSpace:'nowrap'}}><i className="bi bi-calendar2-check" style={{fontSize:11}}></i>{TODO_TEMPLATES.filter(t=>t.bpId===bp.id).length} แผนงานประจำวัน</span>
+        </div>
+        <div style={{fontSize:11.5,color:'#9aa3af',marginTop:5}}>{BP_LV(bp.level).name} · TODO Template ที่นำเข้าได้จะจำกัดตามแผนนี้</div>
+      </div>
+    ) : (
+      <div style={{fontSize:12.5,color:'#9aa3af',lineHeight:1.6}}>ยังไม่ได้กำหนด — กดปุ่ม + เพื่อเลือกแผนธุรกิจที่กลุ่มนี้สนับสนุน (เลือกได้ทุกระดับ) เพื่อจำกัดชุด TODO Template ที่นำเข้าได้ให้ตรงกับแผนงานประจำวันของแผนนั้น</div>
+    )}
+    {showPicker && <BusinessPlanPickerModal value={bp} onChange={setBp} onClose={()=>setShowPicker(false)}/>}
+   </div>
+  );
+}
+
+function TodoPanel({bp,setBp}){
   const [mode,setMode]=React.useState('do');   // 'do' | 'edit'
   const [showImport,setShowImport]=React.useState(false);
+  const [showPlanPicker,setShowPlanPicker]=React.useState(false);
   const [calView,setCalView]=React.useState(false); // false = list, true = gantt
   const [topics,setTopics]=React.useState(TD_SEED);
   const [open,setOpen]=React.useState({});
@@ -570,7 +772,8 @@ function TodoPanel(){
       )}
     </div>
 
-    {showImport && <ImportTodoModal onClose={()=>setShowImport(false)} onImport={(tpcs)=>{setTopics(ts=>[...ts,...tpcs]);setShowImport(false);}}/> }
+    {showImport && <ImportTodoModal bp={bp} onRequestPlan={()=>setShowPlanPicker(true)} onClose={()=>setShowImport(false)} onImport={(tpcs)=>{setTopics(ts=>[...ts,...tpcs]);setShowImport(false);}}/> }
+    {showPlanPicker && <BusinessPlanPickerModal value={bp} onChange={setBp} onClose={()=>setShowPlanPicker(false)}/>}
     {modal && (
       <TodoModal
         data={modal}
@@ -613,26 +816,20 @@ function TodoProgressCard(){
       {/* progress bar หลัก + จำนวน */}
       <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:8}}>
         <span style={{fontWeight:800,fontSize:28,color:primary,lineHeight:1}}>{pct}<span style={{fontSize:15,fontWeight:700}}>%</span></span>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{display:'flex',alignItems:'baseline',gap:5}}>
-            <span style={{fontWeight:800,fontSize:16,color:'#2b3440'}}>{done}</span>
-            <span style={{fontSize:12.5,color:'#9aa3af'}}>/ {total} รายการย่อย</span>
-          </div>
+        <div style={{flex:1,minWidth:0}}></div>
+        <div style={{display:'flex',alignItems:'baseline',gap:5}}>
+          <span style={{fontWeight:800,fontSize:16,color:'#2b3440'}}>{done}</span>
+          <span style={{fontSize:12.5,color:'#9aa3af'}}>/ {total} รายการย่อย</span>
         </div>
       </div>
       <div style={{height:10,borderRadius:99,background:'#eef1f5',overflow:'hidden',marginBottom:6}}>
         <div style={{width:pct+'%',height:'100%',borderRadius:99,background:'linear-gradient(90deg,#15a08f,#2bc0ac)',transition:'width .3s'}}></div>
       </div>
-      <div style={{fontSize:12,color:'#8a93a3',marginBottom:16}}>ทำเสร็จแล้ว · เหลืออีก {total-done} รายการ</div>
+      <div style={{fontSize:12,color:'#8a93a3',marginBottom:16}}>เหลืออีก {total-done} รายการ</div>
       {/* bar graph สถานะรายหัวข้อ */}
       <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:7}}>
         {ms('donut_small',15,'#9aa3af')}
         <span style={{fontSize:11.5,color:'#9aa3af',fontWeight:600}}>สถานะรายหัวข้อ ({withSubs.length})</span>
-      </div>
-      <div style={{display:'flex',height:12,borderRadius:99,overflow:'hidden',marginBottom:13,gap:2,background:'#f3f5f8',padding:0}}>
-        {seg.filter(s=>s.n>0).map((s,i)=>(
-          <div key={s.label} title={s.label+' '+s.n} style={{width:(s.n/nt*100)+'%',background:s.color,borderRadius:99}}></div>
-        ))}
       </div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:7}}>
         {seg.map(s=>(
@@ -1135,6 +1332,7 @@ function WatchPanel(){
 function App(){
   const [tab,setTab]=useState(()=>{const t=new URLSearchParams(location.search).get('tab');return TABS.some(x=>x.key===t)?t:'talk';});
   const [view,setView]=useState('list');
+  const [bp,setBp]=useState(null);
 
   const Card=({children,pad})=>(<div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:pad||'16px 18px'}}>{children}</div>);
 
@@ -1154,6 +1352,7 @@ function App(){
               <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'5px 0',fontSize:13,color:'#3a4452'}}>{ms('check_circle',19,primary,true)}{p[0]}</div>
             ))}
           </Card>
+          <BusinessPlanCard bp={bp} setBp={setBp}/>
           <Card>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:10}}>{ms('edit_note',21,'#8a93a3')}<span style={{fontWeight:600,fontSize:13.5}}>จำนวนโพสต์จากกลุ่ม</span><div style={{flex:1}}></div>{ms('done_all',19,primary)}</div>
             {[['ทั้งหมด',10,'#eef0f4','#3a4452'],['มีข้อสรุป',0,'#eef0f4','#3a4452'],['ยังไม่ได้อ่าน',0,'#fdeaea','#d8513a']].map((r,i)=>(
@@ -1266,7 +1465,7 @@ function App(){
             </div>
            </div>
           ) : tab==='todo' ? (
-           <TodoPanel/>
+           <TodoPanel bp={bp} setBp={setBp}/>
           ) : tab==='watch' ? (
            <WatchPanel/>
           ) : tab==='verify' ? (

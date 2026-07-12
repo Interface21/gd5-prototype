@@ -85,7 +85,7 @@ function GD5ProfileMenu({onClose,onGoAdmin,onGoPA}){
 
 function GD5AppShell({active,bg,children,onGoAdmin,onGoPA}){
   const [showProfile,setShowProfile]=React.useState(false);
-  const goAdmin=onGoAdmin||(()=>{window.location.href='pa-my.html';});
+  const goAdmin=onGoAdmin||(()=>{window.location.href='backend-business-plan-framework.html';});
   const goPA=onGoPA||(()=>{window.location.href='pa-my.html';});
   return (
     <div style={{minHeight:'100vh',background:bg||'#eef1f6'}}>

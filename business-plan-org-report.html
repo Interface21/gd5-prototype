@@ -130,7 +130,9 @@ function scaleTree(nodes,mode){
 const DATA_BY_ROUND={ r1:MISSIONS_BASE, r2:scaleTree(MISSIONS_BASE,'future'), r3:scaleTree(MISSIONS_BASE,'done'), r4:scaleTree(MISSIONS_BASE,'done') };
 
 const flattenTree=(nodes)=>nodes.reduce((acc,n)=>acc.concat([n],flattenTree(n.children||[])),[]);
-const usedTotal=(n)=>(n.spentSelf||0)+(n.children||[]).reduce((s,c)=>s+usedTotal(c),0); // งบที่ใช้ไป = บันทึกเอง + รวมจากแผนที่อยู่ใต้ 1 ระดับ
+const dailyOf=(n)=>Math.round((n.spentSelf||0)*0.4); // งบจากงานประจำวัน (mock — สัดส่วนของยอดบันทึกเอง)
+const usedTotal=(n)=>(n.spentSelf||0)+dailyOf(n)+(n.children||[]).reduce((s,c)=>s+usedTotal(c),0); // งบที่ใช้ไป = บันทึกเอง + งานประจำวัน +
+const cmdOf=(n)=>{ const total=Math.max(3,Math.round((n.budget||0)/45000)); const g=Math.round(total*0.62), y=Math.round(total*0.25), r=Math.max(0,total-g-y); return {total:g+y+r,g,y,r}; }; // คำสั่งการ (mock — สัดส่วนจากงบประมาณ เพื่อให้มีข้อมูลเสมอเหมือนหน้าที่รับผิดชอบ) รวมจากแผนที่อยู่ใต้ 1 ระดับ
 
 /* คำสั่งการ (work orders) สรุปทั้งองค์กร แยกตามรอบ */
 const CMD_SUMMARY_BY_ROUND={
@@ -236,6 +238,139 @@ function PlanCard({node,childLabel,onOpen,onDrill}){
 const LEVEL_CHILD_LABEL=['เป้าหมาย','กลยุทธ์','แผนงาน']; // ระดับที่ 0=พันธกิจ (ลูกคือเป้าหมาย), 1=เป้าหมาย (ลูกคือกลยุทธ์), 2=กลยุทธ์ (ลูกคือแผนงาน)
 const LEVEL_NAME=['พันธกิจ','เป้าหมาย','กลยุทธ์','แผนงาน'];
 
+// แผนงานประจำวัน (ชุด TODO ที่มีชื่อ) — กำหนดโดยแอดมิน/งานแผน ดูอย่างเดียวที่นี่ เรียกใช้/แก้ไขได้จริงหน้า VM ที่ผูกกับแผนนี้
+const DAILY_PLANS_SEED={
+  p2111:[
+    {id:'dpo1',title:'แผนสำรวจความต้องการผู้ใช้งานประจำสัปดาห์',items:['สรุปแบบสอบถามที่ได้รับ','จัดกลุ่มความต้องการตามหมวด','ส่งสรุปให้ทีมพัฒนา']},
+  ],
+  p1211:[
+    {id:'dpo2',title:'แผนเตรียมสถานที่ประกวด MOU',items:['ตรวจสอบความพร้อมสถานที่','ทดสอบระบบโสตทัศนูปกรณ์','ประสานทีมงานวันจริง']},
+  ],
+};
+
+// กลุ่ม Virtual Meeting (VM) ที่ผูกกับแผนธุรกิจนี้ — แต่ละกลุ่มใช้งานแผนงานประจำวันชุดใดชุดหนึ่งข้างต้น (planId อ้างถึง id ใน DAILY_PLANS_SEED)
+const VM_GROUPS_SEED={
+  p2111:[
+    {id:'vgo1',title:'VM : Roadmap GiveD5',members:12,href:'user-virtual-meeting-group.html',planId:'dpo1',done:2,total:3},
+  ],
+  p1211:[
+    {id:'vgo2',title:'ทีมจัดประกวด MOU ระดับภาค',members:10,href:'user-virtual-meeting-group.html',planId:'dpo2',done:3,total:3},
+  ],
+};
+const AVCOLORS=['#3b82f6','#f59e0b','#8b5cf6','#0e8c7d','#ef4444','#15a08f','#db2777'];
+const avColor=(s)=>{let h=0;for(let i=0;i<s.length;i++)h=(h+s.charCodeAt(i)*31)|0;return AVCOLORS[Math.abs(h)%AVCOLORS.length];};
+
+function DailyPlanReadOnly({plans,vmGroups}){
+  const [openId,setOpenId]=useState(null);
+  const [subTab,setSubTab]=useState({});
+  const groups=vmGroups||[];
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:16}}>
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
+          <div style={{width:34,height:34,borderRadius:9,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-journal-check" style={{fontSize:18,color:primary}}></i></div>
+          <div style={{flex:1,minWidth:220}}>
+            <div style={{fontWeight:700,fontSize:15}}>แผนงานประจำวัน</div>
+            <div style={{fontSize:12,color:'#9aa3af',marginTop:1}}>{plans.length} ชุด{groups.length>0?' · เชื่อมกับ '+groups.length+' กลุ่ม VM':''} · กำหนดโดยผู้ดูแลระบบ/งานแผน</div>
+          </div>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6,background:'#f1f3f6',color:'#5a6473',borderRadius:8,padding:'6px 13px',fontSize:12,fontWeight:600}}><i className="bi bi-lock" style={{fontSize:13,color:'#9aa3af'}}></i>ดูอย่างเดียว</span>
+        </div>
+      </div>
+
+      {plans.length===0?(
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          <div style={{textAlign:'center',padding:'32px 10px',color:'#b3bac4'}}>
+            <i className="bi bi-checklist" style={{fontSize:28,color:'#d7dce3'}}></i>
+            <div style={{fontSize:13,fontWeight:600,color:'#8a93a3',marginTop:10}}>ยังไม่มีแผนงานประจำวันสำหรับแผนนี้</div>
+          </div>
+        </div>
+      ):(
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          {plans.map(pl=>{
+            const open=openId===pl.id;
+            const groupsForPlan=groups.filter(g=>g.planId===pl.id);
+            const cur=subTab[pl.id]||(groupsForPlan.length>0?'groups':'items');
+            return (
+              <div key={pl.id} style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden'}}>
+                <button onClick={()=>setOpenId(open?null:pl.id)} style={{display:'flex',alignItems:'center',gap:10,width:'100%',textAlign:'left',padding:'14px 16px',border:'none',background:'none',cursor:'pointer'}}>
+                  <div style={{width:30,height:30,borderRadius:8,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-checklist" style={{fontSize:16,color:primary}}></i></div>
+                  <span style={{flex:1,fontSize:14,fontWeight:700,color:'#1a2332'}}>{pl.title}</span>
+                  {groupsForPlan.length>0 && (
+                    <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:11,fontWeight:600,color:'#3b6fd4',background:'#eaf1fe',borderRadius:8,padding:'3px 10px',flex:'none'}}><i className="bi bi-people-fill" style={{fontSize:11}}></i>{groupsForPlan.length} กลุ่ม</span>
+                  )}
+                  <span style={{fontSize:11,color:'#9aa3af',fontWeight:600,background:'#f1f3f6',borderRadius:8,padding:'3px 10px',flex:'none'}}>{pl.items.length} ข้อ</span>
+                  <span style={{flex:'none',width:28,height:28,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',background:open?'#cde2df':'#ebebeb'}}>
+                    <i className={'bi '+(open?'bi-chevron-up':'bi-chevron-down')} style={{fontSize:13,color:open?'#4e9b92':'#2b3440'}}></i>
+                  </span>
+                </button>
+                {open&&(
+                  <div style={{padding:'0 16px 18px'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:0,borderBottom:'1px solid #f0f2f5',marginBottom:14}}>
+                      {[['groups','กลุ่ม VM ที่ใช้แผนนี้',groupsForPlan.length],['items','รายการย่อย',pl.items.length]].map(([k,label,count])=>(
+                        <button key={k} onClick={()=>setSubTab(s=>({...s,[pl.id]:k}))} style={{padding:'8px 14px',fontWeight:cur===k?700:400,color:cur===k?primary:'#8a93a3',fontSize:12.5,background:'none',border:'none',borderBottom:'2px solid '+(cur===k?primary:'transparent'),cursor:'pointer',display:'flex',alignItems:'center',gap:6}}>
+                          {label}
+                          <span style={{minWidth:18,height:18,borderRadius:99,background:cur===k?primarySoft:'#f4f5f7',color:cur===k?primary:'#9aa3af',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{count}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {cur==='items' ? (
+                      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                        {pl.items.map((it,idx)=>(
+                          <div key={idx} style={{display:'flex',alignItems:'center',gap:10,border:'1px solid #eceef2',borderRadius:10,padding:'9px 12px'}}>
+                            <i className="bi bi-square" style={{fontSize:15,color:'#cfd6e0'}}></i>
+                            <span style={{flex:1,fontSize:13.5,fontWeight:600,color:'#1f2733'}}>{it}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      groupsForPlan.length===0?(
+                        <div style={{fontSize:12.5,color:'#c4ccd4',padding:'4px 2px'}}>ยังไม่มีกลุ่ม VM ที่ใช้แผนนี้</div>
+                      ):(
+                        <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                          {groupsForPlan.map(g=>{
+                            const pct=g.total?Math.round(g.done/g.total*100):0;
+                            const done=g.total>0&&g.done===g.total;
+                            return (
+                              <div key={g.id} style={{display:'flex',alignItems:'center',gap:10,border:'1px solid #eceef2',borderRadius:10,padding:'9px 12px',flexWrap:'wrap'}}>
+                                <div style={{width:32,height:32,borderRadius:'50%',background:avColor(g.title),color:'#fff',fontWeight:700,fontSize:13,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{g.title.trim().charAt(0)}</div>
+                                <div style={{flex:1,minWidth:170}}>
+                                  <div style={{fontSize:13,fontWeight:700,color:'#1a2332',lineHeight:1.3,marginBottom:3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{g.title}</div>
+                                  <div style={{display:'flex',alignItems:'center',gap:10,fontSize:11.5,color:'#9aa3af',flexWrap:'wrap'}}>
+                                    <span style={{display:'inline-flex',alignItems:'center',gap:4}}><i className="bi bi-people" style={{fontSize:12}}></i>{g.members} สมาชิก</span>
+                                    <span>เช็คแล้ว {g.done}/{g.total} รายการ</span>
+                                  </div>
+                                </div>
+                                <div style={{width:70,flex:'none'}}>
+                                  <div style={{height:6,background:'#eef0f3',borderRadius:99,overflow:'hidden'}}>
+                                    <div style={{width:pct+'%',height:'100%',background:done?GRN:primary,borderRadius:99}}></div>
+                                  </div>
+                                </div>
+                                <a href={g.href} style={{flex:'none',display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,height:32,padding:'0 14px',borderRadius:11,border:'1px solid #e3e7ec',background:'#fff',color:'#3a4452',fontSize:12.5,fontWeight:700}}>
+                                  <i className="bi bi-box-arrow-up-right" style={{fontSize:12}}></i>ดูกลุ่ม
+                                </a>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div style={{display:'flex',alignItems:'flex-start',gap:9,fontSize:12,color:'#9aa3af',padding:'0 4px'}}>
+        <i className="bi bi-question-circle" style={{fontSize:15,color:'#b3bac4'}}></i>
+        <span>แต่ละแผนงานคือชุด TODO ที่มีรายการย่อยของตัวเอง จะถูกเรียกใช้/แก้ไขได้จริงที่การประชุม (VM) ที่ผูกกับแผนนี้ — ไม่ใช่ที่นี้ เนื่องจากบางครั้งผู้ดำเนินงานจริงไม่ใช่เจ้าของแผนธุรกิจ</span>
+      </div>
+    </div>
+  );
+}
+
 /* หน้ารายละเอียด "ข้อมูลและสถานะ" ของแผนแต่ละรายการ — เปิดจากการคลิกการ์ด (ทุกชั้น รวมถึงแผนงานที่ไม่มีลูก) */
 function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
   const kids=node.children||[];
@@ -247,48 +382,71 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
   const pct=showQty?Math.min(100,node.achieved/node.target*100):0;
   const budget=node.budget||0;
   const usedSelf=node.spentSelf||0;
+  const usedDaily=dailyOf(node); // รวมจากงานประจำวัน
   const usedChildren=kids.reduce((s,c)=>s+usedTotal(c),0);
-  const used=usedSelf+usedChildren;
+  const used=usedSelf+usedDaily+usedChildren;
   const bpct=budget>0?used/budget*100:0;
   const childWord=childLabel||'แผนย่อย';
   const bLogs=usedSelf>0?[{date:'14/06/2569',amount:usedSelf,by:node.owner,note:'บันทึกการใช้งบประมาณ'}]:[]; // mock — แปลงยอดบันทึกเองเป็นรายการ
+  const budgetItems=[...bLogs.map(l=>({...l,source:'self'})),...(usedDaily>0?[{date:'13/06/2569',amount:usedDaily,by:'ระบบงานประจำวัน',note:'ยอดรวมการใช้งบจากงานประจำวัน',source:'daily'}]:[])];
+  const cmd=cmdOf(node);
+  const actionText=showQty
+    ? 'ดำเนินการได้ '+pct.toFixed(0)+'% ของเป้าหมาย ('+node.achieved.toLocaleString()+(node.unit?' '+node.unit:'')+' จาก '+node.target.toLocaleString()+') '+(budget>0?'และใช้งบประมาณไปแล้ว '+bpct.toFixed(0)+'% จากที่ตั้งไว้':'')
+    : (budget>0?'ใช้งบประมาณไปแล้ว '+bpct.toFixed(0)+'% จากที่ตั้งไว้ แผนธุรกิจนี้ไม่มีตัวชี้วัด':'แผนธุรกิจนี้ไม่มีตัวชี้วัดและงบประมาณ');
+  const [pageTab,setPageTab]=useState('detail');
+  const dailyPlans=DAILY_PLANS_SEED[node.id]||[];
+  const vmGroups=VM_GROUPS_SEED[node.id]||[];
   return (
     <div style={{animation:'fadeIn .15s ease'}}>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:14,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:6,color:'#5a6473',fontSize:13,fontWeight:600,padding:'7px 13px',borderRadius:8,background:'#fff',border:'1px solid #e3e7ec',cursor:'pointer'}}>
           <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ย้อนกลับ
         </button>
-        <span style={{fontSize:12,fontWeight:700,color:'#5a6473',background:'#e9edf2',borderRadius:6,padding:'4px 11px'}}>{LEVEL_NAME[level]||'แผนธุรกิจ'}</span>
-        <div style={{flex:1}}></div>
-        <div style={{display:'flex',alignItems:'center',gap:9}}>
+        <div style={{flex:1,fontWeight:700,fontSize:15,color:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{node.title}</div>
+        <div style={{display:'flex',alignItems:'center',gap:8,flex:'none'}}>
           <span style={{fontSize:12.5,color:'#8a93a3'}}>สถานะล่าสุด</span>
           <StatusDot s={node.status} size={18}/>
-          <span style={{fontSize:13,fontWeight:700,color:node.status?dotC(node.status):'#9aa3af'}}>{STLABEL[node.status]||STLABEL['']}</span>
         </div>
       </div>
 
-      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'20px 24px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',marginBottom:14}}>
-        <div style={{fontWeight:700,fontSize:16,color:'#1a2332',marginBottom:14,lineHeight:1.45}}>{node.title}</div>
-        <div style={{display:'flex',alignItems:'center',gap:28,flexWrap:'wrap'}}>
-          <div style={{display:'flex',alignItems:'center',gap:9}}>
-            <Avatar name={node.owner} size={28}/>
-            <div>
-              <div style={{fontSize:11,color:'#9aa3af',marginBottom:1}}>ผู้รับผิดชอบ</div>
-              <div style={{fontSize:13,fontWeight:600,color:'#1a2332'}}>{node.owner}</div>
-            </div>
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',marginBottom:14}}>
+        <div style={{display:'flex',alignItems:'flex-start',gap:13,marginBottom:14}}>
+          <div style={{width:38,height:38,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className="bi bi-person-fill" style={{fontSize:19,color:primary}}></i>
           </div>
-          <div style={{display:'flex',alignItems:'center',gap:9}}>
-            <div style={{width:28,height:28,borderRadius:'50%',background:'#eef0f3',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
-              <i className="bi bi-calendar-event" style={{fontSize:13,color:'#8a93a3'}}></i>
-            </div>
-            <div>
-              <div style={{fontSize:11,color:'#9aa3af',marginBottom:1}}>ช่วงเวลาดำเนินการ</div>
-              <div style={{fontSize:13,fontWeight:600,color:'#1a2332'}}>{node.period}</div>
+          <div>
+            <div style={{fontWeight:700,fontSize:14.5,color:'#1a2332',marginBottom:6,lineHeight:1.4}}>{node.title}</div>
+            <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+              <span style={{display:'inline-flex',alignItems:'center',gap:6,background:'#f1f3f6',color:'#5a6473',borderRadius:99,padding:'4px 12px',fontSize:12.5,fontWeight:500}}>
+                <i className="bi bi-calendar-event" style={{fontSize:13}}></i>{node.period}
+              </span>
+              <span style={{display:'inline-flex',alignItems:'center',gap:6,background:'#f1f3f6',color:'#5a6473',borderRadius:99,padding:'4px 12px',fontSize:12.5,fontWeight:500}}>
+                <i className="bi bi-person" style={{fontSize:13}}></i>{node.owner}
+              </span>
+              <span style={{fontSize:11.5,fontWeight:700,color:'#5a6473',background:'#e9edf2',borderRadius:6,padding:'3px 10px'}}>{LEVEL_NAME[level]||'แผนธุรกิจ'}</span>
             </div>
           </div>
         </div>
+        <div style={{display:'flex',flexDirection:'column',gap:8}}>
+          <div style={{height:9,background:'#f0f2f5',borderRadius:99,width:'100%'}}></div>
+          <div style={{height:9,background:'#f0f2f5',borderRadius:99,width:'86%'}}></div>
+          <div style={{height:9,background:'#f0f2f5',borderRadius:99,width:'58%'}}></div>
+        </div>
       </div>
 
+      {/* page tabs */}
+      <div style={{display:'flex',gap:6,background:'#fff',border:'1px solid #eceef2',borderRadius:12,padding:5,width:'fit-content',marginBottom:14}}>
+        {[['detail','รายละเอียด','bi-info-circle'],['daily','แผนงานประจำวัน','bi-journal-check']].map(([k,label,ic])=>(
+          <button key={k} onClick={()=>setPageTab(k)} style={{display:'inline-flex',alignItems:'center',gap:7,padding:'9px 16px',borderRadius:9,border:'none',background:pageTab===k?primary:'transparent',color:pageTab===k?'#fff':'#5a6473',fontSize:13.5,fontWeight:700,cursor:'pointer'}}>
+            <i className={'bi '+ic} style={{fontSize:14}}></i>{label}
+            {k==='daily'&&dailyPlans.length>0&&(
+              <span style={{minWidth:19,height:19,borderRadius:99,background:pageTab===k?'rgba(255,255,255,.28)':primarySoft,color:pageTab===k?'#fff':primary,fontSize:11,fontWeight:800,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{dailyPlans.length}</span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {pageTab==='detail' && (<>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,alignItems:'start'}}>
         <div style={{display:'flex',flexDirection:'column',gap:14}}>
         {/* สถานะของแผนธุรกิจ — โครงเดียวกับหน้าแผนธุรกิจที่รับผิดชอบ */}
@@ -302,13 +460,15 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
                     <StatusDot s={node.status} size={10}/>{STLABEL[node.status]}
                   </span>
                 </div>
-                <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
                   <Avatar name={node.owner} size={28}/>
                   <div>
-                    <div style={{fontSize:12.5,fontWeight:600}}>ผู้รับผิดชอบ : {node.owner}</div>
-                    <div style={{fontSize:11.5,color:'#9aa3af'}}>รายละเอียดการรายงานผลอยู่ในหน้าแผนธุรกิจที่รับผิดชอบของผู้รับผิดชอบ</div>
+                    <div style={{fontSize:12.5,fontWeight:600}}>รายงานโดย : {node.owner}</div>
+                    <div style={{fontSize:11.5,color:'#9aa3af'}}>14/06/2569 09:30</div>
                   </div>
                 </div>
+                <div style={{fontSize:12.5,fontWeight:700,color:'#5a6473',marginBottom:6}}>สิ่งที่ดำเนินการ</div>
+                <div style={{fontSize:13,color:'#1a2332',lineHeight:1.7}}>{actionText}</div>
               </React.Fragment>
             ):(
               <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'12px 0'}}>ยังไม่มีการรายงานสถานะ</div>
@@ -316,10 +476,23 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
           </div>
         </div>
 
+        {/* ดำเนินการตามแผนงาน — โครงเดียวกับหน้าแผนธุรกิจที่รับผิดชอบ */}
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'16px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:12}}>
+            <i className="bi bi-record-circle" style={{fontSize:22,color:primary,flex:'none'}}></i>
+            <span style={{fontWeight:600,fontSize:13.5,color:'#1a2332',flex:'none'}}>ดำเนินการตามแผนงาน</span>
+            <div style={{flex:1,height:10,background:'#e3f3f0',borderRadius:99,overflow:'hidden',margin:'0 12px'}}>
+              <div style={{width:pct+'%',height:'100%',background:primary,borderRadius:99}}></div>
+            </div>
+            <span style={{fontSize:22,fontWeight:700,color:primary,flex:'none',minWidth:90,textAlign:'right'}}>{showQty?pct.toFixed(2)+' %':'—'}</span>
+          </div>
+          <div style={{paddingLeft:34,marginTop:6,fontSize:12,color:'#8a93a3'}}>{showQty?('จำนวนที่ทำได้สะสม '+node.achieved.toLocaleString()+' จาก '+node.target.toLocaleString()+(node.unit?' '+node.unit:'')):'แผนธุรกิจนี้ไม่มีตัวชี้วัด'}</div>
+        </div>
+
         {/* งบประมาณ — ที่ตั้งไว้ vs ใช้ไป (ใช้ไป = รวมจากแผนใต้ 1 ระดับ + บันทึกเองในแผนนี้) */}
         <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
           <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
-            <i className="bi bi-wallet2" style={{fontSize:15,color:'#5a6473'}}></i>
+            <i className="bi bi-wallet2" style={{fontSize:15,color:primary}}></i>
             <span style={{fontWeight:700,fontSize:14}}>งบประมาณ</span>
           </div>
           {budget>0?(
@@ -333,21 +506,64 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
               </div>
               <div style={{display:'flex',height:10,background:'#eef0f3',borderRadius:99,overflow:'hidden',marginBottom:12}}>
                 {hasChildren&&usedChildren>0&&<div style={{width:Math.min(100,usedChildren/budget*100)+'%',background:primary}} title={'รวมจาก'+childWord+' '+usedChildren.toLocaleString()+' บาท'}></div>}
+                {usedDaily>0&&<div style={{width:Math.min(100,usedDaily/budget*100)+'%',background:'#e59500'}} title={'รวมจากงานประจำวัน '+usedDaily.toLocaleString()+' บาท'}></div>}
                 {usedSelf>0&&<div style={{width:Math.min(100,usedSelf/budget*100)+'%',background:'#3b6fd4'}} title={'บันทึกเอง '+usedSelf.toLocaleString()+' บาท'}></div>}
               </div>
-              <div style={{display:'flex',flexDirection:'column',gap:6,fontSize:12.5,color:'#3c4350'}}>
+              <div style={{display:'flex',flexDirection:'column',gap:8,fontSize:12.5,color:'#3c4350'}}>
                 {hasChildren&&(
-                <div style={{display:'flex',alignItems:'center',gap:7}}>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
                   <span style={{width:10,height:10,borderRadius:3,background:primary,flex:'none'}}></span>
                   <span style={{flex:1}}>รวมจาก{childWord}ใต้แผนนี้ (1 ระดับ)</span>
                   <span style={{fontWeight:700}}>{usedChildren.toLocaleString()} บาท</span>
                 </div>
                 )}
-                <div style={{display:'flex',alignItems:'center',gap:7}}>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                  <span style={{width:10,height:10,borderRadius:3,background:'#e59500',flex:'none'}}></span>
+                  <span style={{flex:1}}>รวมจากงานประจำวัน</span>
+                  <span style={{fontWeight:700}}>{usedDaily.toLocaleString()} บาท</span>
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
                   <span style={{width:10,height:10,borderRadius:3,background:'#3b6fd4',flex:'none'}}></span>
                   <span style={{flex:1}}>บันทึกเองในแผนนี้</span>
                   <span style={{fontWeight:700}}>{usedSelf.toLocaleString()} บาท</span>
                 </div>
+              </div>
+
+              <div style={{borderTop:'1px solid #f0f2f5',marginTop:14,paddingTop:12}}>
+                <button onClick={()=>setLogsOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:6,width:'100%',background:'none',border:'none',padding:0,cursor:'pointer',marginBottom:logsOpen?8:0}}>
+                  <span style={{fontSize:12.5,fontWeight:700,color:'#5a6473'}}>รายการใช้งบประมาณ</span>
+                  <span style={{fontSize:11.5,color:'#b3bac4',fontWeight:600}}>({budgetItems.length})</span>
+                  <div style={{flex:1}}></div>
+                  <i className={'bi '+(logsOpen?'bi-chevron-up':'bi-chevron-down')} style={{fontSize:13,color:'#9aa3af'}}></i>
+                </button>
+                {logsOpen&&(budgetItems.length===0 ? (
+                  <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'20px 0'}}>ยังไม่มีการบันทึกการใช้งบประมาณ</div>
+                ) : (
+                  <div>
+                    {budgetItems.map((l,i)=>{
+                      const srcColor=l.source==='daily'?'#e59500':'#3b6fd4';
+                      const srcBg=l.source==='daily'?'#fdf1de':'#eaf0fb';
+                      const srcLabel=l.source==='daily'?'งานประจำวัน':'บันทึกเองในแผนนี้';
+                      return (
+                        <div key={i} style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 2px',borderBottom:i<budgetItems.length-1?'1px solid #f4f6f8':'none'}}>
+                          <div style={{width:30,height:30,borderRadius:'50%',background:srcBg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+                            <i className="bi bi-wallet2" style={{fontSize:14,color:srcColor}}></i>
+                          </div>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{fontSize:12.5,color:'#1a2332',fontWeight:600,lineHeight:1.4,marginBottom:4}}>{l.note}</div>
+                            <div style={{display:'flex',alignItems:'center',gap:7,flexWrap:'wrap'}}>
+                              <span style={{fontSize:11.5,color:'#9aa3af'}}>{l.date} · {l.by}</span>
+                              <span style={{display:'inline-flex',alignItems:'center',gap:4,background:srcBg,color:srcColor,borderRadius:8,padding:'2px 8px',fontSize:11,fontWeight:700,whiteSpace:'nowrap'}}>
+                                <span style={{width:6,height:6,borderRadius:2,background:srcColor}}></span>{srcLabel}
+                              </span>
+                            </div>
+                          </div>
+                          <span style={{fontSize:13,fontWeight:700,color:srcColor,flex:'none'}}>{l.amount.toLocaleString()} บาท</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
             </React.Fragment>
           ):(
@@ -355,39 +571,18 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
           )}
         </div>
 
-        {/* ความก้าวหน้า | รายการใช้งบประมาณ | แจ้งเตือน — บล็อกแท็บ (ให้เหมือนหน้าแผนธุรกิจที่รับผิดชอบ) */}
+        {/* ความก้าวหน้า | แจ้งเตือน — บล็อกแท็บ (ให้เหมือนหน้าแผนธุรกิจที่รับผิดชอบ) */}
         <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
           <div style={{display:'flex',alignItems:'center',gap:0,marginBottom:14,flexWrap:'wrap'}}>
-            {['ความก้าวหน้า','รายการใช้งบประมาณ','แจ้งเตือน'].map((t,i)=>(
+            {['ความก้าวหน้า','แจ้งเตือน'].map((t,i)=>(
               <button key={i} onClick={()=>setTab(i)} style={{padding:'7px 14px',fontWeight:tab===i?700:400,color:tab===i?primary:'#8a93a3',fontSize:13,background:'none',border:'none',borderBottom:'2px solid '+(tab===i?primary:'transparent'),cursor:'pointer',display:'flex',alignItems:'center',gap:5}}>
-                <span style={{minWidth:18,height:18,borderRadius:99,background:tab===i?primarySoft:'#f4f5f7',color:tab===i?primary:'#9aa3af',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{i===1?bLogs.length:0}</span>
+                <span style={{minWidth:18,height:18,borderRadius:99,background:tab===i?primarySoft:'#f4f5f7',color:tab===i?primary:'#9aa3af',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>0</span>
                 {t}
               </button>
             ))}
           </div>
           {tab===0 ? (
             <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'22px 14px',lineHeight:1.7}}>รายละเอียดการรายงานความก้าวหน้าอยู่ในหน้าแผนธุรกิจที่รับผิดชอบของผู้รับผิดชอบ</div>
-          ) : tab===1 ? (
-            budget<=0 ? (
-              <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'22px 0'}}>ไม่ได้ตั้งงบประมาณ</div>
-            ) : bLogs.length===0 ? (
-              <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'22px 0'}}>ยังไม่มีการบันทึกการใช้งบประมาณ</div>
-            ) : (
-              <div>
-                {bLogs.map((l,i)=>(
-                  <div key={i} style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 2px',borderBottom:i<bLogs.length-1?'1px solid #f4f6f8':'none'}}>
-                    <div style={{width:30,height:30,borderRadius:'50%',background:'#eaf0fb',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
-                      <i className="bi bi-wallet2" style={{fontSize:14,color:'#3b6fd4'}}></i>
-                    </div>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontSize:12.5,color:'#1a2332',fontWeight:600,lineHeight:1.4,marginBottom:2}}>{l.note}</div>
-                      <div style={{fontSize:11.5,color:'#9aa3af'}}>{l.date} · {l.by}</div>
-                    </div>
-                    <span style={{fontSize:13,fontWeight:700,color:'#3b6fd4',flex:'none'}}>{l.amount.toLocaleString()} บาท</span>
-                  </div>
-                ))}
-              </div>
-            )
           ) : (
             <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'22px 0'}}>ไม่มีการแจ้งเตือน</div>
           )}
@@ -395,37 +590,39 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
         </div>
 
         <div style={{display:'flex',flexDirection:'column',gap:14}}>
-        {/* ตัวชี้วัด (KPI) — คอลัมน์ขวา (ตำแหน่งเดียวกันทุกหน้า) */}
-        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+        {/* สรุปข้อมูลคำสั่งการ — โครงเดียวกับหน้าแผนธุรกิจที่รับผิดชอบ */}
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
           <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
-            <i className="bi bi-bullseye" style={{fontSize:15,color:'#5a6473'}}></i>
-            <span style={{fontWeight:700,fontSize:14}}>ตัวชี้วัด (KPI)</span>
+            <i className="bi bi-people-fill" style={{fontSize:19,color:primary}}></i>
+            <span style={{fontWeight:700,fontSize:14}}>สรุปข้อมูลคำสั่งการ</span>
+            <div style={{flex:1}}></div>
+            <span style={{fontSize:12,color:'#9aa3af',fontWeight:600,background:'#f4f5f7',borderRadius:99,padding:'4px 11px'}}>ทั้งหมด {cmd.total} คำสั่งการ</span>
           </div>
-          {showQty?(
-            <React.Fragment>
-              <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:10}}>
-                <span style={{fontSize:26,fontWeight:700,color:primary}}>{node.achieved.toLocaleString()}</span>
-                <span style={{fontSize:14,color:'#8a93a3'}}>/ {node.target.toLocaleString()}{node.unit?' '+node.unit:''}</span>
-              </div>
-              <div style={{height:10,background:'#e3f3f0',borderRadius:99,overflow:'hidden',marginBottom:7}}>
-                <div style={{width:pct+'%',height:'100%',background:primary,borderRadius:99}}></div>
-              </div>
-              <div style={{fontSize:12,color:'#9aa3af'}}>จำนวนที่ทำได้สะสมคิดเป็น {pct.toFixed(1)}% ของเป้าหมาย</div>
-            </React.Fragment>
-          ):(
-            <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'18px 0'}}>แผนธุรกิจนี้ไม่มีตัวชี้วัด</div>
-          )}
+          <div style={{fontSize:12.5,color:'#8a93a3',marginBottom:8}}>
+            งานตามแผนธุรกิจนี้ <span style={{fontWeight:700,color:'#1a2332'}}>{cmd.total}</span> คำสั่งการ
+          </div>
+          <div style={{display:'flex',height:20,borderRadius:99,overflow:'hidden',marginBottom:10}}>
+            {cmd.g>0&&<div style={{flexGrow:cmd.g,background:GRN}}></div>}
+            {cmd.y>0&&<div style={{flexGrow:cmd.y,background:YEL}}></div>}
+            {cmd.r>0&&<div style={{flexGrow:cmd.r,background:RED}}></div>}
+          </div>
+          <div style={{display:'flex',gap:18,flexWrap:'wrap',fontSize:12.5,color:'#3c4350',marginBottom:12}}>
+            {[[GRN,cmd.g],[YEL,cmd.y],[RED,cmd.r]].map(([c,v],i)=>(
+              <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:11,height:11,borderRadius:'50%',background:c}}></span>{v} คำสั่งการ</span>
+            ))}
+          </div>
+          <div style={{borderTop:'1px solid #f0f2f5',paddingTop:10,display:'flex',alignItems:'center',gap:7,fontSize:12,color:'#9aa3af'}}>
+            <i className="bi bi-question-circle" style={{fontSize:14,color:'#b3bac4'}}></i>
+            นับคำสั่งการที่ติดแผนงานนี้เท่านั้น
+          </div>
         </div>
 
         {kids.length>0&&(
           <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
               <i className="bi bi-diagram-3" style={{fontSize:16,color:'#8a93a3'}}></i>
-              <span style={{fontWeight:700,fontSize:14}}>{childLabel}ภายใต้แผนนี้ ({kids.length})</span>
+              <span style={{fontWeight:700,fontSize:14}}>แผนธุรกิจภายใต้แผนธุรกิจนี้</span>
               <div style={{flex:1}}></div>
-              <button onClick={onDrill} style={{display:'inline-flex',alignItems:'center',gap:5,background:primarySoft,color:primary,border:'none',borderRadius:8,padding:'6px 12px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
-                เปิดรายการ{childLabel}<i className="bi bi-chevron-right" style={{fontSize:10}}></i>
-              </button>
             </div>
             <div>
               {kids.map((c,i)=>(
@@ -442,6 +639,9 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
         )}
         </div>
       </div>
+      </>)}
+
+      {pageTab==='daily' && <DailyPlanReadOnly plans={dailyPlans} vmGroups={vmGroups}/>}
     </div>
   );
 }

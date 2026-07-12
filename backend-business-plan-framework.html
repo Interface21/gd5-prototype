@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>กำหนดกรอบแผนธุรกิจ — ผู้ดูแลระบบ · GiveD5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:none;border:none;padding:0}
+a{color:inherit;text-decoration:none}
+input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+.nav-item:hover{background:#f3f5f8}
+.lv-row:hover{background:#f5f8f7}
+.bp-card{transition:box-shadow .16s ease,transform .16s ease,border-color .16s ease}
+.bp-card:hover{box-shadow:0 10px 26px rgba(16,24,40,.10);transform:translateY(-2px);border-color:#cfe8e3}
+.sub-item:hover{background:#f3f5f8}
+.icon-btn:hover{background:#eef1f5}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes popIn{from{opacity:0;transform:scale(.97) translateY(-4px)}to{opacity:1;transform:none}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const primary='#15a08f', primarySoft='#e3f3f0';
+
+/* ── badge tone palette ── */
+const TONE={
+  success:{bg:'#e7f7ee',color:'#12805e',bd:'#bfe9d6',dot:'#1eb372'},
+  info:   {bg:'#eaf1fe',color:'#2f66d0',bd:'#c9dbfb',dot:'#3b82f6'},
+  teal:   {bg:'#e2f3f0',color:'#0e7c6d',bd:'#bfe6df',dot:'#15a08f'},
+  amber:  {bg:'#fff4df',color:'#b06200',bd:'#f6dca8',dot:'#e5920b'},
+  purple: {bg:'#f1ebfd',color:'#7338d6',bd:'#ddccf8',dot:'#8b52e6'},
+  rose:   {bg:'#fde8f0',color:'#c31e68',bd:'#f7c6dc',dot:'#e0468c'},
+  neutral:{bg:'#f0f3f7',color:'#5a6473',bd:'#e0e5ec',dot:'#9aa3af'},
+};
+function Badge({tone='neutral',icon,dot,children,solid,size}){
+  const t=TONE[tone]||TONE.neutral;
+  const fs=size==='lg'?12.5:11.5, py=size==='lg'?'6px 12px':'4px 10px', rad=size==='lg'?10:8;
+  if(solid) return <span style={{display:'inline-flex',alignItems:'center',gap:6,background:t.dot,color:'#fff',borderRadius:rad,padding:py,fontSize:fs,fontWeight:700,whiteSpace:'nowrap',lineHeight:1}}>{icon&&<i className={'bi '+icon} style={{fontSize:fs+1}}></i>}{children}</span>;
+  return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:6,background:t.bg,color:t.color,border:'1px solid '+t.bd,borderRadius:rad,padding:py,fontSize:fs,fontWeight:700,whiteSpace:'nowrap',lineHeight:1}}>
+      {dot&&<span style={{width:7,height:7,borderRadius:'50%',background:t.dot,flex:'none'}}></span>}
+      {icon&&<i className={'bi '+icon} style={{fontSize:fs+1}}></i>}
+      {children}
+    </span>
+  );
+}
+
+const STATUS={
+  active:{tone:'success',label:'กำลังดำเนินการ',icon:'bi-play-circle-fill'},
+  draft:{tone:'neutral',label:'ร่าง',icon:'bi-pencil-fill'},
+  done:{tone:'info',label:'เสร็จสิ้น',icon:'bi-check-circle-fill'},
+  paused:{tone:'amber',label:'ระงับชั่วคราว',icon:'bi-pause-circle-fill'},
+};
+
+const AV=['#15a08f','#3b6fd4','#e0468c','#7338d6','#e5920b','#0e9488','#d1495b'];
+const avColor=(n)=>AV[[...(n||'?')].reduce((a,c)=>a+c.charCodeAt(0),0)%AV.length];
+function Avatar({name,size=42}){
+  return <div style={{width:size,height:size,borderRadius:'50%',background:avColor(name),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:size*0.42,flex:'none'}}>{(name||'?').trim().charAt(0)}</div>;
+}
+
+/* ── level config ── */
+const LEVELS=[
+  {key:'mission', name:'พันธกิจ', prefix:'พันธกิจที่', tier:1, parent:null,       icon:'bi-flag-fill',      accent:'#15a08f'},
+  {key:'goal',    name:'เป้าหมาย', prefix:'เป้าหมายที่', tier:2, parent:'mission',  icon:'bi-bullseye',       accent:'#3b6fd4'},
+  {key:'strategy',name:'กลยุทธ์',  prefix:'กลยุทธ์ที่',  tier:3, parent:'goal',     icon:'bi-signpost-split-fill',accent:'#7338d6'},
+  {key:'plan',    name:'แผนงาน',   prefix:'แผนงานที่',   tier:4, parent:'strategy', icon:'bi-list-check',     accent:'#e0468c'},
+];
+const LV=(k)=>LEVELS.find(l=>l.key===k);
+const FREQ=['ไม่บังคับรายงาน','ทุกวัน','ทุกสัปดาห์','ทุกเดือน (วันสุดท้ายของเดือน)','ทุกไตรมาส','ทุกปี'];
+
+/* ── seed data per level ── */
+const DATA={
+  mission:[
+    {id:'m1',no:'1',title:'EDR',owner:'Piyawat Takaew',desc:'มุ่งมั่นพัฒนาระบบ EDR ให้เป็นเครื่องมือช่วยลดการออกเรียนกลางคัน ยกระดับคุณภาพผลผลิตทางการศึกษา และพัฒนาสู่สถานศึกษาต้นแบบด้านดิจิทัล',status:'active',period:'01/01/2026 – 31/12/2026',prize:20,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+    {id:'m2',no:'2',title:'GiveD5',owner:'Narate Boonmee',desc:'พัฒนา GD5 Platform เพื่อให้องค์กรลูกค้าพัฒนาไปสู่องค์กรแห่งการเรียนรู้ อย่างยั่งยืนและครอบคลุมทุกมิติ',status:'active',period:'01/01/2026 – 31/12/2026',prize:20,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+    {id:'m3',no:'3',title:'ครุภัณฑ์',owner:'Kanya Srisai',desc:'มุ่งมั่นพัฒนาระบบบริหารจัดการงานขายครุภัณฑ์การศึกษาเพื่อยกระดับคุณภาพผลผลิตทางการศึกษาสู่มาตรฐานสากล และสร้างนวัตกรรมครุภัณฑ์ใหม่ให้สถานศึกษา',status:'active',period:'01/01/2026 – 31/12/2026',prize:20,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+    {id:'m4',no:'4',title:'ใช้เทคโนโลยีดิจิทัล GD5 และ AI',owner:'Piyawat Takaew',desc:'ใช้เทคโนโลยีดิจิทัล GD5 และ AI ช่วยสร้างความผูกพันของบุคลากร ให้มีส่วนร่วมพัฒนางาน มุ่งสร้างวัฒนธรรมการทำงานแบบมืออาชีพ',status:'active',period:'01/01/2026 – 31/12/2026',prize:20,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+  ],
+  goal:[
+    {id:'g1',pid:'m1',no:'1.1',title:'รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ EDR',owner:'Kanya Srisai',desc:'รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ EDR ตลอดปีการศึกษา',status:'active',period:'01/01/2026 – 31/12/2026',prize:0,freq:'ไม่บังคับรายงาน',enabled:true},
+    {id:'g2',pid:'m1',no:'1.2',title:'ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปีการศึกษา 2568 และขยายผลไปในปีการศึกษา 2569 อีกจำนวน 6 แห่ง',owner:'Narate Boonmee',desc:'ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปีการศึกษา 2568 และขยายผลไปในปีการศึกษา 2569 อีกจำนวน 6 แห่ง',status:'active',period:'01/01/2026 – 31/12/2026',prize:0,freq:'ไม่บังคับรายงาน',enabled:true},
+    {id:'g3',pid:'m1',no:'1.3',title:'เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านการอาชีวศึกษา ภายในปี 2569 ให้มีจำนวนผู้เรียนในระบบ EDR ไม่น้อยกว่า 50,000 คน',owner:'Piyawat Takaew',desc:'เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านการอาชีวศึกษา ภายในปี 2569 ให้มีจำนวนผู้เรียนในระบบ EDR ไม่น้อยกว่า 50,000 คน',status:'active',period:'01/01/2026 – 31/12/2026',prize:0,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+    {id:'g4',pid:'m1',no:'1.4',title:'นำ AI มาใช้ร่วม (Synergy) กับ ระบบ EDR',owner:'Suda Meechai',desc:'นำ AI มาใช้ร่วม (Synergy) กับ ระบบ EDR เพื่อยกระดับการวิเคราะห์และแจ้งเตือนเชิงป้องกัน',status:'active',period:'01/01/2026 – 31/12/2026',prize:0,freq:'ไม่บังคับรายงาน',enabled:true},
+  ],
+  strategy:[
+    {id:'s1',pid:'g2',no:'1.2.1',title:'จัดกิจกรรมการประกวด MOU ระดับภาค',owner:'Narate Boonmee',desc:'จัดกิจกรรมการประกวดโครงการ MOU ระดับภาค เพื่อคัดเลือกสถานศึกษาต้นแบบ',status:'active',period:'01/02/2026 – 30/06/2026',prize:5,freq:'ทุกไตรมาส',enabled:true},
+    {id:'s2',pid:'g2',no:'1.2.2',title:'สนับสนุนทีมงานประกวด MOU วิทยาลัย',owner:'Kanya Srisai',desc:'สนับสนุนทีมงานและทรัพยากรให้วิทยาลัยที่เข้าร่วมประกวด MOU',status:'active',period:'01/02/2026 – 30/06/2026',prize:5,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+    {id:'s3',pid:'g3',no:'1.3.1',title:'ขยายการลงทะเบียนนักเรียนในระบบ EDR',owner:'Piyawat Takaew',desc:'ขยายฐานการลงทะเบียนผู้เรียนในระบบ EDR ให้ครอบคลุมวิทยาลัยเครือข่าย',status:'active',period:'01/01/2026 – 31/12/2026',prize:8,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+    {id:'s4',pid:'g3',no:'1.3.2',title:'ลดอัตราการออกกลางคัน',owner:'Suda Meechai',desc:'ลดอัตราการออกกลางคันของผู้เรียนผ่านระบบเฝ้าระวังและแจ้งเตือน',status:'paused',period:'01/01/2026 – 31/12/2026',prize:8,freq:'ทุกไตรมาส',enabled:true},
+  ],
+  plan:[
+    {id:'p1',pid:'s1',no:'1.2.11',title:'จัดกิจกรรมประกวด MOU ระดับภาค',owner:'Narate Boonmee',desc:'จัดกิจกรรมการประกวด MOU ระดับภาค คัดเลือกสถานศึกษาต้นแบบ',status:'active',period:'01/02/2026 – 30/06/2026',prize:2,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+    {id:'p2',pid:'s2',no:'1.2.21',title:'จัดเตรียมทีมงานและวัสดุการประกวด',owner:'Kanya Srisai',desc:'จัดเตรียมทีมงานกรรมการและวัสดุอุปกรณ์สำหรับการประกวด MOU',status:'active',period:'01/02/2026 – 28/02/2026',prize:2,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+    {id:'p3',pid:'s3',no:'1.3.11',title:'จัดทำ Dashboard รายงานผลการดำเนินงาน',owner:'Kanya Srisai',desc:'พัฒนา Dashboard แสดงผลการลงทะเบียนและการใช้งานระบบ EDR',status:'done',period:'01/05/2026 – 30/09/2026',prize:2,freq:'ทุกไตรมาส',enabled:true},
+    {id:'p4',pid:'s4',no:'1.3.21',title:'จัดทำระบบเฝ้าระวังการออกกลางคัน',owner:'Suda Meechai',desc:'จัดทำระบบแจ้งเตือนนักเรียนกลุ่มเสี่ยงออกกลางคัน',status:'active',period:'01/01/2026 – 31/12/2026',prize:3,freq:'ทุกเดือน (วันสุดท้ายของเดือน)',enabled:true},
+  ],
+};
+
+/* ── cascading hierarchy helpers ── */
+const TIER_KEY={1:'mission',2:'goal',3:'strategy',4:'plan'};
+const tierKey=(t)=>TIER_KEY[t];
+const childrenOf=(levelKey,pid)=>DATA[levelKey].filter(x=>x.pid===pid);
+function optsForTier(t,chain){
+  if(t===1) return DATA.mission.filter(m=>m.enabled);
+  return childrenOf(tierKey(t),chain[tierKey(t-1)]);
+}
+function firstChainForLevel(level){
+  const L=LV(level), chain={};
+  for(let t=1;t<L.tier;t++){
+    const opts=optsForTier(t,chain);
+    if(!opts.length) break;
+    const pick=opts.find(o=>childrenOf(tierKey(t+1),o.id).length)||opts[0];
+    chain[tierKey(t)]=pick.id;
+  }
+  return chain;
+}
+function chainComplete(level,chain){
+  const L=LV(level);
+  for(let t=1;t<L.tier;t++){ if(!chain[tierKey(t)]) return false; }
+  return true;
+}
+function itemLabel(levelKey,it){ return LV(levelKey).prefix+' '+it.no+' '+(it.title?': '+it.title:''); }
+
+const PEOPLE=['Piyawat Takaew','Narate Boonmee','Kanya Srisai','Suda Meechai','Chatchai Phon'];
+
+// รายการแผนงานประจำวัน กำหนดต่อรายการแผนธุรกิจแต่ละชั้นโดยตรง (แอดมิน/งานแผนเป็นผู้สร้าง) — แต่ละแผนธุรกิจมีได้หลาย "แผนงาน" (ชุด TODO ที่มีชื่อ) แต่ละแผนงานมีรายการย่อยหลายข้อ— ผู้รับผิดชอบ VM ที่ผูกกับแผนนี้จะแก้ไข/ทำเครื่องหมายที่หน้า VM
+const DAILY_TASKS_SEED={
+  m1:[
+    {id:'dp1',title:'แผนการเยี่ยมสถานศึกษา',items:['ข้อมูลสถานศึกษา','วัตถุประสงค์การเข้าเยี่ยม','การแต่งกาย','เตรียมเอกสาร/อุปกรณ์','สรุปการเข้าพบ','ส่งเอกสารตามนัด','วางแผนนัดถัดไป']},
+    {id:'dp2',title:'แผนติดตามสถานะสัญญาประจำวัน',items:['ตรวจสอบสถานะสัญญาที่ใกล้หมดอายุ','สรุปยอดผู้เรียนเข้าระบบ EDR']},
+  ],
+  m2:[
+    {id:'dp3',title:'แผนตรวจสอบยอดการให้คะแนนประจำวัน',items:['ดึงรายงานยอดคะแนนวันก่อนหน้า','ตรวจสอบความผิดปกติของยอด','สรุปแจ้งทีมที่เกี่ยวข้อง']},
+  ],
+  p3:[
+    {id:'dp4',title:'แผนตรวจสอบข้อมูล Dashboard ก่อนเผยแพร่',items:['ตรวจสอบข้อมูลก่อนเผยแพร่ประจำวัน','เทียบยอดกับระบบต้นทาง']},
+  ],
+};
+
+/* ═══════════ FRAMEWORK LEVEL PANEL (left) ═══════════ */
+function LevelPanel({level,setLevel,rounds,setRounds}){
+  return (
+    <div style={{width:300,flex:'none',padding:'18px 16px',position:'sticky',top:58,height:'calc(100vh - 58px)',overflowY:'auto'}}>
+      <div style={{background:'#fff',border:'1px solid #e7eaef',borderRadius:16,boxShadow:'0 1px 3px rgba(16,24,40,.05)',overflow:'hidden'}}>
+        {/* header */}
+        <div style={{padding:'16px 18px',borderBottom:'1px solid #f0f2f5'}}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:6,background:primarySoft,color:'#0e7c6d',borderRadius:8,padding:'4px 11px',fontSize:11,fontWeight:700,marginBottom:10,letterSpacing:'.2px'}}>
+            <i className="bi bi-shield-lock-fill" style={{fontSize:11}}></i>ผู้ดูแลระบบ · แผนธุรกิจ
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <div style={{width:34,height:34,borderRadius:9,background:primary,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+              <i className="bi bi-ui-checks" style={{fontSize:16,color:'#fff'}}></i>
+            </div>
+            <div style={{fontWeight:700,fontSize:14.5,color:'#1a2332'}}>กำหนดกรอบแผนธุรกิจ</div>
+          </div>
+        </div>
+        {/* levels */}
+        <div style={{padding:'8px 8px'}}>
+          {LEVELS.map((l,i)=>{
+            const act=!rounds&&level===l.key;
+            return (
+              <button key={l.key} className="lv-row" onClick={()=>{setRounds(false);setLevel(l.key);}} style={{display:'flex',alignItems:'center',gap:12,width:'100%',textAlign:'left',padding:'11px 12px',borderRadius:11,border:'none',background:act?primarySoft:'transparent',cursor:'pointer',borderLeft:'3px solid '+(act?primary:'transparent'),marginBottom:2}}>
+                <div style={{width:34,height:34,borderRadius:9,background:act?'#fff':'#f2f4f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',boxShadow:act?'0 1px 3px rgba(16,24,40,.08)':'none'}}>
+                  <i className={'bi '+l.icon} style={{fontSize:16,color:act?l.accent:'#9aa3af'}}></i>
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:act?700:600,fontSize:13.5,color:act?primary:'#3a4452'}}>{l.name}</div>
+                  <div style={{fontSize:11,color:'#9aa3af',marginTop:1}}>ลำดับชั้นที่ {l.tier}</div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        <div style={{height:1,background:'#f0f2f5',margin:'2px 12px'}}></div>
+        {/* rounds row */}
+        <div style={{padding:'8px'}}>
+          <button className="lv-row" onClick={()=>setRounds(true)} style={{display:'flex',alignItems:'center',gap:12,width:'100%',textAlign:'left',padding:'11px 12px',borderRadius:11,border:'none',background:rounds?primarySoft:'transparent',cursor:'pointer',borderLeft:'3px solid '+(rounds?primary:'transparent')}}>
+            <div style={{width:34,height:34,borderRadius:9,background:rounds?'#fff':'#f2f4f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',boxShadow:rounds?'0 1px 3px rgba(16,24,40,.08)':'none'}}>
+              <i className="bi bi-calendar2-range" style={{fontSize:16,color:rounds?primary:'#9aa3af'}}></i>
+            </div>
+            <div style={{flex:1,fontWeight:rounds?700:600,fontSize:13,color:rounds?primary:'#3a4452',lineHeight:1.35}}>กำหนดรอบการวัดเป้าตามกรอบแผนธุรกิจ</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════ THE BADGE TRAY (emphasis) ═══════════ */
+function BadgeTray({item,size}){
+  const st=STATUS[item.status]||STATUS.draft;
+  return (
+    <div style={{display:'flex',flexWrap:'wrap',gap:8,alignItems:'center'}}>
+      <Badge tone={st.tone} icon={st.icon} size={size}>{st.label}</Badge>
+      <Badge tone="neutral" icon="bi-calendar3" size={size}>{item.period}</Badge>
+      <Badge tone="teal" icon="bi-gift-fill" size={size}>{item.prize} Prize</Badge>
+      <Badge tone={item.freq==='ไม่บังคับรายงาน'?'neutral':'info'} icon="bi-bell-fill" size={size}>{item.freq==='ไม่บังคับรายงาน'?'ไม่บังคับรายงาน':'รายงาน '+item.freq.replace(' (วันสุดท้ายของเดือน)','')}</Badge>
+      <Badge tone={item.enabled?'success':'neutral'} size={size}>{item.enabled?'เปิดใช้งาน':'ปิดใช้งาน'}</Badge>
+    </div>
+  );
+}
+
+/* ═══════════ LIST CARD ═══════════ */
+function ListCard({level,item,onEdit}){
+  const L=LV(level);
+  return (
+    <div className="bp-card" style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,padding:'16px 18px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',opacity:item.enabled?1:0.82}}>
+      <div style={{display:'flex',alignItems:'flex-start',gap:13}}>
+        <div style={{position:'relative',flex:'none'}}>
+          <Avatar name={item.owner} size={44}/>
+          <span style={{position:'absolute',bottom:-4,right:-6,background:L.accent,color:'#fff',borderRadius:7,padding:'1px 7px',fontSize:10.5,fontWeight:800,border:'2px solid #fff',whiteSpace:'nowrap'}}>{item.no}</span>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:3,flexWrap:'wrap'}}>
+                <span style={{display:'inline-flex',alignItems:'center',gap:5,background:L.accent+'14',color:L.accent,borderRadius:7,padding:'3px 9px',fontSize:11,fontWeight:800,whiteSpace:'nowrap'}}>
+                  <i className={'bi '+L.icon} style={{fontSize:11}}></i>{L.prefix} {item.no}
+                </span>
+                <span style={{fontWeight:700,fontSize:14.5,color:'#1a2332',lineHeight:1.35}}>{item.title}</span>
+              </div>
+              <div style={{fontSize:12.5,color:'#7a8394',lineHeight:1.6,marginBottom:12,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{item.desc}</div>
+            </div>
+            <div style={{display:'flex',gap:4,flex:'none'}}>
+              <button onClick={onEdit} className="icon-btn" title="แก้ไข" style={{width:32,height:32,borderRadius:9,border:'1px solid #eceef2',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-pencil" style={{fontSize:14,color:'#5a6473'}}></i></button>
+              <button className="icon-btn" title="เพิ่มเติม" style={{width:32,height:32,borderRadius:9,border:'1px solid #eceef2',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="bi bi-three-dots-vertical" style={{fontSize:14,color:'#5a6473'}}></i></button>
+            </div>
+          </div>
+          <BadgeTray item={item}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════ GRID CARD ═══════════ */
+function GridCard({level,item,onEdit}){
+  const L=LV(level);
+  const st=STATUS[item.status]||STATUS.draft;
+  return (
+    <div className="bp-card" style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden',display:'flex',flexDirection:'column',opacity:item.enabled?1:0.82}}>
+      <div style={{height:4,background:L.accent}}></div>
+      <div style={{padding:'16px 16px 14px',flex:1,display:'flex',flexDirection:'column'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+          <span style={{display:'inline-flex',alignItems:'center',gap:5,background:L.accent+'14',color:L.accent,borderRadius:7,padding:'4px 10px',fontSize:11.5,fontWeight:800}}>
+            <i className={'bi '+L.icon} style={{fontSize:12}}></i>{L.prefix} {item.no}
+          </span>
+          <div style={{flex:1}}></div>
+          <Badge tone={st.tone} dot>{st.label}</Badge>
+        </div>
+        <div style={{fontWeight:700,fontSize:14.5,color:'#1a2332',lineHeight:1.4,marginBottom:6,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{item.title}</div>
+        <div style={{fontSize:12,color:'#7a8394',lineHeight:1.6,marginBottom:14,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{item.desc}</div>
+        <div style={{flex:1}}></div>
+        <div style={{display:'flex',flexWrap:'wrap',gap:7,marginBottom:14}}>
+          <Badge tone="neutral" icon="bi-calendar3">{item.period}</Badge>
+          <Badge tone="teal" icon="bi-gift-fill">{item.prize} Prize</Badge>
+          <Badge tone={item.freq==='ไม่บังคับรายงาน'?'neutral':'info'} icon="bi-bell-fill">{item.freq==='ไม่บังคับรายงาน'?'ไม่บังคับ':item.freq.replace(' (วันสุดท้ายของเดือน)','')}</Badge>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:9,paddingTop:12,borderTop:'1px solid #f2f4f7'}}>
+          <Avatar name={item.owner} size={30}/>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:12.5,fontWeight:700,color:'#3a4452',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.owner}</div>
+            <div style={{fontSize:10.5,color:'#9aa3af'}}>ผู้รับผิดชอบ</div>
+          </div>
+          <button onClick={onEdit} className="icon-btn" title="แก้ไข" style={{width:30,height:30,borderRadius:8,border:'1px solid #eceef2',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-pencil" style={{fontSize:13,color:'#5a6473'}}></i></button>
+          <Badge tone={item.enabled?'success':'neutral'} icon={item.enabled?'bi-toggle-on':'bi-toggle-off'}>{item.enabled?'เปิด':'ปิด'}</Badge>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════ HIERARCHY CHAIN SELECTOR (บังคับเลือกจากชั้น 1 ลงมา) ═══════════ */
+/* ═══════════ PARENT PICKER — ช่องเดียว + ค้นหา + drill-down tree ═══════════ */
+function ChainSelector({level,chain,setChain}){
+  const L=LV(level);
+  const parentTier=L.tier-1;
+  const parentKey=tierKey(parentTier);
+  const ref=React.useRef(null);
+  const [open,setOpen]=useState(false);
+  const [query,setQuery]=useState('');
+  const [expanded,setExpanded]=useState({});
+  React.useEffect(()=>{
+    const h=(e)=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false);};
+    document.addEventListener('mousedown',h);
+    return ()=>document.removeEventListener('mousedown',h);
+  },[]);
+  const chainForItem=(levelKey,item)=>{
+    const c={}; let key=levelKey, cur=item;
+    while(cur&&key){ c[key]=cur.id; const pk=LV(key).parent; if(!pk)break; cur=DATA[pk].find(x=>x.id===cur.pid); key=pk; }
+    return c;
+  };
+  const choose=(it)=>{ setChain(chainForItem(parentKey,it)); setOpen(false); setQuery(''); };
+  const openPicker=()=>{
+    const exp={};
+    for(let t=1;t<parentTier;t++){ const id=chain[tierKey(t)]; if(id) exp[id]=true; }
+    setExpanded(exp); setQuery(''); setOpen(true);
+  };
+  const toggle=(id)=>setExpanded(e=>({...e,[id]:!e[id]}));
+
+  // selected breadcrumb chips
+  const chips=[];
+  for(let t=1;t<=parentTier;t++){ const k=tierKey(t); const it=DATA[k].find(x=>x.id===chain[k]); chips.push({t,k,it}); }
+  const selParent=DATA[parentKey].find(x=>x.id===chain[parentKey]);
+
+  // search results (leaf items whose full path matches)
+  const q=query.trim().toLowerCase();
+  const results=q?DATA[parentKey].filter(it=>{
+    const c=chainForItem(parentKey,it);
+    let txt=''; for(let t=1;t<=parentTier;t++){ const k=tierKey(t); const x=DATA[k].find(y=>y.id===c[k]); if(x) txt+=' '+LV(k).prefix+' '+x.no+' '+x.title; }
+    return txt.toLowerCase().includes(q);
+  }):[];
+
+  // tree rows
+  const rows=[];
+  const walk=(levelKey,pid,depth)=>{
+    const items=levelKey==='mission'?DATA.mission.filter(m=>m.enabled):childrenOf(levelKey,pid);
+    items.forEach(it=>{
+      const Lk=LV(levelKey), leaf=Lk.tier===parentTier, isExp=!!expanded[it.id], on=chain[levelKey]===it.id&&leaf, kidCount=leaf?0:childrenOf(tierKey(Lk.tier+1),it.id).length;
+      rows.push(
+        <button key={levelKey+it.id} onClick={()=>leaf?choose(it):toggle(it.id)} className="sub-item" style={{display:'flex',alignItems:'center',gap:9,width:'100%',textAlign:'left',padding:'9px 12px 9px '+(12+depth*20)+'px',border:'none',background:on?primarySoft:'#fff',cursor:'pointer',borderTop:depth===0&&it!==items[0]?'1px solid #f4f6f8':'none'}}>
+          {leaf?<span style={{width:14,flex:'none'}}></span>:<i className={'bi '+(isExp?'bi-caret-down-fill':'bi-caret-right-fill')} style={{fontSize:9,color:'#b3bac4',flex:'none',width:14}}></i>}
+          <i className={'bi '+Lk.icon} style={{fontSize:13,color:Lk.accent,flex:'none'}}></i>
+          <span style={{fontSize:13,fontWeight:on?700:(leaf?500:600),color:on?primary:(leaf?'#3a4452':'#1a2332'),overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{Lk.prefix+' '+it.no}{leaf?' : '+it.title:''}</span>
+          {!leaf&&<span style={{marginLeft:'auto',fontSize:10.5,color:'#9aa3af',fontWeight:600,background:'#f1f3f7',borderRadius:8,padding:'1px 8px',flex:'none'}}>{kidCount}</span>}
+          {on&&<i className="bi bi-check-lg" style={{fontSize:14,color:primary,marginLeft:'auto',flex:'none'}}></i>}
+        </button>
+      );
+      if(!leaf&&isExp) walk(tierKey(Lk.tier+1),it.id,depth+1);
+    });
+  };
+  walk('mission',null,0);
+
+  return (
+    <div ref={ref} style={{marginBottom:18,position:'relative'}}>
+      <div style={{fontSize:12,fontWeight:700,color:'#5a6473',marginBottom:8,display:'flex',alignItems:'center',gap:6}}>
+        <i className="bi bi-diagram-3-fill" style={{fontSize:13,color:primary}}></i>{L.name}ภายใต้ <span style={{color:'#9aa3af',fontWeight:500}}>(ค้นหาหรือไล่กดเลือกทีละชั้น)</span>
+      </div>
+      {/* collapsed field */}
+      <button onClick={()=>open?setOpen(false):openPicker()} style={{display:'flex',alignItems:'center',gap:10,width:'100%',textAlign:'left',background:'#fff',border:'1.5px solid '+(open?primary:'#e3e7ec'),borderRadius:12,padding:'11px 14px',cursor:'pointer'}}>
+        <div style={{flex:1,minWidth:0,display:'flex',alignItems:'center',gap:7,flexWrap:'wrap'}}>
+          {selParent?chips.map((c,i)=>(
+            <React.Fragment key={c.t}>
+              {i>0&&<i className="bi bi-chevron-right" style={{fontSize:10,color:'#c4ccd4'}}></i>}
+              <span style={{display:'inline-flex',alignItems:'center',gap:5,background:LV(c.k).accent+'14',color:LV(c.k).accent,borderRadius:7,padding:'3px 9px',fontSize:12,fontWeight:700,whiteSpace:'nowrap'}}>
+                <i className={'bi '+LV(c.k).icon} style={{fontSize:11}}></i>{LV(c.k).prefix+' '+(c.it?c.it.no:'—')}
+              </span>
+            </React.Fragment>
+          )):<span style={{fontSize:13.5,color:'#b3bac4',fontWeight:500}}>— เลือก{LV(parentKey).name} —</span>}
+        </div>
+        <i className={'bi '+(open?'bi-chevron-up':'bi-chevron-down')} style={{fontSize:14,color:'#9aa3af',flex:'none'}}></i>
+      </button>
+      {selParent&&<div style={{fontSize:12,color:'#8a93a3',marginTop:7,paddingLeft:2,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{itemLabel(parentKey,selParent)}</div>}
+
+      {/* popover */}
+      {open&&(
+        <div style={{position:'absolute',left:0,right:0,top:'calc(100% + 8px)',background:'#fff',border:'1px solid #e3e7ec',borderRadius:13,boxShadow:'0 16px 40px rgba(16,24,40,.18)',zIndex:60,overflow:'hidden',animation:'popIn .13s ease'}}>
+          <div style={{padding:'10px 12px',borderBottom:'1px solid #f0f2f5',display:'flex',alignItems:'center',gap:9,background:'#fafbfc'}}>
+            <i className="bi bi-search" style={{fontSize:14,color:'#9aa3af',flex:'none'}}></i>
+            <input autoFocus value={query} onChange={e=>setQuery(e.target.value)} placeholder={'ค้นหา'+LEVELS.slice(0,parentTier).map(l=>l.name).join(' / ')+'...'} style={{flex:1,border:'none',outline:'none',fontSize:13.5,fontFamily:'inherit',color:'#1f2733',background:'none'}}/>
+            {query&&<button onClick={()=>setQuery('')} style={{width:24,height:24,borderRadius:'50%',border:'none',background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flex:'none'}}><i className="bi bi-x" style={{fontSize:13,color:'#8a93a3'}}></i></button>}
+          </div>
+          <div style={{maxHeight:340,overflowY:'auto',padding:'4px 0'}}>
+            {q?(
+              results.length?results.map(it=>{
+                const c=chainForItem(parentKey,it), on=chain[parentKey]===it.id;
+                return (
+                  <button key={it.id} onClick={()=>choose(it)} className="sub-item" style={{display:'block',width:'100%',textAlign:'left',padding:'9px 14px',border:'none',background:on?primarySoft:'#fff',cursor:'pointer'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8}}>
+                      <i className={'bi '+LV(parentKey).icon} style={{fontSize:13,color:LV(parentKey).accent,flex:'none'}}></i>
+                      <span style={{fontSize:13,fontWeight:on?700:600,color:on?primary:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{LV(parentKey).prefix+' '+it.no+' : '+it.title}</span>
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',gap:5,marginTop:3,paddingLeft:21,fontSize:11,color:'#9aa3af',flexWrap:'wrap'}}>
+                      {Array.from({length:parentTier-1},(_,i)=>i+1).map(t=>{const k=tierKey(t);const x=DATA[k].find(y=>y.id===c[k]);return <React.Fragment key={t}>{t>1&&<i className="bi bi-chevron-right" style={{fontSize:8}}></i>}<span>{x?LV(k).prefix+' '+x.no:''}</span></React.Fragment>;})}
+                    </div>
+                  </button>
+                );
+              }):<div style={{padding:'24px 16px',textAlign:'center',color:'#b3bac4',fontSize:12.5}}>ไม่พบรายการที่ตรงกับ "{query}"</div>
+            ):rows}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════ DAILY TASKS SECTION (inline — อยู่ในฟอร์มแก้ไขของแต่ละรายการ) ═══════════ */
+function DailyTasksSection({plans,setPlans}){
+  const [openId,setOpenId]=useState(plans[0]?plans[0].id:null);
+  const [showAddPlan,setShowAddPlan]=useState(false);
+  const [newPlanTitle,setNewPlanTitle]=useState('');
+  const [newItemText,setNewItemText]=useState({});
+  const [editingPlanId,setEditingPlanId]=useState(null);
+  const [editingPlanTitle,setEditingPlanTitle]=useState('');
+  const [editingItem,setEditingItem]=useState(null); // {planId,idx}
+  const [editingItemVal,setEditingItemVal]=useState('');
+
+  const addPlan=()=>{ if(!newPlanTitle.trim())return; const id='dp'+Date.now(); setPlans(p=>[...p,{id,title:newPlanTitle.trim(),items:[]}]); setNewPlanTitle(''); setShowAddPlan(false); setOpenId(id); };
+  const removePlan=(id)=>setPlans(p=>p.filter(x=>x.id!==id));
+  const startRenamePlan=(pl)=>{ setEditingPlanId(pl.id); setEditingPlanTitle(pl.title); };
+  const commitRenamePlan=()=>{ setPlans(p=>p.map(x=>x.id===editingPlanId?{...x,title:editingPlanTitle.trim()||x.title}:x)); setEditingPlanId(null); };
+  const addItem=(id)=>{ const txt=(newItemText[id]||'').trim(); if(!txt)return; setPlans(p=>p.map(x=>x.id===id?{...x,items:[...x.items,txt]}:x)); setNewItemText(s=>({...s,[id]:''})); };
+  const removeItem=(id,idx)=>setPlans(p=>p.map(x=>x.id===id?{...x,items:x.items.filter((_,i)=>i!==idx)}:x));
+  const startEditItem=(planId,idx,val)=>{ setEditingItem({planId,idx}); setEditingItemVal(val); };
+  const commitEditItem=()=>{ setPlans(p=>p.map(x=>x.id===editingItem.planId?{...x,items:x.items.map((it,i)=>i===editingItem.idx?(editingItemVal.trim()||it):it)}:x)); setEditingItem(null); };
+
+  return (
+    <div style={{marginTop:22,paddingTop:20,borderTop:'1px solid #f0f2f5'}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14,flexWrap:'wrap'}}>
+        <i className="bi bi-journal-check" style={{fontSize:15,color:primary}}></i>
+        <span style={{fontSize:13,fontWeight:700,color:'#3a4452'}}>แผนงานประจำวัน</span>
+        <span style={{fontSize:11.5,color:'#9aa3af',fontWeight:600,background:'#f1f3f7',borderRadius:8,padding:'3px 10px'}}>{plans.length} ชุด</span>
+        <div style={{flex:1}}></div>
+        <button onClick={()=>setShowAddPlan(true)} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:primary,border:'1.5px solid '+primary,borderRadius:9,padding:'7px 13px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}>
+          <i className="bi bi-plus-lg" style={{fontSize:13}}></i>เพิ่มแผนงานใหม่
+        </button>
+      </div>
+
+      {showAddPlan&&(
+        <div style={{background:'#fff',border:'1.5px solid '+primary,borderRadius:12,padding:'12px 14px',marginBottom:14,display:'flex',gap:9,flexWrap:'wrap'}}>
+          <input autoFocus value={newPlanTitle} onChange={e=>setNewPlanTitle(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addPlan()} placeholder="ชื่อแผนงาน เช่น แผนการเยี่ยมลูกค้า" style={{flex:1,minWidth:200,border:'1.5px solid #e1e5ec',borderRadius:9,padding:'9px 12px',fontSize:13.5,outline:'none',fontFamily:'inherit'}}/>
+          <button onClick={()=>{setShowAddPlan(false);setNewPlanTitle('');}} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:9,height:36,padding:'0 14px',fontSize:13.5,fontWeight:600,cursor:'pointer'}}>
+            <i className="bi bi-x-lg" style={{fontSize:12}}></i>ยกเลิก
+          </button>
+          <button onClick={addPlan} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,background:primary,color:'#fff',border:'none',borderRadius:9,height:36,padding:'0 16px',fontSize:13.5,fontWeight:700,cursor:'pointer'}}>
+            <i className="bi bi-check-lg" style={{fontSize:13}}></i>สร้าง
+          </button>
+        </div>
+      )}
+
+      {plans.length===0?(
+        <div style={{fontSize:12.5,color:'#b3bac4',padding:'6px 2px'}}>ยังไม่มีแผนงานประจำวันสำหรับรายการนี้</div>
+      ):(
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          {plans.map(pl=>{
+            const open=openId===pl.id;
+            return (
+              <div key={pl.id} style={{border:'1px solid #eceef2',borderRadius:12,overflow:'hidden'}}>
+                <div style={{display:'flex',alignItems:'center',gap:10,padding:'11px 13px',background:'#f8fafb'}}>
+                  <button onClick={()=>setOpenId(open?null:pl.id)} style={{display:'flex',alignItems:'center',gap:10,flex:1,minWidth:0,textAlign:'left',border:'none',background:'none',cursor:'pointer'}}>
+                    {editingPlanId===pl.id?(
+                      <input autoFocus value={editingPlanTitle} onClick={e=>e.stopPropagation()} onChange={e=>setEditingPlanTitle(e.target.value)} onKeyDown={e=>e.key==='Enter'&&commitRenamePlan()} onBlur={commitRenamePlan} style={{flex:1,border:'1px solid '+primary,borderRadius:8,padding:'6px 9px',fontSize:13.5,fontWeight:700,outline:'none',fontFamily:'inherit'}}/>
+                    ):(
+                      <span style={{flex:1,fontSize:13.5,fontWeight:700,color:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{pl.title}</span>
+                    )}
+                    <span style={{fontSize:11,color:'#9aa3af',fontWeight:600,background:'#fff',border:'1px solid #eef1f4',borderRadius:8,padding:'2px 9px',flex:'none'}}>{pl.items.length} ข้อ</span>
+                  </button>
+                  <button onClick={()=>startRenamePlan(pl)} style={{width:28,height:28,borderRadius:8,border:'none',background:'none',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flex:'none'}}>
+                    <i className="bi bi-pencil" style={{fontSize:12,color:'#9aa3af'}}></i>
+                  </button>
+                  <button onClick={()=>removePlan(pl.id)} style={{width:28,height:28,borderRadius:8,border:'none',background:'none',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flex:'none'}}>
+                    <i className="bi bi-trash" style={{fontSize:12,color:'#e0468c'}}></i>
+                  </button>
+                  <button onClick={()=>setOpenId(open?null:pl.id)} style={{flex:'none',width:28,height:28,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',background:open?'#cde2df':'#ebebeb',border:'none',cursor:'pointer'}}>
+                    <i className={'bi '+(open?'bi-chevron-up':'bi-chevron-down')} style={{fontSize:13,color:open?'#4e9b92':'#2b3440'}}></i>
+                  </button>
+                </div>
+                {open&&(
+                  <div style={{padding:'12px 13px'}}>
+                    {pl.items.length===0?(
+                      <div style={{fontSize:12.5,color:'#b3bac4',padding:'4px 2px',marginBottom:10}}>ยังไม่มีรายการย่อยในแผนงานนี้</div>
+                    ):(
+                      <div style={{display:'flex',flexDirection:'column',gap:7,marginBottom:10}}>
+                        {pl.items.map((t,idx)=>(
+                          <div key={idx} style={{display:'flex',alignItems:'center',gap:9,background:'#fff',border:'1px solid #eef1f4',borderRadius:9,padding:'8px 11px'}}>
+                            <i className="bi bi-check2-square" style={{fontSize:13,color:'#9aa3af'}}></i>
+                            {editingItem&&editingItem.planId===pl.id&&editingItem.idx===idx?(
+                              <input autoFocus value={editingItemVal} onChange={e=>setEditingItemVal(e.target.value)} onKeyDown={e=>e.key==='Enter'&&commitEditItem()} onBlur={commitEditItem} style={{flex:1,border:'1px solid '+primary,borderRadius:8,padding:'6px 9px',fontSize:13,outline:'none',fontFamily:'inherit'}}/>
+                            ):(
+                              <span onClick={()=>startEditItem(pl.id,idx,t)} style={{flex:1,fontSize:13,color:'#3a4452',cursor:'text'}}>{t}</span>
+                            )}
+                            <button onClick={()=>removeItem(pl.id,idx)} style={{width:24,height:24,borderRadius:7,border:'none',background:'none',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
+                              <i className="bi bi-x-lg" style={{fontSize:11,color:'#b3bac4'}}></i>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div style={{display:'flex',gap:8}}>
+                      <input value={newItemText[pl.id]||''} onChange={e=>setNewItemText(s=>({...s,[pl.id]:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&addItem(pl.id)} placeholder="เพิ่มรายการย่อย..." style={{flex:1,border:'1.5px solid #e1e5ec',borderRadius:9,padding:'8px 12px',fontSize:13,outline:'none',fontFamily:'inherit'}}/>
+                      <button onClick={()=>addItem(pl.id)} style={{background:primary,color:'#fff',border:'none',borderRadius:9,padding:'0 14px',fontSize:13,fontWeight:700,cursor:'pointer'}}>เพิ่ม</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <div style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:11.5,color:'#9aa3af',marginTop:14}}>
+        <i className="bi bi-info-circle" style={{fontSize:14,color:'#b3bac4'}}></i>
+        <span>แต่ละแผนงานคือชุด TODO ที่มีรายการย่อยของตัวเอง จะแสดงในแท็บ "แผนประจำวัน" ของหน้ารายละเอียดแผนธุรกิจนี้ (ดูอย่างเดียว) และจะถูกเรียกใช้/ติ๊ก/แก้ไขได้จริงที่การประชุม (VM) ที่ผูกกับแผนนี้</span>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════ ADD / EDIT FORM ═══════════ */
+function FormView({level,chain,setChain,onBack,editItem,dailyTasks,setDailyTasks}){
+  const L=LV(level);
+  const [ftab,setFtab]=useState('detail');
+  const [title,setTitle]=useState(editItem?editItem.title:'');
+  const [desc,setDesc]=useState(editItem?editItem.desc:'');
+  const [owner,setOwner]=useState(editItem?editItem.owner:'');
+  const [freq,setFreq]=useState(editItem?editItem.freq:'ไม่บังคับรายงาน');
+  const [start,setStart]=useState(editItem?(editItem.period||'').split(' – ')[0]||'':'');
+  const [end,setEnd]=useState(editItem?(editItem.period||'').split(' – ')[1]||'':'');
+  const [prize,setPrize]=useState(editItem?String(editItem.prize):'0');
+  const [enabled,setEnabled]=useState(editItem?editItem.enabled:true);
+  const parentKey=L.parent?tierKey(L.tier-1):null;
+  const parentItem=parentKey?DATA[parentKey].find(x=>x.id===chain[parentKey]):null;
+  const complete=chainComplete(level,chain);
+  const canSave=title.trim()&&desc.trim()&&owner&&start&&complete;
+  const inputStyle={width:'100%',border:'1.5px solid #e1e5ec',borderRadius:11,padding:'12px 14px',fontSize:14,outline:'none',color:'#1f2733',background:'#fff'};
+  const labelStyle={fontSize:12.5,fontWeight:700,color:'#3a4452',marginBottom:7,display:'flex',alignItems:'center',gap:5};
+  const taskId=editItem?editItem.id:null;
+
+  return (
+    <div style={{maxWidth:1180,margin:'0 auto'}}>
+      {/* header */}
+      <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:20}}>
+        <button onClick={onBack} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,color:'#5a6473',fontSize:13,fontWeight:600,height:40,padding:'0 16px',borderRadius:11,background:'#fff',border:'1px solid #e3e7ec',cursor:'pointer'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:15}}></i>กลับ
+        </button>
+        <div style={{width:38,height:38,borderRadius:10,background:L.accent+'16',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+          <i className={'bi '+L.icon} style={{fontSize:18,color:L.accent}}></i>
+        </div>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,fontSize:18,color:'#1a2332'}}>กำหนด{L.name} <span style={{color:'#9aa3af',fontWeight:500,fontSize:15}}>{editItem?'(แก้ไขรายการ)':'(เพิ่มรายการใหม่)'}</span></div>
+          {parentItem&&<div style={{fontSize:12.5,color:'#8a93a3',marginTop:2}}>ภายใต้ {itemLabel(parentKey,parentItem)}</div>}
+        </div>
+        <button onClick={onBack} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:11,height:40,padding:'0 18px',fontSize:14,fontWeight:600,cursor:'pointer'}}>
+          <i className="bi bi-x-lg" style={{fontSize:14}}></i>ยกเลิก
+        </button>
+        <button onClick={()=>canSave&&onBack()} disabled={!canSave} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:canSave?primary:'#c7ccd4',color:'#fff',border:'none',borderRadius:11,height:40,padding:'0 20px',fontSize:14,fontWeight:700,cursor:canSave?'pointer':'default'}}>
+          <i className="bi bi-check-lg" style={{fontSize:16}}></i>บันทึก
+        </button>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr',gap:18,alignItems:'start'}}>
+        {editItem&&(
+          <div style={{display:'flex',gap:6,background:'#fff',border:'1px solid #eceef2',borderRadius:12,padding:5,width:'fit-content'}}>
+            {[['detail','รายละเอียด','bi-info-circle'],['daily','แผนงานประจำวัน (ถ้ามี)','bi-journal-check']].map(([k,label,ic])=>(
+              <button key={k} onClick={()=>setFtab(k)} style={{display:'inline-flex',alignItems:'center',gap:7,padding:'9px 16px',borderRadius:9,border:'none',background:ftab===k?primary:'transparent',color:ftab===k?'#fff':'#5a6473',fontSize:13.5,fontWeight:700,cursor:'pointer'}}>
+                <i className={'bi '+ic} style={{fontSize:14}}></i>{label}
+                {k==='daily'&&(dailyTasks[taskId]||[]).length>0&&(
+                  <span style={{minWidth:19,height:19,borderRadius:99,background:ftab===k?'rgba(255,255,255,.28)':primarySoft,color:ftab===k?'#fff':primary,fontSize:11,fontWeight:800,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{(dailyTasks[taskId]||[]).length}</span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+        {/* form */}
+        {ftab==='detail'?(
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,padding:'22px 24px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          {L.parent&&<ChainSelector level={level} chain={chain} setChain={setChain}/>}
+          <div style={{marginBottom:18}}>
+            <div style={labelStyle}>หัวข้อ{L.name}<span style={{color:'#e0468c'}}>*</span></div>
+            <input value={title} onChange={e=>setTitle(e.target.value.slice(0,255))} placeholder={'ระบุหัวข้อ'+L.name} style={inputStyle}/>
+            <div style={{textAlign:'right',fontSize:11,color:'#b3bac4',marginTop:4}}>{title.length} / 255</div>
+          </div>
+          <div style={{marginBottom:18}}>
+            <div style={labelStyle}>คำอธิบาย{L.name}<span style={{color:'#e0468c'}}>*</span></div>
+            <textarea value={desc} onChange={e=>setDesc(e.target.value.slice(0,255))} rows={3} placeholder={'ระบุคำอธิบาย'+L.name} style={{...inputStyle,resize:'vertical',minHeight:82}}/>
+            <div style={{textAlign:'right',fontSize:11,color:'#b3bac4',marginTop:4}}>{desc.length} / 255</div>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:18}}>
+            <div>
+              <div style={labelStyle}>ผู้รับผิดชอบ{L.name}<span style={{color:'#e0468c'}}>*</span></div>
+              <div style={{position:'relative'}}>
+                <select value={owner} onChange={e=>setOwner(e.target.value)} style={{...inputStyle,appearance:'none',cursor:'pointer',color:owner?'#1f2733':'#9aa3af'}}>
+                  <option value="">เลือกผู้รับผิดชอบ{L.name}</option>
+                  {PEOPLE.map(p=><option key={p} value={p}>{p}</option>)}
+                </select>
+                <i className="bi bi-chevron-down" style={{position:'absolute',right:14,top:15,fontSize:13,color:'#9aa3af',pointerEvents:'none'}}></i>
+              </div>
+            </div>
+            <div>
+              <div style={labelStyle}>ความถี่ในการรายงานความก้าวหน้า</div>
+              <div style={{position:'relative'}}>
+                <select value={freq} onChange={e=>setFreq(e.target.value)} style={{...inputStyle,appearance:'none',cursor:'pointer'}}>
+                  {FREQ.map(f=><option key={f} value={f}>{f}</option>)}
+                </select>
+                <i className="bi bi-chevron-down" style={{position:'absolute',right:14,top:15,fontSize:13,color:'#9aa3af',pointerEvents:'none'}}></i>
+              </div>
+            </div>
+          </div>
+
+          {/* period section */}
+          <div style={{marginBottom:18}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+              <i className="bi bi-calendar2-range" style={{fontSize:15,color:'#e5920b'}}></i>
+              <span style={{fontSize:13,fontWeight:700,color:'#3a4452'}}>ระยะเวลาดำเนินการ</span>
+              <div style={{flex:1,height:3,background:'linear-gradient(90deg,#f5b301,#ffd873)',borderRadius:99}}></div>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+              <div>
+                <div style={labelStyle}>วันที่เริ่มต้น<span style={{color:'#e0468c'}}>*</span></div>
+                <div style={{position:'relative'}}>
+                  <input value={start} onChange={e=>setStart(e.target.value)} placeholder="วว/ดด/ปปปป" style={inputStyle}/>
+                  <i className="bi bi-calendar-event" style={{position:'absolute',right:14,top:14,fontSize:14,color:primary,pointerEvents:'none'}}></i>
+                </div>
+              </div>
+              <div>
+                <div style={labelStyle}>วันที่สิ้นสุด</div>
+                <div style={{position:'relative'}}>
+                  <input value={end} onChange={e=>setEnd(e.target.value)} placeholder="วว/ดด/ปปปป" style={inputStyle}/>
+                  <i className="bi bi-calendar-event" style={{position:'absolute',right:14,top:14,fontSize:14,color:primary,pointerEvents:'none'}}></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{display:'flex',alignItems:'flex-end',gap:20,flexWrap:'wrap'}}>
+            <div style={{width:200}}>
+              <div style={labelStyle}><i className="bi bi-gift-fill" style={{fontSize:12,color:primary}}></i>จำนวน Prize ที่มอบให้</div>
+              <input value={prize} onChange={e=>setPrize(e.target.value.replace(/[^0-9]/g,''))} style={inputStyle}/>
+            </div>
+            <div style={{flex:1}}></div>
+            <div style={{display:'inline-flex',height:44,borderRadius:8,border:'1.5px solid #e1e5ec',overflow:'hidden'}}>
+              <button onClick={()=>setEnabled(true)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,height:'100%',border:'none',padding:'0 18px',fontSize:13,fontWeight:700,cursor:'pointer',background:enabled?'#e5f5ec':'#fff',color:enabled?'#1f8a5b':'#9aa3af'}}>
+                <i className="bi bi-check-circle-fill" style={{fontSize:14}}></i>เปิดใช้งาน
+              </button>
+              <button onClick={()=>setEnabled(false)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,height:'100%',border:'none',borderLeft:'1.5px solid #e1e5ec',padding:'0 18px',fontSize:13,fontWeight:700,cursor:'pointer',background:!enabled?'#fbe9e7':'#fff',color:!enabled?'#b8493d':'#9aa3af'}}>
+                <i className="bi bi-x-circle-fill" style={{fontSize:14}}></i>ปิดใช้งาน
+              </button>
+            </div>
+          </div>
+        </div>
+        ):(
+        <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,padding:'22px 24px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          <DailyTasksSection
+            plans={dailyTasks[taskId]||[]}
+            setPlans={(fn)=>setDailyTasks(d=>({...d,[taskId]:typeof fn==='function'?fn(d[taskId]||[]):fn}))}
+          />
+        </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════ ROUNDS: LIST TABLE ═══════════ */
+const ROUND_DATA=[
+  {id:1,label:'เป้าหมายปี 2569 (ครึ่งปีแรก)',start:'01 ม.ค. 2026',end:'30 มิ.ย. 2026',published:'27 มี.ค. 2026',cnt:24,
+   subRounds:[{id:'sr1',start:'01/01/2026',end:'31/03/2026',confirm:'27/03/2026',confirmed:true},{id:'sr2',start:'01/04/2026',end:'30/06/2026',confirm:'',confirmed:false}]},
+  {id:2,label:'เป้าหมายปี 2568 (ครึ่งปีหลัง)',start:'01 ก.ค. 2025',end:'31 ธ.ค. 2025',published:'01 ก.ค. 2025',cnt:31,subRounds:[]},
+  {id:3,label:'เป้าหมายปี 2568 (ครึ่งปีแรก)',start:'01 ม.ค. 2025',end:'30 มิ.ย. 2025',published:'01 ม.ค. 2025',cnt:28,subRounds:[]},
+  {id:4,label:'เป้าหมายปี 2567',start:'06 มี.ค. 2024',end:'31 ธ.ค. 2024',published:'',cnt:19,subRounds:[]},
+];
+function ToolBtn({icon,label,tone,onClick,title}){
+  return (
+    <button onClick={onClick} title={title||label} className="icon-btn" style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,border:'none',background:'none',cursor:'pointer',height:32,padding:label?'0 10px':'0 7px',borderRadius:8,color:tone||'#5a6473'}}>
+      <i className={'bi '+icon} style={{fontSize:15.5}}></i>
+      {label&&<span style={{fontSize:12.5,fontWeight:700,whiteSpace:'nowrap'}}>{label}</span>}
+    </button>
+  );
+}
+function RoundsView({rounds,onAdd,onEdit,onPlans,onDelete}){
+  const [asc,setAsc]=useState(false);
+  const [perPage,setPerPage]=useState(10);
+  const sorted=[...rounds].sort((a,b)=>asc?a.label.localeCompare(b.label,'th'):b.label.localeCompare(a.label,'th'));
+  return (
+    <div style={{maxWidth:1180,margin:'0 auto'}}>
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden'}}>
+        {/* card header */}
+        <div style={{display:'flex',alignItems:'center',gap:12,padding:'20px 22px',borderBottom:'1px solid #f0f2f5'}}>
+          <div style={{width:38,height:38,borderRadius:10,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className="bi bi-calendar2-range" style={{fontSize:18,color:primary}}></i>
+          </div>
+          <div style={{fontWeight:700,fontSize:17,color:'#1a2332',flex:1}}>รอบการวัดเป้า</div>
+          <ToolBtn icon="bi-plus-lg" title="เพิ่มรอบการวัด" onClick={onAdd} tone={primary}/>
+          <ToolBtn icon="bi-search" title="ค้นหา"/>
+          <ToolBtn icon={asc?'bi-sort-alpha-down':'bi-sort-alpha-up-alt'} title="เรียงลำดับ" onClick={()=>setAsc(a=>!a)}/>
+          <ToolBtn icon="bi-funnel" title="กรอง"/>
+          <ToolBtn icon="bi-three-dots-vertical" title="เพิ่มเติม"/>
+        </div>
+        {/* table */}
+        <div style={{overflowX:'auto'}}>
+          <table style={{width:'100%',borderCollapse:'collapse'}}>
+            <thead>
+              <tr>
+                <th style={{textAlign:'left',padding:'13px 22px',fontSize:12.5,fontWeight:700,color:'#5a6473',borderBottom:'1px solid #eceef2',whiteSpace:'nowrap'}}>ชื่อรอบของการวัดเป้า</th>
+                <th style={{textAlign:'left',padding:'13px 16px',fontSize:12.5,fontWeight:700,color:'#5a6473',borderBottom:'1px solid #eceef2',whiteSpace:'nowrap'}}>วันที่เริ่มต้น</th>
+                <th style={{textAlign:'left',padding:'13px 16px',fontSize:12.5,fontWeight:700,color:'#5a6473',borderBottom:'1px solid #eceef2',whiteSpace:'nowrap'}}>วันที่สิ้นสุด</th>
+                <th style={{textAlign:'left',padding:'13px 16px',fontSize:12.5,fontWeight:700,color:'#5a6473',borderBottom:'1px solid #eceef2',whiteSpace:'nowrap'}}>วันที่ประกาศใช้</th>
+                <th style={{textAlign:'left',padding:'13px 22px',fontSize:12.5,fontWeight:700,color:'#5a6473',borderBottom:'1px solid #eceef2',whiteSpace:'nowrap'}}>เครื่องมือ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map(r=>(
+                <tr key={r.id} className="lv-row">
+                  <td style={{padding:'15px 22px',borderBottom:'1px solid #f2f4f7'}}>
+                    <span style={{fontSize:13.5,fontWeight:700,color:primary,cursor:'pointer'}} onClick={()=>onPlans(r)}>{r.label}</span>
+                  </td>
+                  <td style={{padding:'15px 16px',borderBottom:'1px solid #f2f4f7',fontSize:13,color:'#3a4452',whiteSpace:'nowrap'}}>{r.start}</td>
+                  <td style={{padding:'15px 16px',borderBottom:'1px solid #f2f4f7',fontSize:13,color:'#3a4452',whiteSpace:'nowrap'}}>{r.end}</td>
+                  <td style={{padding:'15px 16px',borderBottom:'1px solid #f2f4f7',fontSize:13,color:r.published?'#3a4452':'#c4ccd4',whiteSpace:'nowrap'}}>{r.published||'—'}</td>
+                  <td style={{padding:'15px 22px',borderBottom:'1px solid #f2f4f7'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
+                      <button onClick={()=>onPlans(r)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,background:primarySoft,color:primary,border:'1px solid #bfe0da',borderRadius:8,height:32,padding:'0 13px',fontSize:12,fontWeight:700,cursor:'pointer',whiteSpace:'nowrap'}}>
+                        <i className="bi bi-bullseye" style={{fontSize:13}}></i>ตั้งเป้าหมาย
+                      </button>
+                      <div style={{width:1,height:18,background:'#eceef2'}}></div>
+                      <ToolBtn icon="bi-pencil" title="แก้ไข" onClick={()=>onEdit(r)}/>
+                      <ToolBtn icon="bi-trash" title="ลบ" onClick={()=>onDelete(r)} tone="#e0468c"/>
+                      <ToolBtn icon="bi-arrow-clockwise" title="รีเฟรช"/>
+                      <ToolBtn icon="bi-file-earmark-spreadsheet" title="ดาวน์โหลด XLS"/>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* pagination footer */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:18,padding:'16px 22px'}}>
+          <div style={{display:'flex',alignItems:'center',gap:9}}>
+            <span style={{fontSize:12,color:'#8a93a3'}}>จำนวนรายการ/หน้า</span>
+            <div style={{position:'relative'}}>
+              <select value={perPage} onChange={e=>setPerPage(Number(e.target.value))} style={{appearance:'none',border:'1.5px solid #e1e5ec',borderRadius:9,padding:'6px 26px 6px 11px',fontSize:12.5,fontWeight:700,color:'#3a4452',background:'#fff'}}>
+                {[10,20,50].map(n=><option key={n} value={n}>{n}</option>)}
+              </select>
+              <i className="bi bi-chevron-expand" style={{position:'absolute',right:9,top:8,fontSize:10,color:'#9aa3af',pointerEvents:'none'}}></i>
+            </div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:6}}>
+            <button className="icon-btn" style={{width:28,height:28,borderRadius:8,border:'none',background:'none',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-chevron-bar-left" style={{fontSize:13,color:'#b3bac4'}}></i></button>
+            <button className="icon-btn" style={{width:28,height:28,borderRadius:8,border:'none',background:'none',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-chevron-left" style={{fontSize:13,color:'#b3bac4'}}></i></button>
+            <div style={{width:28,height:28,borderRadius:8,background:primary,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12.5,fontWeight:700}}>1</div>
+            <button className="icon-btn" style={{width:28,height:28,borderRadius:8,border:'none',background:'none',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-chevron-right" style={{fontSize:13,color:'#b3bac4'}}></i></button>
+            <button className="icon-btn" style={{width:28,height:28,borderRadius:8,border:'none',background:'none',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-chevron-bar-right" style={{fontSize:13,color:'#b3bac4'}}></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════ ROUNDS: ADD/EDIT FORM (nested evaluation periods) ═══════════ */
+function RoundFormView({round,rounds,onBack,onSave}){
+  const [label,setLabel]=useState(round?round.label:'');
+  const [start,setStart]=useState(round?round.start:'');
+  const [end,setEnd]=useState(round?round.end:'');
+  const [copyFrom,setCopyFrom]=useState('');
+  const [subRounds,setSubRounds]=useState(round?.subRounds||[]);
+  const [editingSub,setEditingSub]=useState(null);
+  const [draft,setDraft]=useState({start:'',end:'',confirm:''});
+
+  const inputStyle={width:'100%',border:'1.5px solid #e1e5ec',borderRadius:11,padding:'12px 14px',fontSize:14,outline:'none',color:'#1f2733',background:'#fff'};
+  const smallInputStyle={...inputStyle,flex:1,minWidth:120,padding:'7px 10px',fontSize:13};
+  const labelStyle={fontSize:12.5,fontWeight:700,color:'#3a4452',marginBottom:7,display:'flex',alignItems:'center',gap:5};
+  const canSave=label.trim()&&start.trim()&&end.trim();
+
+  const addSub=()=>{
+    const id='sr'+Date.now();
+    setSubRounds(s=>[...s,{id,start:'',end:'',confirm:'',confirmed:false}]);
+    setEditingSub(id);
+    setDraft({start:'',end:'',confirm:''});
+  };
+  const startEdit=(sr)=>{ setEditingSub(sr.id); setDraft({start:sr.start,end:sr.end,confirm:sr.confirm}); };
+  const cancelEdit=(sr)=>{
+    if(!sr.start&&!sr.end) setSubRounds(s=>s.filter(x=>x.id!==sr.id));
+    setEditingSub(null);
+  };
+  const commitEdit=(sr)=>{
+    setSubRounds(s=>s.map(x=>x.id===sr.id?{...x,start:draft.start,end:draft.end,confirm:draft.confirm,confirmed:!!draft.confirm.trim()}:x));
+    setEditingSub(null);
+  };
+  const removeSub=(sr)=>setSubRounds(s=>s.filter(x=>x.id!==sr.id));
+
+  const doSave=()=>{
+    if(!canSave) return;
+    const published=subRounds.filter(s=>s.confirmed).map(s=>s.confirm).sort().slice(-1)[0]||'';
+    onSave({label,start,end,published,subRounds});
+  };
+
+  return (
+    <div style={{maxWidth:1180,margin:'0 auto'}}>
+      <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:20}}>
+        <button onClick={onBack} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,color:'#5a6473',fontSize:13,fontWeight:600,height:40,padding:'0 16px',borderRadius:11,background:'#fff',border:'1px solid #e3e7ec',cursor:'pointer'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:15}}></i>กลับ
+        </button>
+        <div style={{width:38,height:38,borderRadius:10,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+          <i className="bi bi-calendar2-range" style={{fontSize:17,color:primary}}></i>
+        </div>
+        <div style={{fontWeight:700,fontSize:17,color:'#1a2332',flex:1}}>{round?'แก้ไขรอบการดำเนินการตามแผนธุรกิจ':'กำหนดรอบการดำเนินการตามแผนธุรกิจ'}</div>
+        <button onClick={onBack} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:'#e5920b',color:'#fff',border:'none',borderRadius:11,height:40,padding:'0 18px',fontSize:14,fontWeight:700,cursor:'pointer'}}>
+          <i className="bi bi-x-lg" style={{fontSize:14}}></i>ยกเลิก
+        </button>
+        <button onClick={()=>canSave&&doSave()} disabled={!canSave} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:canSave?'#1eb372':'#c7ccd4',color:'#fff',border:'none',borderRadius:11,height:40,padding:'0 20px',fontSize:14,fontWeight:700,cursor:canSave?'pointer':'default'}}>
+          <i className="bi bi-check-lg" style={{fontSize:16}}></i>บันทึก
+        </button>
+      </div>
+
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,padding:'22px 24px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+        <div style={{marginBottom:18}}>
+          <div style={labelStyle}>ชื่อรอบการดำเนินการตามแผนธุรกิจ<span style={{color:'#e0468c'}}>*</span></div>
+          <input value={label} onChange={e=>setLabel(e.target.value.slice(0,120))} placeholder="เป้าหมายรอบปี 2024 -2026" style={inputStyle}/>
+        </div>
+        <div style={{marginBottom:18}}>
+          <div style={labelStyle}><i className="bi bi-calendar2-range" style={{fontSize:13,color:'#e5920b'}}></i>ช่วงวันที่ดำเนินการ<span style={{color:'#e0468c'}}>*</span></div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+            <input value={start} onChange={e=>setStart(e.target.value)} placeholder="dd/MM/yyyy" style={inputStyle}/>
+            <input value={end} onChange={e=>setEnd(e.target.value)} placeholder="dd/MM/yyyy" style={inputStyle}/>
+          </div>
+          <div style={{fontSize:11.5,color:'#9aa3af',marginTop:6}}>ช่วงวันที่สำหรับการวัดผลของรอบแผนธุรกิจ</div>
+        </div>
+        <div style={{marginBottom:26}}>
+          <div style={labelStyle}>คัดลอกข้อมูลจากรอบการดำเนินการตามแผนธุรกิจ</div>
+          <div style={{position:'relative'}}>
+            <select value={copyFrom} onChange={e=>setCopyFrom(e.target.value)} style={{...inputStyle,appearance:'none',cursor:'pointer',color:copyFrom?'#1f2733':'#9aa3af'}}>
+              <option value="">— ไม่คัดลอกข้อมูล —</option>
+              {(rounds||[]).filter(r=>!round||r.id!==round.id).map(r=><option key={r.id} value={r.id}>{r.label}</option>)}
+            </select>
+            <i className="bi bi-chevron-down" style={{position:'absolute',right:14,top:15,fontSize:13,color:'#9aa3af',pointerEvents:'none'}}></i>
+          </div>
+          <div style={{fontSize:11.5,color:'#9aa3af',marginTop:6,lineHeight:1.6}}>ระบบจะบันทึกเป้าเคยบันทึกไว้ในรอบที่เลือกนี้ โดยจะบันทึกเฉพาะแผนธุรกิจที่ยังอยู่ในช่วงเวลาที่เลือกและเปิดการใช้งานเท่านั้น</div>
+        </div>
+
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14}}>
+          <div style={{fontSize:13,fontWeight:700,color:'#3a4452',flex:1}}>รอบการวัดประเมินผล</div>
+          <button onClick={addSub} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,background:'#f1f3f6',color:'#3a4452',border:'none',borderRadius:8,height:32,padding:'0 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}>
+            <i className="bi bi-plus-lg" style={{fontSize:12}}></i>ช่วงประเมินใหม่
+          </button>
+        </div>
+
+        {subRounds.length===0?(
+          <div style={{fontSize:12.5,color:'#b3bac4',padding:'10px 2px'}}>ยังไม่มีรอบการวัดประเมินผล — กด "ช่วงประเมินใหม่" เพื่อเพิ่ม</div>
+        ):(
+          <div style={{border:'1px solid #eceef2',borderRadius:12,overflow:'hidden'}}>
+            {subRounds.map((sr,i)=>{
+              const editing=editingSub===sr.id;
+              return (
+                <div key={sr.id} style={{display:'flex',alignItems:editing?'flex-start':'center',gap:16,padding:'13px 16px',borderTop:i?'1px solid #f0f2f5':'none',flexWrap:'wrap',background:editing?'#fafbfc':'#fff'}}>
+                  <div style={{fontWeight:700,fontSize:13,color:'#1a2332',width:64,flex:'none',paddingTop:editing?9:0}}>รอบที่ {i+1}</div>
+                  {editing?(
+                    <div style={{display:'flex',flexDirection:'column',gap:12,flex:1,minWidth:0}}>
+                      <div style={{display:'flex',alignItems:'center',gap:20,flexWrap:'wrap'}}>
+                        <div style={{display:'flex',alignItems:'center',gap:8,flex:2,minWidth:280}}>
+                          <span style={{fontSize:12,color:'#8a93a3',flex:'none'}}>ช่วงวันที่ประเมิน</span>
+                          <input value={draft.start} onChange={e=>setDraft(d=>({...d,start:e.target.value}))} placeholder="dd/MM/yyyy" style={smallInputStyle}/>
+                          <span style={{color:'#c7ccd4',flex:'none'}}>–</span>
+                          <input value={draft.end} onChange={e=>setDraft(d=>({...d,end:e.target.value}))} placeholder="dd/MM/yyyy" style={smallInputStyle}/>
+                        </div>
+                        <div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:200}}>
+                          <span style={{fontSize:12,color:'#8a93a3',flex:'none'}}>ยืนยันข้อมูล</span>
+                          <input value={draft.confirm} onChange={e=>setDraft(d=>({...d,confirm:e.target.value}))} placeholder="dd/MM/yyyy" style={smallInputStyle}/>
+                        </div>
+                      </div>
+                      <div style={{display:'flex',justifyContent:'flex-end',gap:8}}>
+                        <button onClick={()=>cancelEdit(sr)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,background:'#f1f3f6',color:'#5a6473',border:'none',borderRadius:8,height:32,padding:'0 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}>
+                          <i className="bi bi-x-lg" style={{fontSize:12}}></i>ยกเลิก
+                        </button>
+                        <button onClick={()=>commitEdit(sr)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,background:'#1eb372',color:'#fff',border:'none',borderRadius:8,height:32,padding:'0 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}>
+                          <i className="bi bi-check-lg" style={{fontSize:12}}></i>บันทึก
+                        </button>
+                      </div>
+                    </div>
+                  ):(
+                    <React.Fragment>
+                      <div style={{fontSize:12.5,color:'#5a6473'}}>ช่วงวันที่ประเมิน <span style={{fontWeight:700,color:'#3a4452'}}>{sr.start||'—'} – {sr.end||'—'}</span></div>
+                      <div style={{fontSize:12.5,color:'#5a6473'}}>ยืนยันข้อมูล <span style={{fontWeight:700,color:'#3a4452'}}>{sr.confirm||'—'}</span></div>
+                      <div style={{flex:1}}></div>
+                      {sr.confirmed?(
+                        <span style={{display:'inline-flex',alignItems:'center',gap:6,background:'#e7f7ee',color:'#12805e',border:'1px solid #bfe9d6',borderRadius:8,padding:'5px 11px',fontSize:12,fontWeight:700}}>
+                          <i className="bi bi-check-circle-fill" style={{fontSize:12.5}}></i>ยืนยันแล้ว
+                        </span>
+                      ):(
+                        <React.Fragment>
+                          <ToolBtn icon="bi-pencil" title="แก้ไข" onClick={()=>startEdit(sr)}/>
+                          <ToolBtn icon="bi-trash" title="ลบ" onClick={()=>removeSub(sr)} tone="#e0468c"/>
+                        </React.Fragment>
+                      )}
+                    </React.Fragment>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+/* ═══════════ ROUNDS: BUSINESS-PLAN MEASURE SETUP (per mission, flat) ═══════════ */
+const MEASURE_TONE={
+  teal:  {bg:'#e2f3f0',color:'#0e7c6d',bd:'#bfe6df',icon:'bi-graph-up-arrow'},
+  info:  {bg:'#eaf1fe',color:'#2f66d0',bd:'#c9dbfb',icon:'bi-bar-chart-line-fill'},
+  amber: {bg:'#fff4df',color:'#b06200',bd:'#f6dca8',icon:'bi-display'},
+  danger:{bg:'#fde8f0',color:'#c31e68',bd:'#f7c6dc',icon:'bi-exclamation-circle-fill'},
+};
+function MeasureChip({label,tone}){
+  const t=MEASURE_TONE[tone]||MEASURE_TONE.danger;
+  return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:6,background:t.bg,color:t.color,border:'1px solid '+t.bd,borderRadius:8,padding:'5px 11px',fontSize:11.5,fontWeight:700,whiteSpace:'nowrap'}}>
+      <i className={'bi '+t.icon} style={{fontSize:12}}></i>{label}
+    </span>
+  );
+}
+const MEASURE_DISPLAY_OPTS=[{key:'showAccum',label:'แสดงค่าสะสม',tone:'teal'},{key:'showAvg',label:'แสดงค่าเฉลี่ย',tone:'info'},{key:'showCockpit',label:'แสดงใน Cockpit',tone:'amber'}];
+const MEASURE_CFG_SEED={
+  m1:{kpiDesc:'ทำได้ตามแผนงานที่วางไว้',target:'100',unit:'%',measureType:'quant',showAccum:true,showAvg:false,showCockpit:true,assessor:'Piyawat Takaew',evalValue:'sum',criteriaType:'standard',
+      standard:{op0:'<',val0:'100',op5:'>=',val5:'100'},
+      levels:[{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<=',val2:''}],
+      budget:150000},
+};
+const LEVEL_DOT=['#e0473f','#f0ad2b','#f0ad2b','#f0ad2b','#22b573'];
+function OpSelect({value,onChange}){
+  return (
+    <div style={{position:'relative'}}>
+      <select value={value} onChange={e=>onChange(e.target.value)} style={{appearance:'none',border:'1.5px solid #e1e5ec',borderRadius:8,padding:'7px 22px 7px 10px',fontSize:13,fontWeight:700,color:'#3a4452',background:'#fff',cursor:'pointer'}}>
+        {['<','<=','=','>=','>'].map(o=><option key={o} value={o}>{o}</option>)}
+      </select>
+      <i className="bi bi-chevron-expand" style={{position:'absolute',right:7,top:9,fontSize:9,color:'#9aa3af',pointerEvents:'none'}}></i>
+    </div>
+  );
+}
+function PillRadio({options,value,onChange}){
+  return (
+    <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+      {options.map(o=>{
+        const on=value===o.val;
+        return (
+          <button key={o.val} onClick={()=>onChange(o.val)} style={{display:'inline-flex',alignItems:'center',gap:8,border:'1.5px solid '+(on?primary:'#e1e5ec'),borderRadius:99,padding:'7px 15px 7px 8px',fontSize:12.5,fontWeight:700,cursor:'pointer',background:on?primary:'#fff',color:on?'#fff':'#5a6473'}}>
+            <span style={{width:16,height:16,borderRadius:'50%',border:'1.5px solid '+(on?'#fff':'#c7ccd4'),display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+              {on&&<i className="bi bi-check-lg" style={{fontSize:9,color:'#fff'}}></i>}
+            </span>
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+function CheckOpt({checked,onChange,label}){
+  return (
+    <button onClick={()=>onChange(!checked)} style={{display:'inline-flex',alignItems:'center',gap:9,border:'none',background:'none',cursor:'pointer',padding:0}}>
+      <span style={{width:19,height:19,borderRadius:5,border:'1.5px solid '+(checked?primary:'#c7ccd4'),background:checked?primary:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+        {checked&&<i className="bi bi-check-lg" style={{fontSize:12,color:'#fff'}}></i>}
+      </span>
+      <span style={{fontSize:13,fontWeight:600,color:'#3a4452'}}>{label}</span>
+    </button>
+  );
+}
+function MeasureEditForm({mission,cfg,onBack,onSave}){
+  const c=cfg||{};
+  const [kpiDesc,setKpiDesc]=useState(c.kpiDesc||'');
+  const [target,setTarget]=useState(c.target||'100');
+  const [unit,setUnit]=useState(c.unit||'%');
+  const [measureType,setMeasureType]=useState(c.measureType||'quant');
+  const [showAccum,setShowAccum]=useState(c.showAccum??true);
+  const [showAvg,setShowAvg]=useState(c.showAvg??false);
+  const [showCockpit,setShowCockpit]=useState(c.showCockpit??true);
+  const [assessor,setAssessor]=useState(c.assessor||'');
+  const [evalValue,setEvalValue]=useState(c.evalValue||'sum');
+  const [criteriaType,setCriteriaType]=useState(c.criteriaType||'standard');
+  const [standard,setStandard]=useState(c.standard||{op0:'<',val0:'100',op5:'>=',val5:'100'});
+  const [levels,setLevels]=useState(c.levels||[{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<=',val2:''}]);
+  const [budget,setBudget]=useState(c.budget!=null?String(c.budget):'');
+  const setLevel=(i,patch)=>setLevels(ls=>ls.map((l,idx)=>idx===i?{...l,...patch}:l));
+
+  const inputStyle={width:'100%',border:'1.5px solid #e1e5ec',borderRadius:10,padding:'10px 12px',fontSize:13.5,outline:'none',color:'#1f2733',background:'#fff'};
+  const labelStyle={fontSize:13,fontWeight:700,color:'#1a2332',marginBottom:10,display:'flex',alignItems:'center',gap:7};
+  const canSave=kpiDesc.trim().length>=4;
+
+  const doSave=()=>{
+    if(!canSave) return;
+    onSave({kpiDesc,target,unit,measureType,showAccum,showAvg,showCockpit,assessor,evalValue,criteriaType,standard,levels,budget:budget?Number(budget):0});
+  };
+
+  return (
+    <div style={{maxWidth:1180,margin:'0 auto'}}>
+      {/* header */}
+      <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:20}}>
+        <button onClick={onBack} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,color:'#5a6473',fontSize:13,fontWeight:600,height:40,padding:'0 16px',borderRadius:11,background:'#fff',border:'1px solid #e3e7ec',cursor:'pointer'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:15}}></i>กลับ
+        </button>
+        <div style={{width:38,height:38,borderRadius:10,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+          <i className="bi bi-list-check" style={{fontSize:18,color:primary}}></i>
+        </div>
+        <div style={{fontWeight:700,fontSize:18,color:'#1a2332',flex:1}}>ตัวชี้วัดและการประเมินผล</div>
+        <button onClick={onBack} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:11,height:40,padding:'0 18px',fontSize:14,fontWeight:600,cursor:'pointer'}}>
+          <i className="bi bi-x-lg" style={{fontSize:14}}></i>ยกเลิก
+        </button>
+        <button onClick={doSave} disabled={!canSave} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:canSave?primary:'#c7ccd4',color:'#fff',border:'none',borderRadius:11,height:40,padding:'0 20px',fontSize:14,fontWeight:700,cursor:canSave?'pointer':'default'}}>
+          <i className="bi bi-check-lg" style={{fontSize:16}}></i>บันทึก
+        </button>
+      </div>
+
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,padding:'22px 24px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+        {/* mission header */}
+          <div style={{display:'flex',alignItems:'flex-start',gap:14,marginBottom:22}}>
+            <Avatar name={mission.owner} size={46}/>
+            <div>
+              <div style={{fontWeight:700,fontSize:15,color:'#1a2332',marginBottom:3}}>พันธกิจที่ {mission.no} : {mission.title}</div>
+              <div style={{fontSize:12.5,color:'#8a93a3',lineHeight:1.6}}>{mission.desc}</div>
+            </div>
+          </div>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'26px 40px'}}>
+            {/* ── LEFT COLUMN ── */}
+            <div>
+              <div style={labelStyle}><i className="bi bi-record-circle" style={{color:primary}}></i>ตัวชี้วัด (KPI)</div>
+              <div style={{position:'relative',marginBottom:8}}>
+                <textarea value={kpiDesc} onChange={e=>setKpiDesc(e.target.value.slice(0,255))} rows={3} placeholder="โปรดระบุตัวชี้วัด (KPI) ที่สอดคล้องกับเป้าหมายและหน่วยนับ และมีความหมายที่ชัดเจน" style={{...inputStyle,resize:'vertical',minHeight:78,paddingRight:34}}/>
+                {kpiDesc&&<button onClick={()=>setKpiDesc('')} style={{position:'absolute',right:10,top:10,width:20,height:20,borderRadius:'50%',border:'none',background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-x" style={{fontSize:13,color:'#8a93a3'}}></i></button>}
+              </div>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:20}}>
+                <span style={{fontSize:11,color:kpiDesc.trim().length<4?'#e0473f':'#9aa3af',fontWeight:600}}>ต้องการตัวอักษร 4 ขึ้นไป *</span>
+                <span style={{fontSize:11,color:'#b3bac4'}}>{kpiDesc.length} / 255</span>
+              </div>
+
+              <div style={{display:'flex',gap:16,marginBottom:20}}>
+                <div style={{flex:1}}>
+                  <div style={labelStyle}><i className="bi bi-bullseye" style={{color:primary}}></i>เป้าหมาย</div>
+                  <input value={target} onChange={e=>setTarget(e.target.value.replace(/[^0-9.]/g,''))} placeholder="เป้าหมายตัวเลข" style={inputStyle}/>
+                </div>
+                <div style={{flex:1}}>
+                  <div style={labelStyle}>หน่วยนับ</div>
+                  <div style={{display:'flex',gap:8}}>
+                    <input value={unit} onChange={e=>setUnit(e.target.value)} placeholder="หน่วยนับ" style={inputStyle}/>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{marginBottom:20}}>
+                <div style={labelStyle}><i className="bi bi-123" style={{color:'#3a4452'}}></i>ประเภทตัวชี้วัด</div>
+                <PillRadio value={measureType} onChange={setMeasureType} options={[{val:'quant',label:'เชิงปริมาณ'},{val:'qual',label:'เชิงคุณภาพ'}]}/>
+              </div>
+
+              <div>
+                <div style={labelStyle}><i className="bi bi-graph-up" style={{color:primary}}></i>การแสดงผลจากการรายงาน</div>
+                <div style={{display:'flex',gap:22,flexWrap:'wrap'}}>
+                  <CheckOpt checked={showAccum} onChange={setShowAccum} label="แสดงค่าสะสม"/>
+                  <CheckOpt checked={showAvg} onChange={setShowAvg} label="แสดงค่าเฉลี่ย"/>
+                  <CheckOpt checked={showCockpit} onChange={setShowCockpit} label="แสดงใน Cockpit"/>
+                </div>
+              </div>
+            </div>
+
+            {/* ── RIGHT COLUMN ── */}
+            <div>
+              <div style={labelStyle}><i className="bi bi-person-check-fill" style={{color:primary}}></i>ผู้ประเมินผล</div>
+              <div style={{position:'relative',marginBottom:20}}>
+                <select value={assessor} onChange={e=>setAssessor(e.target.value)} style={{...inputStyle,appearance:'none',cursor:'pointer',color:assessor?'#1f2733':'#9aa3af'}}>
+                  <option value="">ระบุผู้ประเมินผล</option>
+                  {PEOPLE.map(p=><option key={p} value={p}>{p}</option>)}
+                </select>
+                <i className="bi bi-chevron-down" style={{position:'absolute',right:13,top:13,fontSize:12,color:'#9aa3af',pointerEvents:'none'}}></i>
+              </div>
+
+              <div style={{marginBottom:20}}>
+                <div style={labelStyle}><i className="bi bi-123" style={{color:'#3a4452'}}></i>ค่าที่ใช้ในการประเมินตามเกณฑ์ประเมินผล</div>
+                <PillRadio value={evalValue} onChange={setEvalValue} options={[{val:'sum',label:'ค่าสะสม'},{val:'avg',label:'ค่าเฉลี่ย'}]}/>
+              </div>
+
+              <div style={{marginBottom:16}}>
+                <div style={labelStyle}><i className="bi bi-sliders" style={{color:'#3a4452'}}></i>กำหนดเกณฑ์การประเมินผล</div>
+                <PillRadio value={criteriaType} onChange={setCriteriaType} options={[{val:'standard',label:'มาตรฐาน (ผ่าน/ไม่ผ่าน)'},{val:'level_asc',label:'ตามระดับคะแนน(น้อยไปมาก)'},{val:'level_desc',label:'ตามระดับคะแนน(มากไปน้อย)'}]}/>
+              </div>
+
+              {criteriaType==='standard'?(
+                <div style={{display:'grid',gridTemplateColumns:'70px 1fr',gap:'10px 14px',alignItems:'center'}}>
+                  <div style={{fontSize:11.5,fontWeight:700,color:'#8a93a3'}}>คะแนน</div>
+                  <div style={{fontSize:11.5,fontWeight:700,color:'#8a93a3'}}>เกณฑ์ตรวจสอบ</div>
+                  <div style={{display:'flex',alignItems:'center',gap:7,fontWeight:700,fontSize:14}}><span style={{width:12,height:12,borderRadius:'50%',background:'#e0473f'}}></span>1</div>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <OpSelect value={standard.op0} onChange={v=>setStandard(s=>({...s,op0:v}))}/>
+                    <input value={standard.val0} onChange={e=>setStandard(s=>({...s,val0:e.target.value}))} style={{...inputStyle,width:90}}/>
+                    <span style={{color:'#9aa3af',fontSize:13}}>{unit}</span>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:7,fontWeight:700,fontSize:14}}><span style={{width:12,height:12,borderRadius:'50%',background:'#22b573'}}></span>5</div>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <OpSelect value={standard.op5} onChange={v=>setStandard(s=>({...s,op5:v}))}/>
+                    <input value={standard.val5} onChange={e=>setStandard(s=>({...s,val5:e.target.value}))} style={{...inputStyle,width:90}}/>
+                    <span style={{color:'#9aa3af',fontSize:13}}>{unit}</span>
+                  </div>
+                </div>
+              ):(
+                <div style={{display:'grid',gridTemplateColumns:'70px 1fr',gap:'10px 14px',alignItems:'center'}}>
+                  <div style={{fontSize:11.5,fontWeight:700,color:'#8a93a3'}}>คะแนน</div>
+                  <div style={{fontSize:11.5,fontWeight:700,color:'#8a93a3'}}>เกณฑ์ตรวจสอบ</div>
+                  {levels.map((l,i)=>{
+                    const empty=!l.val1.trim()||!l.val2.trim();
+                    return (
+                      <React.Fragment key={i}>
+                        <div style={{display:'flex',alignItems:'center',gap:7,fontWeight:700,fontSize:14}}><span style={{width:12,height:12,borderRadius:'50%',background:LEVEL_DOT[i],flex:'none'}}></span>{i+1}</div>
+                        <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+                          <OpSelect value={l.op1} onChange={v=>setLevel(i,{op1:v})}/>
+                          <input value={l.val1} onChange={e=>setLevel(i,{val1:e.target.value})} style={{...inputStyle,width:82}}/>
+                          <OpSelect value={l.op2} onChange={v=>setLevel(i,{op2:v})}/>
+                          <input value={l.val2} onChange={e=>setLevel(i,{val2:e.target.value})} style={{...inputStyle,width:82}}/>
+                          <span style={{color:'#9aa3af',fontSize:13}}>{unit}</span>
+                          {empty&&<span style={{color:'#e0473f',fontSize:11.5,fontWeight:600}}>- เกณฑ์ตรวจสอบต้องไม่เป็นค่าว่าง</span>}
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── BUDGET (full width) ── */}
+          <div style={{marginTop:26,paddingTop:22,borderTop:'1px solid #f0f2f5'}}>
+            <div style={labelStyle}><i className="bi bi-wallet2" style={{color:'#3b6fd4'}}></i>งบประมาณของพันธกิจนี้ในรอบนี้</div>
+            <div style={{display:'flex',alignItems:'center',gap:14,flexWrap:'wrap'}}>
+              <div style={{width:260}}>
+                <input value={budget} onChange={e=>setBudget(e.target.value.replace(/[^0-9]/g,''))} placeholder="จำนวนงบประมาณที่จัดสรร" style={inputStyle}/>
+              </div>
+              <span style={{fontSize:13,color:'#8a93a3'}}>บาท</span>
+              <div style={{flex:1}}></div>
+              <div style={{fontSize:11.5,color:'#9aa3af',maxWidth:420,lineHeight:1.6,display:'flex',gap:7}}>
+                <i className="bi bi-info-circle" style={{fontSize:13,color:'#b3bac4',flex:'none',marginTop:1}}></i>
+                <span>งบประมาณนี้เป็นวงเงินตั้งต้นของพันธกิจสำหรับรอบการวัดเป้านี้ — การใช้งบประมาณจริง (จากแผนย่อย/งานประจำวัน/บันทึกเอง) จะถูกคำนวณสะสมและแสดงผลในหน้ารายละเอียดแผนธุรกิจ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  );
+}
+function MissionMeasureList({round,onBack}){
+  const [cfgs,setCfgs]=useState(MEASURE_CFG_SEED);
+  const [editing,setEditing]=useState(null); // item being measure-edited
+  const [path,setPath]=useState([]); // [{levelKey,item}]
+
+  const parent=path.length?path[path.length-1]:null;
+  const levelKey=parent?tierKey(LV(parent.levelKey).tier+1):'mission';
+  const L=LV(levelKey);
+  const items=levelKey==='mission'?DATA.mission.filter(m=>m.enabled):childrenOf(levelKey,parent.item.id);
+  const nextKey=L.tier<4?tierKey(L.tier+1):null;
+
+  const goBack=()=>{ if(path.length) setPath(p=>p.slice(0,-1)); else onBack(); };
+  const drillInto=(it)=>setPath(p=>[...p,{levelKey,item:it}]);
+  const save=(vals)=>{ setCfgs(c=>({...c,[editing.id]:vals})); setEditing(null); };
+
+  if(editing){
+    return <MeasureEditForm mission={editing} cfg={cfgs[editing.id]} onBack={()=>setEditing(null)} onSave={save}/>;
+  }
+
+  return (
+    <div style={{maxWidth:1040,margin:'0 auto'}}>
+      <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:path.length?10:18}}>
+        <button onClick={goBack} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,color:'#5a6473',fontSize:13,fontWeight:600,height:40,padding:'0 16px',borderRadius:11,background:'#fff',border:'1px solid #e3e7ec',cursor:'pointer'}}>
+          <i className="bi bi-arrow-left" style={{fontSize:15}}></i>กลับ
+        </button>
+        <div style={{fontWeight:700,fontSize:18,color:'#1a2332'}}>{round.label}</div>
+      </div>
+      {path.length>0&&(
+        <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap',marginBottom:16,fontSize:12.5,color:'#8a93a3'}}>
+          <span>{LV('mission').name}</span>
+          {path.map((p,i)=>(
+            <React.Fragment key={i}>
+              <i className="bi bi-chevron-right" style={{fontSize:9}}></i>
+              <span style={{color:i===path.length-1?primary:'#8a93a3',fontWeight:i===path.length-1?700:500}}>{LV(p.levelKey).prefix} {p.item.no}</span>
+            </React.Fragment>
+          ))}
+        </div>
+      )}
+      <div style={{display:'flex',flexDirection:'column',gap:12}}>
+        {items.map(m=>{
+          const cfg=cfgs[m.id];
+          const activeTags=cfg?MEASURE_DISPLAY_OPTS.filter(o=>cfg[o.key]):[];
+          const kidCount=nextKey?childrenOf(nextKey,m.id).length:0;
+          return (
+            <div key={m.id} className="bp-card" style={{display:'flex',alignItems:'center',gap:16,background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'16px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+              <Avatar name={m.owner} size={46}/>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:700,fontSize:14.5,color:'#1a2332',marginBottom:9}}>{L.prefix} {m.no} : {m.title}</div>
+                {cfg?(
+                  <React.Fragment>
+                    <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:9,fontSize:12.5,color:'#3a4452'}}>
+                      <i className="bi bi-record-circle" style={{fontSize:14,color:primary}}></i>{cfg.kpiDesc}
+                    </div>
+                    <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                      {activeTags.length?activeTags.map(o=><MeasureChip key={o.key} label={o.label} tone={o.tone}/>):<span style={{fontSize:11.5,color:'#b3bac4'}}>ไม่แสดงผลรูปแบบใด</span>}
+                      {cfg.budget>0&&<MeasureChip label={cfg.budget.toLocaleString()+' บาท'} tone="info"/>}
+                    </div>
+                  </React.Fragment>
+                ):<MeasureChip label="ไม่มีตัวชี้วัด" tone="danger"/>}
+              </div>
+              <div style={{textAlign:'right',flex:'none',width:150}}>
+                <div style={{fontSize:11,color:'#9aa3af',marginBottom:5}}>ผู้ประเมินผล</div>
+                {cfg&&cfg.assessor?(
+                  <div style={{display:'flex',alignItems:'center',gap:6,justifyContent:'flex-end'}}>
+                    <Avatar name={cfg.assessor} size={24}/>
+                    <span style={{fontSize:12.5,fontWeight:700,color:'#3a4452'}}>{cfg.assessor}</span>
+                  </div>
+                ):(
+                  <span style={{fontSize:12,color:'#c4ccd4',fontWeight:600}}>ไม่มีผู้ประเมิน</span>
+                )}
+              </div>
+              <button onClick={()=>setEditing(m)} title="แก้ไขตัวชี้วัด" style={{width:36,height:36,borderRadius:'50%',border:'none',background:'#fdefdc',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flex:'none'}}>
+                <i className="bi bi-pencil-fill" style={{fontSize:14,color:'#e5920b'}}></i>
+              </button>
+              {kidCount>0?(
+                <button onClick={()=>drillInto(m)} title={'ดู'+LV(nextKey).name+'ภายใต้รายการนี้'} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,background:'#eef1f5',color:'#3a4452',border:'none',borderRadius:8,height:32,padding:'0 14px',fontSize:12,fontWeight:700,cursor:'pointer',flex:'none',whiteSpace:'nowrap'}}>
+                  {LV(nextKey).name}<i className="bi bi-chevron-right" style={{fontSize:11}}></i>
+                </button>
+              ):nextKey&&(
+                <span title={'ไม่มี'+LV(nextKey).name} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,background:'#f5f6f8',color:'#c4ccd4',border:'1px solid #eceef2',borderRadius:8,height:32,padding:'0 14px',fontSize:12,fontWeight:700,flex:'none',whiteSpace:'nowrap'}}>
+                  ไม่มี{LV(nextKey).name}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
+
+/* ═══════════ ROUNDS CONTAINER (list / form / plans) ═══════════ */
+function RoundsContainer(){
+  const [rounds,setRounds]=useState(ROUND_DATA);
+  const [view,setView]=useState('list'); // list | form | plans
+  const [active,setActive]=useState(null);
+
+  const openAdd=()=>{setActive(null);setView('form');};
+  const openEdit=(r)=>{setActive(r);setView('form');};
+  const openPlans=(r)=>{setActive(r);setView('plans');};
+  const back=()=>{setView('list');setActive(null);};
+  const del=(r)=>setRounds(rs=>rs.filter(x=>x.id!==r.id));
+  const save=(vals)=>{
+    if(active){ setRounds(rs=>rs.map(x=>x.id===active.id?{...x,...vals}:x)); }
+    else{ setRounds(rs=>[{id:Date.now(),cnt:0,...vals},...rs]); }
+    back();
+  };
+
+  if(view==='form') return <RoundFormView round={active} rounds={rounds} onBack={back} onSave={save}/>;
+  if(view==='plans') return <MissionMeasureList round={active} onBack={back}/>;
+  return <RoundsView rounds={rounds} onAdd={openAdd} onEdit={openEdit} onPlans={openPlans} onDelete={del}/>;
+}
+
+/* ═══════════ MAIN CONTENT ═══════════ */
+function Content({level,rounds,dailyTasks,setDailyTasks}){
+  const L=LV(level);
+  const [view,setView]=useState('list'); // list | form
+  const [viewMode,setViewMode]=useState('list'); // list | grid
+  const [asc,setAsc]=useState(true);
+  const [chain,setChain]=useState(()=>firstChainForLevel(level));
+  const [editItem,setEditItem]=useState(null);
+
+  React.useEffect(()=>{setView('list');setEditItem(null);setChain(firstChainForLevel(level));},[level,rounds]);
+
+  if(rounds) return (
+    <div style={{flex:1,padding:'22px 26px',overflowY:'auto',height:'calc(100vh - 58px)',minWidth:0}}>
+      <RoundsContainer/>
+    </div>
+  );
+
+  if(view==='form') return (
+    <div style={{flex:1,padding:'22px 26px',overflowY:'auto',height:'calc(100vh - 58px)',minWidth:0}}>
+      <FormView level={level} chain={chain} setChain={setChain} onBack={()=>{setView('list');setEditItem(null);}} editItem={editItem} dailyTasks={dailyTasks} setDailyTasks={setDailyTasks}/>
+    </div>
+  );
+
+  const base=level==='mission'?DATA.mission:childrenOf(level,chain[tierKey(L.tier-1)]);
+  const items=[...base].sort((a,b)=>asc?a.no.localeCompare(b.no,undefined,{numeric:true}):b.no.localeCompare(a.no,undefined,{numeric:true}));
+
+  return (
+    <div style={{flex:1,padding:'22px 26px',overflowY:'auto',height:'calc(100vh - 58px)',minWidth:0}}>
+      <div style={{maxWidth:1180,margin:'0 auto'}}>
+        {/* header */}
+        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:18,flexWrap:'wrap'}}>
+          <div style={{width:40,height:40,borderRadius:11,background:L.accent+'16',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className={'bi '+L.icon} style={{fontSize:19,color:L.accent}}></i>
+          </div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontWeight:700,fontSize:18,color:'#1a2332'}}>กำหนด{L.name}</div>
+            <div style={{fontSize:12.5,color:'#8a93a3',marginTop:1}}>ลำดับชั้นที่ {L.tier} · ทั้งหมด {items.length} รายการ</div>
+          </div>
+          <button onClick={()=>setAsc(a=>!a)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:11,height:40,padding:'0 15px',fontSize:13,fontWeight:600,cursor:'pointer'}}>
+            <i className={'bi '+(asc?'bi-sort-numeric-down':'bi-sort-numeric-up-alt')} style={{fontSize:15}}></i>เรียงลำดับ
+          </button>
+          <button onClick={()=>{setEditItem(null);setView('form');}} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:primary,color:'#fff',border:'none',borderRadius:11,height:40,padding:'0 18px',fontSize:13.5,fontWeight:700,cursor:'pointer',boxShadow:'0 2px 8px rgba(21,160,143,.28)'}}>
+            <i className="bi bi-plus-lg" style={{fontSize:15}}></i>เพิ่มรายการใหม่
+          </button>
+        </div>
+
+        {/* hierarchy chain selector for levels 2-4 */}
+        {L.parent&&<ChainSelector level={level} chain={chain} setChain={setChain}/>}
+
+        {/* view toggle */}
+        <div style={{display:'flex',alignItems:'center',marginBottom:16}}>
+          <div style={{flex:1}}></div>
+          <span style={{fontSize:12.5,color:'#8a93a3',marginRight:10}}>เปลี่ยนมุมมอง</span>
+          <div style={{display:'flex',background:'#eef1f5',borderRadius:10,padding:3,gap:2}}>
+            {[['list','bi-list-ul'],['grid','bi-grid-3x3-gap-fill']].map(([m,ic])=>(
+              <button key={m} onClick={()=>setViewMode(m)} style={{width:36,height:32,borderRadius:8,border:'none',background:viewMode===m?'#fff':'transparent',boxShadow:viewMode===m?'0 1px 3px rgba(16,24,40,.12)':'none',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
+                <i className={'bi '+ic} style={{fontSize:15,color:viewMode===m?primary:'#9aa3af'}}></i>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* list / grid */}
+        {items.length===0?(
+          <div style={{background:'#fff',border:'1px dashed #d9dee6',borderRadius:14,padding:'40px 20px',textAlign:'center'}}>
+            <i className={'bi '+L.icon} style={{fontSize:30,color:'#c4ccd4'}}></i>
+            <div style={{fontSize:13.5,fontWeight:700,color:'#5a6473',marginTop:12}}>ยังไม่มี{L.name}ภายใต้ลำดับชั้นที่เลือก</div>
+            <div style={{fontSize:12.5,color:'#9aa3af',marginTop:4}}>กด “เพิ่มรายการใหม่” เพื่อสร้าง{L.name}แรก</div>
+          </div>
+        ):viewMode==='list'?(
+          <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            {items.map(it=><ListCard key={it.id} level={level} item={it} onEdit={()=>{setEditItem(it);setView('form');}}/>)}
+          </div>
+        ):(
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:16}}>
+            {items.map(it=><GridCard key={it.id} level={level} item={it} onEdit={()=>{setEditItem(it);setView('form');}}/>)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const [level,setLevel]=useState('mission');
+  const [rounds,setRounds]=useState(false);
+  const [dailyTasks,setDailyTasks]=useState(DAILY_TASKS_SEED);
+  return (
+    <GD5AppShell active="business" onGoAdmin={()=>{setRounds(false);setLevel('mission');}}>
+      <LevelPanel level={level} setLevel={setLevel} rounds={rounds} setRounds={setRounds}/>
+      <Content level={level} rounds={rounds} dailyTasks={dailyTasks} setDailyTasks={setDailyTasks}/>
+    </GD5AppShell>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(async function(){
+  var shellSrc='';
+  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
+  var pageSrc=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>
