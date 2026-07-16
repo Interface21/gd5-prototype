@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EDR ภาคเรียน 1/2569 — กลุ่ม — GiveD5</title>
+<title>SA-Developer — กลุ่ม — GiveD5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -73,9 +73,9 @@ function PostThumb({icon,tone}){
 }
 
 const VM=[
-  {title:'EDR ภาคเรียน 1/2569',members:24,unread:3,posts:48},
   {title:'VM : AAR GiveD5',members:18,unread:20,posts:136},
-  {title:'เคล็ดลับการเขียนแผนธุรกิจ',members:29,unread:0,posts:2},
+  {title:'EDR วิทยาลัยเทคนิคอยุธยา',members:18,unread:2,posts:36,href:'user-virtual-meeting-group-2.html'},
+  {title:'EDR ภาคเรียน 1/2569',members:24,unread:0,posts:48,href:'user-virtual-meeting-group-1.html'},
   {title:'AI วันละ 5 นาที',members:17,unread:7,posts:22},
 ];
 const POSTS=[
@@ -111,67 +111,24 @@ function Pill({children,bg,color,icon}){
 let _uid=100;
 const uid=()=>'x'+(++_uid);
 const sub=(title,done,date,days,daysType,inContract,op)=>({id:uid(),title,done:!!done,date:date||'',days:days||0,daysType:daysType||'left',inContract:inContract!==false,op:op||null});
-
-/* ค่าใช้จ่ายจริง (บันทึกโดยผู้รับผิดชอบต่อหัวข้อ TODO) — dd/mm/yyyy ตามรูปแบบวันที่ของไฟล์นี้ */
-const expense=(date,amount,note)=>({id:uid(),date,amount,note});
-const isoToDisp=(iso)=>{ if(!iso)return ''; const [y,m,d]=iso.split('-'); return d+'/'+m+'/'+y; };
-const dispToIso=(disp)=>{ if(!disp)return ''; const [d,m,y]=disp.split('/'); return y+'-'+m+'-'+d; };
-const TODAY_ISO='2026-07-10';
-
 const TD_SEED=[
-  {id:uid(),title:'วิทยาลัยเทคนิคอยุธยา',inContract:true,expenses:[
-    expense('28/06/2026',8500,'ค่าเดินทางประสานงานทะเบียนวิทยาลัย'),
-    expense('12/06/2026',15000,'ค่าจัดพิมพ์เอกสารและแบบฟอร์ม ศธ.02'),
-  ],subs:[
-    sub('ติดตามการกำหนดช่วงระยะเวลาการอัพโหลดแผนการจัดการเรียนรู้ และบันทึกหลังการสอน(เฉพาะภาคเรียนที่ 1 และ 2 )',true,'10/05/2026',0,'left',true,null),
-    sub('ตรวจสอบ/ปรับปรุง/แก้ไขข้อมูลแผนการเรียน ใน ศธ.02ออนไลน์ (กรณีวิทยาลัยปรับปรุงแผนการเรียน)',true,'12/05/2026',0,'left',true,null),
-    sub('นำวิชาในแผนการเรียนเข้าตารางเรียน และกำหนดครูผู้สอน ในระบบ ศธ.02 ออนไลน์',true,'15/05/2026',0,'left',true,null),
-    sub('ติดตามการกำหนดช่วงระยะเวลาการประเมินครูผู้สอน(เฉพาะภาคเรียนที่ 1 และ 2 )',true,'18/05/2026',0,'left',true,null),
-    sub('ติดตามการลงทะเบียนเรียน (เรียนซ้ำ/เรียนซ่อม)',true,'20/05/2026',0,'left',true,null),
-    sub('Sync ข้อมูลนักศึกษาเพื่อปรับปรุงข้อมูลให้ตรงกันทั้ง 2 ระบบ',false,'25/05/2026',5,'left',true,{label:'ที่กำลังดำเนินการ',count:'850/1200',statusKey:'inprogress',colorStatus:'green'}),
-    sub('ลงทะเบียนเรียนบนระบบ ศธ.02 (กลุ่มเรียนปกติ)',false,'28/05/2026',8,'left',true,{label:'ที่กำลังดำเนินการ',count:'42/45',statusKey:'inprogress',colorStatus:'green'}),
-    sub('ลงทะเบียนเรียนบนระบบ ศธ.02 (สำหรับนักศึกษาเรียนซ้ำ/เรียนซ่อม)',false,'30/05/2026',10,'left',true,{label:'ที่กำลังดำเนินการ',count:'15/28',statusKey:'inprogress',colorStatus:'yellow'}),
-    sub('ติดตามการกำหนดช่วงระยะเวลาการประเมินครูที่ปรึกษา(เฉพาะภาคเรียนที่ 1 และ 2 )',false,'05/06/2026',15,'left',true,{label:'ที่กำลังดำเนินการ',count:'',statusKey:'inprogress',colorStatus:'green'}),
-    sub('ติดตามการกำหนดแบบสำรวจความเสี่ยงระหว่างภาคเรียน (เฉพาะภาคเรียนที่ 1 และ 2 )',false,'10/06/2026',20,'left',true,{avatar:true}),
-    sub('ติดตามการบันทึกรายการค่าใช้จ่ายและค่าลงทะเบียนเรียน (รอบล่าช้า)',false,'15/06/2026',25,'left',true,null),
-    sub('ติดตามการกำหนดวันที่ชำระเงินค่าลงทะเบียนเรียน (รอบล่าช้า)',false,'18/06/2026',28,'left',true,null),
-    sub('ติดตามการรายงาน GPA&GPAX (5 ภาคเรียน)',false,'25/06/2026',35,'left',true,null),
-    sub('ติดตามการรายงาน GPA&GPAX (จบพร้อมรุ่นและไม่พร้อมรุ่น)',false,'28/06/2026',38,'left',true,null),
-    sub('ติดตามการรายงานข้อมูลนักเรียน นักศึกษา (รายงานรายหัว งวดที่ 3)',false,'05/07/2026',45,'left',true,null),
-  ]},
-  {id:uid(),title:'วิทยาลัยเทคนิคร้อยเอ็ด',inContract:true,subs:[
-    sub('ติดตามการกำหนดช่วงระยะเวลาการอัพโหลดแผนการจัดการเรียนรู้ และบันทึกหลังการสอน(เฉพาะภาคเรียนที่ 1 และ 2 )',true,'10/05/2026',0,'left',true,null),
-    sub('ตรวจสอบ/ปรับปรุง/แก้ไขข้อมูลแผนการเรียน ใน ศธ.02ออนไลน์ (กรณีวิทยาลัยปรับปรุงแผนการเรียน)',true,'12/05/2026',0,'left',true,null),
-    sub('นำวิชาในแผนการเรียนเข้าตารางเรียน และกำหนดครูผู้สอน ในระบบ ศธ.02 ออนไลน์',true,'14/05/2026',0,'left',true,null),
-    sub('ติดตามการกำหนดช่วงระยะเวลาการประเมินครูผู้สอน(เฉพาะภาคเรียนที่ 1 และ 2 )',false,'15/05/2026',2,'over',true,{label:'ที่กำลังดำเนินการ',count:'10/35',statusKey:'inprogress',colorStatus:'red'}),
-    sub('ติดตามการลงทะเบียนเรียน (เรียนซ้ำ/เรียนซ่อม)',false,'16/05/2026',1,'over',true,{label:'ที่กำลังดำเนินการ',count:'5/12',statusKey:'inprogress',colorStatus:'yellow'}),
-    sub('Sync ข้อมูลนักศึกษาเพื่อปรับปรุงข้อมูลให้ตรงกันทั้ง 2 ระบบ',false,'22/05/2026',4,'left',true,{label:'ที่กำลังดำเนินการ',count:'500/980',statusKey:'inprogress',colorStatus:'yellow'}),
-    sub('ลงทะเบียนเรียนบนระบบ ศธ.02 (กลุ่มเรียนปกติ)',false,'28/05/2026',10,'left',true,{avatar:true}),
-    sub('ลงทะเบียนเรียนบนระบบ ศธ.02 (สำหรับนักศึกษาเรียนซ้ำ/เรียนซ่อม)',false,'30/05/2026',12,'left',true,{avatar:true}),
-    sub('ติดตามการกำหนดช่วงระยะเวลาการประเมินครูที่ปรึกษา(เฉพาะภาคเรียนที่ 1 และ 2 )',false,'05/06/2026',18,'left',true,null),
-    sub('ติดตามการกำหนดแบบสำรวจความเสี่ยงระหว่างภาคเรียน (เฉพาะภาคเรียนที่ 1 และ 2 )',false,'10/06/2026',23,'left',true,null),
-    sub('ติดตามการบันทึกรายการค่าใช้จ่ายและค่าลงทะเบียนเรียน (รอบล่าช้า)',false,'15/06/2026',28,'left',true,null),
-    sub('ติดตามการกำหนดวันที่ชำระเงินค่าลงทะเบียนเรียน (รอบล่าช้า)',false,'18/06/2026',31,'left',true,null),
-    sub('ติดตามการรายงาน GPA&GPAX (5 ภาคเรียน)',false,'25/06/2026',38,'left',true,null),
-    sub('ติดตามการรายงาน GPA&GPAX (จบพร้อมรุ่นและไม่พร้อมรุ่น)',false,'28/06/2026',41,'left',true,null),
-    sub('ติดตามการรายงานข้อมูลนักเรียน นักศึกษา (รายงานรายหัว งวดที่ 3)',false,'05/07/2026',48,'left',true,null),
-  ]},
-  {id:uid(),title:'วิทยาลัยเทคนิคเดชอุดม',inContract:true,subs:[
-    sub('ติดตามการกำหนดช่วงระยะเวลาการอัพโหลดแผนการจัดการเรียนรู้ และบันทึกหลังการสอน(เฉพาะภาคเรียนที่ 1 และ 2 )',true,'09/05/2026',0,'left',true,null),
-    sub('ตรวจสอบ/ปรับปรุง/แก้ไขข้อมูลแผนการเรียน ใน ศธ.02ออนไลน์ (กรณีวิทยาลัยปรับปรุงแผนการเรียน)',true,'11/05/2026',0,'left',true,null),
-    sub('นำวิชาในแผนการเรียนเข้าตารางเรียน และกำหนดครูผู้สอน ในระบบ ศธ.02 ออนไลน์',false,'18/05/2026',3,'left',true,{label:'ขอปิดงาน',count:'40/40',statusKey:'closing',colorStatus:'green'}),
-    sub('ติดตามการกำหนดช่วงระยะเวลาการประเมินครูผู้สอน(เฉพาะภาคเรียนที่ 1 และ 2 )',false,'20/05/2026',5,'left',true,{label:'ที่กำลังดำเนินการ',count:'18/25',statusKey:'inprogress',colorStatus:'green'}),
-    sub('ติดตามการลงทะเบียนเรียน (เรียนซ้ำ/เรียนซ่อม)',false,'22/05/2026',7,'left',true,{label:'ที่กำลังดำเนินการ',count:'4/10',statusKey:'inprogress',colorStatus:'yellow'}),
-    sub('Sync ข้อมูลนักศึกษาเพื่อปรับปรุงข้อมูลให้ตรงกันทั้ง 2 ระบบ',false,'25/05/2026',10,'left',true,{avatar:true}),
-    sub('ลงทะเบียนเรียนบนระบบ ศธ.02 (กลุ่มเรียนปกติ)',false,'28/05/2026',13,'left',true,{avatar:true}),
-    sub('ลงทะเบียนเรียนบนระบบ ศธ.02 (สำหรับนักศึกษาเรียนซ้ำ/เรียนซ่อม)',false,'30/05/2026',15,'left',true,null),
-    sub('ติดตามการกำหนดช่วงระยะเวลาการประเมินครูที่ปรึกษา(เฉพาะภาคเรียนที่ 1 และ 2 )',false,'05/06/2026',21,'left',true,null),
-    sub('ติดตามการกำหนดแบบสำรวจความเสี่ยงระหว่างภาคเรียน (เฉพาะภาคเรียนที่ 1 และ 2 )',false,'10/06/2026',26,'left',true,null),
-    sub('ติดตามการบันทึกรายการค่าใช้จ่ายและค่าลงทะเบียนเรียน (รอบล่าช้า)',false,'15/06/2026',31,'left',true,null),
-    sub('ติดตามการกำหนดวันที่ชำระเงินค่าลงทะเบียนเรียน (รอบล่าช้า)',false,'18/06/2026',34,'left',true,null),
-    sub('ติดตามการรายงาน GPA&GPAX (5 ภาคเรียน)',false,'25/06/2026',41,'left',true,null),
-    sub('ติดตามการรายงาน GPA&GPAX (จบพร้อมรุ่นและไม่พร้อมรุ่น)',false,'28/06/2026',44,'left',true,null),
-    sub('ติดตามการรายงานข้อมูลนักเรียน นักศึกษา (รายงานรายหัว งวดที่ 3)',false,'05/07/2026',51,'left',true,null),
+  {id:uid(),title:'บริหารงานโปรเจคครุภัณฑ์',inContract:true,subs:[
+    sub('แจ้งทำสัญญา',false,'',0,'left',true,null),
+    sub('ขอใบเสนอราคาจาก Supplier/Sub Contractor',false,'',0,'left',true,null),
+    sub('ทำ Scope of Work และแผนงาน',false,'',0,'left',true,null),
+    sub('Kick of Metting (KOM)',true,'',0,'left',true,null),
+    sub('ทำเรื่องขอเปลี่ยนรุ่นสินค้า และยี่ห้อ',false,'',0,'left',true,null),
+    sub('เปิดใบขอซื้อ (PR) / เปิดใบสั่งซื้อ (PO)',false,'',0,'left',true,null),
+    sub('กำกับ ติดตาม การรับสินค้าเข้าคลัง',false,'',0,'left',true,null),
+    sub('ส่งสินค้าประกอบ (ถ้ามี)',false,'',0,'left',false,null),
+    sub('ติดตามสินค้าประกอบ (ถ้ามี)',false,'',0,'left',false,null),
+    sub('ตรวจสอบสินค้าประกอบ / ตรวจสอบงานติดตั้งหน้างาน (ถ้ามี)',false,'',0,'left',false,null),
+    sub('ทำเอกสารตรวจรับสินค้าประกอบ / ทำเอกสารตรวจรับงานติดตั้งหน้างาน',false,'',0,'left',false,null),
+    sub('จัดเตรียมใบงานเพื่ออบรม (ถ้ามี)',false,'',0,'left',true,null),
+    sub('จัดเตรียมการอบรม ตั้งเป้าหมาย',false,'',0,'left',true,null),
+    sub('อบรมลูกค้า/ส่งมอบงาน',false,'',0,'left',true,null),
+    sub('ติดตามการเก็บเงิน ตามสัญญา',false,'',0,'left',true,null),
+    sub('ติดตามขอคืนหลักประกันสัญญา',false,'',0,'left',true,null),
   ]},
 ];
 
@@ -198,7 +155,6 @@ function TodoModal({data,onClose,onSave,onDelete}){
         </div>
         <div style={{padding:'12px 20px 20px'}}>
           <input value={title} onChange={(e)=>setTitle(e.target.value)} placeholder="ชื่อสิ่งที่ต้องทำ" style={{...inp,background:'#f6f7f9',fontWeight:600}}/>
-          {!isTopic && (<React.Fragment>
           <Lbl i="edit_note">รายละเอียด</Lbl>
           <textarea value={detail} onChange={(e)=>setDetail(e.target.value)} rows={3} style={{...inp,resize:'vertical'}}/>
           <div style={{display:'flex',gap:18,marginTop:12}}>
@@ -215,8 +171,7 @@ function TodoModal({data,onClose,onSave,onDelete}){
             <div style={{flex:1}}><Lbl i="notifications">แจ้งเตือนครั้งที่ 1</Lbl><select value={r1} onChange={(e)=>setR1(e.target.value)} style={{...inp,cursor:'pointer'}}>{REM.map(r=><option key={r}>{r}</option>)}</select></div>
             <div style={{flex:1}}><Lbl i="notifications">แจ้งเตือนครั้งที่ 2</Lbl><select value={r2} onChange={(e)=>setR2(e.target.value)} style={{...inp,cursor:'pointer'}}>{REM.map(r=><option key={r}>{r}</option>)}</select></div>
           </div>
-          </React.Fragment>)}
-          {false && isTopic && editing && (
+          {isTopic && editing && (
             <div style={{border:'1px solid #eceef2',borderRadius:12,padding:'14px 16px',marginTop:16}}>
               <div style={{display:'flex',justifyContent:'flex-end',marginBottom:6}}><span style={{display:'inline-flex',alignItems:'center',gap:5,color:primary,fontSize:12,fontWeight:600}}>{ms('open_in_new',15,primary)}ดูคำสั่งการ</span></div>
               <div style={{fontWeight:700,fontSize:14,color:'#2b3440',lineHeight:1.4,marginBottom:10}}>คำสั่งการ : {title||'—'}</div>
@@ -231,107 +186,8 @@ function TodoModal({data,onClose,onSave,onDelete}){
             {editing && onDelete && <button onClick={()=>{onDelete();onClose();}} style={{background:'#fdeaea',color:'#d83a3a',border:'none',borderRadius:9,padding:'9px 18px',fontSize:13.5,fontWeight:700}}>ลบ</button>}
             <div style={{flex:1}}></div>
             <button onClick={()=>{onSave({title,detail,inContract:inC});onClose();}} style={{background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 20px',fontSize:13.5,fontWeight:700}}>{editing?'บันทึกแก้ไข':'บันทึก'}</button>
-            {!isTopic && <button onClick={()=>{onSave({title,detail,inContract:inC});onClose();}} style={{background:'#0e8c7d',color:'#fff',border:'none',borderRadius:9,padding:'9px 20px',fontSize:13.5,fontWeight:700}}>บันทึก + สั่งการ</button>}
+            <button onClick={()=>{onSave({title,detail,inContract:inC});onClose();}} style={{background:'#0e8c7d',color:'#fff',border:'none',borderRadius:9,padding:'9px 20px',fontSize:13.5,fontWeight:700}}>{isTopic?'เริ่มดำเนินการ':'บันทึก + สั่งการ'}</button>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ค่าใช้จ่ายจริงของหัวข้อ TODO หนึ่งกลุ่ม — ดู/เพิ่ม/แก้ไข/ลบ (วันที่จ่าย + จ่ายค่าอะไร + จำนวนเงิน) */
-function ExpenseModal({topic,budget,onClose,onAdd,onEdit,onDelete}){
-  const [form,setForm]=React.useState(null); // {id?,date(iso),amount,note}
-  const [confirmDelId,setConfirmDelId]=React.useState(null);
-  const list=topic.expenses||[];
-  const total=list.reduce((s,e)=>s+e.amount,0);
-  const over=budget>0&&total>budget;
-  const openAdd=()=>{setForm({date:TODAY_ISO,amount:'',note:''});setConfirmDelId(null);};
-  const openEdit=(e)=>{setForm({id:e.id,date:dispToIso(e.date),amount:String(e.amount),note:e.note});setConfirmDelId(null);};
-  const amt=form?parseFloat(String(form.amount||'').replace(/,/g,'')):0;
-  const canSave=!!form&&!!form.date&&!isNaN(amt)&&amt>0&&form.note.trim()!=='';
-  const submit=()=>{
-    if(!canSave)return;
-    const payload={date:isoToDisp(form.date),amount:amt,note:form.note.trim()};
-    if(form.id){onEdit(form.id,payload);}else{onAdd(payload);}
-    setForm(null);
-  };
-  const inp={width:'100%',border:'1px solid #dde1e8',borderRadius:9,padding:'9px 11px',fontSize:13,fontFamily:'inherit',outline:'none',color:'#1f2733',boxSizing:'border-box',background:'#fff'};
-  const btn=(bg,color,border)=>({height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,background:bg,color,border:border||'none',borderRadius:11,padding:'0 16px',fontSize:12.5,fontWeight:700,cursor:'pointer'});
-  return (
-    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'flex-start',justifyContent:'center',zIndex:95,padding:'40px 16px',overflowY:'auto'}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,width:560,maxWidth:'100%',boxShadow:'0 24px 64px rgba(16,24,40,.28)',animation:'fadeIn .15s ease'}}>
-        <div style={{display:'flex',alignItems:'center',gap:11,padding:'18px 22px',borderBottom:'1px solid #f0f2f5'}}>
-          <div style={{width:36,height:36,borderRadius:9,background:'#eaf1fe',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-wallet2" style={{fontSize:17,color:'#3b6fd4'}}></i></div>
-          <div style={{minWidth:0}}>
-            <div style={{fontWeight:700,fontSize:15}}>ค่าใช้จ่าย</div>
-            <div style={{fontSize:12,color:'#9aa3af',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{topic.title}</div>
-          </div>
-          <div style={{flex:1}}></div>
-          <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'#f1f3f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',border:'none',cursor:'pointer'}}><i className="bi bi-x-lg" style={{fontSize:14,color:'#5a6473'}}></i></button>
-        </div>
-        <div style={{padding:'16px 22px'}}>
-          <div style={{display:'flex',alignItems:'center',gap:9,background:over?'#fdeaea':'#f7f9fb',border:'1px solid '+(over?'#f6d3d0':'#eceef2'),borderRadius:11,padding:'11px 14px',marginBottom:16,flexWrap:'wrap'}}>
-            <span style={{fontSize:12.5,color:'#5a6473'}}>รวมจ่ายแล้ว</span>
-            <span style={{fontSize:17,fontWeight:700,color:over?'#d83a3a':'#3b6fd4'}}>{total.toLocaleString()}</span>
-            <span style={{fontSize:12.5,color:'#9aa3af'}}>{budget>0?('จาก '+budget.toLocaleString()+' บาท'):'บาท'} · {list.length} รายการ</span>
-          </div>
-
-          {list.length===0 && !form && (
-            <div style={{textAlign:'center',padding:'22px 0',color:'#b3bac4',fontSize:13}}>ยังไม่มีการบันทึกค่าใช้จ่ายในหัวข้อนี้</div>
-          )}
-
-          {list.map((e,i)=>(
-            confirmDelId===e.id ? (
-              <div key={e.id} style={{display:'flex',alignItems:'center',gap:8,background:'#fdeaea',borderRadius:10,padding:'10px 12px',marginBottom:8}}>
-                <span style={{fontSize:12.5,color:'#d83a3a',fontWeight:600,flex:1}}>ลบรายการนี้?</span>
-                <button onClick={()=>{onDelete(e.id);setConfirmDelId(null);}} style={btn('#d83a3a','#fff')}><i className="bi bi-check-lg" style={{fontSize:13}}></i>ยืนยัน</button>
-                <button onClick={()=>setConfirmDelId(null)} style={btn('#fff','#5a6473','1px solid #e3e7ec')}><i className="bi bi-x-lg" style={{fontSize:12}}></i>ยกเลิก</button>
-              </div>
-            ) : (form&&form.id===e.id) ? null : (
-              <div key={e.id} style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 2px',borderBottom:i<list.length-1?'1px solid #f4f6f8':'none'}}>
-                <div style={{width:30,height:30,borderRadius:'50%',background:'#eaf0fb',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-cash-coin" style={{fontSize:14,color:'#3b6fd4'}}></i></div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:12.5,color:'#9aa3af'}}>{e.date}</div>
-                  <div style={{fontSize:13,color:'#1a2332',fontWeight:600,marginTop:2,lineHeight:1.4}}>{e.note}</div>
-                </div>
-                <span style={{fontSize:13.5,fontWeight:700,color:'#3b6fd4',flex:'none',whiteSpace:'nowrap'}}>{e.amount.toLocaleString()} บาท</span>
-                <div style={{display:'flex',gap:5,flex:'none'}}>
-                  <button onClick={()=>openEdit(e)} title="แก้ไข" style={{width:26,height:26,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-pencil" style={{fontSize:12,color:'#5a6473'}}></i></button>
-                  <button onClick={()=>setConfirmDelId(e.id)} title="ลบ" style={{width:26,height:26,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-trash" style={{fontSize:12,color:'#d83a3a'}}></i></button>
-                </div>
-              </div>
-            )
-          ))}
-
-          {form && (
-            <div style={{border:'1px solid #cfe0fb',background:'#f7faff',borderRadius:12,padding:'14px 16px',marginTop:list.length?12:0}}>
-              <div style={{fontWeight:700,fontSize:13,color:'#1a2332',marginBottom:12}}>{form.id?'แก้ไขรายการค่าใช้จ่าย':'เพิ่มรายการค่าใช้จ่าย'}</div>
-              <div style={{display:'flex',gap:12,flexWrap:'wrap',marginBottom:10}}>
-                <div style={{width:160}}>
-                  <div style={{fontSize:12,color:'#5a6473',fontWeight:600,marginBottom:6}}>วันที่จ่าย</div>
-                  <input type="date" value={form.date} onChange={ev=>setForm(f=>({...f,date:ev.target.value}))} style={inp}/>
-                </div>
-                <div style={{flex:'1 1 160px'}}>
-                  <div style={{fontSize:12,color:'#5a6473',fontWeight:600,marginBottom:6}}>จำนวนเงิน (บาท)</div>
-                  <input value={form.amount} onChange={ev=>setForm(f=>({...f,amount:ev.target.value}))} placeholder="เช่น 5,000" style={inp}/>
-                </div>
-              </div>
-              <div style={{marginBottom:14}}>
-                <div style={{fontSize:12,color:'#5a6473',fontWeight:600,marginBottom:6}}>จ่ายค่าอะไร</div>
-                <input value={form.note} onChange={ev=>setForm(f=>({...f,note:ev.target.value}))} placeholder="เช่น ค่าจัดพิมพ์เอกสาร" style={inp}/>
-              </div>
-              <div style={{display:'flex',justifyContent:'flex-end',gap:9}}>
-                <button onClick={()=>setForm(null)} style={btn('#fff','#5a6473','1px solid #e3e7ec')}><i className="bi bi-x-lg" style={{fontSize:12}}></i>ยกเลิก</button>
-                {form.id && <button onClick={()=>{onDelete(form.id);setForm(null);}} style={btn('#fdeaea','#d83a3a')}><i className="bi bi-trash" style={{fontSize:12}}></i>ลบ</button>}
-                <button onClick={submit} disabled={!canSave} style={{...btn(canSave?'#3b6fd4':'#c7ccd4','#fff'),cursor:canSave?'pointer':'default'}}><i className="bi bi-check-lg" style={{fontSize:13}}></i>บันทึก</button>
-              </div>
-            </div>
-          )}
-
-          {!form && (
-            <button onClick={openAdd} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:7,width:'100%',marginTop:list.length?14:0,height:40,border:'1.5px dashed #cdd4de',borderRadius:11,background:'#fafbfc',color:'#3b6fd4',fontSize:13.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-plus-lg" style={{fontSize:16}}></i>เพิ่มรายการค่าใช้จ่าย</button>
-          )}
         </div>
       </div>
     </div>
@@ -344,9 +200,10 @@ function GanttView({topics}){
   const base=new Date(2026,0,1);
   const todayDay=13; // 14 Jan 2026
   const fmt=(d)=>{const dt=new Date(base.getTime()+d*DAY);return dt.getDate()+'/'+(dt.getMonth()+1);};
+  // build rows with synthetic date ranges (prototype: seed has no explicit ranges)
   let rows=[];
   topics.forEach((t,ti)=>{
-    if(filter!=='all' && ti!==filter) return;
+    if(filter!=='all' && ti!==filter) return; // ti kept = original index → ranges stable
     const tStart=ti*2;
     const subRows=t.subs.map((s,i)=>{
       const start=tStart+i*2;
@@ -366,6 +223,7 @@ function GanttView({topics}){
 
   return (
    <div>
+    {/* topic filter */}
     <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12,flexWrap:'wrap'}}>
       {ms('filter_list',18,'#8a93a3')}
       <span style={{fontSize:12.5,color:'#8a93a3',fontWeight:600}}>หัวข้อหลัก</span>
@@ -375,6 +233,7 @@ function GanttView({topics}){
       </select>
       {filter!=='all' && <button onClick={()=>setFilter('all')} style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:12,fontWeight:600,color:primary}}>{ms('close',16,primary)}ล้าง</button>}
     </div>
+    {/* today label */}
     <div style={{display:'flex'}}>
       <div style={{width:LBL,flex:'none'}}></div>
       <div style={{flex:1,position:'relative',height:20}}>
@@ -385,10 +244,12 @@ function GanttView({topics}){
     </div>
 
     <div style={{position:'relative',borderTop:'1px solid #f1f3f6'}}>
+      {/* plot overlay: gridlines + today line */}
       <div style={{position:'absolute',left:LBL,right:0,top:0,bottom:0,pointerEvents:'none'}}>
         {ticks.map((d,i)=>(<div key={i} style={{position:'absolute',left:pct(d),top:0,bottom:0,width:1,background:'#f4f6f8'}}></div>))}
         <div style={{position:'absolute',left:pct(todayDay),top:0,bottom:0,width:2,marginLeft:-1,background:'#37b86e',opacity:.45}}></div>
       </div>
+      {/* rows */}
       {rows.map((r,i)=> r.type==='topic' ? (
         <div key={i} style={{display:'flex',alignItems:'center',minHeight:34,borderTop:i?'1px solid #f4f6f8':'none'}}>
           <div style={{width:LBL,flex:'none',paddingRight:14,fontWeight:700,fontSize:12.5,color:'#2b3440',lineHeight:1.3,paddingTop:6,paddingBottom:6,textWrap:'pretty'}}>{r.title}</div>
@@ -404,6 +265,7 @@ function GanttView({topics}){
       ))}
     </div>
 
+    {/* axis */}
     <div style={{display:'flex',borderTop:'1px solid #f1f3f6',marginTop:2}}>
       <div style={{width:LBL,flex:'none'}}></div>
       <div style={{flex:1,position:'relative',height:24}}>
@@ -411,6 +273,7 @@ function GanttView({topics}){
       </div>
     </div>
 
+    {/* legend */}
     <div style={{display:'flex',alignItems:'center',gap:16,marginTop:12,paddingLeft:LBL,fontSize:11.5,color:'#7b8595',flexWrap:'wrap'}}>
       {[['#37b86e','เสร็จแล้ว'],['#7aa7d9','กำลังดำเนินการ'],['#ef9a9a','เกินกำหนด'],['#d6dce3','ยังไม่เริ่ม']].map((l,i)=>(
         <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{width:14,height:9,borderRadius:99,background:l[0]}}></span>{l[1]}</span>
@@ -431,28 +294,28 @@ const BP_TIERKEY={1:'mission',2:'goal',3:'strategy',4:'plan'};
 const BP_LV=(k)=>BP_LEVELS.find(l=>l.key===k);
 const BP_DATA={
   mission:[
-    {id:'m1',no:'1',title:'EDR',budget:2500000},
-    {id:'m2',no:'2',title:'GiveD5',budget:1800000},
-    {id:'m3',no:'3',title:'ครุภัณฑ์',budget:3200000},
-    {id:'m4',no:'4',title:'ใช้เทคโนโลยีดิจิทัล GD5 และ AI',budget:1200000},
+    {id:'m1',no:'1',title:'EDR'},
+    {id:'m2',no:'2',title:'GiveD5'},
+    {id:'m3',no:'3',title:'ครุภัณฑ์'},
+    {id:'m4',no:'4',title:'ใช้เทคโนโลยีดิจิทัล GD5 และ AI'},
   ],
   goal:[
-    {id:'g1',pid:'m1',no:'1.1',title:'รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ',budget:300000},
-    {id:'g2',pid:'m1',no:'1.2',title:'ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปีการศึกษา 2568',budget:600000},
-    {id:'g3',pid:'m1',no:'1.3',title:'เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านการอาชีวศึกษา',budget:800000},
-    {id:'g4',pid:'m1',no:'1.4',title:'นำ AI มาใช้ร่วม (Synergy) กับ ระบบ EDR',budget:400000},
+    {id:'g1',pid:'m1',no:'1.1',title:'รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ'},
+    {id:'g2',pid:'m1',no:'1.2',title:'ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปีการศึกษา 2568'},
+    {id:'g3',pid:'m1',no:'1.3',title:'เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านการอาชีวศึกษา'},
+    {id:'g4',pid:'m1',no:'1.4',title:'นำ AI มาใช้ร่วม (Synergy) กับ ระบบ EDR'},
   ],
   strategy:[
-    {id:'s1',pid:'g2',no:'1.2.1',title:'จัดกิจกรรมการประกวด MOU ระดับภาค',budget:250000},
-    {id:'s2',pid:'g2',no:'1.2.2',title:'สนับสนุนทีมงานประกวด MOU วิทยาลัย',budget:200000},
-    {id:'s3',pid:'g3',no:'1.3.1',title:'ขยายการลงทะเบียนนักเรียนในระบบ EDR',budget:180000},
-    {id:'s4',pid:'g3',no:'1.3.2',title:'ลดอัตราการออกกลางคัน',budget:150000},
+    {id:'s1',pid:'g2',no:'1.2.1',title:'จัดกิจกรรมการประกวด MOU ระดับภาค'},
+    {id:'s2',pid:'g2',no:'1.2.2',title:'สนับสนุนทีมงานประกวด MOU วิทยาลัย'},
+    {id:'s3',pid:'g3',no:'1.3.1',title:'ขยายการลงทะเบียนนักเรียนในระบบ EDR'},
+    {id:'s4',pid:'g3',no:'1.3.2',title:'ลดอัตราการออกกลางคัน'},
   ],
   plan:[
-    {id:'p1',pid:'s1',no:'1.2.11',title:'จัดกิจกรรมประกวด MOU ระดับภาค',budget:60000},
-    {id:'p2',pid:'s2',no:'1.2.21',title:'จัดเตรียมทีมงานและวัสดุการประกวด',budget:55000},
-    {id:'p3',pid:'s3',no:'1.3.11',title:'จัดทำ Dashboard รายงานผลการดำเนินงาน',budget:90000},
-    {id:'p4',pid:'s4',no:'1.3.21',title:'จัดทำระบบเฝ้าระวังการออกกลางคัน',budget:70000},
+    {id:'p1',pid:'s1',no:'1.2.11',title:'จัดกิจกรรมประกวด MOU ระดับภาค'},
+    {id:'p2',pid:'s2',no:'1.2.21',title:'จัดเตรียมทีมงานและวัสดุการประกวด'},
+    {id:'p3',pid:'s3',no:'1.3.11',title:'จัดทำ Dashboard รายงานผลการดำเนินงาน'},
+    {id:'p4',pid:'s4',no:'1.3.21',title:'จัดทำระบบเฝ้าระวังการออกกลางคัน'},
   ],
 };
 const bpNode=(level,id)=>(BP_DATA[level]||[]).find(x=>x.id===id);
@@ -478,10 +341,6 @@ function bpBreadcrumb(level,id){
 const bpLabel=(level,id)=>{const it=bpNode(level,id);return it?(BP_LV(level).name+' '+it.no+': '+it.title):'';};
 
 const TODO_TEMPLATES=[
-  {id:'tp11',title:'แผนงานเยี่ยมลูกค้าก่อนเปิดภาคเรียน',bpId:'s3',count:6,topics:['นัดหมายเข้าเยี่ยมลูกค้า','เตรียมเอกสารแนะนำหลักสูตร','สำรวจความต้องการของลูกค้า','นำเสนอหลักสูตร/ข้อเสนอ','สรุปผลการเยี่ยม','ติดตามผลหลังการเยี่ยม']},
-  {id:'tp12',title:'แผนงานจัดการข้อมูลประจำภาคเรียนที่ 1',bpId:'s3',count:6,topics:['ตรวจสอบข้อมูลนักศึกษาใหม่','ปรับปรุงแผนการเรียน ภาคเรียนที่ 1','จัดตารางเรียนและกำหนดครูผู้สอน','ลงทะเบียนเรียน ภาคเรียนที่ 1','ติดตามการชำระเงินค่าลงทะเบียน','สรุปข้อมูลสิ้นภาคเรียนที่ 1']},
-  {id:'tp13',title:'แผนงานจัดการข้อมูลประจำภาคเรียนที่ 2',bpId:'s3',count:6,topics:['ตรวจสอบข้อมูลนักศึกษาคงอยู่','ปรับปรุงแผนการเรียน ภาคเรียนที่ 2','จัดตารางเรียนและกำหนดครูผู้สอน','ลงทะเบียนเรียน ภาคเรียนที่ 2','ติดตามการชำระเงินค่าลงทะเบียน','สรุปข้อมูลสิ้นภาคเรียนที่ 2']},
-  {id:'tp10',title:'โปรเจค ติดตามงานระบบ ศธ.02 และ EDR',bpId:'s3',count:15,topics:['ติดตามการกำหนดช่วงระยะเวลาการอัพโหลดแผนการจัดการเรียนรู้','ตรวจสอบ/ปรับปรุง/แก้ไขข้อมูลแผนการเรียน ใน ศธ.02ออนไลน์','นำวิชาในแผนการเรียนเข้าตารางเรียน และกำหนดครูผู้สอน','ติดตามการกำหนดช่วงระยะเวลาการประเมินครูผู้สอน','ติดตามการลงทะเบียนเรียน (เรียนซ้ำ/เรียนซ่อม)','Sync ข้อมูลนักศึกษาเพื่อปรับปรุงข้อมูลให้ตรงกันทั้ง 2 ระบบ','ลงทะเบียนเรียนบนระบบ ศธ.02 (กลุ่มเรียนปกติ)','ลงทะเบียนเรียนบนระบบ ศธ.02 (สำหรับนักศึกษาเรียนซ้ำ/เรียนซ่อม)','ติดตามการกำหนดช่วงระยะเวลาการประเมินครูที่ปรึกษา','ติดตามการกำหนดแบบสำรวจความเสี่ยงระหว่างภาคเรียน','ติดตามการบันทึกรายการค่าใช้จ่ายและค่าลงทะเบียนเรียน','ติดตามการกำหนดวันที่ชำระเงินค่าลงทะเบียนเรียน','ติดตามการรายงาน GPA&GPAX (5 ภาคเรียน)','ติดตามการรายงาน GPA&GPAX (จบพร้อมรุ่นและไม่พร้อมรุ่น)','ติดตามการรายงานข้อมูลนักเรียน นักศึกษา']},
   {id:'tp1',title:'โปรเจค ครุภัณฑ์ชุดเครื่องไฟฟ้า',bpId:'m3',count:6,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้าเข้าคลัง','ติดตามการเก็บเงินตามสัญญา']},
   {id:'tp2',title:'โปรเจค ครุภัณฑ์ชุดเครื่องครัวร้อน',bpId:'m3',count:9,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ทำเรื่องขอเปลี่ยนรุ่นสินค้าและยี่ห้อ','เปิดใบขอซื้อ (PR) / ใบสั่งซื้อ (PO)','กำกับติดตามการรับสินค้า','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
   {id:'tp3',title:'โปรเจค ห้องเรียน Smart Classroom',bpId:'m3',count:35,topics:['แจ้งทำสัญญา','ขอใบเสนอราคาจาก Supplier/Sub Contractor','ออกแบบ Layout ห้องเรียน','ทำ Scope of Work และแผนงาน','Kick off Meeting (KOM)','ประสานงานวิทยาลัย','สำรวจหน้างาน','จัดซื้ออุปกรณ์ Display','จัดซื้ออุปกรณ์คอมพิวเตอร์','จัดซื้ออุปกรณ์เครือข่าย','จัดซื้อระบบเสียง','งานไฟฟ้าและสายสัญญาณ','งานติดตั้ง Display','งานติดตั้งคอมพิวเตอร์','งานติดตั้งเครือข่าย','งานติดตั้งระบบเสียง','ทดสอบระบบรวม','ทำเอกสารตรวจรับ','อบรมลูกค้า/ส่งมอบงาน','ติดตามการเก็บเงินตามสัญญา']},
@@ -494,10 +353,6 @@ const TODO_TEMPLATES=[
 ];
 
 const TMETA={
-  tp11:{icon:'geo-alt-fill',accent:'#0e8c7d',bg:'#e3f3f0'},
-  tp12:{icon:'calendar-check-fill',accent:'#3b6fd4',bg:'#eaf1fe'},
-  tp13:{icon:'calendar2-check-fill',accent:'#7c3aed',bg:'#f0e9fe'},
-  tp10:{icon:'diagram-3-fill',accent:'#0e8c7d',bg:'#e3f3f0'},
   tp1:{icon:'lightning-charge-fill',accent:'#d97706',bg:'#fef3e2'},
   tp2:{icon:'thermometer-high',accent:'#dc2626',bg:'#fdeaea'},
   tp3:{icon:'display-fill',accent:'#15a08f',bg:'#e3f3f0'},
@@ -523,6 +378,7 @@ function ImportTodoModal({onClose,onImport,bp,onRequestPlan}){
   return (
     <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:90,padding:'28px 16px'}}>
       <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:18,width:660,maxWidth:'100%',maxHeight:'86vh',display:'flex',flexDirection:'column',boxShadow:'0 24px 64px rgba(16,24,40,.28)',animation:'fadeIn .15s ease'}}>
+        {/* header */}
         <div style={{display:'flex',alignItems:'center',gap:12,padding:'18px 22px 16px',borderBottom:'1px solid #f0f2f5',flex:'none'}}>
           <div style={{width:40,height:40,borderRadius:11,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
             <i className="bi bi-ui-checks" style={{fontSize:20,color:primary}}></i>
@@ -540,6 +396,7 @@ function ImportTodoModal({onClose,onImport,bp,onRequestPlan}){
             <i className="bi bi-x-lg" style={{fontSize:14,color:'#5a6473'}}></i>
           </button>
         </div>
+        {/* list */}
         <div style={{overflowY:'auto',flex:1}}>
           {!bp ? (
             <div style={{textAlign:'center',padding:'48px 30px'}}>
@@ -555,6 +412,7 @@ function ImportTodoModal({onClose,onImport,bp,onRequestPlan}){
             const open=!!expanded[t.id];
             return (
               <div key={t.id} style={{borderBottom:'1px solid #f4f6f8'}}>
+                {/* row */}
                 <div style={{display:'flex',alignItems:'center',gap:13,padding:'14px 22px',background:open?'#fafbfc':'#fff',cursor:'pointer'}} onClick={()=>toggle(t.id)}>
                   <div style={{width:36,height:36,borderRadius:10,background:m.bg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
                     <i className={'bi bi-'+m.icon} style={{fontSize:18,color:m.accent}}></i>
@@ -568,6 +426,7 @@ function ImportTodoModal({onClose,onImport,bp,onRequestPlan}){
                     <i className="bi bi-download" style={{fontSize:13}}></i>ใช้งาน
                   </button>
                 </div>
+                {/* expanded topics */}
                 {open && t.topics && (
                   <div style={{background:'#f7f9fb',padding:'4px 22px 16px 22px',borderTop:'1px solid #eef0f3'}}>
                     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px 24px',paddingTop:10}}>
@@ -725,29 +584,20 @@ function BusinessPlanCard({bp,setBp}){
 }
 
 function TodoPanel({bp,setBp}){
-  const [mode,setMode]=React.useState('do');
+  const [mode,setMode]=React.useState('do');   // 'do' | 'edit'
   const [showImport,setShowImport]=React.useState(false);
   const [showPlanPicker,setShowPlanPicker]=React.useState(false);
-  const [calView,setCalView]=React.useState(false);
+  const [calView,setCalView]=React.useState(false); // false = list, true = gantt
   const [topics,setTopics]=React.useState(TD_SEED);
   const [open,setOpen]=React.useState({});
   const [modal,setModal]=React.useState(null);
   const [hovSubId,setHovSubId]=React.useState(null);
   const [confirmDel,setConfirmDel]=React.useState(null);
-  const [expModal,setExpModal]=React.useState(null); // topic id ที่กำลังดูค่าใช้จ่าย
 
   const cnt=(t)=>({done:t.subs.filter(s=>s.done).length,total:t.subs.length});
   const complete=(t)=>{const c=cnt(t);return c.total>0&&c.done===c.total;};
   const overallN=topics.length, overallDone=topics.filter(complete).length;
   const overallPct=overallN?Math.round(overallDone/overallN*1000)/10:0;
-
-  const expTotal=(t)=>(t.expenses||[]).reduce((s,e)=>s+e.amount,0);
-  const totalExpense=topics.reduce((s,t)=>s+expTotal(t),0);
-  const bpBudget=bp?((bpNode(bp.level,bp.id)||{}).budget||0):0;
-  const overBudget=bpBudget>0&&totalExpense>bpBudget;
-  const addExpense=(tid,d)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,expenses:[expense(d.date,d.amount,d.note),...(t.expenses||[])]}));
-  const editExpense=(tid,eid,d)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,expenses:(t.expenses||[]).map(e=>e.id!==eid?e:{...e,date:d.date,amount:d.amount,note:d.note})}));
-  const delExpense=(tid,eid)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,expenses:(t.expenses||[]).filter(e=>e.id!==eid)}));
 
   const toggleOpen=(id)=>setOpen(o=>({...o,[id]:!o[id]}));
   const toggleDone=(tid,sid)=>setTopics(ts=>ts.map(t=>t.id!==tid?t:{...t,subs:t.subs.map(s=>s.id!==sid?s:{...s,done:!s.done})}));
@@ -768,6 +618,7 @@ function TodoPanel({bp,setBp}){
   return (
    <div>
     <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
+      {/* TOOLBAR */}
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:14,flexWrap:'wrap'}}>
         <div style={{fontWeight:700,fontSize:15}}>สิ่งที่ต้องทำ</div>
         {mode==='do' ? (
@@ -775,12 +626,6 @@ function TodoPanel({bp,setBp}){
             <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12,fontWeight:600,color:'#9aa3af',flex:'none'}}><span style={{color:'#22b573',fontWeight:700}}>{overallDone}</span>/{overallN} เสร็จ</span>
             <span style={{flex:'1 1 120px',maxWidth:260,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><span style={{display:'block',height:'100%',borderRadius:99,background:'#15a08f',width:overallPct+'%'}}></span></span>
             <span style={{fontSize:12.5,color:'#9aa3af',fontWeight:600}}>{overallPct} %</span>
-            {(totalExpense>0 || bpBudget>0) && (
-              <span style={{display:'inline-flex',alignItems:'center',gap:6,background:overBudget?'#fdeaea':'#eaf1fe',color:overBudget?'#d83a3a':'#3b6fd4',borderRadius:8,padding:'5px 12px',fontSize:12,fontWeight:700,flex:'none',whiteSpace:'nowrap'}}>
-                <i className="bi bi-wallet2" style={{fontSize:13}}></i>
-                {totalExpense.toLocaleString()} บาท
-              </span>
-            )}
             <div style={{flex:1}}></div>
             {ICONBTN('format_list_bulleted',!calView,()=>setCalView(false),'รายการ')}
             {ICONBTN('calendar_month',calView,()=>setCalView(true),'ปฏิทิน (Gantt)')}
@@ -796,25 +641,17 @@ function TodoPanel({bp,setBp}){
         )}
       </div>
 
+      {/* TOPICS */}
       {calView ? <GanttView topics={topics} open={open} toggleOpen={toggleOpen}/> : (
       <div>
         {topics.map((t,ti)=>{const c=cnt(t),isOpen=open[t.id];return (
           <div key={t.id} style={{borderTop:ti?'1px solid #f4f6f8':'none'}}>
+            {/* topic row */}
             <div className="td-row" style={{display:'flex',alignItems:'center',gap:12,padding:'13px 8px',margin:'0 -8px',borderRadius:10}}>
               <button onClick={()=>toggleOpen(t.id)} style={{display:'flex',alignItems:'center',flex:'none'}}>{mode==='edit'?ms('drag_indicator',22,'#c4ccd4'):ms(complete(t)?'check_circle':'radio_button_unchecked',22,complete(t)?'#22b96a':'#c4ccd4',complete(t))}</button>
               <div onClick={()=>toggleOpen(t.id)} style={{flex:1,minWidth:0,fontWeight:600,fontSize:13.5,color:'#2b3440',cursor:'pointer'}}>{t.title}</div>
               {mode==='do' && c.total>0 && <MiniBar c={c}/>}
               {c.total>0 && <Count c={c}/>}
-              {(()=>{const et=expTotal(t);return (
-                <button
-                  onClick={()=>bp?setExpModal(t.id):setShowPlanPicker(true)}
-                  title={bp?'บันทึกค่าใช้จ่าย':'กำหนดแผนธุรกิจก่อนจึงจะบันทึกค่าใช้จ่ายได้'}
-                  style={{display:'inline-flex',alignItems:'center',gap:6,border:'1px solid '+(et>0?'#cfe0fb':'#e7eaef'),background:et>0?'#eaf1fe':'#fff',borderRadius:8,padding:'5px 10px',fontSize:12,fontWeight:700,color:et>0?'#3b6fd4':'#9aa3af',flex:'none',cursor:'pointer',whiteSpace:'nowrap'}}
-                >
-                  <i className="bi bi-wallet2" style={{fontSize:13}}></i>
-                  {et>0?et.toLocaleString()+' บาท':'ค่าใช้จ่าย'}
-                </button>
-              );})()}
               {mode==='edit' ? (
                 confirmDel&&confirmDel.type==='topic'&&confirmDel.id===t.id ? (
                   <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fdeaea',borderRadius:9,padding:'4px 10px',flex:'none'}}>
@@ -824,7 +661,6 @@ function TodoPanel({bp,setBp}){
                   </div>
                 ) : (
                 <div style={{display:'flex',alignItems:'center',gap:6,flex:'none'}}>
-                  <button onClick={()=>setModal({kind:'topic',id:t.id,title:t.title,inContract:t.inContract})} title="แก้ไขชื่อหัวข้อ" style={{width:28,height:28,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('edit',16,'#8a93a3')}</button>
                   <button onClick={()=>setModal({kind:'sub',topicId:t.id})} title="เพิ่มรายการ" style={{width:28,height:28,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('add',17,primary)}</button>
                   <button onClick={()=>setConfirmDel({type:'topic',id:t.id})} title="ลบ" style={{width:28,height:28,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('delete',17,'#d83a3a')}</button>
                   <div style={{display:'flex',flexDirection:'column'}}>
@@ -838,6 +674,7 @@ function TodoPanel({bp,setBp}){
                 <button onClick={()=>toggleOpen(t.id)} style={{flex:'none',width:34,height:34,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',marginLeft:2,background:isOpen?'#cde2df':'#ebebeb',border:'none'}}>{ms(isOpen?'expand_less':'expand_more',21,isOpen?'#4e9b92':'#2b3440')}</button>
               )}
             </div>
+            {/* subs */}
             {isOpen && t.subs.length>0 && (
               <div style={{paddingLeft:14,paddingBottom:8}}>
                 {t.subs.map((s,si)=>{
@@ -851,8 +688,11 @@ function TodoPanel({bp,setBp}){
                   const dClr=s.daysType==='over'?overClr:leftClr;
                   return (
                   <div key={s.id} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 8px',borderRadius:9,background:s.done?'#f1faf4':'transparent',marginBottom:3,flexWrap:'wrap'}}>
+                    {/* checkbox */}
                     <button onClick={()=>mode==='do'&&toggleDone(t.id,s.id)} style={{display:'flex',cursor:mode==='do'?'pointer':'default',flex:'none'}}>{ms(s.done?'check_box':'check_box_outline_blank',20,s.done?'#22b573':'#c2cad4',s.done)}</button>
+                    {/* title */}
                     <div style={{flex:'1 1 180px',minWidth:140,fontSize:13,color:s.done?'#6b7785':'#2b3440',textDecoration:s.done?'line-through':'none'}}>{s.title}</div>
+                    {/* date / days pill */}
                     {mode==='do' && (
                       s.done ? (
                         s.date && <Pill bg="#e9f6ee" color="#1f9d57" icon="event">{s.date}</Pill>
@@ -872,7 +712,9 @@ function TodoPanel({bp,setBp}){
                         </span>
                       ) : null
                     )}
+                    {/* ในสัญญา/นอกสัญญา */}
                     <Pill bg={s.inContract?'#eaf1fe':'#f1f3f6'} color={s.inContract?'#3b6fd4':'#8a93a3'}>{s.inContract?'ในสัญญา':'นอกสัญญา'}</Pill>
+                    {/* command area */}
                     {mode==='do' ? (
                       s.done ? (
                         <React.Fragment>
@@ -898,7 +740,7 @@ function TodoPanel({bp,setBp}){
                         </div>
                       ) : (
                       <div style={{display:'flex',alignItems:'center',gap:6,flex:'none'}}>
-                        <button onClick={()=>setModal({kind:'sub',topicId:t.id,id:s.id,title:s.title,inContract:s.inContract})} title="แก้ไขรายการ" style={{width:26,height:26,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('edit',15,'#8a93a3')}</button>
+                        <button onClick={()=>setModal({kind:'sub',topicId:t.id})} title="เพิ่มรายการ" style={{width:26,height:26,borderRadius:7,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('add',15,primary)}</button>
                         <button onClick={()=>setConfirmDel({type:'sub',topicId:t.id,id:s.id})} title="ลบ" style={{width:26,height:26,borderRadius:7,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('delete',15,'#d83a3a')}</button>
                         <div style={{display:'flex',flexDirection:'column'}}>
                           <button onClick={()=>moveSub(t.id,si,-1)} style={{height:13,display:'flex',alignItems:'center',color:'#9aa3af'}}>{ms('keyboard_arrow_up',15,'#9aa3af')}</button>
@@ -924,16 +766,6 @@ function TodoPanel({bp,setBp}){
 
     {showImport && <ImportTodoModal bp={bp} onRequestPlan={()=>setShowPlanPicker(true)} onClose={()=>setShowImport(false)} onImport={(tpcs)=>{setTopics(ts=>[...ts,...tpcs]);setShowImport(false);}}/> }
     {showPlanPicker && <BusinessPlanPickerModal value={bp} onChange={setBp} onClose={()=>setShowPlanPicker(false)}/>}
-    {expModal && (()=>{const t=topics.find(x=>x.id===expModal);return t && (
-      <ExpenseModal
-        topic={t}
-        budget={bpBudget}
-        onClose={()=>setExpModal(null)}
-        onAdd={(d)=>addExpense(expModal,d)}
-        onEdit={(eid,d)=>editExpense(expModal,eid,d)}
-        onDelete={(eid)=>delExpense(expModal,eid)}
-      />
-    );})()}
     {modal && (
       <TodoModal
         data={modal}
@@ -946,12 +778,69 @@ function TodoPanel({bp,setBp}){
   );
 }
 
+function TodoProgressCard(){
+  // สรุปจากชุดข้อมูล TD_SEED (นับเฉพาะหัวข้อที่มีรายการย่อย)
+  const withSubs=TD_SEED.filter(t=>(t.subs||[]).length>0);
+  const allSubs=withSubs.flatMap(t=>t.subs);
+  const total=allSubs.length;
+  const done=allSubs.filter(s=>s.done).length;
+  const pct=total?Math.round(done/total*100):0;
+  // สถานะรายหัวข้อ: เสร็จ / กำลังทำ / ยังไม่เริ่ม
+  let tDone=0,tProg=0,tNot=0;
+  withSubs.forEach(t=>{
+    const d=t.subs.filter(s=>s.done).length;
+    if(d===t.subs.length)tDone++; else if(d>0)tProg++; else tNot++;
+  });
+  const nt=withSubs.length||1;
+  const seg=[
+    {label:'เสร็จ',n:tDone,color:'#22b96a'},
+    {label:'กำลังทำ',n:tProg,color:'#f5b301'},
+    {label:'ยังไม่เริ่ม',n:tNot,color:'#dfe3e9'},
+  ];
+  const segTint={'เสร็จ':'#e7f7ee','กำลังทำ':'#fdf3d9','ยังไม่เริ่ม':'#eef1f5'};
+  const segText={'เสร็จ':'#1a9e5f','กำลังทำ':'#b5860a','ยังไม่เริ่ม':'#8a93a3'};
+  return (
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:15}}>
+        <span style={{width:30,height:30,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('task_alt',18,primary)}</span>
+        <span style={{fontWeight:600,fontSize:13.5,color:'#5a6473'}}>ความคืบหน้าสิ่งที่ต้องทำ</span>
+      </div>
+      {/* progress bar หลัก + จำนวน */}
+      <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:8}}>
+        <span style={{fontWeight:800,fontSize:28,color:primary,lineHeight:1}}>{pct}<span style={{fontSize:15,fontWeight:700}}>%</span></span>
+        <div style={{flex:1,minWidth:0}}></div>
+        <div style={{display:'flex',alignItems:'baseline',gap:5}}>
+          <span style={{fontWeight:800,fontSize:16,color:'#2b3440'}}>{done}</span>
+          <span style={{fontSize:12.5,color:'#9aa3af'}}>/ {total} รายการย่อย</span>
+        </div>
+      </div>
+      <div style={{height:10,borderRadius:99,background:'#eef1f5',overflow:'hidden',marginBottom:6}}>
+        <div style={{width:pct+'%',height:'100%',borderRadius:99,background:'linear-gradient(90deg,#15a08f,#2bc0ac)',transition:'width .3s'}}></div>
+      </div>
+      <div style={{fontSize:12,color:'#8a93a3',marginBottom:16}}>เหลืออีก {total-done} รายการ</div>
+      {/* bar graph สถานะรายหัวข้อ */}
+      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:7}}>
+        {ms('donut_small',15,'#9aa3af')}
+        <span style={{fontSize:11.5,color:'#9aa3af',fontWeight:600}}>สถานะรายหัวข้อ ({withSubs.length})</span>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:7}}>
+        {seg.map(s=>(
+          <div key={s.label} style={{background:segTint[s.label],borderRadius:10,padding:'9px 6px',textAlign:'center'}}>
+            <div style={{fontWeight:800,fontSize:18,color:segText[s.label],lineHeight:1}}>{s.n}</div>
+            <div style={{fontSize:10.5,color:segText[s.label],marginTop:3,fontWeight:600,opacity:.85}}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const CONTRACT_TEAM=['Piyawat Takaew','Narate Boonmee','Nichagorn Prajansen','Pannawat Chantharasena','Khajonsak Sukpasert','Jarunya Thaiprayoon'];
 function ContractCard(){
   const [edit,setEdit]=useState(false);
   const [c,setC]=useState({
-    desc:'โครงการติดตามและบริหารจัดการข้อมูล ศธ.02 ออนไลน์ และระบบบริหารจัดการเรียนรู้ (EDR) ภาคเรียนที่ 1/2569',
-    school:'กลุ่มวิทยาลัยเทคนิค (อยุธยา, ร้อยเอ็ด, เดชอุดม)',
+    desc:'งานปรับปรุงระบบเครือข่ายและติดตั้งอุปกรณ์ ICT ประจำปีงบประมาณ 2569 ตามขอบเขตงาน (TOR)',
+    school:'วิทยาลัยพณิชยการธนบุรี',
     value:'1,250,000',
     period:'01/05/2026 - 31/12/2026',
     deliverDays:'90',
@@ -964,6 +853,8 @@ function ContractCard(){
   });
   const [draft,setDraft]=useState(c);
   const [ownerMenu,setOwnerMenu]=useState(false);
+  const [collapsed,setCollapsed]=useState(true);
+  const showAll=edit||!collapsed;
   const start=()=>{setDraft(c);setEdit(true);setOwnerMenu(false);};
   const save=()=>{setC(draft);setEdit(false);};
   const set=(k,v)=>setDraft(d=>({...d,[k]:v}));
@@ -996,19 +887,20 @@ function ContractCard(){
         )}
       </div>
       {edit ? <textarea value={draft.desc} onChange={(e)=>set('desc',e.target.value)} rows={3} style={{...inp,resize:'vertical',marginBottom:4}}/> :
-        <div style={{fontSize:12.5,color:'#5a6473',lineHeight:1.6,marginBottom:6}}>{c.desc}</div>}
+        <div style={{fontSize:12.5,color:'#5a6473',lineHeight:1.6,marginBottom:6,...(collapsed?{display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}:{})}}>{c.desc}</div>}
       <Row icon="account_balance" label="ชื่อสถานศึกษา" k="school"/>
       <Row icon="payments" label="มูลค่าสัญญา (incl.vat)" k="value" suffix="บาท"/>
       <Row icon="event" label="ช่วงเวลาสัญญา" k="period"/>
-      <Row icon="local_shipping" label="จำนวนวันส่งมอบ" k="deliverDays" suffix="วัน"/>
-      <Row icon="error" label="ค่าปรับ" k="penalty" suffix="บาท/วัน"/>
-      <Row icon="groups" label="Kick-off Meeting" k="kickoff"/>
-      <div style={{display:'flex',alignItems:'flex-start',gap:10,padding:'7px 0'}}>
+      {showAll && <Row icon="local_shipping" label="จำนวนวันส่งมอบ" k="deliverDays" suffix="วัน"/>}
+      {showAll && <Row icon="error" label="ค่าปรับ" k="penalty" suffix="บาท/วัน"/>}
+      {showAll && <Row icon="groups" label="Kick-off Meeting" k="kickoff"/>}
+      {showAll && <div style={{display:'flex',alignItems:'flex-start',gap:10,padding:'7px 0'}}>
         {ms('engineering',18,'#9aa3af')}
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontSize:11.5,color:'#9aa3af',marginBottom:edit?5:3}}>ผู้รับผิดชอบโครงการ</div>
-          {edit ? (
+{edit ? (
             <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              {/* หลัก — single */}
               <div>
                 <div style={{fontSize:11,color:'#9aa3af',marginBottom:4}}>หลัก <span style={{fontSize:10}}>(1 คน)</span></div>
                 <select value={draft.ownerMain||''} onChange={e=>set('ownerMain',e.target.value)} style={{width:'100%',border:'1px solid #e3e7ec',borderRadius:7,padding:'7px 10px',fontSize:12.5,outline:'none',color:'#1f2733',background:'#fff',fontFamily:'inherit'}}>
@@ -1016,6 +908,7 @@ function ContractCard(){
                   {CONTRACT_TEAM.filter(n=>!(draft.ownersSub||[]).includes(n)).map(n=><option key={n} value={n}>{n}</option>)}
                 </select>
               </div>
+              {/* รอง — multi chips */}
               <div>
                 <div style={{fontSize:11,color:'#9aa3af',marginBottom:4}}>รอง <span style={{fontSize:10}}>(เพิ่มได้หลายคน)</span></div>
                 <div style={{display:'flex',gap:5,flexWrap:'wrap',alignItems:'center'}}>
@@ -1046,10 +939,15 @@ function ContractCard(){
             </div>
           )}
         </div>
-      </div>
-      <div style={{height:1,background:'#f3f5f8',margin:'8px 0'}}></div>
+      </div>}
+      {showAll && <div style={{height:1,background:'#f3f5f8',margin:'8px 0'}}></div>}
       <Row icon="report" label="จำนวนวันที่เกินสัญญา" k="overDays" suffix="วันแล้ว" danger={true}/>
-      <Row icon="account_balance_wallet" label="ค่าปรับรวม" k="penaltyTotal" suffix="บาท" danger={true}/>
+      {showAll && <Row icon="account_balance_wallet" label="ค่าปรับรวม" k="penaltyTotal" suffix="บาท" danger={true}/>}
+      {!edit && (
+        <button onClick={()=>setCollapsed(v=>!v)} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,width:'100%',marginTop:10,paddingTop:11,borderTop:'1px solid #f3f5f8',border:'none',borderTopWidth:1,borderTopStyle:'solid',borderTopColor:'#f3f5f8',background:'transparent',color:primary,fontSize:12.5,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}}>
+          {collapsed?'ดูข้อมูลทั้งหมด':'ย่อข้อมูล'}<i className={collapsed?'bi bi-chevron-down':'bi bi-chevron-up'} style={{fontSize:11}}></i>
+        </button>
+      )}
     </div>
   );
 }
@@ -1059,140 +957,147 @@ function AttachmentsCard(){
   const [files,setFiles]=useState([
     {id:'f1',name:'สัญญาเลขที่ 25/2569.pdf'},
     {id:'f2',name:'ขอบเขตงาน TOR.pdf'},
-    {id:'f3',name:'หลักประกันสัญญา.pdf'},
-    {id:'f4',name:'ใบส่งมอบงานงวดที่ 1.pdf'},
+    {id:'f3',name:'BOQ ราคากลาง.pdf'},
+    {id:'f4',name:'หนังสือมอบอำนาจ.pdf'},
   ]);
-  const [name,setName]=useState('');
-  const add=()=>{if(!name.trim())return;setFiles([...files,{id:'f'+Date.now(),name:name.trim()}]);setName('');};
-  const del=(id)=>setFiles(files.filter(f=>f.id!==id));
-  const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:7,padding:'6px 9px',fontSize:12.5,outline:'none',color:'#1f2733',fontFamily:'inherit',background:'#fff'};
+  let _n=0;
+  const rename=(id,v)=>setFiles(fs=>fs.map(f=>f.id===id?{...f,name:v}:f));
+  const del=(id)=>setFiles(fs=>fs.filter(f=>f.id!==id));
+  const add=()=>setFiles(fs=>[...fs,{id:'f'+Date.now(),name:'ไฟล์ใหม่.pdf'}]);
+  const inp={flex:1,minWidth:0,border:'1px solid #e3e7ec',borderRadius:7,padding:'6px 9px',fontSize:12.5,outline:'none',color:'#1f2733',fontFamily:'inherit'};
+
   return (
     <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'16px 18px'}}>
-      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:11}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10,paddingBottom:12,borderBottom:'1px solid #f3f5f8'}}>
         {ms('attach_file',19,primary)}
-        <span style={{fontWeight:600,fontSize:13.5,color:'#2b3440'}}>ไฟล์แนบสัญญา</span>
-        <span style={{minWidth:20,height:20,borderRadius:99,background:primarySoft,color:primary,fontSize:11.5,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 6px'}}>{files.length}</span>
+        <span style={{fontWeight:600,fontSize:13.5,color:'#2b3440'}}>ไฟล์แนบตามสัญญา</span>
         <div style={{flex:1}}></div>
-        <button onClick={()=>setEdit(!edit)} title={edit?'เสร็จ':'แก้ไข'} style={{width:30,height:30,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',background:edit?primarySoft:'transparent'}}>{ms(edit?'check':'edit',18,edit?primary:'#8a93a3')}</button>
+        <button onClick={()=>setEdit(e=>!e)} title={edit?'เสร็จ':'แก้ไข'} style={{width:30,height:30,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>{ms(edit?'check':'edit',18,edit?primary:'#8a93a3')}</button>
       </div>
-      <div style={{display:'flex',flexDirection:'column',gap:6}}>
+      <div style={{display:'flex',flexDirection:'column',gap:7}}>
         {files.map(f=>(
-          <div key={f.id} style={{display:'flex',alignItems:'center',gap:8,padding:'6px 8px',borderRadius:8,background:'#f8f9fb',fontSize:12.5}}>
-            {ms('picture_as_pdf',16,'#ef4444')}
-            <span style={{flex:1,minWidth:0,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',color:'#2b3440'}}>{f.name}</span>
-            {edit ? <button onClick={()=>del(f.id)} style={{color:'#d83a3a',padding:2}}>{ms('delete',15,'#d83a3a')}</button> :
-              <button style={{color:'#9aa3af',padding:2}}>{ms('download',16,'#9aa3af')}</button>}
+          <div key={f.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 10px',border:'1px solid #f1f3f6',borderRadius:9,background:'#fbfcfd'}}>
+            <span style={{width:30,height:30,borderRadius:7,background:'#fdecec',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',fontSize:9,fontWeight:800,color:'#d8513a'}}>PDF</span>
+            {edit ? <input value={f.name} onChange={(e)=>rename(f.id,e.target.value)} style={inp}/> :
+              <a href="#" onClick={(e)=>e.preventDefault()} style={{flex:1,minWidth:0,fontSize:12.5,color:'#2b3440',fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{f.name}</a>}
+            {edit ? <button onClick={()=>del(f.id)} style={{width:28,height:28,borderRadius:7,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('delete',17,'#d83a3a')}</button> :
+              <span style={{flex:'none',display:'flex'}}>{ms('download',18,'#9aa3af')}</span>}
           </div>
         ))}
-        {files.length===0 && <div style={{fontSize:12.5,color:'#aeb6c2',textAlign:'center',padding:'12px 0'}}>ไม่มีไฟล์แนบ</div>}
       </div>
       {edit && (
-        <div style={{display:'flex',gap:6,marginTop:10,paddingTop:10,borderTop:'1px solid #f3f5f8'}}>
-          <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="ชื่อไฟล์ เช่น ใบงวดที่ 2.pdf" style={{...inp,flex:1}}/>
-          <button onClick={add} style={{background:primary,color:'#fff',border:'none',borderRadius:7,padding:'6px 12px',fontSize:12.5,fontWeight:700}}>เพิ่ม</button>
-        </div>
+        <button onClick={add} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:7,width:'100%',marginTop:9,padding:'9px 0',border:'1.5px dashed #cdd4de',borderRadius:9,background:'#fafbfc',color:primary,fontSize:12.5,fontWeight:700}}>{ms('upload_file',18,primary)}เพิ่มไฟล์แนบ</button>
       )}
     </div>
   );
 }
 
+const VERIFY=[
+  {user:'Phinit Butta', date:'12/03/2569', date2:'15/03/2569', summary:true, body:'สรุปแนวทางการติดตั้งระบบเครือข่ายภายในอาคารปฏิบัติการ พร้อมข้อเสนอแนะเรื่องการเดินสายและจุดติดตั้งอุปกรณ์', note:'ข้อสรุป: ใช้สายมาตรฐาน CAT6 และติดตั้งตู้ Rack เพิ่ม 1 จุด พร้อมทดสอบระบบก่อนส่งมอบ'},
+  {user:'Nichagorn Prajansen', date:'10/03/2569', date2:'10/03/2569', summary:false, body:'สอบถามเรื่องกำหนดการส่งมอบงานงวดแรก เนื่องจากอุปกรณ์บางส่วนยังอยู่ระหว่างขนส่ง ขอให้ทีมงานช่วยยืนยันกำหนดส่ง'},
+  {user:'Pannawat Chantharasena', date:'08/03/2569', date2:'11/03/2569', summary:true, body:'รายงานผลการทดสอบระบบกล้องวงจรปิดและการเชื่อมต่อสัญญาณภาพ พบจุดบอດ 2 จุดที่ต้องปรับตำแหน่ง', note:'ข้อสรุป: นัดช่างเข้าปรับภายใน 7 วัน และถ่ายภาพยืนยันก่อน/หลัง'},
+  {user:'Khajonsak Sukpasert', date:'05/03/2569', date2:'05/03/2569', summary:false, body:'แจ้งเปลี่ยนแปลงกำหนดส่งมอบงานงวดที่ 3 เนื่องจากผู้รับจ้างขอขยายระยะเวลาส่งมอบงาน'},
+  {user:'Jarunya Thaiprayoon', date:'02/03/2569', date2:'06/03/2569', summary:true, body:'สรุปผลการอบรมการใช้งานระบบให้กับบุคลากรประจำสถานศึกษา มีผู้เข้าร่วมทั้งสิ้น 28 คน', note:'ข้อสรุป: ผู้ใช้งานเข้าใจระบบได้ดี ควรจัดอบรมรอบถัดไปให้ครบทุกสถานศึกษา'},
+  {user:'Phinit Butta', date:'28/02/2569', date2:'28/02/2569', summary:false, body:'ฝากไฟล์คู่มือการติดตั้งซอฟต์แวร์จัดการครุภัณฑ์ สำหรับผู้ดูแลระบบมือใหม่'},
+];
 function VerifyPanel(){
-  const [list,setList]=useState([
-    {id:1,user:'Narate Boonmee',date:'23 มิ.ย. 2026, 9:27 น.',body:'Group Arrangement Properties ของ Group ใน JasperReports/Jaspersoft Studio...',summary:true,date2:'23 มิ.ย. 2026, 14:10 น.',note:'1. Min Height To Start New Page... 2. Reprint Header On Each Page... 3. Start New Column...'},
-    {id:2,user:'Narate Boonmee',date:'8 ม.ค. 2026, 11:37 น.',body:'การอ่านค่า ไฟล์ pdf โดยใช้ lib pdfbox 3.0.6...',summary:false,date2:'',note:''},
-    {id:3,user:'Piyawat Takaew',date:'18 ธ.ค. 2025, 13:07 น.',body:'5 วิธีง่ายๆ เผาผลาญไขมัน...',summary:true,date2:'19 ธ.ค. 2025, 09:15 น.',note:'มื้อเช้าอย่าเริ่มด้วยแป้ง ให้เริ่มด้วยโปรตีน จะทำให้เราอิ่มนาน ไม่ทำให้น้ำตาลขึ้นเร็ว'},
-    {id:4,user:'Piyawat Takaew',date:'4 พ.ย. 2025, 8:25 น.',body:'Win 11 LDPlayer ตั้งค่า Bypass ติดตั้ง APK...',summary:false,date2:'',note:''},
-  ]);
-  const [filterOpen,setFilterOpen]=useState(false);
-  const [q,setQ]=useState('');
-  const [sStatus,setSStatus]=useState('all');
-  const [sUser,setSUser]=useState('all');
-
-  const cardSt={background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',marginBottom:16};
-  const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 12px',fontSize:13,outline:'none',color:'#1f2733',fontFamily:'inherit',background:'#fff'};
-  const Lbl=({i,children})=>(<div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,fontWeight:600,color:'#5a6473',margin:'12px 0 6px'}}>{ms(i,16,'#8a93a3')}{children}</div>);
-
-  const clear=()=>{setQ('');setSStatus('all');setSUser('all');};
-  const filtered=list.filter(p=>{
-    if(q && !p.body.includes(q) && !p.user.includes(q)) return false;
-    if(sStatus==='summary' && !p.summary) return false;
-    if(sStatus==='nosummary' && p.summary) return false;
-    if(sUser!=='all' && p.user!==sUser) return false;
+  const [creator,setCreator]=useState('');
+  const [noSum,setNoSum]=useState(false);
+  const [hasSum,setHasSum]=useState(false);
+  const [date,setDate]=useState('');
+  const [range,setRange]=useState('3 เดือนย้อนหลัง');
+  const [filterOpen,setFilterOpen]=useState(true);
+  const clear=()=>{setCreator('');setNoSum(false);setHasSum(false);setDate('');setRange('3 เดือนย้อนหลัง');};
+  const list=VERIFY.filter(p=>{
+    if(creator && p.user.toLowerCase().indexOf(creator.toLowerCase())<0) return false;
+    if(hasSum && !noSum && !p.summary) return false;
+    if(noSum && !hasSum && p.summary) return false;
     return true;
   });
-
+  const cardSt={background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)'};
+  const Check=({on,set,label})=>(
+    <button onClick={()=>set(!on)} style={{display:'inline-flex',alignItems:'center',gap:8,background:'none',border:'none',cursor:'pointer',fontSize:13,color:'#3a4452',padding:0}}>
+      <span style={{width:18,height:18,borderRadius:5,border:'2px solid '+(on?primary:'#c2cad4'),background:on?primary:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{on&&ms('check',13,'#fff')}</span>{label}
+    </button>
+  );
+  const datePill=(t)=>(<span style={{background:'#f1f3f7',borderRadius:6,padding:'2px 9px',fontSize:11.5,color:'#8a93a3',whiteSpace:'nowrap'}}>{t}</span>);
   return (
-    <div style={{animation:'fadeIn .2s ease'}}>
-      <div style={{...cardSt,padding:'16px 20px'}}>
-        <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
-          {ms('fact_check',22,primary)}
-          <span style={{fontWeight:700,fontSize:16}}>ตรวจสอบโพสต์ในกลุ่ม</span>
-          <span style={{minWidth:22,height:22,borderRadius:99,background:primarySoft,color:primary,fontSize:12,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 7px'}}>{list.length}</span>
-          <div style={{flex:1}}></div>
-          <button onClick={()=>setFilterOpen(!filterOpen)} style={{display:'inline-flex',alignItems:'center',gap:6,background:filterOpen?primarySoft:'#f1f3f7',color:filterOpen?primary:'#5a6473',border:'1px solid '+(filterOpen?primary:'#e7eaef'),borderRadius:9,padding:'8px 14px',fontSize:13,fontWeight:600,cursor:'pointer'}}>{ms('filter_list',18,filterOpen?primary:'#8a93a3')}ตัวกรอง{(q||sStatus!=='all'||sUser!=='all')&&<span style={{width:8,height:8,borderRadius:'50%',background:primary}}></span>}</button>
-        </div>
+   <div style={{animation:'fadeIn .2s ease',display:'flex',flexDirection:'column',gap:16}}>
+     {/* FILTER CARD */}
+     <div style={{...cardSt,padding:'14px 18px 18px'}}>
+       <div style={{display:'flex',alignItems:'center',gap:8}}>
+         <span style={{display:'inline-flex',alignItems:'center',gap:7,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:9,padding:'6px 13px',fontSize:13,fontWeight:700,color:'#3a4452'}}>{ms('tune',18,'#5a6473')}กรองข้อมูล</span>
+         <div style={{flex:1}}></div>
+         <button onClick={()=>setFilterOpen(o=>!o)} style={{background:'none',border:'none',cursor:'pointer',display:'flex',alignItems:'center'}}>{ms(filterOpen?'expand_less':'expand_more',22,'#9aa3af')}</button>
+       </div>
+       {filterOpen && (
+       <div style={{marginTop:14}}>
+         <div style={{display:'flex',gap:24,flexWrap:'wrap',alignItems:'flex-start'}}>
+           <div style={{flex:'1 1 360px',minWidth:280}}>
+             <div style={{fontSize:12.5,fontWeight:600,color:'#5a6473',marginBottom:7}}>ผู้สร้างโพสต์</div>
+             <div style={{display:'flex',alignItems:'center',gap:8,background:'#fff',border:'1px solid #e3e7ec',borderRadius:10,padding:'8px 12px'}}>
+               <i className="bi bi-search" style={{fontSize:15,color:'#9aa3af'}}></i>
+               <input value={creator} onChange={(e)=>setCreator(e.target.value)} placeholder="ค้นหาจากชื่อผู้สร้างโพสต์" style={{border:'none',outline:'none',fontSize:13,flex:1,background:'transparent',color:'#1f2733'}}/>
+             </div>
+           </div>
+           <div style={{display:'flex',alignItems:'center',gap:22,paddingTop:26}}>
+             <Check on={noSum} set={setNoSum} label="ไม่มีข้อสรุป"/>
+             <Check on={hasSum} set={setHasSum} label="มีข้อสรุป"/>
+           </div>
+         </div>
+         <div style={{marginTop:14}}>
+           <div style={{fontSize:12.5,fontWeight:600,color:'#5a6473',marginBottom:7}}>วันที่สร้างโพสต์</div>
+           <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+             <div style={{display:'flex',alignItems:'center',gap:8,background:'#fff',border:'1px solid #e3e7ec',borderRadius:10,padding:'8px 12px',width:190,flex:'none'}}>
+               <input value={date} onChange={(e)=>setDate(e.target.value)} placeholder="dd/MM/yyyy" style={{border:'none',outline:'none',fontSize:13,flex:1,minWidth:0,background:'transparent',color:date?'#1f2733':'#9aa3af'}}/>
+               <span style={{display:'flex',flex:'none'}}>{ms('calendar_month',18,'#9aa3af')}</span>
+             </div>
+             <span style={{fontSize:12.5,color:'#8a93a3',margin:'0 4px',flex:'none'}}>หรือ</span>
+             <select value={range} onChange={(e)=>setRange(e.target.value)} style={{border:'1px solid #e3e7ec',borderRadius:10,padding:'9px 12px',fontSize:13,color:'#3a4452',background:'#fff',width:210,fontFamily:'inherit'}}>
+               {['3 เดือนย้อนหลัง','6 เดือนย้อนหลัง','1 ปีย้อนหลัง','ทั้งหมด'].map(o=>(<option key={o}>{o}</option>))}
+             </select>
+           </div>
+         </div>
+         <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:10,marginTop:18}}>
+           <button style={{display:'inline-flex',alignItems:'center',gap:6,background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 20px',fontSize:13,fontWeight:700,cursor:'pointer'}}>{ms('search',18,'#fff')}ค้นหา</button>
+           <button onClick={()=>setFilterOpen(false)} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 18px',fontSize:13,fontWeight:600,cursor:'pointer'}}>{ms('close',17,'#8a93a3')}ปิด</button>
+           <button onClick={clear} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 18px',fontSize:13,fontWeight:600,cursor:'pointer'}}>{ms('ink_eraser',17,'#8a93a3')}เคลียร์</button>
+         </div>
+       </div>
+       )}
+     </div>
 
-        {filterOpen && (
-        <div style={{marginTop:16,paddingTop:16,borderTop:'1px solid #f1f3f6',animation:'fadeIn .15s ease'}}>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14}}>
-            <div>
-              <Lbl i="search">คำค้นหา</Lbl>
-              <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="ค้นหาจากเนื้อหา หรือผู้โพสต์..." style={inp}/>
-            </div>
-            <div>
-              <Lbl i="fact_check">สถานะข้อสรุป</Lbl>
-              <select value={sStatus} onChange={(e)=>setSStatus(e.target.value)} style={{...inp,cursor:'pointer'}}>
-                <option value="all">ทั้งหมด ({list.length})</option>
-                <option value="summary">มีข้อสรุปแล้ว ({list.filter(x=>x.summary).length})</option>
-                <option value="nosummary">ยังไม่มีข้อสรุป ({list.filter(x=>!x.summary).length})</option>
-              </select>
-            </div>
-            <div>
-              <Lbl i="person">ผู้โพสต์</Lbl>
-              <select value={sUser} onChange={(e)=>setSUser(e.target.value)} style={{...inp,cursor:'pointer'}}>
-                <option value="all">ทุกคน</option>
-                <option value="Narate Boonmee">Narate Boonmee</option>
-                <option value="Piyawat Takaew">Piyawat Takaew</option>
-              </select>
-            </div>
-          </div>
-          <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:10,marginTop:18}}>
-            <button style={{display:'inline-flex',alignItems:'center',gap:6,background:primary,color:'#fff',border:'none',borderRadius:9,padding:'9px 20px',fontSize:13,fontWeight:700,cursor:'pointer'}}>{ms('search',18,'#fff')}ค้นหา</button>
-            <button onClick={()=>setFilterOpen(false)} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 18px',fontSize:13,fontWeight:600,cursor:'pointer'}}>{ms('close',17,'#8a93a3')}ปิด</button>
-            <button onClick={clear} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 18px',fontSize:13,fontWeight:600,cursor:'pointer'}}>{ms('ink_eraser',17,'#8a93a3')}เคลียร์</button>
-          </div>
-        </div>
-        )}
-      </div>
+     {/* RESULT COUNT */}
+     <div style={{fontSize:12.5,color:'#8a93a3',margin:'-4px 2px'}}>พบ {list.length} โพสต์</div>
 
-      <div style={{fontSize:12.5,color:'#8a93a3',margin:'-4px 2px'}}>พบ {filtered.length} โพสต์</div>
-
-      {filtered.map((p,i)=>(
-        <div key={i} style={{...cardSt,padding:'15px 18px'}}>
-          <div style={{display:'flex',alignItems:'center',gap:11}}>
-            <Letter s={p.user} d={34}/>
-            <span style={{fontWeight:700,fontSize:13.5,color:'#2b3440'}}>{p.user}</span>
-            <span style={{fontSize:12,color:'#aab2bd'}}>{p.date}</span>
-            <div style={{flex:1}}></div>
-            {p.summary
-              ? <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#eaf6f3',color:'#0f8f81',borderRadius:99,padding:'3px 11px',fontSize:11.5,fontWeight:600}}>{ms('task_alt',14,'#0f8f81')}มีข้อสรุป</span>
-              : <span style={{background:'#f4f5f7',color:'#9aa3af',borderRadius:99,padding:'3px 11px',fontSize:11.5,fontWeight:600}}>ไม่มีข้อสรุป</span>}
-            {p.summary && <span style={{fontSize:12,color:'#aab2bd'}}>สรุปเมื่อ {p.date2}</span>}
-            <button title="เปิดโพสต์" style={{background:'none',border:'none',cursor:'pointer',flex:'none',display:'flex',alignItems:'center',padding:2,marginLeft:4}}>{ms('open_in_new',18,'#c2cad4')}</button>
-          </div>
-          <div style={{fontSize:13,color:'#3c4350',margin:'10px 0 0 45px',lineHeight:1.65}}>{p.body}</div>
-          {p.summary && (
-            <div style={{background:'#eef7f5',borderRadius:9,padding:'9px 13px',fontSize:12.5,color:'#36675f',lineHeight:1.6,margin:'10px 0 0 45px'}}>{p.note}</div>
-          )}
-        </div>
-      ))}
-      {filtered.length===0 && (
-        <div style={{...cardSt,padding:'60px 0',textAlign:'center',color:'#aeb6c2'}}>{ms('search_off',36,'#cfd6e0')}<div style={{marginTop:8,fontSize:13.5}}>ไม่พบโพสต์ตามเงื่อนไข</div></div>
-      )}
-    </div>
+     {/* POSTS */}
+     {list.map((p,i)=>(
+       <div key={i} style={{...cardSt,padding:'15px 18px'}}>
+         <div style={{display:'flex',alignItems:'center',gap:11}}>
+           <Letter s={p.user} d={34}/>
+           <span style={{fontWeight:700,fontSize:13.5,color:'#2b3440'}}>{p.user}</span>
+           <span style={{fontSize:12,color:'#aab2bd'}}>{p.date}</span>
+           <div style={{flex:1}}></div>
+           {p.summary
+             ? <span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#eaf6f3',color:'#0f8f81',borderRadius:99,padding:'3px 11px',fontSize:11.5,fontWeight:600}}>{ms('task_alt',14,'#0f8f81')}มีข้อสรุป</span>
+             : <span style={{background:'#f4f5f7',color:'#9aa3af',borderRadius:99,padding:'3px 11px',fontSize:11.5,fontWeight:600}}>ไม่มีข้อสรุป</span>}
+           {p.summary && <span style={{fontSize:12,color:'#aab2bd'}}>สรุปเมื่อ {p.date2}</span>}
+           <button title="เปิดโพสต์" style={{background:'none',border:'none',cursor:'pointer',flex:'none',display:'flex',alignItems:'center',padding:2,marginLeft:4}}>{ms('open_in_new',18,'#c2cad4')}</button>
+         </div>
+         <div style={{fontSize:13,color:'#3c4350',margin:'10px 0 0 45px',lineHeight:1.65}}>{p.body}</div>
+         {p.summary && (
+           <div style={{background:'#eef7f5',borderRadius:9,padding:'9px 13px',fontSize:12.5,color:'#36675f',lineHeight:1.6,margin:'10px 0 0 45px'}}>{p.note}</div>
+         )}
+       </div>
+     ))}
+     {list.length===0 && (
+       <div style={{...cardSt,padding:'60px 0',textAlign:'center',color:'#aeb6c2'}}>{ms('search_off',36,'#cfd6e0')}<div style={{marginTop:8,fontSize:13.5}}>ไม่พบโพสต์ตามเงื่อนไข</div></div>
+     )}
+   </div>
   );
 }
 
+// โปรเจค/วิทยาลัยที่มีอยู่ (สำหรับเพิ่มรายการต้องติดตามเอง — ต้องผูกกับโปรเจคเสมอ)
 const WPROJECTS=[
   {project:'การดำเนินงานออกใบสั่งซื้อ (PO) - วท.จุฬาภรณ์',college:'วท.จุฬาภรณ์'},
   {project:'ครุภัณฑ์ห้องปฏิบัติการคอมพิวเตอร์ - วท.เชียงใหม่',college:'วท.เชียงใหม่'},
@@ -1266,7 +1171,7 @@ function WatchPanel(){
   const [catalog,setCatalog]=useState(loadTags);
   const [showAdd,setShowAdd]=useState(false);
   const [openNotes,setOpenNotes]=useState({});
-  const [tagMenu,setTagMenu]=useState(null);
+  const [tagMenu,setTagMenu]=useState(null);   // item id whose add-tag menu is open
   const [tagInput,setTagInput]=useState('');
   const [noteInput,setNoteInput]=useState({});
   const ME='Piyawat Takaew';
@@ -1274,6 +1179,7 @@ function WatchPanel(){
   const persist=(next)=>{setItems(next);saveWatch(next);};
   const remove=(id)=>persist(items.filter(w=>w.id!==id));
   const addManual=(item)=>{persist([item,...items]);setShowAdd(false);};
+  // สิทธิ์: เฉพาะผู้รับผิดชอบโปรเจค Easy PM (ในต้นแบบนี้ ME เป็นผู้รับผิดชอบ)
   const canAdd=true;
   const toggleNotes=(id)=>setOpenNotes(o=>({...o,[id]:!o[id]}));
 
@@ -1320,6 +1226,7 @@ function WatchPanel(){
       const suggestions=catalog.filter(t=>!tags.includes(t)&&t.toLowerCase().includes(tagInput.trim().toLowerCase()));
       return (
       <div key={w.id} style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'18px 20px'}}>
+        {/* head */}
         <div style={{display:'flex',alignItems:'flex-start',gap:13}}>
           <div style={{width:40,height:40,borderRadius:11,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-clipboard-check" style={{fontSize:20,color:primary}}></i></div>
           <div style={{flex:1,minWidth:0}}>
@@ -1339,6 +1246,7 @@ function WatchPanel(){
           </div>
         </div>
 
+        {/* added by / when */}
         <div style={{display:'flex',alignItems:'center',gap:9,marginTop:14,paddingTop:13,borderTop:'1px solid #f4f6f8'}}>
           <Letter s={w.addedBy||ME} d={26} fs={11}/>
           <span style={{fontSize:12.5,color:'#5a6473'}}>เพิ่มโดย <b style={{color:'#2b3440'}}>{w.addedBy||ME}</b>{w.addedByRole?' · '+w.addedByRole:''}</span>
@@ -1347,6 +1255,7 @@ function WatchPanel(){
           <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:12.5,color:'#9aa3af'}}><i className="bi bi-clock" style={{fontSize:12}}></i>{relTime(w.addedAt||Date.now())}</span>
         </div>
 
+        {/* tags */}
         <div style={{display:'flex',alignItems:'center',gap:8,marginTop:13,flexWrap:'wrap',position:'relative'}}>
           <span style={{fontSize:12.5,fontWeight:600,color:'#8a93a3',display:'inline-flex',alignItems:'center',gap:5}}><i className="bi bi-tags" style={{fontSize:14}}></i>Tag</span>
           {tags.map(t=><Tag key={t} label={t} onX={()=>removeTag(w.id,t)}/>)}
@@ -1375,6 +1284,7 @@ function WatchPanel(){
           )}
         </div>
 
+        {/* notes toggle */}
         <div style={{marginTop:14}}>
           <button onClick={()=>toggleNotes(w.id)} style={{display:'inline-flex',alignItems:'center',gap:7,border:'none',background:'transparent',padding:0,fontSize:13,fontWeight:600,color:'#5a6473'}}>
             <i className="bi bi-journal-text" style={{fontSize:15,color:primary}}></i>Note List
@@ -1412,9 +1322,9 @@ function WatchPanel(){
 }
 
 function App(){
-  const [tab,setTab]=useState(()=>{const t=new URLSearchParams(location.search).get('tab');return TABS.some(x=>x.key===t)?t:'todo';});
+  const [tab,setTab]=useState(()=>{const t=new URLSearchParams(location.search).get('tab');return TABS.some(x=>x.key===t)?t:'talk';});
   const [view,setView]=useState('list');
-  const [bp,setBp]=useState({level:'strategy',id:'s3'});
+  const [bp,setBp]=useState(null);
 
   const Card=({children,pad})=>(<div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:pad||'16px 18px'}}>{children}</div>);
 
@@ -1429,7 +1339,7 @@ function App(){
         <div style={{display:'flex',flexDirection:'column',gap:16}}>
           <Card>
             <div style={{fontWeight:700,fontSize:16,marginBottom:8}}>เกี่ยวกับ</div>
-            <div style={{fontSize:13,color:'#5a6473',lineHeight:1.6,marginBottom:14}}>สำหรับกลุ่มพัฒนาและติดตามระบบการเรียนรู้ (EDR) เท่านั้น</div>
+            <div style={{fontSize:13,color:'#5a6473',lineHeight:1.6,marginBottom:14}}>สำหรับกลุ่มพัฒนาซอฟแวร์และวิเคราะห์ระบบเท่านั้น</div>
             {[['อนุญาตให้ค้นหาชื่อกลุ่มได้'],['อนุญาตให้แชร์โพสต์ออกจากกลุ่มได้'],['อนุญาตให้ออกจากกลุ่มได้']].map((p,i)=>(
               <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'5px 0',fontSize:13,color:'#3a4452'}}>{ms('check_circle',19,primary,true)}{p[0]}</div>
             ))}
@@ -1437,7 +1347,7 @@ function App(){
           <BusinessPlanCard bp={bp} setBp={setBp}/>
           <Card>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:10}}>{ms('edit_note',21,'#8a93a3')}<span style={{fontWeight:600,fontSize:13.5}}>จำนวนโพสต์จากกลุ่ม</span><div style={{flex:1}}></div>{ms('done_all',19,primary)}</div>
-            {[['ทั้งหมด',48,'#eef0f4','#3a4452'],['มีข้อสรุป',35,'#eef0f4','#3a4452'],['ยังไม่ได้อ่าน',3,'#fdeaea','#d8513a']].map((r,i)=>(
+            {[['ทั้งหมด',10,'#eef0f4','#3a4452'],['มีข้อสรุป',0,'#eef0f4','#3a4452'],['ยังไม่ได้อ่าน',0,'#fdeaea','#d8513a']].map((r,i)=>(
               <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'7px 0',fontSize:13,color:'#5a6473'}}>
                 <span>{r[0]}</span><span style={{minWidth:30,textAlign:'center',background:r[2],color:r[3],fontWeight:700,borderRadius:8,padding:'2px 9px',fontSize:12.5}}>{r[1]}</span>
               </div>
@@ -1451,7 +1361,7 @@ function App(){
             </div>
             <div style={{display:'flex',flexDirection:'column'}}>
               {VM.map((g,i)=>(
-                <a key={i} href={g.title.includes('EDR ภาคเรียน 1/2569')?'user-virtual-meeting-group-1.html':'user-virtual-meeting-group.html'} className="vm-row" style={{display:'flex',alignItems:'center',gap:11,padding:'9px 6px',borderRadius:10,borderTop:i?'1px solid #f3f5f8':'none'}}>
+                <a key={i} href={g.href||"user-virtual-meeting-group.html"} className="vm-row" style={{display:'flex',alignItems:'center',gap:11,padding:'9px 6px',borderRadius:10,borderTop:i?'1px solid #f3f5f8':'none'}}>
                   <VMThumb/>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontWeight:700,fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{g.title}</div>
@@ -1468,18 +1378,20 @@ function App(){
         <div style={{minWidth:0,display:'flex',flexDirection:'column',gap:16}}>
           {/* HERO */}
           <Card pad="0">
-            <div style={{height:230,position:'relative',overflow:'hidden',borderRadius:'13px 13px 0 0',background:'linear-gradient(135deg, #0e8c7d 0%, #15a08f 50%, #22b573 100%)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <div style={{textAlign:'center',color:'#ffffff',fontWeight:800,fontSize:42,lineHeight:1.2,letterSpacing:1,textShadow:'0 2px 12px rgba(0,0,0,.18)'}}>
-                <i className="bi bi-diagram-3-fill" style={{fontSize:54,display:'block',marginBottom:8,opacity:.9}}></i>
-                EDR ภาคเรียน 1/2569
+            <div style={{height:230,position:'relative',overflow:'hidden',borderRadius:'13px 13px 0 0',background:'linear-gradient(135deg,#0f766e 0%,#15a08f 55%,#2bbfa9 100%)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <div style={{position:'absolute',inset:0,background:'repeating-linear-gradient(46deg,rgba(255,255,255,.06),rgba(255,255,255,.06) 26px,transparent 26px,transparent 52px)'}}></div>
+              <div style={{position:'relative',textAlign:'center',color:'#fff'}}>
+                <i className="bi bi-hdd-stack-fill" style={{fontSize:52,color:'rgba(255,255,255,.92)'}}></i>
+                <div style={{fontWeight:800,fontSize:40,lineHeight:1,letterSpacing:3,marginTop:10,textShadow:'0 2px 6px rgba(0,0,0,.18)'}}>SSO ครุภัณฑ์</div>
+                <div style={{fontWeight:600,fontSize:15,letterSpacing:1,marginTop:8,opacity:.9}}>ชุดห้องปฏิบัติการคอมพิวเตอร์ · วท.อุทัยธานี</div>
               </div>
             </div>
             <div style={{padding:'16px 20px 6px'}}>
               <div style={{display:'flex',alignItems:'flex-start',gap:12,flexWrap:'wrap'}}>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontWeight:700,fontSize:22}}>EDR ภาคเรียน 1/2569</div>
-                  <div style={{fontSize:13,color:'#8a93a3',margin:'4px 0 8px'}}>สมาชิก 24 คน</div>
-                  <Avatars n={5} sz={28} extra={19}/>
+                  <div style={{fontWeight:700,fontSize:22}}>ชุดห้องปฏิบัติการคอมพิวเตอร์ วท.อุทัยธานี</div>
+                  <div style={{fontSize:13,color:'#8a93a3',margin:'4px 0 8px'}}>สมาชิก 4 คน</div>
+                  <Avatars n={4} sz={28}/>
                 </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:9}}>
                   <div style={{display:'flex',alignItems:'center',gap:9}}>
@@ -1488,7 +1400,7 @@ function App(){
                     <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:'#3a4452',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 14px',fontSize:13.5,fontWeight:600}}>{ms('check',18,primary)}เข้าร่วมแล้ว</button>
                   </div>
                   <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:9,padding:'8px 13px',width:220}}>
-                    <i className="bi bi-search" style={{fontSize:14,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:12.5}}>ค้นหา EDR ภาคเรียน 1/2569</span>
+                    <i className="bi bi-search" style={{fontSize:14,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:12.5}}>ค้นหาชุดห้องปฏิบัติการคอมพิวเตอร์ วท.อุทัยธานี</span>
                   </div>
                 </div>
               </div>
@@ -1556,7 +1468,7 @@ function App(){
           ) : tab==='verify' ? (
            <VerifyPanel/>
           ) : (
-           <Card pad="70px 0"><div style={{textAlign:'center',color:'#aeb6c2'}}>{ms(tab==='members'?'group':tab==='invite'?'mail':tab==='verify'?'fact_check':'insights',40,'#cfd6e0')}<div style={{marginTop:10,fontWeight:600,color:'#9aa3af',fontSize:13.5}}>{tab==='members'?'รายชื่อสมาชิกในกลุ่ม (24 คน)':tab==='invite'?'ยังไม่มีคำเชิญที่รอตอบรับ':tab==='verify'?'ตรวจสอบโพสต์ในกลุ่ม':'ภาพรวมกลุ่ม'}</div></div></Card>
+           <Card pad="70px 0"><div style={{textAlign:'center',color:'#aeb6c2'}}>{ms(tab==='members'?'group':tab==='invite'?'mail':tab==='verify'?'fact_check':'insights',40,'#cfd6e0')}<div style={{marginTop:10,fontWeight:600,color:'#9aa3af',fontSize:13.5}}>{tab==='members'?'รายชื่อสมาชิกในกลุ่ม':tab==='invite'?'ยังไม่มีคำเชิญที่รอตอบรับ':tab==='verify'?'ตรวจสอบโพสต์ในกลุ่ม':'ภาพรวมกลุ่ม'}</div></div></Card>
           )}
         </div>
 
@@ -1565,19 +1477,20 @@ function App(){
           <Card>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:13}}>{ms('verified_user',19,primary)}<span style={{fontWeight:600,fontSize:13.5,color:'#5a6473'}}>เจ้าของกลุ่ม</span></div>
             <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:16}}>
-              <Letter s="Piyawat Takaew" d={42}/>
-              <div><div style={{fontWeight:700,fontSize:14}}>Piyawat Takaew</div><div style={{fontSize:12,color:'#9aa3af'}}>SA Staff / Project Owner</div></div>
+              <Letter s="Chanavee Bekaku" d={42}/>
+              <div><div style={{fontWeight:700,fontSize:14}}>Chanavee Bekaku</div><div style={{fontSize:12,color:'#9aa3af'}}>Dev Manager</div></div>
             </div>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:11}}>{ms('shield_person',19,'#8a93a3')}<span style={{fontWeight:600,fontSize:13.5,color:'#5a6473'}}>ผู้ดูแลกลุ่ม</span></div>
-            <Avatars n={3} sz={36}/>
+            <Avatars n={1} sz={36}/>
           </Card>
+          <TodoProgressCard/>
           <ContractCard/>
           <AttachmentsCard/>
           <Card>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:13}}><span style={{width:30,height:30,borderRadius:'50%',background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('trending_up',18,primary)}</span><span style={{fontWeight:600,fontSize:13,color:'#5a6473',lineHeight:1.3}}>โพสต์ที่มียอดวิวสูงสุดสัปดาห์นี้</span></div>
             <div style={{display:'flex',alignItems:'flex-start',gap:11}}>
               <span style={{minWidth:26,height:26,borderRadius:8,background:'#eaf1fe',color:'#3b6fd4',fontWeight:800,fontSize:14,display:'inline-flex',alignItems:'center',justifyContent:'center',flex:'none'}}>1</span>
-              <div><div style={{fontWeight:600,fontSize:13.5,lineHeight:1.4,color:'#2b3440'}}>ขั้นตอนการอัพโหลดแผนการสอน ศธ.02 …</div><div style={{fontSize:12,color:'#9aa3af',marginTop:3}}>โดย Piyawat Takaew</div></div>
+              <div><div style={{fontWeight:600,fontSize:13.5,lineHeight:1.4,color:'#2b3440'}}>Group Arrangement Properties …</div><div style={{fontSize:12,color:'#9aa3af',marginTop:3}}>โดย Narate Boonmee</div></div>
             </div>
           </Card>
         </div>
