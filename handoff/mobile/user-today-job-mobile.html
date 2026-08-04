@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GiveDeeFive — Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#e8edf2;background:#e7eaf0;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 0}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input{font-family:inherit}
+.ms{font-family:'Material Symbols Rounded';line-height:1}
+.appscroll::-webkit-scrollbar{display:none}
+.appscroll{scrollbar-width:none}
+@keyframes popIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const ICON={"account_balance":"bank","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","add_circle":"plus-circle","add_task":"plus-square","arrow_back":"arrow-left","arrow_forward":"arrow-right","arrow_drop_down":"caret-down-fill","arrow_drop_up":"caret-up-fill","assignment":"clipboard","attach_file":"paperclip","autorenew":"arrow-repeat","back_hand":"hand-index","bar_chart":"bar-chart","battery_full":"battery-full","bolt":"lightning-charge","bookmark":"bookmark","bookmark_add":"bookmark-plus","calendar_month":"calendar3","calendar_today":"calendar","call_made":"arrow-up-right","call_received":"arrow-down-left","campaign":"megaphone","cancel":"x-circle","chat":"chat-dots","chat_bubble":"chat-dots","chat_bubble_outline":"chat","check":"check-lg","check_box":"check-square","check_box_outline_blank":"square","check_circle":"check-circle","checklist":"list-check","chevron_left":"chevron-left","chevron_right":"chevron-right","close":"x-lg","content_copy":"files","delete":"trash","description":"file-text","desktop_windows":"display","domain":"building","done":"check-lg","done_all":"check2-all","donut_small":"pie-chart","download":"download","drag_indicator":"grip-vertical","ecg_heart":"activity","edit":"pencil","edit_note":"pencil-square","engineering":"tools","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","favorite":"heart","filter":"funnel","filter_alt_off":"funnel","filter_list":"funnel","flag":"flag","format_list_bulleted":"list-ul","forum":"chat-square-text","grid_view":"grid","group":"people","group_add":"person-plus","groups":"people","help":"question-circle","home":"house","hourglass":"hourglass","hourglass_bottom":"hourglass-bottom","hourglass_empty":"hourglass","hourglass_top":"hourglass-top","how_to_reg":"person-check","image":"image","inbox":"inbox","ink_eraser":"eraser","insert_chart":"bar-chart","insights":"graph-up","inventory_2":"box-seam","keyboard_arrow_down":"chevron-down","keyboard_arrow_up":"chevron-up","leaderboard":"bar-chart-line","list":"list","lock":"lock","low_priority":"sort-down","mail":"envelope","menu":"list","menu_book":"book","monitor_heart":"activity","monitoring":"graph-up-arrow","more_horiz":"three-dots","more_vert":"three-dots-vertical","move_up":"arrow-up-square","note_add":"file-earmark-plus","notifications":"bell","open_in_full":"arrows-fullscreen","open_in_new":"box-arrow-up-right","outbox":"box-arrow-up","palette":"palette","pending":"hourglass-split","person":"person","pie_chart":"pie-chart","play_arrow":"play-fill","play_circle":"play-circle","playlist_add":"list-task","playlist_add_check":"list-check","power_settings_new":"power","public":"globe","push_pin":"pin-angle","radio_button_unchecked":"circle","redeem":"gift","reply":"reply","schedule":"clock","search":"search","south_west":"arrow-down-left","north_east":"arrow-up-right","co_present":"easel","show_chart":"graph-up","storefront":"shop","shopping_bag":"bag","search_off":"search","send":"send","settings":"gear","shield_lock":"shield-lock","shield_person":"shield-check","signal_cellular_alt":"reception-4","signpost":"signpost-2","sort":"sort-down","speed":"speedometer2","star":"star","support":"life-preserver","swap_vert":"arrow-down-up","tag":"hash","task_alt":"check2-circle","title":"type","today":"calendar-check","touch_app":"hand-index","trending_up":"graph-up-arrow","tune":"sliders","unfold_more":"chevron-expand","upload_file":"file-earmark-arrow-up","verified_user":"patch-check","videocam":"camera-video","view_agenda":"card-heading","visibility":"eye","volunteer_activism":"hand-heart","warning":"exclamation-triangle","waving_hand":"emoji-smile","wifi":"wifi"};
+const ICONF={"check_circle":"check-circle-fill","favorite":"heart-fill","person":"person-fill","groups":"people-fill","group":"people-fill","play_circle":"play-circle-fill","lock":"lock-fill","send":"send-fill","push_pin":"pin-angle-fill","verified_user":"patch-check-fill","shield_person":"shield-fill-check","inbox":"inbox-fill","waving_hand":"emoji-smile-fill","star":"star-fill","flag":"flag-fill","notifications":"bell-fill","home":"house-fill","pie_chart":"pie-chart-fill"};
+// Dark app palette (matches real GD5 mobile)
+const bg0='#f3f5f8', bg1='#ffffff', bg2='#eef0f4', line='#e7eaef';
+const txt='#1f2733', sub='#8a93a3', teal='#15a08f', tealDim='#e3f3f0', pink='#ef4444', indigo='#4f46e5';
+const ic=(name,size,color,fill)=>{var k=(fill&&ICONF[name])||ICON[name]||'bi-record-circle';return (<i className={'bi '+(/^bi-/.test(k)?k:'bi-'+k)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
+
+const MYJOBS0=[
+  {id:'j1',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',priority:'high',due:'31/03/2026',days:'เกิน 5 วัน',daysType:'over',progress:60,status:'yellow'},
+  {id:'j2',title:'อัพเดทระบบ EDR เป็น jdk8',commander:'Piyawat',priority:'urgent',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over',progress:30,status:'red'},
+  {id:'j3',title:'จัดทำ WI กระบวนการ Deploy เว็บไซต์ใหม่',commander:'Chanavee',priority:'normal',due:'30/06/2026',days:'เหลือ 1 วัน',daysType:'left',progress:100,status:'green'},
+  {id:'j4',title:'ติดตามการเก็บเงิน ตามสัญญา',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:0,status:'yellow'},
+  {id:'j5',title:'โพสปัญหาเชิงโครงสร้างของ EDR',commander:'Pinij',priority:'normal',due:'30/06/2026',days:'เหลือ 4 วัน',daysType:'left',progress:45,status:'green'},
+];
+const MEMBERS0=[
+  {id:'m1',name:'Bodin Muanprasat',role:'Software Engineer',progress:14,jobs:[
+    {id:'b1',title:'เรียน NuxtJS สำหรับพัฒนา EDR V.3',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:10,status:'yellow'},
+    {id:'b2',title:'แก้บั๊ก dashboard EDR ก่อน demo',commander:'Narate',priority:'urgent',due:'29/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:40,status:'red'},
+    {id:'b3',title:'รีวิวโค้ด Pull Request #214',commander:'Chanavee',priority:'normal',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:0,status:'yellow'},
+  ]},
+  {id:'m2',name:'Narate Boonmee',role:'Software Engineer',progress:46,jobs:[
+    {id:'n1',title:'จัดทำ WI การ Deploy ด้วย Nuxt Content',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:60,status:'green'},
+    {id:'n2',title:'ทดสอบ regression ระบบ EDR',commander:'Piyawat',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:30,status:'yellow'},
+  ]},
+  {id:'m3',name:'Supatta Longna',role:'แผนปฏิบัติการ',progress:9,jobs:[
+    {id:'s1',title:'หาสาเหตุที่แท้จริงของปัญหา',commander:'Piyawat',priority:'normal',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:0,status:'red'},
+    {id:'s2',title:'สรุปยอดเก็บเงินรายเดือน',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:20,status:'yellow'},
+  ]},
+  {id:'m4',name:'Nichagorn Prajansen',role:'Staff',progress:46,jobs:[
+    {id:'g1',title:'สรุปข้อมูลความเห็นโพสต์',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:46,status:'green'},
+    {id:'g2',title:'จัดทำเอกสาร Tip การใช้ AI',commander:'Jarunya',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:50,status:'green'},
+  ]},
+];
+const POOL0=[
+  {id:'p1',title:'อบรมลูกค้า / ส่งมอบงานระบบ Grand ATS',commander:'บาส',priority:'urgent',due:'30/06/2026',days:'เกิน 10 วัน',daysType:'over'},
+  {id:'p2',title:'จัดทำรายละเอียดของสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',priority:'urgent',due:'30/06/2026',days:'เกิน 5 วัน',daysType:'over'},
+  {id:'p3',title:'ติดตามการเก็บเงิน ตามสัญญา (เพิ่มเติม)',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over'},
+  {id:'p4',title:'หาสาเหตุที่แท้จริงของปัญหาเชิงโครงสร้าง',commander:'Supatta',priority:'normal',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left'},
+  {id:'p5',title:'PA - พัฒนางานประจำ ไตรมาส 3',commander:'Piyawat',priority:'normal',due:'31/12/2026',days:'อีก 5 วัน',daysType:'left'},
+  {id:'p6',title:'โพสบทความเคล็ดลับการเขียน WI',commander:'Khajonsak',priority:'high',due:'30/06/2026',days:'อีก 4 วัน',daysType:'left'},
+  {id:'p7',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left'},
+];
+
+const pickColor=(name)=>{const c=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57'];let h=0;const s=name||'?';for(let i=0;i<s.length;i++)h=(h+s.charCodeAt(i))%c.length;return c[h];};
+const barColorFor=(p)=> p>=100?'#22b573':p>=40?teal:p>0?'#f5b301':'#cbd5e1';
+const statsFor=(arr)=>{const total=arr.length,done=arr.filter(j=>j.progress>=100).length,over=arr.filter(j=>j.daysType==='over').length,avg=total?Math.round(arr.reduce((s,j)=>s+j.progress,0)/total):0;return {total,done,over,pending:total-done,avg,avgStyle:avg+'%'};};
+
+function App(){
+  const [tab,setTab]=useState('more');      // home | chat | analytics | more  (real bottom bar)
+  const [route,setRoute]=useState(null); // null | 'todayjob'  (pushed over a tab)
+  const [tj,setTj]=useState('me');           // me | team | member | manage   (inside today's job)
+  const [sel,setSel]=useState(0);
+  const [manageTab,setManageTab]=useState('list');
+  const [poolFilter,setPoolFilter]=useState('all');
+  const [poolSearch,setPoolSearch]=useState('');
+  const [myJobs,setMyJobs]=useState(MYJOBS0);
+  const [members,setMembers]=useState(MEMBERS0);
+  const [pool,setPool]=useState(POOL0);
+
+  const openTab=(k)=>{setRoute(null);setTab(k);};
+  const openTodayJob=()=>{setRoute('todayjob');setTj('me');};
+  const backFromTJ=()=>{ if(tj==='member'){setTj('team');} else {setRoute(null);} };
+
+  const getList=(kind)=> kind==='team'?(members[sel]?members[sel].jobs:[]):myJobs;
+  const setList=(kind,arr)=>{ if(kind==='team'){ setMembers(ms=>ms.map((m,i)=>i===sel?{...m,jobs:arr}:m)); } else setMyJobs(arr); };
+  const move=(kind,id,dir)=>{const arr=[...getList(kind)];const i=arr.findIndex(j=>j.id===id),ni=i+dir;if(i<0||ni<0||ni>=arr.length)return;const t=arr[i];arr[i]=arr[ni];arr[ni]=t;setList(kind,arr);};
+  const remove=(kind,id)=>setList(kind,getList(kind).filter(j=>j.id!==id));
+  const addProgress=(kind,id)=>setList(kind,getList(kind).map(j=>{if(j.id!==id)return j;const np=Math.min(100,j.progress+25);return {...j,progress:np,status:np>=100?'green':j.status};}));
+  const importJob=(id)=>{const p=pool.find(x=>x.id===id);if(!p)return;const job={id:'imp-'+id+'-'+Date.now(),title:p.title,commander:p.commander,priority:p.priority,due:p.due,days:p.days,daysType:p.daysType||'left',progress:0,status:'yellow'};setMyJobs(a=>[...a,job]);setPool(pl=>pl.filter(x=>x.id!==id));setManageTab('list');};
+
+  const PR=(p)=>{const m={urgent:{bg:'#fdeaea',text:'#d83a3a',label:'ด่วนมาก'},high:{bg:'#fff2e2',text:'#dd7a16',label:'ด่วน'},normal:{bg:'#eef1f5',text:'#6b7280',label:'ปกติ'}};return m[p]||m.normal;};
+
+  const mapJob=(job,idx)=>{const pr=PR(job.priority),hi=job.progress>=100;return {...job,rank:idx+1,widthStyle:job.progress+'%',barColor:barColorFor(job.progress),
+    statusColor:job.status==='red'?'#ef4444':job.status==='green'?'#22b573':'#f5b301',
+    prBg:pr.bg,prText:pr.text,prLabel:pr.label,
+    daysColor:job.daysType==='over'?'#d83a3a':'#16916f',daysIcon:job.daysType==='over'?'warning':'schedule',
+    rowBg:hi?'#eaf7f0':bg1,rowBorder:hi?'#bfe6d3':line,
+    avatarInitial:(job.commander||'?').trim().charAt(0),avatarColor:pickColor(job.commander)};};
+
+  const myStats=statsFor(myJobs);
+  const teamAll=members.reduce((a,m)=>a.concat(m.jobs),[]);
+  const teamStats=statsFor(teamAll);
+  const mem=members[sel]||{name:'',role:'',jobs:[]};
+  const memberStats=statsFor(mem.jobs||[]);
+
+  const flt=poolFilter,q=(poolSearch||'').trim();
+  const poolView=pool.filter(p=>(flt==='all'||p.priority===flt)&&(!q||p.title.indexOf(q)>=0)).map(p=>{const pr=PR(p.priority);return {...p,prBg:pr.bg,prText:pr.text,prLabel:pr.label,avatarInitial:(p.commander||'?').charAt(0),avatarColor:pickColor(p.commander),daysColor:p.daysType==='over'?'#ff7676':'#2ec27e'};});
+  const ft=[{key:'all',label:'ทั้งหมด'},{key:'urgent',label:'ด่วนมาก'},{key:'high',label:'ด่วน'},{key:'normal',label:'ปกติ'}];
+
+  const StatRow=({s})=>(
+    <div style={{display:'flex',alignItems:'center',gap:7,marginTop:11,flexWrap:'wrap'}}>
+      <span style={{fontSize:11.5,color:sub,fontWeight:500}}>{s.pending} รอดำเนินการ</span>
+      <span style={{background:'#e4f4ec',color:'#1f9d57',fontSize:11.5,fontWeight:600,borderRadius:99,padding:'3px 10px'}}>{s.done} ดำเนินการแล้ว</span>
+      <span style={{background:'#fdeaea',color:'#d83a3a',fontSize:11.5,fontWeight:600,borderRadius:99,padding:'3px 10px'}}>{s.over} งานค้าง</span>
+    </div>
+  );
+
+  const JobCard=({job,kind,reorder})=>(
+    <div style={{background:job.rowBg,border:'1px solid '+job.rowBorder,borderRadius:14,padding:13,marginBottom:10,animation:'popIn .2s ease'}}>
+      <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+        <div style={{width:26,height:26,borderRadius:8,background:tealDim,color:teal,fontWeight:800,fontSize:14,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{job.rank}</div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:600,fontSize:13.5,lineHeight:1.35,color:txt}}>{job.title}</div>
+          <div style={{display:'flex',alignItems:'center',gap:7,marginTop:7,flexWrap:'wrap',fontSize:11,color:sub}}>
+            {!reorder && <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:16,height:16,borderRadius:'50%',background:job.avatarColor,color:'#fff',fontSize:9,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{job.avatarInitial}</span>{job.commander}</span>}
+            <span style={{padding:'1px 8px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+            <span style={{display:'inline-flex',alignItems:'center',gap:3,color:job.daysColor,fontWeight:600}}>{ic(job.daysIcon,13,job.daysColor)}{job.days}</span>
+          </div>
+        </div>
+        {reorder ? (
+          <div style={{display:'flex',flexDirection:'column',border:'1px solid '+line,borderRadius:8,overflow:'hidden',flex:'none'}}>
+            <button onClick={()=>move(kind,job.id,-1)} style={{padding:'1px 5px',display:'flex',alignItems:'center',color:sub}}>{ic('keyboard_arrow_up',18,sub)}</button>
+            <button onClick={()=>move(kind,job.id,1)} style={{padding:'1px 5px',display:'flex',alignItems:'center',color:sub,borderTop:'1px solid '+line}}>{ic('keyboard_arrow_down',18,sub)}</button>
+          </div>
+        ) : <span style={{width:11,height:11,borderRadius:'50%',background:job.statusColor,flex:'none',marginTop:4}}></span>}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginTop:10}}>
+        <div style={{flex:1,height:7,background:bg2,borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:job.barColor,width:job.widthStyle}}></div></div>
+        <span style={{fontSize:11.5,fontWeight:700,color:job.barColor,width:34,textAlign:'right'}}>{job.widthStyle}</span>
+        <button onClick={()=>addProgress(kind,job.id)} style={{display:'inline-flex',alignItems:'center',gap:3,background:tealDim,color:teal,borderRadius:8,padding:'6px 9px',fontSize:11,fontWeight:700,whiteSpace:'nowrap'}}>{ic('add',15,teal)}เพิ่ม</button>
+      </div>
+    </div>
+  );
+
+  // ---- TOP APP BAR ----
+  const TopBar=()=>{
+    if(route==='todayjob'){
+      const titles={me:"คำสั่งที่ได้รับ",team:"Today's Job ของลูกทีม",member:'รายละเอียดลูกทีม',manage:'จัดการ Daily Job'};
+      return (
+        <div style={{height:52,display:'flex',alignItems:'center',gap:10,padding:'0 12px',background:bg1,borderBottom:'1px solid '+line,flex:'none'}}>
+          <button onClick={backFromTJ} style={{width:34,height:34,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',color:txt}}>{ic('arrow_back',23,txt)}</button>
+          <div style={{fontWeight:700,fontSize:16,color:txt}}>{titles[tj]}</div>
+        </div>
+      );
+    }
+    if(tab==='home'){
+      return (
+        <div style={{height:52,display:'flex',alignItems:'center',gap:10,padding:'0 14px',background:bg1,borderBottom:'1px solid '+line,flex:'none'}}>
+          <div style={{width:30,height:30,borderRadius:8,overflow:'hidden',flex:'none',background:'#15a08f'}}><img src="image/logo.png" style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/></div>
+          <div style={{flex:1,textAlign:'center',fontWeight:700,fontSize:16,color:txt}}>Piyawat Takaew</div>
+          <div style={{position:'relative',display:'flex',alignItems:'center'}}>{ic('notifications',23,txt)}<span style={{position:'absolute',top:-4,right:-5,background:pink,color:'#fff',fontSize:9,fontWeight:800,borderRadius:99,minWidth:15,height:15,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 3px'}}>1</span></div>
+          <span style={{marginLeft:6}}>{ic('search',23,txt)}</span>
+        </div>
+      );
+    }
+    const t={chat:'แชท',analytics:'วิเคราะห์ข้อมูล',more:'อื่นๆ'}[tab];
+    return (<div style={{height:52,display:'flex',alignItems:'center',justifyContent:'center',background:bg1,borderBottom:'1px solid '+line,flex:'none'}}><div style={{fontWeight:700,fontSize:17,color:txt}}>{t}</div></div>);
+  };
+
+  // ---- MORE MENU (อื่นๆ) ----
+  const menuItems=[
+    {ic:'person',label:'หน้าของคุณ'},
+    {ic:'grid_view',label:'แดชบอร์ด'},
+    {ic:'south_west',label:'คำสั่งที่ได้รับ',action:openTodayJob,active:true},
+    {ic:'north_east',label:'คำสั่งที่สั่งไป'},
+    {ic:'north_east',label:'ตรวจสอบการสั่งการจัดทำเอกสาร WI'},
+    {ic:'north_east',label:'สรุปข้อมูลการสั่งการ'},
+    {ic:'co_present',label:'Virtual Meeting'},
+    {ic:'download',label:'รายการนำไปใช้เพื่อพัฒนาตัวเอง'},
+    {ic:'menu_book',label:'เอกสารปฏิบัติงาน'},
+    {ic:'fact_check',label:'ตรวจสอบสถานะจัดทำเอกสาร'},
+    {ic:'fact_check',label:'ตรวจสอบสถิติการใช้งานเอกสาร'},
+    {ic:'leaderboard',label:'รายงานแผนธุรกิจ',sub:'รายงานสถานะของแผนธุรกิจที่รับผิดชอบ'},
+    {ic:'show_chart',label:'รายงานผลลัพธ์ของแผนธุรกิจ',sub:'รายงานสถานะของแผนธุรกิจทั้งหมดขององค์กร'},
+    {ic:'storefront',label:'ร้านค้า'},
+    {ic:'shopping_bag',label:'ประวัติการแลกรางวัล'},
+  ];
+
+  const Feed=()=>(
+    <div className="appscroll" style={{flex:1,overflowY:'auto',padding:'14px 14px 92px'}}>
+      <div className="appscroll" style={{display:'flex',gap:12,overflowX:'auto',marginBottom:14,paddingBottom:2}}>
+        <div style={{flex:'none',width:230,height:150,borderRadius:16,background:'linear-gradient(135deg,#0f8d7f,#1ec4ad)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12}}>
+          <div style={{fontWeight:700,fontSize:16,color:'#fff'}}>แดชบอร์ด</div>
+          {ic('grid_view',46,'rgba(255,255,255,.9)')}
+        </div>
+        <div style={{flex:'none',width:160,height:150,borderRadius:16,background:'linear-gradient(135deg,#5d7088,#43536b)',position:'relative',overflow:'hidden',display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
+          <div style={{position:'absolute',top:10,left:0,right:0,textAlign:'center',fontSize:12,color:'rgba(255,255,255,.85)'}}>คุณ</div>
+          <span style={{position:'absolute',top:42,left:'50%',transform:'translateX(-50%)',background:pink,color:'#fff',fontSize:11,fontWeight:700,borderRadius:99,padding:'3px 10px',whiteSpace:'nowrap'}}>8 Watcher</span>
+          <div style={{paddingBottom:16,fontSize:12,color:'rgba(255,255,255,.85)'}}>D_KEEP · 0</div>
+        </div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10,background:bg1,border:'1px solid '+line,borderRadius:12,padding:'10px 12px',marginBottom:14}}>
+        <div style={{width:30,height:30,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:13,flex:'none'}}>P</div>
+        <span style={{flex:1,fontSize:12.5,color:sub}}>ถ้าอยากได้ความคิดเห็น โพสต์ถามเพื่อนเลย</span>
+        <div style={{width:26,height:26,borderRadius:'50%',background:'#15a08f'}}></div>
+      </div>
+      <div style={{marginBottom:8}}><div style={{fontWeight:700,fontSize:19,color:txt}}>Virtual Meeting</div><div style={{fontSize:12.5,color:sub}}>กลุ่มของคุณ</div></div>
+      <div style={{background:bg1,border:'1px solid '+line,borderRadius:14,padding:14,marginBottom:14}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <div style={{width:46,height:46,borderRadius:11,background:'#e6c200',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',fontSize:9,fontWeight:800,color:'#5a4b00',textAlign:'center',lineHeight:1.1}}>RESTRICTED</div>
+          <div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:15,color:txt}}>SA-Developer</div><div style={{fontSize:11.5,color:sub,marginTop:2}}>สมาชิก 4 คน · โพสต์ 10</div></div>
+        </div>
+      </div>
+      {[{n:'Praphas Khongsabai',r:'ที่ปรึกษาด้านปฏิบัติการ',d:'24 มิ.ย. 2026',t:'สรุปแผนธุรกิจ บจ.แกรนด์ เอทีเอส ปี 2569 บนระบบ GD5 — ประกอบด้วย 4 พันธกิจ…'},{n:'Jirapa Saegkam',r:'Senior Implement',d:'23 มิ.ย. 2026',t:'งานทวิภาคีต้องการให้ระบบแสดงข้อมูลการอัพโหลดแผนฝึกอาชีพในสถานประกอบการ…'}].map((p,i)=>(
+        <div key={i} style={{background:bg1,border:'1px solid '+line,borderRadius:14,padding:14,marginBottom:11}}>
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+            <div style={{width:38,height:38,borderRadius:'50%',background:pickColor(p.n),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:16,flex:'none'}}>{(p.n||'?').trim().charAt(0)}</div>
+            <div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:13.5,color:txt}}>{p.n}</div><div style={{fontSize:11,color:sub}}>{p.r} · {p.d}</div></div>
+            {ic('more_vert',20,sub)}
+          </div>
+          <div style={{fontSize:13,color:'#3a4452',lineHeight:1.5}}>{p.t}</div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const ChatList=()=>(
+    <div className="appscroll" style={{flex:1,overflowY:'auto',padding:'10px 12px 92px'}}>
+      {[{n:'SA-Developer',m:'Narate: เดี๋ยวรีวิว PR ให้นะครับ',t:'15:42',u:3},{n:'Piyawat Takaew',m:'อัพเดทความก้าวหน้าให้หน่อยครับ',t:'14:08',u:1},{n:'VM : EDR วก.ตะกั่วป่า',m:'Jirapa: รีโพสต์แล้วค่ะ',t:'13:58',u:0},{n:'Bodin Muanprasat',m:'รับทราบครับ กำลังทำอยู่',t:'เมื่อวาน',u:0},{n:'แผนปฏิบัติการ',m:'สรุปยอดเก็บเงินเดือนนี้',t:'จ.',u:6}].map((c,i)=>(
+        <div key={i} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 8px',borderBottom:'1px solid '+line}}>
+          <div style={{width:48,height:48,borderRadius:'50%',background:pickColor(c.n),color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:19,flex:'none'}}>{(c.n||'?').trim().charAt(0)}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontWeight:700,fontSize:14,color:txt}}>{c.n}</div>
+            <div style={{fontSize:12.5,color:sub,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{c.m}</div>
+          </div>
+          <div style={{textAlign:'right',flex:'none'}}>
+            <div style={{fontSize:11,color:sub}}>{c.t}</div>
+            {c.u>0 && <span style={{display:'inline-block',marginTop:5,background:pink,color:'#fff',fontSize:10,fontWeight:700,borderRadius:99,minWidth:18,height:18,lineHeight:'18px',padding:'0 5px'}}>{c.u}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const Analytics=()=>{
+    const bars=[{l:'คำสั่งใหม่',v:15},{l:'กำลังทำ',v:52},{l:'ขอปิด',v:16},{l:'ปิดแล้ว',v:30},{l:'ปฏิเสธ',v:2}];
+    const max=60;
+    return (
+      <div className="appscroll" style={{flex:1,overflowY:'auto',padding:'14px 14px 92px'}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:11,marginBottom:14}}>
+          {[{l:'คำสั่งทั้งหมด',v:'115',c:teal},{l:'กำลังดำเนินการ',v:'52',c:'#3b9fe0'},{l:'เกินกำหนด',v:'8',c:'#ff6b6b'},{l:'อัตราสำเร็จ',v:'74%',c:'#2ec27e'}].map((s,i)=>(
+            <div key={i} style={{background:bg1,border:'1px solid '+line,borderRadius:14,padding:'14px 12px'}}>
+              <div style={{fontSize:12,color:sub}}>{s.l}</div>
+              <div style={{fontWeight:800,fontSize:26,color:s.c,marginTop:4}}>{s.v}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{background:bg1,border:'1px solid '+line,borderRadius:14,padding:14}}>
+          <div style={{fontWeight:700,fontSize:14,color:txt,marginBottom:14}}>งานแยกตามสถานะ · 30 วัน</div>
+          <div style={{display:'flex',alignItems:'flex-end',gap:10,height:150}}>
+            {bars.map((b,i)=>(
+              <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:6,height:'100%',justifyContent:'flex-end'}}>
+                <div style={{fontSize:11,fontWeight:700,color:teal}}>{b.v}</div>
+                <div style={{width:'100%',borderRadius:'6px 6px 0 0',background:'linear-gradient(180deg,#74dbe2,#19c3b2)',height:(b.v/max*110)+'px'}}></div>
+                <div style={{fontSize:9.5,color:sub,textAlign:'center'}}>{b.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const MoreMenu=()=>(
+    <div className="appscroll" style={{flex:1,overflowY:'auto',padding:'14px 14px 92px'}}>
+      <div style={{background:bg1,border:'1px solid '+line,borderRadius:14,padding:'12px 14px',display:'flex',alignItems:'center',gap:12,marginBottom:13}}>
+        <div style={{width:42,height:42,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:18,flex:'none'}}>P</div>
+        <div style={{flex:1,fontWeight:700,fontSize:15,color:txt}}>Piyawat Takaew</div>
+        <div style={{position:'relative',width:34,height:34,borderRadius:'50%',background:bg2,display:'flex',alignItems:'center',justifyContent:'center'}}>{ic('expand_more',22,sub)}<span style={{position:'absolute',top:-3,right:-3,background:pink,color:'#fff',fontSize:9,fontWeight:800,borderRadius:99,minWidth:15,height:15,display:'flex',alignItems:'center',justifyContent:'center'}}>1</span></div>
+      </div>
+      <div style={{background:bg1,border:'1px solid '+line,borderRadius:14,padding:'16px 16px 6px',marginBottom:13}}>
+        <div style={{display:'flex',alignItems:'flex-start'}}>
+          <div style={{flex:1}}><div style={{fontWeight:700,fontSize:18,color:txt}}>Piyawat Takaew</div><div style={{fontSize:12.5,color:sub,marginTop:2}}>SA Staff</div><div style={{fontSize:12.5,color:sub,marginTop:6,display:'flex',alignItems:'center',gap:6}}>{ic('mail',16,sub)}piyawat@grandats.com</div></div>
+          <button style={{color:teal,fontSize:13.5,fontWeight:600}}>แก้ไข</button>
+        </div>
+        <div style={{height:1,background:line,margin:'14px 0'}}></div>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <div style={{width:30,height:30,borderRadius:'50%',background:'#f3eafd',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ic('redeem',18,'#7c3aed')}</div>
+          <div style={{flex:1,fontSize:13.5,color:'#3a4452'}}>ให้รางวัลได้อีก</div>
+          <div style={{fontWeight:800,fontSize:18,color:pink}}>45 <span style={{fontSize:12,fontWeight:500,color:sub}}>ครั้ง</span></div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginTop:14,paddingBottom:8}}>
+          <div style={{flex:1}}><div style={{fontSize:13.5,color:'#3a4452'}}>จำนวนรางวัลสะสมที่ใช้ได้</div><div style={{fontSize:11.5,color:sub,marginTop:2}}>544 รางวัลสะสม · 0 ใช้แล้ว</div></div>
+          <div style={{fontWeight:800,fontSize:30,color:teal}}>544</div>
+        </div>
+      </div>
+      <div style={{background:bg1,border:'1px solid '+line,borderRadius:14,overflow:'hidden'}}>
+        {menuItems.map((m,i)=>(
+          <button key={i} onClick={m.action||undefined} style={{width:'100%',display:'flex',alignItems:'center',gap:14,padding:'14px 16px',borderBottom:i<menuItems.length-1?'1px solid '+line:'none',background:m.active?tealDim:'transparent',textAlign:'left'}}>
+            {ic(m.ic,22,m.active?teal:sub)}
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:14.5,fontWeight:m.active?700:500,color:m.active?teal:txt}}>{m.label}</div>
+              {m.sub && <div style={{fontSize:11.5,color:sub,marginTop:2}}>{m.sub}</div>}
+            </div>
+            {m.active && <span style={{fontSize:10.5,color:teal,fontWeight:700,background:tealDim,borderRadius:99,padding:'2px 9px'}}>เปิด</span>}
+            {ic('chevron_right',22,'#c2cad4')}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ---- TODAY'S JOB FLOW ----
+  const TodayJob=()=>(
+    <div className="appscroll" style={{flex:1,overflowY:'auto',padding:'14px 14px 92px',animation:'fadeIn .18s ease'}}>
+      {tj!=='member' && (
+        <div style={{display:'flex',background:bg2,borderRadius:11,padding:3,marginBottom:14}}>
+          {[{k:'me',l:'งานของฉัน'},{k:'team',l:'ของลูกทีม'},{k:'manage',l:'จัดการ'}].map(s=>{const a=tj===s.k;return (
+            <button key={s.k} onClick={()=>{setTj(s.k);if(s.k==='manage')setManageTab('list');}} style={{flex:1,borderRadius:9,padding:9,fontSize:12.5,fontWeight:700,background:a?bg1:'transparent',color:a?teal:sub}}>{s.l}</button>
+          );})}
+        </div>
+      )}
+
+      {tj==='me' && (<React.Fragment>
+        <div style={{background:bg1,border:'1px solid '+line,borderRadius:16,padding:15,marginBottom:13}}>
+          <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
+            <div style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:13.5,fontWeight:700,color:indigo}}>{ic('monitoring',19,indigo)}ความก้าวหน้าของฉัน</div>
+            <div style={{flex:1}}></div>
+            <div style={{fontWeight:800,fontSize:20,color:indigo}}>{myStats.avg} %</div>
+          </div>
+          <div style={{height:13,background:bg2,borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:indigo,width:myStats.avgStyle}}></div></div>
+          <StatRow s={myStats}/>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:8,margin:'0 2px 10px'}}>
+          {ic('checklist',21,teal)}
+          <div style={{fontWeight:700,fontSize:15.5,color:txt}}>Today's Job <span style={{color:sub,fontWeight:500,fontSize:13}}>(คำสั่งที่ได้รับ)</span></div>
+          <div style={{flex:1}}></div>
+          <button onClick={()=>{setTj('manage');setManageTab('list');}} style={{display:'inline-flex',alignItems:'center',gap:4,color:teal,fontSize:12.5,fontWeight:700}}>{ic('tune',17,teal)}จัดการ</button>
+        </div>
+        {myJobs.map((j,i)=><JobCard key={j.id} job={mapJob(j,i)} kind="me"/>)}
+      </React.Fragment>)}
+
+      {tj==='team' && (<React.Fragment>
+        <div style={{background:bg1,border:'1px solid '+line,borderRadius:15,padding:14,marginBottom:13}}>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <div style={{display:'inline-flex',alignItems:'center',gap:6,color:'#3a4452',fontSize:12.5,fontWeight:700,whiteSpace:'nowrap'}}>{ic('monitoring',18,teal)}ความก้าวหน้า</div>
+            <div style={{flex:1,height:14,background:bg2,borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:indigo,width:teamStats.avgStyle}}></div></div>
+            <div style={{fontWeight:800,fontSize:18,color:indigo,whiteSpace:'nowrap'}}>{teamStats.avg} %</div>
+          </div>
+          <StatRow s={teamStats}/>
+        </div>
+        {members.map((m,i)=>{const st=statsFor(m.jobs);return (
+          <div key={m.id} onClick={()=>{setSel(i);setTj('member');}} style={{background:bg1,border:'1px solid '+line,borderRadius:15,padding:14,marginBottom:11,cursor:'pointer',animation:'popIn .2s ease'}}>
+            <div style={{display:'flex',alignItems:'center',gap:12}}>
+              <div style={{width:44,height:44,borderRadius:'50%',border:'1.5px solid '+line,background:bg2,display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:sub}}>{ic('person',28,sub)}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                  <div style={{fontWeight:700,fontSize:14,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',flex:1,color:txt}}>{m.name}</div>
+                  <div style={{fontWeight:800,fontSize:16,color:indigo}}>{m.progress} %</div>
+                </div>
+                <div style={{fontSize:11,color:sub,marginTop:1}}>{m.role}</div>
+              </div>
+              {ic('chevron_right',22,'#c2cad4')}
+            </div>
+            <div style={{height:11,background:bg2,borderRadius:99,overflow:'hidden',margin:'11px 0 9px'}}><div style={{height:'100%',borderRadius:99,background:indigo,width:m.progress+'%'}}></div></div>
+            <div style={{display:'flex',alignItems:'center',gap:7,flexWrap:'wrap'}}>
+              <span style={{fontSize:11,color:sub,fontWeight:500}}>{st.pending} รอดำเนินการ</span>
+              <span style={{background:'#e4f4ec',color:'#1f9d57',fontSize:11,fontWeight:600,borderRadius:99,padding:'2px 9px'}}>{st.done} เสร็จ</span>
+              {st.over>0 && <span style={{background:'#fdeaea',color:'#d83a3a',fontSize:11,fontWeight:600,borderRadius:99,padding:'2px 9px'}}>{st.over} ค้าง</span>}
+              <div style={{flex:1}}></div>
+              <span style={{fontSize:11,color:sub}}>{st.total} คำสั่งการ</span>
+            </div>
+          </div>
+        );})}
+      </React.Fragment>)}
+
+      {tj==='member' && (<React.Fragment>
+        <div style={{background:bg1,border:'1px solid '+line,borderRadius:16,padding:15,marginBottom:13,animation:'slideIn .2s ease'}}>
+          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:13}}>
+            <div style={{width:50,height:50,borderRadius:'50%',border:'1.5px solid '+line,background:bg2,display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:sub}}>{ic('person',32,sub)}</div>
+            <div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:16,color:txt}}>{mem.name}</div><div style={{fontSize:12,color:sub}}>{mem.role}</div></div>
+            <span style={{background:tealDim,color:teal,fontSize:11,fontWeight:700,borderRadius:99,padding:'5px 11px',display:'inline-flex',alignItems:'center',gap:4}}>{ic('edit',14,teal)}ผู้จัดการ</span>
+          </div>
+          <div style={{height:13,background:bg2,borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:indigo,width:memberStats.avgStyle}}></div></div>
+          <StatRow s={memberStats}/>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:8,margin:'0 2px 10px'}}>
+          {ic('checklist',20,teal)}
+          <div style={{fontWeight:700,fontSize:14.5,color:txt}}>Today's Job ของลูกทีม</div>
+          <div style={{flex:1}}></div>
+          <span style={{fontSize:11,color:sub}}>↑↓ จัดลำดับ</span>
+        </div>
+        {(mem.jobs||[]).map((j,i)=><JobCard key={j.id} job={mapJob(j,i)} kind="team" reorder={true}/>)}
+      </React.Fragment>)}
+
+      {tj==='manage' && (<React.Fragment>
+        <div style={{display:'flex',background:bg2,borderRadius:11,padding:3,marginBottom:13}}>
+          <button onClick={()=>setManageTab('list')} style={{flex:1,borderRadius:9,padding:9,fontSize:12.5,fontWeight:700,background:manageTab==='list'?bg1:'transparent',color:manageTab==='list'?teal:sub}}>รายการงาน ({myJobs.length})</button>
+          <button onClick={()=>setManageTab('import')} style={{flex:1,borderRadius:9,padding:9,fontSize:12.5,fontWeight:700,background:manageTab==='import'?bg1:'transparent',color:manageTab==='import'?teal:sub}}>นำเข้าจากผู้สั่งการ</button>
+        </div>
+        {manageTab==='list' ? (<React.Fragment>
+          {myJobs.map((j,idx)=>{const job=mapJob(j,idx);return (
+            <div key={j.id} style={{background:job.rowBg,border:'1px solid '+job.rowBorder,borderRadius:13,padding:12,marginBottom:9,display:'flex',alignItems:'center',gap:10,animation:'popIn .2s ease'}}>
+              <div style={{width:24,height:24,borderRadius:7,background:tealDim,color:teal,fontWeight:800,fontSize:13,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{job.rank}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:600,fontSize:13,lineHeight:1.3,color:txt}}>{job.title}</div>
+                <div style={{display:'flex',alignItems:'center',gap:7,marginTop:5,flexWrap:'wrap',fontSize:10.5}}>
+                  <span style={{padding:'1px 7px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+                  <span style={{color:job.daysColor,fontWeight:600}}>{job.days}</span>
+                </div>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',border:'1px solid '+line,borderRadius:8,overflow:'hidden',flex:'none'}}>
+                <button onClick={()=>move('me',j.id,-1)} style={{padding:'0 5px',display:'flex',alignItems:'center'}}>{ic('keyboard_arrow_up',17,sub)}</button>
+                <button onClick={()=>move('me',j.id,1)} style={{padding:'0 5px',display:'flex',alignItems:'center',borderTop:'1px solid '+line}}>{ic('keyboard_arrow_down',17,sub)}</button>
+              </div>
+              <button onClick={()=>remove('me',j.id)} style={{width:32,height:32,borderRadius:8,background:'#fdeaea',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ic('delete',17,'#d83a3a')}</button>
+            </div>
+          );})}
+          {myJobs.length===0 && <div style={{textAlign:'center',color:sub,fontSize:12.5,padding:'30px 0'}}>ยังไม่มีงาน — นำเข้าจากผู้สั่งการ</div>}
+        </React.Fragment>) : (<React.Fragment>
+          <div style={{display:'flex',alignItems:'center',gap:7,background:bg1,border:'1px solid '+line,borderRadius:11,padding:'9px 12px',marginBottom:10}}>
+            {ic('search',18,sub)}
+            <input value={poolSearch} onChange={(e)=>setPoolSearch(e.target.value)} placeholder="ค้นหาคำสั่งการ" style={{border:'none',background:'transparent',outline:'none',fontSize:13,width:'100%',color:txt}}/>
+          </div>
+          <div className="appscroll" style={{display:'flex',gap:6,marginBottom:11,overflowX:'auto'}}>
+            {ft.map(t=>{const a=flt===t.key;return <button key={t.key} onClick={()=>setPoolFilter(t.key)} style={{border:'1px solid '+(a?teal:line),borderRadius:99,padding:'6px 13px',fontSize:12,fontWeight:600,background:a?teal:bg1,color:a?'#fff':sub,whiteSpace:'nowrap',flex:'none'}}>{t.label}</button>;})}
+          </div>
+          {poolView.map(p=>(
+            <div key={p.id} style={{background:bg1,border:'1px solid '+line,borderRadius:13,padding:12,marginBottom:9,display:'flex',alignItems:'center',gap:11,animation:'popIn .2s ease'}}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:600,fontSize:13,lineHeight:1.35,color:txt}}>{p.title}</div>
+                <div style={{display:'flex',alignItems:'center',gap:7,marginTop:6,flexWrap:'wrap',fontSize:10.5,color:sub}}>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:15,height:15,borderRadius:'50%',background:p.avatarColor,color:'#fff',fontSize:8,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{p.avatarInitial}</span>{p.commander}</span>
+                  <span style={{padding:'1px 7px',borderRadius:99,fontWeight:600,background:p.prBg,color:p.prText}}>{p.prLabel}</span>
+                  <span style={{color:p.daysColor,fontWeight:600}}>{p.days}</span>
+                </div>
+              </div>
+              <button onClick={()=>importJob(p.id)} style={{width:38,height:38,borderRadius:'50%',background:teal,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ic('add',22,'#fff')}</button>
+            </div>
+          ))}
+          {poolView.length===0 && <div style={{textAlign:'center',color:sub,fontSize:12.5,padding:'30px 0'}}>ไม่พบคำสั่งการ</div>}
+        </React.Fragment>)}
+      </React.Fragment>)}
+    </div>
+  );
+
+  const navDef=[{key:'home',icon:'home',label:'หน้าหลัก'},{key:'chat',icon:'chat_bubble',label:'แชท',badge:10},{key:'analytics',icon:'pie_chart',label:'วิเคราะห์ข้อมูล'},{key:'more',icon:'more_horiz',label:'อื่นๆ'}];
+  const activeNav = route==='todayjob' ? 'more' : tab;
+
+  let body;
+  if(route==='todayjob') body=<TodayJob/>;
+  else if(tab==='home') body=<Feed/>;
+  else if(tab==='chat') body=<ChatList/>;
+  else if(tab==='analytics') body=<Analytics/>;
+  else body=<MoreMenu/>;
+
+  return (
+   <div style={{position:'relative',width:390,height:844,background:'#000',borderRadius:52,padding:11,boxShadow:'0 30px 60px rgba(16,24,40,.28)',flex:'none'}}>
+    <div style={{position:'absolute',inset:11,borderRadius:42,overflow:'hidden',display:'flex',flexDirection:'column',background:bg0}}>
+
+      {/* STATUS BAR */}
+      <div style={{height:44,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 26px',position:'relative',background:bg1,flex:'none'}}>
+        <span style={{fontSize:14,fontWeight:700,color:txt}}>15:55</span>
+        <div style={{position:'absolute',left:'50%',top:8,transform:'translateX(-50%)',width:96,height:26,background:'#000',borderRadius:99}}></div>
+        <div style={{display:'flex',alignItems:'center',gap:6}}>{ic('signal_cellular_alt',17,txt,true)}{ic('wifi',17,txt,true)}{ic('battery_full',19,txt,true)}</div>
+      </div>
+
+      <TopBar/>
+
+      {body}
+
+      {/* BOTTOM NAV — real GD5 tabs */}
+      <div style={{position:'absolute',left:0,right:0,bottom:0,background:'rgba(255,255,255,.95)',backdropFilter:'blur(12px)',borderTop:'1px solid '+line,padding:'8px 10px 22px',display:'flex',alignItems:'flex-end',justifyContent:'space-around',zIndex:30}}>
+        {navDef.map(n=>{const a=n.key===activeNav;return (
+          <button key={n.key} onClick={()=>openTab(n.key)} style={{position:'relative',display:'flex',flexDirection:'column',alignItems:'center',gap:3,padding:'4px 10px',color:a?teal:'#9aa3af'}}>
+            {n.badge && <span style={{position:'absolute',top:-4,right:6,background:pink,color:'#fff',fontSize:9,fontWeight:800,borderRadius:99,minWidth:16,height:16,display:'flex',alignItems:'center',justifyContent:'center',padding:'0 3px'}}>{n.badge}</span>}
+            {ic(n.icon,25,a?teal:'#9aa3af',a)}
+            <span style={{fontSize:10,fontWeight:a?700:500}}>{n.label}</span>
+          </button>
+        );})}
+      </div>
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var src = document.getElementById('jsx-src').textContent;
+  var out = Babel.transform(src, {presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

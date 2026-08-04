@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="design_doc_mode" content="canvas">
+<title>Options — รายงานแผนธุรกิจทั้งหมดขององค์กร</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f0eee9;font-family:'IBM Plex Sans Thai',system-ui,sans-serif;color:#1a1a1a}
+.bi{vertical-align:-2px}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}
+.dv-tsub{font:400 12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5);margin:0 0 22px}
+.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}
+.dv-card{max-width:100%;background:#f3f5f9;border:1px solid rgba(0,0,0,.08);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+/* shared mini design-system tokens used inside every option card */
+.primary{color:#15a08f}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none}
+.dot-g{background:#22b96a}.dot-y{background:#f5b301}.dot-r{background:#ef4444}.dot-n{background:#c7ccd4}
+.avatar{width:24px;height:24px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex:none}
+</style>
+</head>
+<body>
+
+<section class="dv-turn" id="t2">
+  <div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">ระดับถัดไป (เป้าหมาย) — รูปแบบเดียวกับตัวเลือกใน <a class="dv-oid" href="#t1">เทิร์น 1</a></span></div>
+  <p class="dv-tsub">ตัวอย่างตอนกดเข้า <a class="dv-oid" href="#1a">พันธกิจที่ 1: EDR</a> แล้วดูชั้น "เป้าหมาย" ย่อย — แต่ละแบบใช้ภาษาการออกแบบเดียวกับตัวเองในเทิร์น 1 ทุกชั้นถัดไป (กลยุทธ์ แผนงาน) จะยึดรูปแบบเดียวกันนี้ต่อเนื่องไปเรื่อยๆ</p>
+  <div class="dv-opts">
+
+    <!-- ══════════ 2a — ต่อจาก 1a ══════════ -->
+    <div class="dv-opt" id="2a">
+      <div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>ต่อจาก <a class="dv-oid" href="#1a">1a</a> — การ์ดแบน + จุดสถานะ</div>
+      <div class="dv-card" style="width:460px;padding:18px">
+        <div style="font-size:12px;margin-bottom:14px;display:flex;align-items:center;gap:6px">
+          <span class="primary" style="font-weight:600;cursor:pointer">แผนธุรกิจทั้งหมด</span>
+          <i class="bi bi-chevron-right" style="font-size:9px;color:#c4ccd4"></i>
+          <span style="font-weight:700">พันธกิจที่ 1: EDR</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px 18px;display:flex;gap:14px;align-items:center;opacity:.55">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:13.5px;margin-bottom:7px;line-height:1.35">เป้าหมายที่ 1.1 รักษาฐานลูกค้าสถานศึกษาเดิม</div>
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px"><div class="avatar" style="background:#0891b2">J</div><span style="font-size:11.5px;color:#5a6473">Jarunya Thaiprayoon</span></div>
+              <div style="font-size:11px;color:#c7ccd4">ไม่มีตัวชี้วัด</div>
+            </div>
+            <span style="font-size:11px;color:#8a93a3">สถานะล่าสุด</span><span class="dot dot-r" style="width:17px;height:17px"></span>
+          </div>
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px 18px;display:flex;gap:14px;align-items:center">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:13.5px;margin-bottom:7px;line-height:1.35">เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบ 3 แห่ง</div>
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px"><div class="avatar" style="background:#dd7a16">T</div><span style="font-size:11.5px;color:#5a6473">Thaniya Tongprasert</span></div>
+              <div style="font-size:11px;color:#9aa3af">จำนวนที่ทำได้สะสม <strong style="color:#5a6473">0/6</strong> แห่ง</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-end;flex:none">
+              <div style="display:flex;align-items:center;gap:7px"><span style="font-size:11px;color:#8a93a3">สถานะล่าสุด</span><span class="dot dot-y" style="width:17px;height:17px"></span></div>
+              <div style="display:flex;align-items:center;gap:7px"><span style="font-size:11px;color:#8a93a3">สถานะแต่ละกลยุทธ์</span><span class="dot dot-g"></span><span class="dot dot-g"></span></div>
+            </div>
+            <i class="bi bi-chevron-right" style="font-size:13px;color:#c4ccd4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 2b — ต่อจาก 1b ══════════ -->
+    <div class="dv-opt" id="2b">
+      <div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>ต่อจาก <a class="dv-oid" href="#1b">1b</a> — Dashboard grid + วงแหวน</div>
+      <div class="dv-card" style="width:520px;padding:18px">
+        <div style="font-size:12px;margin-bottom:14px;display:flex;align-items:center;gap:6px">
+          <span class="primary" style="font-weight:600;cursor:pointer">แผนธุรกิจทั้งหมด</span>
+          <i class="bi bi-chevron-right" style="font-size:9px;color:#c4ccd4"></i>
+          <span style="font-weight:700">พันธกิจที่ 1: EDR</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px">
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+              <div style="width:52px;height:52px;border-radius:50%;background:conic-gradient(#ef4444 0 5%,#eef0f3 5% 100%);display:flex;align-items:center;justify-content:center;flex:none">
+                <div style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#c7ccd4">—</div>
+              </div>
+              <div style="min-width:0"><div style="font-weight:700;font-size:12.5px;line-height:1.3;margin-bottom:4px">เป้าหมายที่ 1.1 รักษาฐานลูกค้า</div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#0891b2;width:20px;height:20px;font-size:9.5px">J</div><span style="font-size:11px;color:#5a6473">Jarunya</span></div></div>
+            </div>
+            <div style="font-size:10.5px;color:#b3bac4">ไม่มีกลยุทธ์ย่อย</div>
+          </div>
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px">
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+              <div style="width:52px;height:52px;border-radius:50%;background:conic-gradient(#f5b301 0 45%,#eef0f3 45% 100%);display:flex;align-items:center;justify-content:center;flex:none">
+                <div style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#b45309">45%</div>
+              </div>
+              <div style="min-width:0"><div style="font-weight:700;font-size:12.5px;line-height:1.3;margin-bottom:4px">เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบ</div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#dd7a16;width:20px;height:20px;font-size:9.5px">T</div><span style="font-size:11px;color:#5a6473">Thaniya</span></div></div>
+            </div>
+            <div style="display:flex;gap:5px"><span class="dot dot-g" style="width:9px;height:9px"></span><span class="dot dot-g" style="width:9px;height:9px"></span><span style="font-size:10.5px;color:#b3bac4;margin-left:4px">2 กลยุทธ์</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 2c — ต่อจาก 1c ══════════ -->
+    <div class="dv-opt" id="2c">
+      <div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>ต่อจาก <a class="dv-oid" href="#1c">1c</a> — ตารางกระชับ</div>
+      <div class="dv-card" style="width:560px">
+        <div style="font-size:12px;padding:12px 18px 0;display:flex;align-items:center;gap:6px;background:#fff">
+          <span class="primary" style="font-weight:600;cursor:pointer">แผนธุรกิจทั้งหมด</span>
+          <i class="bi bi-chevron-right" style="font-size:9px;color:#c4ccd4"></i>
+          <span style="font-weight:700">พันธกิจที่ 1: EDR</span>
+        </div>
+        <div style="display:flex;font-size:11px;font-weight:700;color:#8a93a3;padding:10px 18px;background:#fff;border-bottom:1px solid #eceef2;margin-top:10px">
+          <div style="flex:2">เป้าหมาย / ผู้รับผิดชอบ</div>
+          <div style="flex:1.4;text-align:center">ความคืบหน้า</div>
+          <div style="flex:1.2;text-align:center">กลยุทธ์ย่อย</div>
+          <div style="width:40px;text-align:center">สถานะ</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:12px 18px;background:#fff;border-bottom:1px solid #f2f4f7">
+          <div style="flex:2;display:flex;align-items:center;gap:8px;min-width:0">
+            <div class="avatar" style="background:#0891b2">J</div>
+            <div style="min-width:0"><div style="font-weight:600;font-size:12.5px">เป้าหมายที่ 1.1 รักษาฐานลูกค้า</div><div style="font-size:11px;color:#9aa3af">Jarunya Thaiprayoon</div></div>
+          </div>
+          <div style="flex:1.4;padding:0 8px;font-size:10.5px;color:#c7ccd4;text-align:center">ไม่มีตัวชี้วัด</div>
+          <div style="flex:1.2;display:flex;justify-content:center;font-size:11px;color:#c7ccd4">—</div>
+          <div style="width:40px;display:flex;justify-content:center"><span class="dot dot-r"></span></div>
+        </div>
+        <div style="display:flex;align-items:center;padding:12px 18px;background:#fff">
+          <div style="flex:2;display:flex;align-items:center;gap:8px;min-width:0">
+            <div class="avatar" style="background:#dd7a16">T</div>
+            <div style="min-width:0"><div style="font-weight:600;font-size:12.5px">เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบ</div><div style="font-size:11px;color:#9aa3af">Thaniya Tongprasert</div></div>
+          </div>
+          <div style="flex:1.4;padding:0 8px"><div style="height:7px;background:#eef0f3;border-radius:99px;overflow:hidden"><div style="width:45%;height:100%;background:#f5b301"></div></div><div style="font-size:10px;color:#b3bac4;text-align:center;margin-top:3px">0/6 แห่ง</div></div>
+          <div style="flex:1.2;display:flex;justify-content:center;gap:4px"><span class="dot dot-g" style="width:8px;height:8px"></span><span class="dot dot-g" style="width:8px;height:8px"></span></div>
+          <div style="width:40px;display:flex;justify-content:center"><span class="dot dot-y"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 2d — ต่อจาก 1d ══════════ -->
+    <div class="dv-opt" id="2d">
+      <div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a>ต่อจาก <a class="dv-oid" href="#1d">1d</a> — Kanban ตามสถานะ</div>
+      <div class="dv-card" style="width:600px;padding:16px">
+        <div style="font-size:12px;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+          <span class="primary" style="font-weight:600;cursor:pointer">แผนธุรกิจทั้งหมด</span>
+          <i class="bi bi-chevron-right" style="font-size:9px;color:#c4ccd4"></i>
+          <span style="font-weight:700">พันธกิจที่ 1: EDR</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#1f9d57;margin-bottom:9px"><span class="dot dot-g"></span>บรรลุ / ปกติ · 0</div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#b45309;margin-bottom:9px"><span class="dot dot-y"></span>เฝ้าระวัง · 1</div>
+            <div style="background:#fff;border:1px solid #eceef2;border-radius:11px;padding:12px">
+              <div style="font-weight:600;font-size:12.5px;margin-bottom:6px">เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบ</div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#dd7a16;width:19px;height:19px;font-size:9px">T</div><span style="font-size:11px;color:#5a6473">Thaniya Tongprasert</span></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#dc2626;margin-bottom:9px"><span class="dot dot-r"></span>ต่ำกว่าเกณฑ์ · 3</div>
+            <div style="background:#fff;border:1px solid #eceef2;border-radius:11px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:600;font-size:12.5px;margin-bottom:6px">เป้าหมายที่ 1.1 รักษาฐานลูกค้า</div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#0891b2;width:19px;height:19px;font-size:9px">J</div><span style="font-size:11px;color:#5a6473">Jarunya</span></div>
+            </div>
+            <div style="background:#fff;border:1px solid #eceef2;border-radius:11px;padding:12px">
+              <div style="font-weight:600;font-size:12.5px;margin-bottom:6px">เป้าหมายที่ 1.3 เป็นผู้นำด้านซอฟต์แวร์</div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#d83a3a;width:19px;height:19px;font-size:9px">ส</div><span style="font-size:11px;color:#5a6473">สรัญญู ตรีคุณา</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">ลองพิมพ์ต่อ: "ยืนยันว่าใช้ <a class="dv-oid" href="#2b">2b</a> ทุกชั้นตั้งแต่พันธกิจถึงแผนงาน" · "โชว์ชั้นกลยุทธ์/แผนงานของ <a class="dv-oid" href="#2a">2a</a> ด้วย" · "เอา <a class="dv-oid" href="#2c">2c</a> ไปทำจริง"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">รายงานแผนธุรกิจทั้งหมดขององค์กร — แนวทางการแสดงผลระดับพันธกิจ</span></div>
+  <p class="dv-tsub">ข้อมูลชุดเดียวกันทั้ง 4 แบบ (พันธกิจ 4 รายการ) นำเสนอด้วยวิธีต่างกัน — <a class="dv-oid" href="#1a">1a</a> คือดีไซน์ที่ใช้งานอยู่ตอนนี้ ส่วน <a class="dv-oid" href="#1b">1b</a>–<a class="dv-oid" href="#1d">1d</a> เป็นทางเลือกใหม่</p>
+  <div class="dv-opts">
+
+    <!-- ══════════ 1a — ของเดิมที่ใช้อยู่ (การ์ดแบน + จุดสถานะ) ══════════ -->
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>การ์ดแบน + จุดสถานะ (ดีไซน์ปัจจุบัน)</div>
+      <div class="dv-card" style="width:460px;padding:18px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px 18px;display:flex;gap:14px;align-items:center">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:14px;margin-bottom:7px">พันธกิจที่ 1: EDR</div>
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+                <div class="avatar" style="background:#15a08f">P</div>
+                <span style="font-size:12px;color:#5a6473">Pinij Ningunha</span>
+              </div>
+              <div style="font-size:11.5px;color:#9aa3af">จำนวนที่ทำได้สะสม <strong style="color:#5a6473">0/100</strong> %</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-end;flex:none">
+              <div style="display:flex;align-items:center;gap:7px"><span style="font-size:11px;color:#8a93a3">สถานะล่าสุด</span><span class="dot dot-r" style="width:17px;height:17px"></span></div>
+              <div style="display:flex;align-items:center;gap:7px"><span style="font-size:11px;color:#8a93a3">สถานะแต่ละเป้าหมาย</span><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-r"></span><span class="dot dot-r"></span></div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px 18px;display:flex;gap:14px;align-items:center">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:14px;margin-bottom:7px">พันธกิจที่ 2: GiveD5</div>
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+                <div class="avatar" style="background:#4f46e5">S</div>
+                <span style="font-size:12px;color:#5a6473">Siramet</span>
+              </div>
+              <div style="font-size:11.5px;color:#9aa3af">จำนวนที่ทำได้สะสม <strong style="color:#5a6473">0/100</strong> %</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-end;flex:none">
+              <div style="display:flex;align-items:center;gap:7px"><span style="font-size:11px;color:#8a93a3">สถานะล่าสุด</span><span class="dot dot-r" style="width:17px;height:17px"></span></div>
+              <div style="display:flex;align-items:center;gap:7px"><span style="font-size:11px;color:#8a93a3">สถานะแต่ละเป้าหมาย</span><span class="dot dot-y"></span><span class="dot dot-y"></span></div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px 18px;display:flex;gap:14px;align-items:center;opacity:.55">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:14px;margin-bottom:7px">พันธกิจที่ 3 : ครุภัณฑ์</div>
+              <div style="font-size:11.5px;color:#c7ccd4">…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 1b — Dashboard grid + progress ring ══════════ -->
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Dashboard grid + วงแหวนความคืบหน้า</div>
+      <div class="dv-card" style="width:520px;padding:18px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px">
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+              <div style="width:52px;height:52px;border-radius:50%;background:conic-gradient(#ef4444 0 22%,#eef0f3 22% 100%);display:flex;align-items:center;justify-content:center;flex:none">
+                <div style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#ef4444">22%</div>
+              </div>
+              <div style="min-width:0">
+                <div style="font-weight:700;font-size:13.5px;line-height:1.3;margin-bottom:4px">พันธกิจที่ 1: EDR</div>
+                <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#15a08f;width:20px;height:20px;font-size:9.5px">P</div><span style="font-size:11.5px;color:#5a6473">Pinij Ningunha</span></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:5px">
+              <span class="dot dot-r" style="width:9px;height:9px"></span><span class="dot dot-y" style="width:9px;height:9px"></span><span class="dot dot-r" style="width:9px;height:9px"></span><span class="dot dot-r" style="width:9px;height:9px"></span>
+              <span style="font-size:10.5px;color:#b3bac4;margin-left:4px">4 เป้าหมาย</span>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px">
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+              <div style="width:52px;height:52px;border-radius:50%;background:conic-gradient(#f5b301 0 48%,#eef0f3 48% 100%);display:flex;align-items:center;justify-content:center;flex:none">
+                <div style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#b45309">48%</div>
+              </div>
+              <div style="min-width:0">
+                <div style="font-weight:700;font-size:13.5px;line-height:1.3;margin-bottom:4px">พันธกิจที่ 2: GiveD5</div>
+                <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#4f46e5;width:20px;height:20px;font-size:9.5px">S</div><span style="font-size:11.5px;color:#5a6473">Siramet</span></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:5px">
+              <span class="dot dot-y" style="width:9px;height:9px"></span><span class="dot dot-y" style="width:9px;height:9px"></span>
+              <span style="font-size:10.5px;color:#b3bac4;margin-left:4px">2 เป้าหมาย</span>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px">
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+              <div style="width:52px;height:52px;border-radius:50%;background:conic-gradient(#ef4444 0 10%,#eef0f3 10% 100%);display:flex;align-items:center;justify-content:center;flex:none">
+                <div style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#ef4444">10%</div>
+              </div>
+              <div style="min-width:0">
+                <div style="font-weight:700;font-size:13.5px;line-height:1.3;margin-bottom:4px">พันธกิจที่ 3 : ครุภัณฑ์</div>
+                <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#dd7a16;width:20px;height:20px;font-size:9.5px">A</div><span style="font-size:11.5px;color:#5a6473">Anusorn Suksri</span></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:5px">
+              <span class="dot dot-r" style="width:9px;height:9px"></span><span class="dot dot-r" style="width:9px;height:9px"></span><span class="dot dot-r" style="width:9px;height:9px"></span>
+              <span style="font-size:10.5px;color:#b3bac4;margin-left:4px">3 เป้าหมาย</span>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #eceef2;border-radius:14px;padding:16px">
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+              <div style="width:52px;height:52px;border-radius:50%;background:conic-gradient(#22b96a 0 65%,#eef0f3 65% 100%);display:flex;align-items:center;justify-content:center;flex:none">
+                <div style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#1f9d57">65%</div>
+              </div>
+              <div style="min-width:0">
+                <div style="font-weight:700;font-size:13.5px;line-height:1.3;margin-bottom:4px">พันธกิจที่ 4: เทคโนโลยีดิจิทัล</div>
+                <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#4f46e5;width:20px;height:20px;font-size:9.5px">S</div><span style="font-size:11.5px;color:#5a6473">Siramet</span></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:5px">
+              <span class="dot dot-g" style="width:9px;height:9px"></span><span class="dot dot-g" style="width:9px;height:9px"></span><span class="dot dot-y" style="width:9px;height:9px"></span>
+              <span style="font-size:10.5px;color:#b3bac4;margin-left:4px">3 เป้าหมาย</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 1c — ตารางกระชับ (แถวเดียวต่อพันธกิจ) ══════════ -->
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>ตารางกระชับ — สแกนดูได้เร็ว</div>
+      <div class="dv-card" style="width:560px">
+        <div style="display:flex;font-size:11px;font-weight:700;color:#8a93a3;padding:10px 18px;background:#fff;border-bottom:1px solid #eceef2">
+          <div style="flex:2">พันธกิจ / ผู้รับผิดชอบ</div>
+          <div style="flex:1.4;text-align:center">ความคืบหน้า</div>
+          <div style="flex:1.2;text-align:center">เป้าหมายย่อย</div>
+          <div style="width:40px;text-align:center">สถานะ</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:12px 18px;background:#fff;border-bottom:1px solid #f2f4f7">
+          <div style="flex:2;display:flex;align-items:center;gap:8px;min-width:0">
+            <div class="avatar" style="background:#15a08f">P</div>
+            <div style="min-width:0"><div style="font-weight:600;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">พันธกิจที่ 1: EDR</div><div style="font-size:11px;color:#9aa3af">Pinij Ningunha</div></div>
+          </div>
+          <div style="flex:1.4;padding:0 8px"><div style="height:7px;background:#eef0f3;border-radius:99px;overflow:hidden"><div style="width:22%;height:100%;background:#ef4444"></div></div><div style="font-size:10px;color:#b3bac4;text-align:center;margin-top:3px">22%</div></div>
+          <div style="flex:1.2;display:flex;justify-content:center;gap:4px"><span class="dot dot-r" style="width:8px;height:8px"></span><span class="dot dot-y" style="width:8px;height:8px"></span><span class="dot dot-r" style="width:8px;height:8px"></span><span class="dot dot-r" style="width:8px;height:8px"></span></div>
+          <div style="width:40px;display:flex;justify-content:center"><span class="dot dot-r"></span></div>
+        </div>
+        <div style="display:flex;align-items:center;padding:12px 18px;background:#fff;border-bottom:1px solid #f2f4f7">
+          <div style="flex:2;display:flex;align-items:center;gap:8px;min-width:0">
+            <div class="avatar" style="background:#4f46e5">S</div>
+            <div style="min-width:0"><div style="font-weight:600;font-size:12.5px">พันธกิจที่ 2: GiveD5</div><div style="font-size:11px;color:#9aa3af">Siramet</div></div>
+          </div>
+          <div style="flex:1.4;padding:0 8px"><div style="height:7px;background:#eef0f3;border-radius:99px;overflow:hidden"><div style="width:48%;height:100%;background:#f5b301"></div></div><div style="font-size:10px;color:#b3bac4;text-align:center;margin-top:3px">48%</div></div>
+          <div style="flex:1.2;display:flex;justify-content:center;gap:4px"><span class="dot dot-y" style="width:8px;height:8px"></span><span class="dot dot-y" style="width:8px;height:8px"></span></div>
+          <div style="width:40px;display:flex;justify-content:center"><span class="dot dot-r"></span></div>
+        </div>
+        <div style="display:flex;align-items:center;padding:12px 18px;background:#fff;border-bottom:1px solid #f2f4f7">
+          <div style="flex:2;display:flex;align-items:center;gap:8px;min-width:0">
+            <div class="avatar" style="background:#dd7a16">A</div>
+            <div style="min-width:0"><div style="font-weight:600;font-size:12.5px">พันธกิจที่ 3 : ครุภัณฑ์</div><div style="font-size:11px;color:#9aa3af">Anusorn Suksri</div></div>
+          </div>
+          <div style="flex:1.4;padding:0 8px"><div style="height:7px;background:#eef0f3;border-radius:99px;overflow:hidden"><div style="width:10%;height:100%;background:#ef4444"></div></div><div style="font-size:10px;color:#b3bac4;text-align:center;margin-top:3px">10%</div></div>
+          <div style="flex:1.2;display:flex;justify-content:center;gap:4px"><span class="dot dot-r" style="width:8px;height:8px"></span><span class="dot dot-r" style="width:8px;height:8px"></span><span class="dot dot-r" style="width:8px;height:8px"></span></div>
+          <div style="width:40px;display:flex;justify-content:center"><span class="dot dot-r"></span></div>
+        </div>
+        <div style="display:flex;align-items:center;padding:12px 18px;background:#fff">
+          <div style="flex:2;display:flex;align-items:center;gap:8px;min-width:0">
+            <div class="avatar" style="background:#4f46e5">S</div>
+            <div style="min-width:0"><div style="font-weight:600;font-size:12.5px">พันธกิจที่ 4: เทคโนโลยีดิจิทัล</div><div style="font-size:11px;color:#9aa3af">Siramet</div></div>
+          </div>
+          <div style="flex:1.4;padding:0 8px"><div style="height:7px;background:#eef0f3;border-radius:99px;overflow:hidden"><div style="width:65%;height:100%;background:#22b96a"></div></div><div style="font-size:10px;color:#b3bac4;text-align:center;margin-top:3px">65%</div></div>
+          <div style="flex:1.2;display:flex;justify-content:center;gap:4px"><span class="dot dot-g" style="width:8px;height:8px"></span><span class="dot dot-g" style="width:8px;height:8px"></span><span class="dot dot-y" style="width:8px;height:8px"></span></div>
+          <div style="width:40px;display:flex;justify-content:center"><span class="dot dot-g"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 1d — Kanban แบ่งตามสถานะ ══════════ -->
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Kanban จัดกลุ่มตามสถานะ</div>
+      <div class="dv-card" style="width:600px;padding:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#1f9d57;margin-bottom:9px"><span class="dot dot-g"></span>บรรลุ / ปกติ · 1</div>
+            <div style="background:#fff;border:1px solid #eceef2;border-radius:11px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:600;font-size:12.5px;margin-bottom:6px">พันธกิจที่ 4: เทคโนโลยีดิจิทัล</div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#4f46e5;width:19px;height:19px;font-size:9px">S</div><span style="font-size:11px;color:#5a6473">Siramet</span></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#b45309;margin-bottom:9px"><span class="dot dot-y"></span>เฝ้าระวัง · 1</div>
+            <div style="background:#fff;border:1px solid #eceef2;border-radius:11px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:600;font-size:12.5px;margin-bottom:6px">พันธกิจที่ 2: GiveD5</div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#4f46e5;width:19px;height:19px;font-size:9px">S</div><span style="font-size:11px;color:#5a6473">Siramet</span></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#dc2626;margin-bottom:9px"><span class="dot dot-r"></span>ต่ำกว่าเกณฑ์ · 2</div>
+            <div style="background:#fff;border:1px solid #eceef2;border-radius:11px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:600;font-size:12.5px;margin-bottom:6px">พันธกิจที่ 1: EDR</div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#15a08f;width:19px;height:19px;font-size:9px">P</div><span style="font-size:11px;color:#5a6473">Pinij Ningunha</span></div>
+            </div>
+            <div style="background:#fff;border:1px solid #eceef2;border-radius:11px;padding:12px">
+              <div style="font-weight:600;font-size:12.5px;margin-bottom:6px">พันธกิจที่ 3 : ครุภัณฑ์</div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:#dd7a16;width:19px;height:19px;font-size:9px">A</div><span style="font-size:11px;color:#5a6473">Anusorn Suksri</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">ลองพิมพ์ต่อ: "เอา <a class="dv-oid" href="#1b">1b</a> ไปทำจริงแทนของเดิม" · "ผสม <a class="dv-oid" href="#1c">1c</a> กับจุดสถานะแบบ <a class="dv-oid" href="#1a">1a</a>" · "อยากได้อีกแบบ"</p>
+</section>
+
+</body>
+</html>

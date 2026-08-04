@@ -86,36 +86,36 @@ const ROUNDS=[
 ];
 
 const MISSIONS_BASE=[
-  {id:'m1',budget:2500000,spentSelf:100000,title:'พันธกิจที่ 1: EDR',owner:'Pinij Ningunha',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
-    {id:'g11',budget:300000,spentSelf:120000,title:'เป้าหมายที่ 1.1 รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ EDR',owner:'Jarunya Thaiprayoon',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
-    {id:'g12',budget:600000,spentSelf:50000,title:'เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปี 2568 และขยายผลอีก 6 แห่ง',owner:'Thaniya Tongprasert',period:'01/01/2026 – 31/12/2026',achieved:0,target:6,unit:'แห่ง',status:'y',children:[
-      {id:'s121',budget:250000,spentSelf:40000,title:'กลยุทธ์ 1.2.1 จัดกิจกรรมการประกวด MOU ระดับภาค',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:1,target:1,unit:'กิจกรรม',status:'g',children:[
-        {id:'p1211',budget:100000,spentSelf:80000,title:'แผนงาน 1.2.1.1 จัดเตรียมสถานที่และวัสดุการประกวด',owner:'Thaniya Tongprasert',period:'01/02/2026 – 28/02/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
-        {id:'p1212',budget:120000,spentSelf:95000,title:'แผนงาน 1.2.1.2 ดำเนินการประกวดและตัดสินผล MOU',owner:'Thaniya Tongprasert',period:'01/03/2026 – 31/03/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
+  {id:'m1',investBudget:1500000,operateBudget:1000000,spentSelf:100000,title:'พันธกิจที่ 1: EDR',owner:'Pinij Ningunha',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g11',investBudget:180000,operateBudget:120000,spentSelf:120000,title:'เป้าหมายที่ 1.1 รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ EDR',owner:'Jarunya Thaiprayoon',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g12',investBudget:360000,operateBudget:240000,spentSelf:50000,title:'เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปี 2568 และขยายผลอีก 6 แห่ง',owner:'Thaniya Tongprasert',period:'01/01/2026 – 31/12/2026',achieved:0,target:6,unit:'แห่ง',status:'y',children:[
+      {id:'s121',investBudget:150000,operateBudget:100000,spentSelf:40000,title:'กลยุทธ์ 1.2.1 จัดกิจกรรมการประกวด MOU ระดับภาค',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:1,target:1,unit:'กิจกรรม',status:'g',children:[
+        {id:'p1211',investBudget:60000,operateBudget:40000,spentSelf:80000,title:'แผนงาน 1.2.1.1 จัดเตรียมสถานที่และวัสดุการประกวด',owner:'Thaniya Tongprasert',period:'01/02/2026 – 28/02/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
+        {id:'p1212',investBudget:72000,operateBudget:48000,spentSelf:95000,title:'แผนงาน 1.2.1.2 ดำเนินการประกวดและตัดสินผล MOU',owner:'Thaniya Tongprasert',period:'01/03/2026 – 31/03/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
       ]},
-      {id:'s122',budget:200000,spentSelf:150000,title:'กลยุทธ์ 1.2.2 สนับสนุนทีมงานประกวด MOU วิทยาลัย',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:3,target:3,unit:'แห่ง',status:'g',children:[]},
+      {id:'s122',investBudget:120000,operateBudget:80000,spentSelf:150000,title:'กลยุทธ์ 1.2.2 สนับสนุนทีมงานประกวด MOU วิทยาลัย',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:3,target:3,unit:'แห่ง',status:'g',children:[]},
     ]},
-    {id:'g13',budget:800000,spentSelf:210000,title:'เป้าหมายที่ 1.3 เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านอาชีวศึกษา ให้มีจำนวนผู้เรียนในระบบ EDR ไม่น้อยกว่า 50,000 คน',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:50000,unit:'คน',status:'r',children:[]},
-    {id:'g14',budget:400000,spentSelf:0,title:'เป้าหมายที่ 1.4 นำ AI มาใช้ร่วม (Synergy) กับระบบ EDR',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[]},
+    {id:'g13',investBudget:480000,operateBudget:320000,spentSelf:210000,title:'เป้าหมายที่ 1.3 เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านอาชีวศึกษา ให้มีจำนวนผู้เรียนในระบบ EDR ไม่น้อยกว่า 50,000 คน',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:50000,unit:'คน',status:'r',children:[]},
+    {id:'g14',investBudget:240000,operateBudget:160000,spentSelf:0,title:'เป้าหมายที่ 1.4 นำ AI มาใช้ร่วม (Synergy) กับระบบ EDR',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[]},
   ]},
-  {id:'m2',budget:1800000,spentSelf:60000,title:'พันธกิจที่ 2: GiveD5',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
-    {id:'g21',budget:900000,spentSelf:80000,title:'เป้าหมายที่ 2.1 พัฒนาโปรแกรม GiveD5 ในแต่ละเวอร์ชัน (Version) ให้แล้วเสร็จตามกรอบเวลาที่กำหนด',owner:'Piyawat Takaew',period:'01/01/2026 – 31/12/2026',achieved:2,target:4,unit:'เวอร์ชัน',status:'y',children:[
-      {id:'s211',budget:300000,spentSelf:120000,title:'กลยุทธ์ 2.1.1 วางแผนและออกแบบฟีเจอร์ตาม Roadmap',owner:'Piyawat Takaew',period:'01/01/2026 – 31/03/2026',achieved:1,target:1,unit:'ฉบับ',status:'g',children:[
-        {id:'p2111',budget:80000,spentSelf:65000,title:'แผนงาน 2.1.1.1 สำรวจความต้องการผู้ใช้งาน GiveD5',owner:'Piyawat Takaew',period:'01/01/2026 – 31/01/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
+  {id:'m2',investBudget:1080000,operateBudget:null,spentSelf:60000,title:'พันธกิจที่ 2: GiveD5',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g21',investBudget:540000,operateBudget:360000,spentSelf:80000,title:'เป้าหมายที่ 2.1 พัฒนาโปรแกรม GiveD5 ในแต่ละเวอร์ชัน (Version) ให้แล้วเสร็จตามกรอบเวลาที่กำหนด',owner:'Piyawat Takaew',period:'01/01/2026 – 31/12/2026',achieved:2,target:4,unit:'เวอร์ชัน',status:'y',children:[
+      {id:'s211',investBudget:180000,operateBudget:120000,spentSelf:120000,title:'กลยุทธ์ 2.1.1 วางแผนและออกแบบฟีเจอร์ตาม Roadmap',owner:'Piyawat Takaew',period:'01/01/2026 – 31/03/2026',achieved:1,target:1,unit:'ฉบับ',status:'g',children:[
+        {id:'p2111',investBudget:48000,operateBudget:32000,spentSelf:65000,title:'แผนงาน 2.1.1.1 สำรวจความต้องการผู้ใช้งาน GiveD5',owner:'Piyawat Takaew',period:'01/01/2026 – 31/01/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
       ]},
-      {id:'s212',budget:250000,spentSelf:30000,title:'กลยุทธ์ 2.1.2 พัฒนาคุณภาพระบบ GiveD5 ให้ตรงตามความต้องการผู้ใช้',owner:'Narate Boonmee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+      {id:'s212',investBudget:150000,operateBudget:100000,spentSelf:30000,title:'กลยุทธ์ 2.1.2 พัฒนาคุณภาพระบบ GiveD5 ให้ตรงตามความต้องการผู้ใช้',owner:'Narate Boonmee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
     ]},
-    {id:'g22',budget:500000,spentSelf:175000,title:'เป้าหมายที่ 2.2 สถานศึกษาที่ใช้ GiveD5 ทดแทนไลน์กลุ่มในการสนับสนุนการใช้ EDR',owner:'Piyawat Takaew',period:'01/04/2026 – 30/09/2026',achieved:7,target:26,unit:'แห่ง',status:'y',children:[]},
+    {id:'g22',investBudget:300000,operateBudget:200000,spentSelf:175000,title:'เป้าหมายที่ 2.2 สถานศึกษาที่ใช้ GiveD5 ทดแทนไลน์กลุ่มในการสนับสนุนการใช้ EDR',owner:'Piyawat Takaew',period:'01/04/2026 – 30/09/2026',achieved:7,target:26,unit:'แห่ง',status:'y',children:[]},
   ]},
-  {id:'m3',budget:3200000,spentSelf:0,title:'พันธกิจที่ 3 : ครุภัณฑ์',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
-    {id:'g31',budget:1500000,spentSelf:480000,title:'เป้าหมายที่ 3.1 ยอดขายทั้งหมดจากครุภัณฑ์และสิ่งก่อสร้างไม่น้อยกว่า 150 ล้านบาทต่อปี และมีผลกำไรไม่ต่ำกว่า 32 ล้านบาท ในปี 2569',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:150000000,unit:'บาท',status:'r',children:[]},
-    {id:'g32',budget:700000,spentSelf:260000,title:'เป้าหมายที่ 3.2 จัดส่งมอบงานให้เป็นไปตามกำหนดส่งมอบตามสัญญา',owner:'ปอนด์',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
-    {id:'g33',budget:600000,spentSelf:90000,title:'เป้าหมายที่ 3.3 สร้างโครงสร้างพื้นฐาน เพื่อขยายการตลาดการขายสินค้าวัตกรรม ที่เน้นด้านครุภัณฑ์',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+  {id:'m3',investBudget:null,operateBudget:1280000,spentSelf:0,title:'พันธกิจที่ 3 : ครุภัณฑ์',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g31',investBudget:900000,operateBudget:600000,spentSelf:480000,title:'เป้าหมายที่ 3.1 ยอดขายทั้งหมดจากครุภัณฑ์และสิ่งก่อสร้างไม่น้อยกว่า 150 ล้านบาทต่อปี และมีผลกำไรไม่ต่ำกว่า 32 ล้านบาท ในปี 2569',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:150000000,unit:'บาท',status:'r',children:[]},
+    {id:'g32',investBudget:420000,operateBudget:280000,spentSelf:260000,title:'เป้าหมายที่ 3.2 จัดส่งมอบงานให้เป็นไปตามกำหนดส่งมอบตามสัญญา',owner:'ปอนด์',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g33',investBudget:360000,operateBudget:240000,spentSelf:90000,title:'เป้าหมายที่ 3.3 สร้างโครงสร้างพื้นฐาน เพื่อขยายการตลาดการขายสินค้าวัตกรรม ที่เน้นด้านครุภัณฑ์',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
   ]},
-  {id:'m4',budget:1200000,spentSelf:45000,title:'พันธกิจที่ 4: ใช้เทคโนโลยีดิจิทัล GD5 และ AI',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
-    {id:'g41',budget:400000,spentSelf:110000,title:'เป้าหมายที่ 4.1 สร้างวัฒนธรรมการทำงานอย่างมืออาชีพ และสร้างความผูกพัน ทั่วทั้งองค์กร',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
-    {id:'g42',budget:350000,spentSelf:95000,title:'เป้าหมายที่ 4.2 พัฒนาระบบงานภายในองค์กรให้เป็นไปตาม (Comply) ขบวนการตรวจสอบของผู้ตรวจสอบภายนอกเพื่อเตรียมพร้อมในการยื่น Filing กับ ก.ล.ต. ในทุกไตรมาส',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
-    {id:'g43',budget:300000,spentSelf:70000,title:'เป้าหมายที่ 4.3 ขับเคลื่อนนโยบายด้านเทคโนโลยีสารสนเทศเพื่อให้แผนธุรกิจบรรลุผลสำเร็จ',owner:'Idsara Wungdee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+  {id:'m4',investBudget:null,operateBudget:null,spentSelf:45000,title:'พันธกิจที่ 4: ใช้เทคโนโลยีดิจิทัล GD5 และ AI',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g41',investBudget:240000,operateBudget:160000,spentSelf:110000,title:'เป้าหมายที่ 4.1 สร้างวัฒนธรรมการทำงานอย่างมืออาชีพ และสร้างความผูกพัน ทั่วทั้งองค์กร',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g42',investBudget:210000,operateBudget:140000,spentSelf:95000,title:'เป้าหมายที่ 4.2 พัฒนาระบบงานภายในองค์กรให้เป็นไปตาม (Comply) ขบวนการตรวจสอบของผู้ตรวจสอบภายนอกเพื่อเตรียมพร้อมในการยื่น Filing กับ ก.ล.ต. ในทุกไตรมาส',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g43',investBudget:180000,operateBudget:120000,spentSelf:70000,title:'เป้าหมายที่ 4.3 ขับเคลื่อนนโยบายด้านเทคโนโลยีสารสนเทศเพื่อให้แผนธุรกิจบรรลุผลสำเร็จ',owner:'Idsara Wungdee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
   ]},
 ];
 
@@ -132,7 +132,113 @@ const DATA_BY_ROUND={ r1:MISSIONS_BASE, r2:scaleTree(MISSIONS_BASE,'future'), r3
 const flattenTree=(nodes)=>nodes.reduce((acc,n)=>acc.concat([n],flattenTree(n.children||[])),[]);
 const dailyOf=(n)=>Math.round((n.spentSelf||0)*0.4); // งบจากงานประจำวัน (mock — สัดส่วนของยอดบันทึกเอง)
 const usedTotal=(n)=>(n.spentSelf||0)+dailyOf(n)+(n.children||[]).reduce((s,c)=>s+usedTotal(c),0); // งบที่ใช้ไป = บันทึกเอง + งานประจำวัน +
-const cmdOf=(n)=>{ const total=Math.max(3,Math.round((n.budget||0)/45000)); const g=Math.round(total*0.62), y=Math.round(total*0.25), r=Math.max(0,total-g-y); return {total:g+y+r,g,y,r}; }; // คำสั่งการ (mock — สัดส่วนจากงบประมาณ เพื่อให้มีข้อมูลเสมอเหมือนหน้าที่รับผิดชอบ) รวมจากแผนที่อยู่ใต้ 1 ระดับ
+const investUsedOf=(n)=>(n.spentSelf||0)+(n.children||[]).reduce((s,c)=>s+investUsedOf(c),0); // งบลงทุน = บันทึกเอง + แผนใต้
+const operateUsedOf=(n)=>dailyOf(n)+(n.children||[]).reduce((s,c)=>s+operateUsedOf(c),0); // งบดำเนินการ = งานประจำวัน + แผนใต้
+const budgetKind=(n)=>{ const i=n.investBudget!=null, o=n.operateBudget!=null; return i&&o?'both':i?'invest':o?'operate':'none'; };
+const BUDGET_BADGE={
+  both:   {label:'ลงทุน + ดำเนินการ',icon:'bi-wallet2',color:'#0e7c6d',bg:'#e2f3f0',bd:'#bfe6df'},
+  invest: {label:'งบลงทุน',icon:'bi-buildings',color:'#2f66d0',bg:'#eaf1fe',bd:'#c9dbfb'},
+  operate:{label:'งบดำเนินการ',icon:'bi-gear',color:'#b06200',bg:'#fff4df',bd:'#f6dca8'},
+  none:   {label:'ไม่ได้ตั้งงบ',icon:'bi-slash-circle',color:'#8a93a3',bg:'#f1f3f6',bd:'#e3e7ec'},
+};
+function BudgetKindBadge({node}){
+  const investSet=node.investBudget!=null, operateSet=node.operateBudget!=null;
+  if(!investSet&&!operateSet){
+    const b=BUDGET_BADGE.none;
+    return (
+      <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,height:24,background:b.bg,color:b.color,border:'1px solid '+b.bd,borderRadius:8,padding:'0 10px',fontSize:11,fontWeight:700,whiteSpace:'nowrap',boxSizing:'border-box'}}>
+        <i className={'bi '+b.icon} style={{fontSize:11}}></i>{b.label}
+      </span>
+    );
+  }
+  const rows=[];
+  if(investSet) rows.push({label:'งบลงทุน',color:'#2f66d0',bar:'#3b6fd4',bg:'#eaf1fe',bd:'#d3e2fb',used:investUsedOf(node),budget:node.investBudget});
+  if(operateSet) rows.push({label:'งบดำเนินการ',color:'#b06200',bar:'#e59500',bg:'#fff4df',bd:'#f5dcab',used:operateUsedOf(node),budget:node.operateBudget});
+  const two=rows.length>1;
+  return (
+    <div style={{width:two?340:186,display:'flex',flexDirection:two?'row':'column',gap:8,alignItems:'stretch'}}>
+      {rows.map((r,i)=>{
+        const pct=r.budget>0?r.used/r.budget*100:0;
+        const over=pct>100;
+        return (
+          <div key={i} style={{flex:two?1:'none',display:'flex',alignItems:'center',gap:8,height:24,boxSizing:'border-box',background:r.bg,border:'1px solid '+r.bd,borderRadius:8,padding:'0 10px'}}>
+            <span style={{fontSize:10.5,color:r.color,fontWeight:700,flex:'none',whiteSpace:'nowrap'}}>{r.label}</span>
+            <div style={{flex:1,minWidth:34,height:6,background:'rgba(255,255,255,.7)',borderRadius:99,overflow:'hidden'}}>
+              <div style={{width:Math.min(100,pct)+'%',height:'100%',background:over?RED:r.bar,borderRadius:99}}></div>
+            </div>
+            <span style={{fontSize:10.5,fontWeight:800,color:over?RED:r.color,width:30,textAlign:'right',flex:'none'}}>{Math.round(pct)}%</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+function OrgBudgetSection({label,icon,budget,used,pct,rows,primary,RED}){
+  const over=pct>100;
+  return (
+    <div style={{marginBottom:2}}>
+      <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:9}}>
+        <i className={'bi '+icon} style={{fontSize:14,color:primary}}></i>
+        <span style={{fontWeight:700,fontSize:12.5,color:'#3a4452'}}>{label}</span>
+      </div>
+      <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:9,flexWrap:'wrap'}}>
+        <span style={{fontSize:11.5,color:'#8a93a3'}}>ใช้ไป</span>
+        <span style={{fontSize:22,fontWeight:700,color:over?RED:primary}}>{used.toLocaleString()}</span>
+        <span style={{fontSize:12.5,color:'#8a93a3'}}>จาก {budget.toLocaleString()} บาท</span>
+        <div style={{flex:1}}></div>
+        <span style={{fontSize:16,fontWeight:700,color:over?RED:primary}}>{pct.toFixed(1)}%</span>
+      </div>
+      <div style={{display:'flex',height:10,background:'#eef0f3',borderRadius:99,overflow:'hidden',marginBottom:10}}>
+        {rows.filter(r=>r.amount>0).map((r,i)=><div key={i} style={{width:Math.min(100,budget>0?r.amount/budget*100:0)+'%',background:r.color}}></div>)}
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8,fontSize:12.5,color:'#3c4350'}}>
+        {rows.map((r,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'center',gap:8}}>
+            <span style={{width:10,height:10,borderRadius:3,background:r.color,flex:'none'}}></span>
+            <span style={{flex:1}}>{r.label}</span>
+            <span style={{fontWeight:700}}>{r.amount.toLocaleString()} บาท</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+function OrgBudgetLogList({title,items,open,onToggle,accent,accentBg,srcLabel}){
+  return (
+    <div style={{borderTop:'1px solid #f0f2f5',marginTop:14,paddingTop:12}}>
+      <button onClick={onToggle} style={{display:'flex',alignItems:'center',gap:6,width:'100%',background:'none',border:'none',padding:0,cursor:'pointer',marginBottom:open?8:0}}>
+        <span style={{fontSize:12.5,fontWeight:700,color:'#5a6473'}}>{title}</span>
+        <span style={{fontSize:11.5,color:'#b3bac4',fontWeight:600}}>({items.length})</span>
+        <div style={{flex:1}}></div>
+        <i className={'bi '+(open?'bi-chevron-up':'bi-chevron-down')} style={{fontSize:13,color:'#9aa3af'}}></i>
+      </button>
+      {open&&(items.length===0 ? (
+        <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'20px 0'}}>ยังไม่มีการบันทึกการใช้งบประมาณ</div>
+      ):(
+        <div>
+          {items.map((l,i)=>(
+            <div key={i} style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 2px',borderBottom:i<items.length-1?'1px solid #f4f6f8':'none'}}>
+              <div style={{width:30,height:30,borderRadius:'50%',background:accentBg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+                <i className="bi bi-wallet2" style={{fontSize:14,color:accent}}></i>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:12.5,color:'#1a2332',fontWeight:600,lineHeight:1.4,marginBottom:4}}>{l.note}</div>
+                <div style={{display:'flex',alignItems:'center',gap:7,flexWrap:'wrap'}}>
+                  <span style={{fontSize:11.5,color:'#9aa3af'}}>{l.date} · {l.by}</span>
+                  <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:4,height:24,boxSizing:'border-box',background:accentBg,color:accent,borderRadius:8,padding:'0 8px',fontSize:11,fontWeight:700,whiteSpace:'nowrap'}}>
+                    <span style={{width:6,height:6,borderRadius:2,background:accent}}></span>{srcLabel}
+                  </span>
+                </div>
+              </div>
+              <span style={{fontSize:13,fontWeight:700,color:accent,flex:'none'}}>{l.amount.toLocaleString()} บาท</span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+const cmdOf=(n)=>{ const b=(n.investBudget||0)+(n.operateBudget||0); const total=Math.max(3,Math.round(b/45000)); const g=Math.round(total*0.62), y=Math.round(total*0.25), r=Math.max(0,total-g-y); return {total:g+y+r,g,y,r}; }; // คำสั่งการ (mock — สัดส่วนจากงบประมาณ เพื่อให้มีข้อมูลเสมอเหมือนหน้าที่รับผิดชอบ) รวมจากแผนที่อยู่ใต้ 1 ระดับ
 
 /* คำสั่งการ (work orders) สรุปทั้งองค์กร แยกตามรอบ */
 const CMD_SUMMARY_BY_ROUND={
@@ -223,13 +329,14 @@ function PlanCard({node,childLabel,onOpen,onDrill}){
                 <StatusDot key={c.id} s={c.status} size={13} title={c.title+' — '+(STLABEL[c.status]||STLABEL[''])}/>
               ))}
             </div>
-            <button onClick={(e)=>{e.stopPropagation();onDrill();}} style={{display:'inline-flex',alignItems:'center',gap:6,background:primarySoft,color:primary,border:'none',borderRadius:8,padding:'6px 13px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+            <button onClick={(e)=>{e.stopPropagation();onDrill();}} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,height:24,boxSizing:'border-box',background:primarySoft,color:primary,border:'none',borderRadius:8,padding:'0 13px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
               ดู{childLabel} {kids.length} รายการ<i className="bi bi-chevron-right" style={{fontSize:10}}></i>
             </button>
           </div>
         ):(
           <span style={{fontSize:12,color:'#c7ccd4'}}>ไม่มีข้อมูล{childLabel}</span>
         ))}
+        <BudgetKindBadge node={node}/>
       </div>
     </div>
   );
@@ -242,19 +349,25 @@ const LEVEL_NAME=['พันธกิจ','เป้าหมาย','กลย�
 const DAILY_PLANS_SEED={
   p2111:[
     {id:'dpo1',title:'แผนสำรวจความต้องการผู้ใช้งานประจำสัปดาห์',items:['สรุปแบบสอบถามที่ได้รับ','จัดกลุ่มความต้องการตามหมวด','ส่งสรุปให้ทีมพัฒนา']},
+    {id:'dpo2',title:'แผนทดสอบระบบร่วมกับผู้ใช้ภาคสนาม',items:['เตรียมชุดทดสอบ','ลงพื้นที่ทดสอบกับผู้ใช้','บันทึกผลและข้อบกพร่อง']},
+    {id:'dpo3',title:'แผนอบรมการใช้งานเบื้องต้น',items:['เตรียมสื่อการอบรม','จัดอบรมผู้ใช้ใหม่']},
+    {id:'dpo4',title:'แผนจัดทำคู่มือการใช้งาน',items:['ร่างโครงคู่มือ','เขียนเนื้อหา','ตรวจทานและเผยแพร่']},
   ],
   p1211:[
-    {id:'dpo2',title:'แผนเตรียมสถานที่ประกวด MOU',items:['ตรวจสอบความพร้อมสถานที่','ทดสอบระบบโสตทัศนูปกรณ์','ประสานทีมงานวันจริง']},
+    {id:'dpo9',title:'แผนเตรียมสถานที่ประกวด MOU',items:['ตรวจสอบความพร้อมสถานที่','ทดสอบระบบโสตทัศนูปกรณ์','ประสานทีมงานวันจริง']},
   ],
 };
 
-// กลุ่ม Virtual Meeting (VM) ที่ผูกกับแผนธุรกิจนี้ — แต่ละกลุ่มใช้งานแผนงานประจำวันชุดใดชุดหนึ่งข้างต้น (planId อ้างถึง id ใน DAILY_PLANS_SEED)
+// กลุ่ม Virtual Meeting (VM) ที่ผูกกับแผนงานประจำวัน — spent = ค่าใช้จ่ายที่กลุ่มนั้นบันทึกเข้ามา; ยอดรวมต่อแผน = ผลรวม spent ของทุกกลุ่มที่ใช้แผนนั้น
 const VM_GROUPS_SEED={
   p2111:[
-    {id:'vgo1',title:'VM : Roadmap GiveD5',members:12,href:'user-virtual-meeting-group.html',planId:'dpo1',done:2,total:3},
+    {id:'vgo1',title:'VM : Roadmap GiveD5',members:12,href:'vm-example-roadmap-gived5.html',planId:'dpo1',done:2,total:3,spent:24000}, // 1 กลุ่ม มีค่าใช้จ่าย
+    {id:'vgo1b',title:'ทีมทดสอบภาคสนาม (เหนือ)',members:7,href:'user-virtual-meeting-group.html',planId:'dpo2',done:2,total:3,spent:15000}, // หลายกลุ่มในแผนเดียว
+    {id:'vgo1c',title:'ทีมทดสอบภาคสนาม (อีสาน)',members:6,href:'user-virtual-meeting-group.html',planId:'dpo2',done:1,total:3,spent:9000},
+    {id:'vgo1d',title:'ทีมอบรมผู้ใช้ใหม่',members:5,href:'user-virtual-meeting-group.html',planId:'dpo3',done:0,total:2,spent:0}, // มีกลุ่มแต่ยังไม่บันทึกค่าใช้จ่าย
   ],
   p1211:[
-    {id:'vgo2',title:'ทีมจัดประกวด MOU ระดับภาค',members:10,href:'user-virtual-meeting-group.html',planId:'dpo2',done:3,total:3},
+    {id:'vgo2',title:'ทีมจัดประกวด MOU ระดับภาค',members:10,href:'user-virtual-meeting-group.html',planId:'dpo9',done:3,total:3,spent:32000},
   ],
 };
 const AVCOLORS=['#3b82f6','#f59e0b','#8b5cf6','#0e8c7d','#ef4444','#15a08f','#db2777'];
@@ -273,7 +386,7 @@ function DailyPlanReadOnly({plans,vmGroups}){
             <div style={{fontWeight:700,fontSize:15}}>แผนงานประจำวัน</div>
             <div style={{fontSize:12,color:'#9aa3af',marginTop:1}}>{plans.length} ชุด{groups.length>0?' · เชื่อมกับ '+groups.length+' กลุ่ม VM':''} · กำหนดโดยผู้ดูแลระบบ/งานแผน</div>
           </div>
-          <span style={{display:'inline-flex',alignItems:'center',gap:6,background:'#f1f3f6',color:'#5a6473',borderRadius:8,padding:'6px 13px',fontSize:12,fontWeight:600}}><i className="bi bi-lock" style={{fontSize:13,color:'#9aa3af'}}></i>ดูอย่างเดียว</span>
+          <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,height:24,boxSizing:'border-box',background:'#f1f3f6',color:'#5a6473',borderRadius:8,padding:'0 13px',fontSize:12,fontWeight:600}}><i className="bi bi-lock" style={{fontSize:13,color:'#9aa3af'}}></i>ดูอย่างเดียว</span>
         </div>
       </div>
 
@@ -290,15 +403,19 @@ function DailyPlanReadOnly({plans,vmGroups}){
             const open=openId===pl.id;
             const groupsForPlan=groups.filter(g=>g.planId===pl.id);
             const cur=subTab[pl.id]||(groupsForPlan.length>0?'groups':'items');
+            const planSpent=groupsForPlan.reduce((s,g)=>s+(g.spent||0),0);
             return (
               <div key={pl.id} style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden'}}>
                 <button onClick={()=>setOpenId(open?null:pl.id)} style={{display:'flex',alignItems:'center',gap:10,width:'100%',textAlign:'left',padding:'14px 16px',border:'none',background:'none',cursor:'pointer'}}>
                   <div style={{width:30,height:30,borderRadius:8,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-checklist" style={{fontSize:16,color:primary}}></i></div>
                   <span style={{flex:1,fontSize:14,fontWeight:700,color:'#1a2332'}}>{pl.title}</span>
                   {groupsForPlan.length>0 && (
-                    <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:11,fontWeight:600,color:'#3b6fd4',background:'#eaf1fe',borderRadius:8,padding:'3px 10px',flex:'none'}}><i className="bi bi-people-fill" style={{fontSize:11}}></i>{groupsForPlan.length} กลุ่ม</span>
+                    <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,height:24,boxSizing:'border-box',fontSize:11,fontWeight:600,color:'#3b6fd4',background:'#eaf1fe',borderRadius:8,padding:'0 10px',flex:'none'}}><i className="bi bi-people-fill" style={{fontSize:11}}></i>{groupsForPlan.length} กลุ่ม</span>
                   )}
-                  <span style={{fontSize:11,color:'#9aa3af',fontWeight:600,background:'#f1f3f6',borderRadius:8,padding:'3px 10px',flex:'none'}}>{pl.items.length} ข้อ</span>
+                  {planSpent>0 && (
+                    <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,height:24,boxSizing:'border-box',fontSize:11,fontWeight:700,color:'#b06200',background:'#fff4df',borderRadius:8,padding:'0 10px',flex:'none',whiteSpace:'nowrap'}}><i className="bi bi-wallet2" style={{fontSize:11}}></i>ใช้จ่าย {planSpent.toLocaleString()} บาท</span>
+                  )}
+                  <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',height:24,boxSizing:'border-box',fontSize:11,color:'#9aa3af',fontWeight:600,background:'#f1f3f6',borderRadius:8,padding:'0 10px',flex:'none'}}>{pl.items.length} ข้อ</span>
                   <span style={{flex:'none',width:28,height:28,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',background:open?'#cde2df':'#ebebeb'}}>
                     <i className={'bi '+(open?'bi-chevron-up':'bi-chevron-down')} style={{fontSize:13,color:open?'#4e9b92':'#2b3440'}}></i>
                   </span>
@@ -339,6 +456,7 @@ function DailyPlanReadOnly({plans,vmGroups}){
                                   <div style={{display:'flex',alignItems:'center',gap:10,fontSize:11.5,color:'#9aa3af',flexWrap:'wrap'}}>
                                     <span style={{display:'inline-flex',alignItems:'center',gap:4}}><i className="bi bi-people" style={{fontSize:12}}></i>{g.members} สมาชิก</span>
                                     <span>เช็คแล้ว {g.done}/{g.total} รายการ</span>
+                                    {g.spent>0?<span style={{display:'inline-flex',alignItems:'center',gap:4,color:'#b06200',fontWeight:700}}><i className="bi bi-wallet2" style={{fontSize:12}}></i>ใช้จ่าย {g.spent.toLocaleString()} บาท</span>:<span style={{color:'#c4ccd4'}}>ยังไม่บันทึกค่าใช้จ่าย</span>}
                                   </div>
                                 </div>
                                 <div style={{width:70,flex:'none'}}>
@@ -374,25 +492,32 @@ function DailyPlanReadOnly({plans,vmGroups}){
 /* หน้ารายละเอียด "ข้อมูลและสถานะ" ของแผนแต่ละรายการ — เปิดจากการคลิกการ์ด (ทุกชั้น รวมถึงแผนงานที่ไม่มีลูก) */
 function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
   const kids=node.children||[];
-  const [logsOpen,setLogsOpen]=useState(false); // (คงไว้กันพัง — ย้าย log ไปเป็นแท็บแล้ว)
+  const [logsOpen,setLogsOpen]=useState(false); // รายการงบลงทุน
+  const [logsOpenOp,setLogsOpenOp]=useState(false); // รายการงบดำเนินการ
   const [tab,setTab]=useState(0); // 0 ความก้าวหน้า | 1 รายการใช้งบประมาณ | 2 แจ้งเตือน
   const childLabel=LEVEL_CHILD_LABEL[level]||null;
   const hasChildren=kids.length>0; // แผนงาน (ลำดับสุดท้าย) = ไม่มีแผนย่อย → ไม่แสดง "รวมจากแผนใต้ 1 ระดับ"
   const showQty=node.target>0;
   const pct=showQty?Math.min(100,node.achieved/node.target*100):0;
-  const budget=node.budget||0;
-  const usedSelf=node.spentSelf||0;
-  const usedDaily=dailyOf(node); // รวมจากงานประจำวัน
-  const usedChildren=kids.reduce((s,c)=>s+usedTotal(c),0);
-  const used=usedSelf+usedDaily+usedChildren;
+  const investBudget=node.investBudget, operateBudget=node.operateBudget;
+  const investSet=investBudget!=null, operateSet=operateBudget!=null;
+  const usedSelf=node.spentSelf||0; // บันทึกเอง → งบลงทุน
+  const usedDaily=dailyOf(node); // งานประจำวัน → งบดำเนินการ
+  const childInvest=kids.reduce((s,c)=>s+investUsedOf(c),0);
+  const childOperate=kids.reduce((s,c)=>s+operateUsedOf(c),0);
+  const investUsed=usedSelf+childInvest, operateUsed=usedDaily+childOperate;
+  const investPct=investSet&&investBudget>0?investUsed/investBudget*100:0;
+  const operatePct=operateSet&&operateBudget>0?operateUsed/operateBudget*100:0;
+  const budget=(investBudget||0)+(operateBudget||0);
+  const used=investUsed+operateUsed;
   const bpct=budget>0?used/budget*100:0;
   const childWord=childLabel||'แผนย่อย';
-  const bLogs=usedSelf>0?[{date:'14/06/2569',amount:usedSelf,by:node.owner,note:'บันทึกการใช้งบประมาณ'}]:[]; // mock — แปลงยอดบันทึกเองเป็นรายการ
-  const budgetItems=[...bLogs.map(l=>({...l,source:'self'})),...(usedDaily>0?[{date:'13/06/2569',amount:usedDaily,by:'ระบบงานประจำวัน',note:'ยอดรวมการใช้งบจากงานประจำวัน',source:'daily'}]:[])];
+  const investLogs=usedSelf>0?[{date:'14/06/2569',amount:usedSelf,by:node.owner,note:'บันทึกการใช้งบประมาณ'}]:[];
+  const operateLogs=usedDaily>0?[{date:'13/06/2569',amount:usedDaily,by:'ระบบงานประจำวัน',note:'ยอดรวมการใช้งบจากงานประจำวัน'}]:[];
   const cmd=cmdOf(node);
   const actionText=showQty
-    ? 'ดำเนินการได้ '+pct.toFixed(0)+'% ของเป้าหมาย ('+node.achieved.toLocaleString()+(node.unit?' '+node.unit:'')+' จาก '+node.target.toLocaleString()+') '+(budget>0?'และใช้งบประมาณไปแล้ว '+bpct.toFixed(0)+'% จากที่ตั้งไว้':'')
-    : (budget>0?'ใช้งบประมาณไปแล้ว '+bpct.toFixed(0)+'% จากที่ตั้งไว้ แผนธุรกิจนี้ไม่มีตัวชี้วัด':'แผนธุรกิจนี้ไม่มีตัวชี้วัดและงบประมาณ');
+    ? 'ดำเนินการได้ '+pct.toFixed(0)+'% ของเป้าหมาย ('+node.achieved.toLocaleString()+(node.unit?' '+node.unit:'')+' จาก '+node.target.toLocaleString()+') '+((investSet||operateSet)?'และใช้งบประมาณไปแล้ว '+bpct.toFixed(0)+'% จากที่ตั้งไว้':'')
+    : ((investSet||operateSet)?'ใช้งบประมาณไปแล้ว '+bpct.toFixed(0)+'% จากที่ตั้งไว้ แผนธุรกิจนี้ไม่มีตัวชี้วัด':'แผนธุรกิจนี้ไม่มีตัวชี้วัดและงบประมาณ');
   const [pageTab,setPageTab]=useState('detail');
   const dailyPlans=DAILY_PLANS_SEED[node.id]||[];
   const vmGroups=VM_GROUPS_SEED[node.id]||[];
@@ -400,8 +525,7 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
     <div style={{animation:'fadeIn .15s ease'}}>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:14,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:6,color:'#5a6473',fontSize:13,fontWeight:600,padding:'7px 13px',borderRadius:8,background:'#fff',border:'1px solid #e3e7ec',cursor:'pointer'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ย้อนกลับ
-        </button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
         <div style={{flex:1,fontWeight:700,fontSize:15,color:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{node.title}</div>
         <div style={{display:'flex',alignItems:'center',gap:8,flex:'none'}}>
           <span style={{fontSize:12.5,color:'#8a93a3'}}>สถานะล่าสุด</span>
@@ -495,76 +619,22 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
             <i className="bi bi-wallet2" style={{fontSize:15,color:primary}}></i>
             <span style={{fontWeight:700,fontSize:14}}>งบประมาณ</span>
           </div>
-          {budget>0?(
+          {investSet||operateSet?(
             <React.Fragment>
-              <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:10,flexWrap:'wrap'}}>
-                <span style={{fontSize:12.5,color:'#8a93a3'}}>ใช้ไป</span>
-                <span style={{fontSize:26,fontWeight:700,color:bpct>100?RED:primary}}>{used.toLocaleString()}</span>
-                <span style={{fontSize:14,color:'#8a93a3'}}>จาก {budget.toLocaleString()} บาท</span>
-                <div style={{flex:1}}></div>
-                <span style={{fontSize:18,fontWeight:700,color:bpct>100?RED:primary}}>{bpct.toFixed(1)}%</span>
-              </div>
-              <div style={{display:'flex',height:10,background:'#eef0f3',borderRadius:99,overflow:'hidden',marginBottom:12}}>
-                {hasChildren&&usedChildren>0&&<div style={{width:Math.min(100,usedChildren/budget*100)+'%',background:primary}} title={'รวมจาก'+childWord+' '+usedChildren.toLocaleString()+' บาท'}></div>}
-                {usedDaily>0&&<div style={{width:Math.min(100,usedDaily/budget*100)+'%',background:'#e59500'}} title={'รวมจากงานประจำวัน '+usedDaily.toLocaleString()+' บาท'}></div>}
-                {usedSelf>0&&<div style={{width:Math.min(100,usedSelf/budget*100)+'%',background:'#3b6fd4'}} title={'บันทึกเอง '+usedSelf.toLocaleString()+' บาท'}></div>}
-              </div>
-              <div style={{display:'flex',flexDirection:'column',gap:8,fontSize:12.5,color:'#3c4350'}}>
-                {hasChildren&&(
-                <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  <span style={{width:10,height:10,borderRadius:3,background:primary,flex:'none'}}></span>
-                  <span style={{flex:1}}>รวมจาก{childWord}ใต้แผนนี้ (1 ระดับ)</span>
-                  <span style={{fontWeight:700}}>{usedChildren.toLocaleString()} บาท</span>
+              {investSet&&(
+                <div style={{background:'#fafbfc',border:'1px solid #eef0f3',borderRadius:11,padding:'14px 16px',marginBottom:operateSet?12:0}}>
+                  <OrgBudgetSection label="งบลงทุน" icon="bi-buildings" budget={investBudget} used={investUsed} pct={investPct}
+                    rows={[...(hasChildren?[{label:'รวมจาก'+childWord+'ใต้แผนนี้ (1 ระดับ)',amount:childInvest,color:primary}]:[]),{label:'บันทึกเองในแผนนี้',amount:usedSelf,color:'#3b6fd4'}]} primary={primary} RED={RED}/>
+                  <OrgBudgetLogList title="รายการใช้งบลงทุน" items={investLogs} open={logsOpen} onToggle={()=>setLogsOpen(o=>!o)} accent="#3b6fd4" accentBg="#eaf0fb" srcLabel="บันทึกเองในแผนนี้"/>
                 </div>
-                )}
-                <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  <span style={{width:10,height:10,borderRadius:3,background:'#e59500',flex:'none'}}></span>
-                  <span style={{flex:1}}>รวมจากงานประจำวัน</span>
-                  <span style={{fontWeight:700}}>{usedDaily.toLocaleString()} บาท</span>
+              )}
+              {operateSet&&(
+                <div style={{background:'#fafbfc',border:'1px solid #eef0f3',borderRadius:11,padding:'14px 16px'}}>
+                  <OrgBudgetSection label="งบดำเนินการ" icon="bi-gear" budget={operateBudget} used={operateUsed} pct={operatePct}
+                    rows={[...(hasChildren?[{label:'รวมจาก'+childWord+'ใต้แผนนี้ (1 ระดับ)',amount:childOperate,color:primary}]:[]),{label:'รวมจากงานประจำวัน',amount:usedDaily,color:'#e59500'}]} primary={primary} RED={RED}/>
+                  <OrgBudgetLogList title="รายการใช้งบดำเนินการ" items={operateLogs} open={logsOpenOp} onToggle={()=>setLogsOpenOp(o=>!o)} accent="#e59500" accentBg="#fdf1de" srcLabel="งานประจำวัน"/>
                 </div>
-                <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  <span style={{width:10,height:10,borderRadius:3,background:'#3b6fd4',flex:'none'}}></span>
-                  <span style={{flex:1}}>บันทึกเองในแผนนี้</span>
-                  <span style={{fontWeight:700}}>{usedSelf.toLocaleString()} บาท</span>
-                </div>
-              </div>
-
-              <div style={{borderTop:'1px solid #f0f2f5',marginTop:14,paddingTop:12}}>
-                <button onClick={()=>setLogsOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:6,width:'100%',background:'none',border:'none',padding:0,cursor:'pointer',marginBottom:logsOpen?8:0}}>
-                  <span style={{fontSize:12.5,fontWeight:700,color:'#5a6473'}}>รายการใช้งบประมาณ</span>
-                  <span style={{fontSize:11.5,color:'#b3bac4',fontWeight:600}}>({budgetItems.length})</span>
-                  <div style={{flex:1}}></div>
-                  <i className={'bi '+(logsOpen?'bi-chevron-up':'bi-chevron-down')} style={{fontSize:13,color:'#9aa3af'}}></i>
-                </button>
-                {logsOpen&&(budgetItems.length===0 ? (
-                  <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'20px 0'}}>ยังไม่มีการบันทึกการใช้งบประมาณ</div>
-                ) : (
-                  <div>
-                    {budgetItems.map((l,i)=>{
-                      const srcColor=l.source==='daily'?'#e59500':'#3b6fd4';
-                      const srcBg=l.source==='daily'?'#fdf1de':'#eaf0fb';
-                      const srcLabel=l.source==='daily'?'งานประจำวัน':'บันทึกเองในแผนนี้';
-                      return (
-                        <div key={i} style={{display:'flex',alignItems:'flex-start',gap:11,padding:'11px 2px',borderBottom:i<budgetItems.length-1?'1px solid #f4f6f8':'none'}}>
-                          <div style={{width:30,height:30,borderRadius:'50%',background:srcBg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
-                            <i className="bi bi-wallet2" style={{fontSize:14,color:srcColor}}></i>
-                          </div>
-                          <div style={{flex:1,minWidth:0}}>
-                            <div style={{fontSize:12.5,color:'#1a2332',fontWeight:600,lineHeight:1.4,marginBottom:4}}>{l.note}</div>
-                            <div style={{display:'flex',alignItems:'center',gap:7,flexWrap:'wrap'}}>
-                              <span style={{fontSize:11.5,color:'#9aa3af'}}>{l.date} · {l.by}</span>
-                              <span style={{display:'inline-flex',alignItems:'center',gap:4,background:srcBg,color:srcColor,borderRadius:8,padding:'2px 8px',fontSize:11,fontWeight:700,whiteSpace:'nowrap'}}>
-                                <span style={{width:6,height:6,borderRadius:2,background:srcColor}}></span>{srcLabel}
-                              </span>
-                            </div>
-                          </div>
-                          <span style={{fontSize:13,fontWeight:700,color:srcColor,flex:'none'}}>{l.amount.toLocaleString()} บาท</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
+              )}
             </React.Fragment>
           ):(
             <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'18px 0'}}>ไม่ได้ตั้งงบประมาณ</div>

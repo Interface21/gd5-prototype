@@ -585,7 +585,8 @@ function SetupItemView({item,onBack,onEdit,onGoKpi,backLabel}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>{backLabel||'ตั้งต้น PA'}
+        </button>
         <div style={{flex:1}}></div>
         <ApvBadge approved={item.approved} cat={item.cat}/>
         {item.approved
@@ -702,7 +703,8 @@ function ExecuteItemView({item,onBack,setItems}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ดำเนินการ
+        </button>
         <div style={{flex:1}}></div>
         {execStatus==='upcoming'&&<span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#eaf1fe',color:'#2b5ec7',borderRadius:6,padding:'5px 11px',fontSize:12.5,fontWeight:600}}><i className="bi bi-clock" style={{fontSize:12}}></i>ยังไม่ถึงช่วงดำเนินการ</span>}
         {execStatus==='ended'&&<span style={{display:'inline-flex',alignItems:'center',gap:5,background:'#f1f3f6',color:'#6b7785',borderRadius:6,padding:'5px 11px',fontSize:12.5,fontWeight:600}}><i className="bi bi-lock" style={{fontSize:12}}></i>สิ้นสุดช่วงดำเนินการแล้ว</span>}
@@ -945,7 +947,8 @@ function EvaluateItemView({item,onBack,initRound}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ประเมินผล
+        </button>
         <div style={{flex:1}}></div>
         {score&&<Btn onClick={()=>{}} variant="success"><i className="bi bi-check-lg" style={{fontSize:12}}></i>บันทึกคะแนน</Btn>}
       </div>
@@ -1044,7 +1047,8 @@ function ItemEditPanel({item,items,onBack,onSave,onGoKpi}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>รายละเอียด PA ปี {PA_YEAR}
+        </button>
         <div style={{flex:1}}></div>
         <Btn onClick={save} variant="success"><i className="bi bi-check-lg" style={{fontSize:12}}></i>บันทึก</Btn>
         <Btn onClick={onBack} variant="ghost">ยกเลิก</Btn>
@@ -1178,7 +1182,8 @@ function KpiEditPanel({ctx,items,setItems,onBack}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ตัวชี้วัดและเกณฑ์ประเมินผล
+        </button>
         <div style={{flex:1}}></div>
         <Btn onClick={save} variant="success"><i className="bi bi-check-lg" style={{fontSize:12}}></i>บันทึก</Btn>
         <Btn onClick={onBack} variant="ghost">ยกเลิก</Btn>
@@ -1694,7 +1699,8 @@ function TeamItemDetailView({person,item,catKey,onBack}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>รายการ PA ของ {person.name}
+        </button>
         <div style={{flex:1}}></div>
         <div style={{display:'flex',gap:0,background:'#f1f3f6',borderRadius:7,padding:2}}>
           <button onClick={()=>setTab('evaluate')} style={{display:'flex',alignItems:'center',gap:6,padding:'6px 12px',borderRadius:5,background:tab==='evaluate'?'#fff':'transparent',border:'none',cursor:'pointer',fontSize:12.5,fontWeight:700,color:tab==='evaluate'?primary:'#8a93a3'}}><i className="bi bi-graph-up"></i>ประเมินผล</button>
@@ -1830,7 +1836,8 @@ function TeamDetailView({person,onBack}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>PA ลูกทีม
+        </button>
       </div>
 
       <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',borderRadius:10,padding:'14px 18px',marginBottom:14,flexWrap:'wrap'}}>
@@ -1919,7 +1926,8 @@ function EvaluateTeamListView({people,onBack,onOpen}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>พิจารณา/ประเมินผลงาน
+        </button>
       </div>
       <div style={{fontWeight:700,fontSize:17,color:'#1f2733',margin:'8px 0 4px'}}>ประเมินผลงานลูกทีม</div>
       <div style={{fontSize:12.5,color:'#9aa3af',marginBottom:16}}>ให้คะแนนผลงานลูกทีม (รอบที่กำลังเปิดประเมิน) · ปี {PA_YEAR}</div>
@@ -1956,7 +1964,8 @@ function EvaluateTeamPersonView({person,onBack,onOpenItem}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ประเมินผลงานลูกทีม
+        </button>
       </div>
       <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',borderRadius:10,padding:'14px 18px',marginBottom:18,flexWrap:'wrap'}}>
         <Avatar name={person.name} size={40}/>
@@ -2008,7 +2017,8 @@ function EvaluateTeamItemScoreView({person,item,catKey,onBack,onSave}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>{person.name}
+        </button>
         <div style={{flex:1}}></div>
         <Btn variant="success" onClick={()=>score&&onSave({score,note})} style={!score?{opacity:.5,pointerEvents:'none'}:undefined}><i className="bi bi-check-lg" style={{fontSize:12}}></i>บันทึกคะแนน</Btn>
       </div>
@@ -2103,7 +2113,8 @@ function ApproveTeamListView({people,onBack,onOpen}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>พิจารณา/ประเมินผลงาน
+        </button>
       </div>
       <div style={{fontWeight:700,fontSize:17,color:'#1f2733',margin:'8px 0 4px'}}>อนุมัติ PA ของลูกทีม</div>
       <div style={{fontSize:12.5,color:'#9aa3af',marginBottom:16}}>คำขออนุมัติจากลูกทีม · {batches.length} คำขอ · รวม {totalItems} รายการ</div>
@@ -2157,7 +2168,8 @@ function ApproveTeamBatchView({person,items,onBack,onApproveMany,onRejectOne}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>อนุมัติ PA ของลูกทีม
+        </button>
       </div>
 
       <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',borderRadius:10,padding:'14px 18px',marginBottom:14,flexWrap:'wrap'}}>
@@ -2314,7 +2326,8 @@ function SummaryDetailView({person,onBack,onOpenLog}){
     <div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:5,color:'#5a6473',fontSize:13.5,fontWeight:600,cursor:'pointer',border:'none',background:'none'}}>
-          <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
+          <i className="bi bi-arrow-left" style={{fontSize:14}}></i>ผลการประเมิน PA ปี {PA_YEAR}
+        </button>
         <div style={{flex:1}}></div>
         <div style={{display:'flex',gap:0,background:'#f1f3f6',borderRadius:7,padding:2}}>
           <button onClick={()=>setTab('detail')} style={{display:'flex',alignItems:'center',gap:6,padding:'6px 12px',borderRadius:5,background:tab==='detail'?'#fff':'transparent',border:'none',cursor:'pointer',fontSize:12.5,fontWeight:700,color:tab==='detail'?primary:'#8a93a3'}}><i className="bi bi-list-ul"></i>รายละเอียด PA</button>

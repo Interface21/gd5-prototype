@@ -112,32 +112,24 @@ let _uid=100;
 const uid=()=>'x'+(++_uid);
 const sub=(title,done,date,days,daysType,inContract,op)=>({id:uid(),title,done:!!done,date:date||'',days:days||0,daysType:daysType||'left',inContract:inContract!==false,op:op||null});
 const TD_SEED=[
-  {id:uid(),title:'แจ้งทำสัญญา',inContract:true,subs:[
-    sub('เอกสารมอบอำนาจ',true,'12/05/2026',0,'left',true,null),
-    sub('Catalog สินค้าที่ยื่นเสนอราคา',true,'12/05/2026',0,'left',true,null),
-    sub('หลักประกันสัญญา',false,'18/05/2026',10,'left',true,{label:'ที่กำลังดำเนินการ',count:'5/12',statusKey:'inprogress',colorStatus:'yellow'}),
-    sub('สำรวจหน้างาน',false,'02/05/2026',10,'over',true,{label:'ที่กำลังดำเนินการ',count:'',statusKey:'inprogress',colorStatus:'red'}),
-    sub('เอกสารอื่นๆ ที่วิทยาลัยขอตามหนังสือแจ้ง',false,'15/05/2026',10,'over',true,{avatar:true}),
+  {id:uid(),title:'บริหารงานโปรเจคครุภัณฑ์',inContract:true,subs:[
+    sub('แจ้งทำสัญญา',false,'',0,'left',true,null),
+    sub('ขอใบเสนอราคาจาก Supplier/Sub Contractor',false,'',0,'left',true,null),
+    sub('ทำ Scope of Work และแผนงาน',false,'',0,'left',true,null),
+    sub('Kick of Metting (KOM)',true,'',0,'left',true,null),
+    sub('ทำเรื่องขอเปลี่ยนรุ่นสินค้า และยี่ห้อ',false,'',0,'left',true,null),
+    sub('เปิดใบขอซื้อ (PR) / เปิดใบสั่งซื้อ (PO)',false,'',0,'left',true,null),
+    sub('กำกับ ติดตาม การรับสินค้าเข้าคลัง',false,'',0,'left',true,null),
+    sub('ส่งสินค้าประกอบ (ถ้ามี)',false,'',0,'left',false,null),
+    sub('ติดตามสินค้าประกอบ (ถ้ามี)',false,'',0,'left',false,null),
+    sub('ตรวจสอบสินค้าประกอบ / ตรวจสอบงานติดตั้งหน้างาน (ถ้ามี)',false,'',0,'left',false,null),
+    sub('ทำเอกสารตรวจรับสินค้าประกอบ / ทำเอกสารตรวจรับงานติดตั้งหน้างาน',false,'',0,'left',false,null),
+    sub('จัดเตรียมใบงานเพื่ออบรม (ถ้ามี)',false,'',0,'left',true,null),
+    sub('จัดเตรียมการอบรม ตั้งเป้าหมาย',false,'',0,'left',true,null),
+    sub('อบรมลูกค้า/ส่งมอบงาน',false,'',0,'left',true,null),
+    sub('ติดตามการเก็บเงิน ตามสัญญา',false,'',0,'left',true,null),
+    sub('ติดตามขอคืนหลักประกันสัญญา',false,'',0,'left',true,null),
   ]},
-  {id:uid(),title:'ขอใบเสนอราคาจาก Supplier/Sub Contractor',inContract:true,subs:[
-    sub('งานที่มีใบเสนอราคาอยู่ และมีการสั่งซื้อประจำ',false,'12/05/2026',10,'left',true,{label:'ที่กำลังดำเนินการ',count:'10/35',statusKey:'inprogress',colorStatus:'green'}),
-    sub('งานที่ต้องหาใบเสนอราคาใหม่ งานเฉพาะทางเทคนิค',false,'12/05/2026',10,'left',true,{avatar:true}),
-    sub('งานติดตั้งระบบไฟฟ้า',false,'12/05/2026',10,'left',true,{avatar:true}),
-  ]},
-  {id:uid(),title:'ทำ Scope of Work และแผนงาน',inContract:true,subs:[sub('กำหนดขอบเขตงาน'),sub('ทำแผนงาน Gantt')]},
-  {id:uid(),title:'Kick of Metting (KOM)',inContract:true,subs:[sub('นัดประชุม',true),sub('เตรียมเอกสาร',true),sub('สรุปประชุม',true)]},
-  {id:uid(),title:'ทำเรื่องขอเปลี่ยนรุ่นสินค้า และยี่ห้อ',inContract:true,subs:[sub('รวบรวมข้อมูล'),sub('ยื่นขออนุมัติ')]},
-  {id:uid(),title:'เปิดใบขอซื้อ (PR) / เปิดใบสั่งซื้อ (PO)',inContract:true,subs:[sub('เปิด PR'),sub('เปิด PO')]},
-  {id:uid(),title:'กำกับ ติดตาม การรับสินค้าเข้าคลัง',inContract:true,subs:[sub('รับสินค้า'),sub('ตรวจนับ'),sub('บันทึกคลัง')]},
-  {id:uid(),title:'ส่งสินค้าประกอบ (ถ้ามี)',inContract:false,subs:[]},
-  {id:uid(),title:'ติดตามสินค้าประกอบ (ถ้ามี)',inContract:false,subs:[]},
-  {id:uid(),title:'ตรวจสอบสินค้าประกอบ / ตรวจสอบงานติดตั้งหน้างาน (ถ้ามี)',inContract:false,subs:[]},
-  {id:uid(),title:'ทำเอกสารตรวจรับสินค้าประกอบ / ทำเอกสารตรวจรับงานติดตั้งหน้างาน',inContract:false,subs:[]},
-  {id:uid(),title:'จัดเตรียมใบงานเพื่ออบรม (ถ้ามี)',inContract:true,subs:[sub('เตรียมใบงาน'),sub('ตรวจสอบ')]},
-  {id:uid(),title:'จัดเตรียมการอบรม ตั้งเป้าหมาย',inContract:true,subs:[sub('วางแผนอบรม'),sub('ตั้งเป้าหมาย')]},
-  {id:uid(),title:'อบรมลูกค้า/ส่งมอบงาน',inContract:true,subs:[sub('อบรม'),sub('ส่งมอบ'),sub('รับ feedback')]},
-  {id:uid(),title:'ติดตามการเก็บเงิน ตามสัญญา',inContract:true,subs:[sub('วางบิล'),sub('ติดตามชำระ')]},
-  {id:uid(),title:'ติดตามขอคืนหลักประกันสัญญา',inContract:true,subs:[sub('ยื่นคำขอ'),sub('ติดตาม')]},
 ];
 
 const REM=['ไม่แจ้งเตือน','1 วันล่วงหน้า','3 วันล่วงหน้า','7 วันล่วงหน้า','15 วันล่วงหน้า','30 วันล่วงหน้า'];
@@ -1386,13 +1378,18 @@ function App(){
         <div style={{minWidth:0,display:'flex',flexDirection:'column',gap:16}}>
           {/* HERO */}
           <Card pad="0">
-            <div style={{height:230,position:'relative',overflow:'hidden',borderRadius:'13px 13px 0 0',background:'repeating-linear-gradient(46deg,#f6c916,#f6c916 26px,#e9bd11 26px,#e9bd11 52px)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <div style={{textAlign:'center',color:'#3a3526',fontWeight:800,fontSize:46,lineHeight:1,letterSpacing:2,textShadow:'0 2px 0 rgba(255,255,255,.18)'}}>RESTRICTED<br/>AREA</div>
+            <div style={{height:230,position:'relative',overflow:'hidden',borderRadius:'13px 13px 0 0',background:'linear-gradient(135deg,#0f766e 0%,#15a08f 55%,#2bbfa9 100%)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <div style={{position:'absolute',inset:0,background:'repeating-linear-gradient(46deg,rgba(255,255,255,.06),rgba(255,255,255,.06) 26px,transparent 26px,transparent 52px)'}}></div>
+              <div style={{position:'relative',textAlign:'center',color:'#fff'}}>
+                <i className="bi bi-hdd-stack-fill" style={{fontSize:52,color:'rgba(255,255,255,.92)'}}></i>
+                <div style={{fontWeight:800,fontSize:40,lineHeight:1,letterSpacing:3,marginTop:10,textShadow:'0 2px 6px rgba(0,0,0,.18)'}}>SSO ครุภัณฑ์</div>
+                <div style={{fontWeight:600,fontSize:15,letterSpacing:1,marginTop:8,opacity:.9}}>ชุดห้องปฏิบัติการคอมพิวเตอร์ · วท.อุทัยธานี</div>
+              </div>
             </div>
             <div style={{padding:'16px 20px 6px'}}>
               <div style={{display:'flex',alignItems:'flex-start',gap:12,flexWrap:'wrap'}}>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontWeight:700,fontSize:22}}>SA-Developer</div>
+                  <div style={{fontWeight:700,fontSize:22}}>ชุดห้องปฏิบัติการคอมพิวเตอร์ วท.อุทัยธานี</div>
                   <div style={{fontSize:13,color:'#8a93a3',margin:'4px 0 8px'}}>สมาชิก 4 คน</div>
                   <Avatars n={4} sz={28}/>
                 </div>
@@ -1403,7 +1400,7 @@ function App(){
                     <button style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',color:'#3a4452',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 14px',fontSize:13.5,fontWeight:600}}>{ms('check',18,primary)}เข้าร่วมแล้ว</button>
                   </div>
                   <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:9,padding:'8px 13px',width:220}}>
-                    <i className="bi bi-search" style={{fontSize:14,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:12.5}}>ค้นหา SA-Developer</span>
+                    <i className="bi bi-search" style={{fontSize:14,color:'#9aa3af'}}></i><span style={{color:'#9aa3af',fontSize:12.5}}>ค้นหาชุดห้องปฏิบัติการคอมพิวเตอร์ วท.อุทัยธานี</span>
                   </div>
                 </div>
               </div>

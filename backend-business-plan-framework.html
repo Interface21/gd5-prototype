@@ -919,7 +919,15 @@ const MEASURE_CFG_SEED={
   m1:{kpiDesc:'ทำได้ตามแผนงานที่วางไว้',target:'100',unit:'%',measureType:'quant',showAccum:true,showAvg:false,showCockpit:true,assessor:'Piyawat Takaew',evalValue:'sum',criteriaType:'standard',
       standard:{op0:'<',val0:'100',op5:'>=',val5:'100'},
       levels:[{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<=',val2:''}],
-      budget:150000},
+      investBudget:150000,operateBudget:80000},
+  m2:{kpiDesc:'จำนวนองค์กรลูกค้าที่พัฒนาสู่องค์กรดิจิทัล',target:'12',unit:'องค์กร',measureType:'quant',showAccum:true,showAvg:false,showCockpit:true,assessor:'Narate Boonmee',evalValue:'sum',criteriaType:'level',
+      standard:{op0:'<',val0:'100',op5:'>=',val5:'100'},
+      levels:[{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<=',val2:''}],
+      investBudget:420000,operateBudget:null},
+  m3:{kpiDesc:'ยอดขายครุภัณฑ์ตามเป้าที่ตั้งไว้',target:'8000000',unit:'บาท',measureType:'quant',showAccum:false,showAvg:true,showCockpit:true,assessor:'Kanya Srisai',evalValue:'sum',criteriaType:'standard',
+      standard:{op0:'<',val0:'100',op5:'>=',val5:'100'},
+      levels:[{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<=',val2:''}],
+      investBudget:null,operateBudget:250000},
 };
 const LEVEL_DOT=['#e0473f','#f0ad2b','#f0ad2b','#f0ad2b','#22b573'];
 function OpSelect({value,onChange}){
@@ -973,7 +981,8 @@ function MeasureEditForm({mission,cfg,onBack,onSave}){
   const [criteriaType,setCriteriaType]=useState(c.criteriaType||'standard');
   const [standard,setStandard]=useState(c.standard||{op0:'<',val0:'100',op5:'>=',val5:'100'});
   const [levels,setLevels]=useState(c.levels||[{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<',val2:''},{op1:'>=',val1:'',op2:'<=',val2:''}]);
-  const [budget,setBudget]=useState(c.budget!=null?String(c.budget):'');
+  const [investBudget,setInvestBudget]=useState(c.investBudget!=null?String(c.investBudget):'');
+  const [operateBudget,setOperateBudget]=useState(c.operateBudget!=null?String(c.operateBudget):'');
   const setLevel=(i,patch)=>setLevels(ls=>ls.map((l,idx)=>idx===i?{...l,...patch}:l));
 
   const inputStyle={width:'100%',border:'1.5px solid #e1e5ec',borderRadius:10,padding:'10px 12px',fontSize:13.5,outline:'none',color:'#1f2733',background:'#fff'};
@@ -982,7 +991,7 @@ function MeasureEditForm({mission,cfg,onBack,onSave}){
 
   const doSave=()=>{
     if(!canSave) return;
-    onSave({kpiDesc,target,unit,measureType,showAccum,showAvg,showCockpit,assessor,evalValue,criteriaType,standard,levels,budget:budget?Number(budget):0});
+    onSave({kpiDesc,target,unit,measureType,showAccum,showAvg,showCockpit,assessor,evalValue,criteriaType,standard,levels,investBudget:investBudget?Number(investBudget):null,operateBudget:operateBudget?Number(operateBudget):null});
   };
 
   return (
@@ -1121,16 +1130,25 @@ function MeasureEditForm({mission,cfg,onBack,onSave}){
           {/* ── BUDGET (full width) ── */}
           <div style={{marginTop:26,paddingTop:22,borderTop:'1px solid #f0f2f5'}}>
             <div style={labelStyle}><i className="bi bi-wallet2" style={{color:'#3b6fd4'}}></i>งบประมาณของพันธกิจนี้ในรอบนี้</div>
-            <div style={{display:'flex',alignItems:'center',gap:14,flexWrap:'wrap'}}>
-              <div style={{width:260}}>
-                <input value={budget} onChange={e=>setBudget(e.target.value.replace(/[^0-9]/g,''))} placeholder="จำนวนงบประมาณที่จัดสรร" style={inputStyle}/>
+            <div style={{display:'flex',gap:18,flexWrap:'wrap'}}>
+              <div style={{flex:'1 1 300px',minWidth:280}}>
+                <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,fontWeight:700,color:'#3a4452',marginBottom:8}}><i className="bi bi-buildings" style={{fontSize:14,color:'#3b6fd4'}}></i>งบลงทุน</div>
+                <div style={{display:'flex',alignItems:'center',gap:10}}>
+                  <input value={investBudget} onChange={e=>setInvestBudget(e.target.value.replace(/[^0-9]/g,''))} placeholder="จำนวนงบลงทุนที่จัดสรร" style={{...inputStyle,flex:1}}/>
+                  <span style={{fontSize:13,color:'#8a93a3'}}>บาท</span>
+                </div>
               </div>
-              <span style={{fontSize:13,color:'#8a93a3'}}>บาท</span>
-              <div style={{flex:1}}></div>
-              <div style={{fontSize:11.5,color:'#9aa3af',maxWidth:420,lineHeight:1.6,display:'flex',gap:7}}>
-                <i className="bi bi-info-circle" style={{fontSize:13,color:'#b3bac4',flex:'none',marginTop:1}}></i>
-                <span>งบประมาณนี้เป็นวงเงินตั้งต้นของพันธกิจสำหรับรอบการวัดเป้านี้ — การใช้งบประมาณจริง (จากแผนย่อย/งานประจำวัน/บันทึกเอง) จะถูกคำนวณสะสมและแสดงผลในหน้ารายละเอียดแผนธุรกิจ</span>
+              <div style={{flex:'1 1 300px',minWidth:280}}>
+                <div style={{display:'flex',alignItems:'center',gap:7,fontSize:12.5,fontWeight:700,color:'#3a4452',marginBottom:8}}><i className="bi bi-gear" style={{fontSize:14,color:'#3b6fd4'}}></i>งบดำเนินการ</div>
+                <div style={{display:'flex',alignItems:'center',gap:10}}>
+                  <input value={operateBudget} onChange={e=>setOperateBudget(e.target.value.replace(/[^0-9]/g,''))} placeholder="จำนวนงบดำเนินการที่จัดสรร" style={{...inputStyle,flex:1}}/>
+                  <span style={{fontSize:13,color:'#8a93a3'}}>บาท</span>
+                </div>
               </div>
+            </div>
+            <div style={{fontSize:11.5,color:'#9aa3af',maxWidth:640,lineHeight:1.6,display:'flex',gap:7,marginTop:12}}>
+              <i className="bi bi-info-circle" style={{fontSize:13,color:'#b3bac4',flex:'none',marginTop:1}}></i>
+              <span>กำหนดงบลงทุนและ/หรืองบดำเนินการแยกกันได้ — <b style={{color:'#7a828f'}}>หากไม่กำหนดงบส่วนใด ระบบจะไม่แสดงการใช้งบส่วนนั้น</b>เมื่อเข้ามาตรวจสอบการใช้งบของแผนนั้นๆ ในหน้ารายละเอียดแผนธุรกิจ</span>
             </div>
           </div>
         </div>
@@ -1192,7 +1210,8 @@ function MissionMeasureList({round,onBack}){
                     </div>
                     <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                       {activeTags.length?activeTags.map(o=><MeasureChip key={o.key} label={o.label} tone={o.tone}/>):<span style={{fontSize:11.5,color:'#b3bac4'}}>ไม่แสดงผลรูปแบบใด</span>}
-                      {cfg.budget>0&&<MeasureChip label={cfg.budget.toLocaleString()+' บาท'} tone="info"/>}
+                      {cfg.investBudget>0&&<MeasureChip label={'ลงทุน '+cfg.investBudget.toLocaleString()+' บาท'} tone="info"/>}
+                      {cfg.operateBudget>0&&<MeasureChip label={'ดำเนินการ '+cfg.operateBudget.toLocaleString()+' บาท'} tone="info"/>}
                     </div>
                   </React.Fragment>
                 ):<MeasureChip label="ไม่มีตัวชี้วัด" tone="danger"/>}

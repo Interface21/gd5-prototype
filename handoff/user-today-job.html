@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Job Dashboard — GiveD5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+@keyframes popIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fn-head:hover{background:#fafbfd}
+.fn-status-row:hover{background:#f5f8fb;border-color:#dde6ef}
+.chip-scroll::-webkit-scrollbar{display:none}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState} = React;
+const ICON={"account_balance":"bank","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","add_circle":"plus-circle","add_task":"plus-square","arrow_back":"arrow-left","arrow_forward":"arrow-right","arrow_drop_down":"caret-down-fill","arrow_drop_up":"caret-up-fill","assignment":"clipboard","attach_file":"paperclip","autorenew":"arrow-repeat","back_hand":"hand-index","bar_chart":"bar-chart","battery_full":"battery-full","bolt":"lightning-charge","bookmark":"bookmark","bookmark_add":"bookmark-plus","calendar_month":"calendar3","calendar_today":"calendar","call_made":"arrow-up-right","call_received":"arrow-down-left","campaign":"megaphone","cancel":"x-circle","chat":"chat-dots","chat_bubble":"chat-dots","chat_bubble_outline":"chat","check":"check-lg","check_box":"check-square","check_box_outline_blank":"square","check_circle":"check-circle","checklist":"list-check","chevron_left":"chevron-left","chevron_right":"chevron-right","close":"x-lg","content_copy":"files","delete":"trash","description":"file-text","desktop_windows":"display","domain":"building","done":"check-lg","done_all":"check2-all","donut_small":"pie-chart","download":"download","drag_indicator":"grip-vertical","ecg_heart":"activity","edit":"pencil","edit_note":"pencil-square","engineering":"tools","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","favorite":"heart","filter":"funnel","filter_alt_off":"funnel","filter_list":"funnel","flag":"flag","format_list_bulleted":"list-ul","forum":"chat-square-text","grid_view":"grid","group":"people","group_add":"person-plus","groups":"people","help":"question-circle","home":"house","hourglass":"hourglass","hourglass_bottom":"hourglass-bottom","hourglass_empty":"hourglass","hourglass_top":"hourglass-top","how_to_reg":"person-check","image":"image","inbox":"inbox","ink_eraser":"eraser","insert_chart":"bar-chart","insights":"graph-up","inventory_2":"box-seam","keyboard_arrow_down":"chevron-down","keyboard_arrow_up":"chevron-up","leaderboard":"bar-chart-line","list":"list","lock":"lock","low_priority":"sort-down","mail":"envelope","menu":"list","menu_book":"book","monitor_heart":"activity","monitoring":"graph-up-arrow","more_horiz":"three-dots","more_vert":"three-dots-vertical","move_up":"arrow-up-square","note_add":"file-earmark-plus","notifications":"bell","open_in_full":"arrows-fullscreen","open_in_new":"box-arrow-up-right","outbox":"box-arrow-up","palette":"palette","pending":"hourglass-split","person":"person","pie_chart":"pie-chart","play_arrow":"play-fill","play_circle":"play-circle","playlist_add":"list-task","playlist_add_check":"list-check","power_settings_new":"power","public":"globe","push_pin":"pin-angle","radio_button_unchecked":"circle","redeem":"gift","reply":"reply","schedule":"clock","search":"search","search_off":"search","send":"send","settings":"gear","shield_lock":"shield-lock","shield_person":"shield-check","signal_cellular_alt":"reception-4","signpost":"signpost-2","sort":"sort-down","speed":"speedometer2","star":"star","support":"life-preserver","swap_vert":"arrow-down-up","tag":"hash","task_alt":"check2-circle","title":"type","today":"calendar-check","touch_app":"hand-index","trending_up":"graph-up-arrow","tune":"sliders","unfold_more":"chevron-expand","upload_file":"file-earmark-arrow-up","verified_user":"patch-check","videocam":"camera-video","view_agenda":"card-heading","visibility":"eye","volunteer_activism":"hand-heart","warning":"exclamation-triangle","waving_hand":"emoji-smile","wifi":"wifi"};
+const ICONF={"check_circle":"check-circle-fill","favorite":"heart-fill","person":"person-fill","groups":"people-fill","group":"people-fill","play_circle":"play-circle-fill","lock":"lock-fill","send":"send-fill","push_pin":"pin-angle-fill","verified_user":"patch-check-fill","shield_person":"shield-fill-check","inbox":"inbox-fill","waving_hand":"emoji-smile-fill","star":"star-fill","flag":"flag-fill","notifications":"bell-fill","home":"house-fill","pie_chart":"pie-chart-fill"};
+
+const TODAY0 = [
+  {id:'j1',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',commander:'Siramet',priority:'high',due:'31/03/2026',days:'เกิน 5 วัน',daysType:'over',progress:60,status:'yellow',type:'strategic'},
+  {id:'j2',title:'อัพเดทระบบ EDR เป็น jdk8 (ทดสอบเป้าหมายแบบตัวเลข)',commander:'Piyawat',priority:'urgent',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over',progress:30,status:'red',type:'daily'},
+  {id:'j3',title:'จัดทำ WI กระบวนการ Deploy เว็บไซต์ใหม่',commander:'Chanavee',priority:'normal',due:'30/06/2026',days:'เหลือ 1 วัน',daysType:'left',progress:100,status:'green',type:'daily',inProgress:true},
+  {id:'j4',title:'ติดตามการเก็บเงิน ตามสัญญา',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:0,status:'yellow',type:'daily'},
+  {id:'j5',title:'โพสปัญหาเชิงโครงสร้างของ EDR',commander:'Pinij',priority:'normal',due:'30/06/2026',days:'เหลือ 4 วัน',daysType:'left',progress:45,status:'green',type:'daily'},
+  {id:'j6',title:'ส่งรายงาน PA พัฒนางานประจำ',commander:'Sunthan',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:20,status:'red',type:'pa'},
+  {id:'j7',title:'เรียน NuxtJS สำหรับพัฒนา EDR V.3',commander:'Bodin',priority:'normal',due:'05/07/2026',days:'เหลือ 8 วัน',daysType:'left',progress:10,status:'yellow',type:'pa'},
+];
+const MEMBERS0 = [
+  {id:'m1',name:'Bodin Muanprasat',role:'Software Engineer',progress:14,jobs:[
+    {id:'b1',title:'เรียน NuxtJS สำหรับพัฒนา EDR V.3',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:10,status:'yellow',type:'pa'},
+    {id:'b2',title:'แก้บั๊ก dashboard EDR ก่อน demo',commander:'Narate',priority:'urgent',due:'29/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:40,status:'red',type:'daily'},
+    {id:'b3',title:'รีวิวโค้ด Pull Request #214',commander:'Chanavee',priority:'normal',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:0,status:'yellow',type:'daily'},
+  ]},
+  {id:'m2',name:'Chanavee Bekaku',role:'Dev Manager',progress:46,jobs:[
+    {id:'c1',title:'วางแผน Sprint ทีมพัฒนา EDR',commander:'Piyawat',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:60,status:'green',type:'daily'},
+    {id:'c2',title:'รีวิวสถาปัตยกรรมระบบ Grand ATS',commander:'Piyawat',priority:'normal',due:'03/07/2026',days:'เหลือ 6 วัน',daysType:'left',progress:40,status:'yellow',type:'pa'},
+    {id:'c3',title:'อนุมัติ Pull Request ค้างทั้งหมด',commander:'Narate',priority:'urgent',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:35,status:'red',type:'daily'},
+  ]},
+  {id:'m3',name:'Chanon Thaiprayoo',role:'Technician',progress:9,jobs:[
+    {id:'t1',title:'ติดตั้งอุปกรณ์เครือข่ายสาขาใหม่',commander:'Piyawat',priority:'normal',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:0,status:'red',type:'daily'},
+    {id:'t2',title:'ตรวจเช็คระบบสำรองไฟ UPS',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:18,status:'yellow',type:'daily'},
+  ]},
+  {id:'m4',name:'Narate Boonmee',role:'Software Engineer',progress:18,jobs:[
+    {id:'n1',title:'จัดทำ WI การ Deploy ด้วย Nuxt Content',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:60,status:'green',type:'daily'},
+    {id:'n2',title:'ทดสอบ regression ระบบ EDR',commander:'Piyawat',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:30,status:'yellow',type:'daily'},
+  ]},
+  {id:'m5',name:'Sunthan Mongkol',role:'QA Engineer',progress:46,jobs:[
+    {id:'q1',title:'เขียน Test Case ฟีเจอร์ Virtual Meeting',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:55,status:'green',type:'daily'},
+    {id:'q2',title:'ทดสอบ End-to-End ก่อน Release',commander:'Piyawat',priority:'urgent',due:'29/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:45,status:'red',type:'daily'},
+    {id:'q3',title:'สรุปรายงานบั๊กประจำสัปดาห์',commander:'Narate',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:40,status:'yellow',type:'daily'},
+  ]},
+  {id:'m6',name:'Wandee Klaharn',role:'QA Engineer',progress:14,jobs:[
+    {id:'w1',title:'ตรวจสอบความถูกต้องของรายงาน',commander:'Piyawat',priority:'normal',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:15,status:'yellow',type:'daily'},
+    {id:'w2',title:'ทดสอบการแสดงผลบนมือถือ',commander:'Chanavee',priority:'high',due:'30/06/2026',days:'เหลือ 2 วัน',daysType:'left',progress:10,status:'yellow',type:'daily'},
+  ]},
+  {id:'m7',name:'Chayanee Prajongkarn',role:'Staff',progress:18,jobs:[
+    {id:'y1',title:'สรุปข้อมูลความเห็นโพสต์',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:20,status:'yellow',type:'daily'},
+    {id:'y2',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:25,status:'yellow',type:'pa'},
+  ]},
+  {id:'m8',name:'Anusorn Suksri',role:'ที่ปรึกษา',progress:14,jobs:[
+    {id:'a1',title:'ให้คำปรึกษาการวางแผนธุรกิจ Q3',commander:'Piyawat',priority:'normal',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:18,status:'yellow',type:'strategic'},
+    {id:'a2',title:'ทบทวนเอกสารกลยุทธ์องค์กร',commander:'Nitirud',priority:'normal',due:'03/07/2026',days:'เหลือ 6 วัน',daysType:'left',progress:10,status:'yellow',type:'pa'},
+  ]},
+];
+const POOL0 = [
+  {id:'p1',title:'อบรมลูกค้า / ส่งมอบงานระบบ Grand ATS',commander:'บาส',priority:'urgent',due:'30/06/2026',days:'เกิน 10 วัน',daysType:'over',amount:'฿1,000,000',type:'daily'},
+  {id:'p2',title:'จัดทำรายละเอียดของสัญญา วิทยาลัยพณิชยการ',commander:'สรัญญา',priority:'urgent',due:'30/06/2026',days:'เกิน 5 วัน',daysType:'over',amount:'฿1,000,000',type:'daily'},
+  {id:'p3',title:'ติดตามการเก็บเงิน ตามสัญญา (เพิ่มเติม)',commander:'Nitirud',priority:'high',due:'30/06/2026',days:'เกิน 2 วัน',daysType:'over',amount:'฿1,000,000',type:'daily'},
+  {id:'p4',title:'หาสาเหตุที่แท้จริงของปัญหาเชิงโครงสร้าง',commander:'Supatta',priority:'normal',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left',count:'3 งาน',type:'daily'},
+  {id:'p5',title:'ขอให้ใช้ GiveD5 เป็นส่วนหนึ่งของงานประจำวัน',commander:'ปอนด์',priority:'normal',due:'30/06/2026',days:'อีก 10 วัน',daysType:'left',count:'ดำเนินการแล้วเสร็จ',type:'strategic'},
+  {id:'p6',title:'PA - พัฒนางานประจำ ไตรมาส 3',commander:'Piyawat',priority:'normal',due:'31/12/2026',days:'อีก 5 วัน',daysType:'left',count:'3 งาน',type:'pa'},
+  {id:'p7',title:'โพสบทความเคล็ดลับการเขียน WI',commander:'Khajonsak',priority:'high',due:'30/06/2026',days:'อีก 4 วัน',daysType:'left',count:'2 งาน',type:'strategic'},
+  {id:'p8',title:'จัดทำเอกสาร Tip การใช้ AI ในงานประจำ',commander:'Jarunya',priority:'high',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left',count:'3 งาน',type:'pa'},
+  {id:'p9',title:'แชร์ Use Case ของ Nuxt Content บน GiveD5',commander:'Chanavee',priority:'normal',due:'05/07/2026',days:'อีก 8 วัน',daysType:'left',count:'1 งาน',type:'strategic'},
+  {id:'p10',title:'ทดสอบการรายงานความก้าวหน้าเป็น %',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left',count:'5 งาน',type:'daily'},
+];
+
+const primary='#15a08f', primarySoft='#e3f3f0', primarySoftBorder='#c4e7df';
+const prStyle=(p)=> p==='urgent'?{bg:'#fdeaea',text:'#d83a3a',label:'ด่วนมาก'}:p==='high'?{bg:'#fff2e2',text:'#dd7a16',label:'ด่วน'}:{bg:'#eef1f5',text:'#6b7280',label:'ปกติ'};
+const tyStyle=(t)=> t==='strategic'?{bg:'#fdeee0',text:'#d98223',label:'งานตามแผนธุรกิจ'}:t==='pa'?{bg:'#fef3d4',text:'#b88407',label:'PA'}:{bg:'#e3f3f0',text:'#0e8c7d',label:'งานประจำวัน'};
+const pickColor=(name)=>{const c=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57'];let h=0;const s=name||'?';for(let i=0;i<s.length;i++)h=(h+s.charCodeAt(i))%c.length;return c[h];};
+const barColorFor=(p)=> p>=100?'#22b573':p>=40?primary:p>0?'#f5b301':'#cbd5e1';
+const statsFor=(arr)=>{const total=arr.length,done=arr.filter(j=>j.progress>=100).length,over=arr.filter(j=>j.daysType==='over').length,avg=total?Math.round(arr.reduce((s,j)=>s+j.progress,0)/total):0;return {total,done,over,pending:total-done,avg,avgStyle:avg+'%'};};
+
+function ChipScroller({statuses,base}){
+  const msc=(name,size,color)=>{var k=(ICON[name]||'bi-record-circle');return (<i className={'bi '+(/^bi-/.test(k)?k:'bi-'+k)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
+  const ref=React.useRef(null);
+  const [ov,setOv]=React.useState({l:false,r:false});
+  const update=()=>{const el=ref.current;if(!el)return;setOv({l:el.scrollLeft>4,r:el.scrollLeft+el.clientWidth<el.scrollWidth-4});};
+  React.useEffect(()=>{const el=ref.current;if(!el)return;const h=()=>update();el.addEventListener('scroll',h);window.addEventListener('resize',h);const t=setTimeout(update,60);return()=>{el.removeEventListener('scroll',h);window.removeEventListener('resize',h);clearTimeout(t);};},[]);
+  const go=(d)=>{const el=ref.current;if(el)el.scrollBy({left:d*180,behavior:'smooth'});};
+  return (
+    <div style={{position:'relative',marginTop:10,paddingLeft:53}}>
+      {ov.l && <button onClick={()=>go(-1)} style={{position:'absolute',top:'50%',left:48,transform:'translateY(-50%)',width:26,height:26,borderRadius:'50%',border:'1px solid #e3e7ec',background:'#fff',boxShadow:'0 1px 5px rgba(16,24,40,.14)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:2,color:'#5a6473'}}>{msc('chevron_left',18)}</button>}
+      <div ref={ref} className="chip-scroll" style={{display:'flex',gap:7,overflowX:'auto',scrollbarWidth:'none'}}>
+        {statuses.map((st,j)=>(
+          <a key={j} className="fn-status-row" href={base+'&status='+st.key} style={{display:'inline-flex',alignItems:'center',gap:7,padding:'4px 11px 4px 5px',borderRadius:99,textDecoration:'none',color:'#5a6473',border:'1px solid #eef0f4',background:'#fff',whiteSpace:'nowrap',flex:'none',transition:'background .15s,border-color .15s'}}>
+            <span style={{minWidth:21,height:21,borderRadius:99,border:'1.5px solid '+st.color,color:st.color,fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 4px'}}>{st.count}</span>
+            <span style={{fontSize:12,fontWeight:500}}>{st.label}</span>
+          </a>
+        ))}
+      </div>
+      {ov.r && <button onClick={()=>go(1)} style={{position:'absolute',top:'50%',right:0,transform:'translateY(-50%)',width:26,height:26,borderRadius:'50%',border:'1px solid #e3e7ec',background:'#fff',boxShadow:'0 1px 5px rgba(16,24,40,.14)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:2,color:'#5a6473'}}>{msc('chevron_right',18)}</button>}
+    </div>
+  );
+}
+
+function App(){
+  const [view,setView]=useState('dashboard');
+  const [manageMode,setManageMode]=useState('me');
+  const [selectedMember,setSelectedMember]=useState(0);
+  React.useEffect(()=>{
+    try{
+      const p=new URLSearchParams(window.location.search).get('member');
+      if(p){
+        const idx=MEMBERS0.findIndex(m=>m.name===decodeURIComponent(p));
+        if(idx>=0){ setSelectedMember(idx); setView('member'); }
+      }
+    }catch(e){}
+  },[]);
+  const [reorderOpen,setReorderOpen]=useState(false);
+  const [reorderKind,setReorderKind]=useState('me');
+  const [openFn,setOpenFn]=useState(1);
+  const [poolFilter,setPoolFilter]=useState('all');
+  const [poolSearch,setPoolSearch]=useState('');
+  const [todayJobs,setTodayJobs]=useState(TODAY0);
+  const [members,setMembers]=useState(MEMBERS0);
+  const [pool,setPool]=useState(POOL0);
+  const dragRef = React.useRef(null);
+
+  const getList=(kind)=> kind==='team' ? (members[selectedMember]?members[selectedMember].jobs:[]) : todayJobs;
+  const setList=(kind,arr)=>{ if(kind==='team'){ setMembers(ms=>ms.map((m,i)=>i===selectedMember?{...m,jobs:arr}:m)); } else setTodayJobs(arr); };
+  const move=(kind,id,dir)=>{ const arr=[...getList(kind)];const i=arr.findIndex(j=>j.id===id);const ni=i+dir;if(i<0||ni<0||ni>=arr.length)return;const t=arr[i];arr[i]=arr[ni];arr[ni]=t;setList(kind,arr); };
+  const remove=(kind,id)=> setList(kind,getList(kind).filter(j=>j.id!==id));
+  const addProgress=(kind,id)=> setList(kind,getList(kind).map(j=>{if(j.id!==id)return j;const np=Math.min(100,j.progress+25);return {...j,progress:np,status:np>=100?'green':j.status};}));
+  const dropOn=(kind,targetId)=>{const d=dragRef.current;if(!d||d===targetId)return;const arr=[...getList(kind)];const from=arr.findIndex(j=>j.id===d);const to=arr.findIndex(j=>j.id===targetId);if(from<0||to<0)return;const [mv]=arr.splice(from,1);arr.splice(to,0,mv);setList(kind,arr);dragRef.current=null;};
+  const importJob=(id)=>{const p=pool.find(x=>x.id===id);if(!p)return;const kind=manageMode==='team'?'team':'me';const job={id:'imp-'+id+'-'+Date.now(),title:p.title,commander:p.commander,priority:p.priority,due:p.due,days:p.days,daysType:p.daysType||'left',progress:0,status:'yellow',type:p.type||'daily'};setList(kind,[...getList(kind),job]);setPool(pl=>pl.filter(x=>x.id!==id));};
+
+  const mapJob=(job,idx,kind)=>{
+    const pr=prStyle(job.priority),ty=tyStyle(job.type),hi=job.progress>=100||job.inProgress;
+    return {...job,rank:idx+1,widthStyle:job.progress+'%',barColor:barColorFor(job.progress),
+      statusColor:job.status==='red'?'#ef4444':job.status==='green'?'#22b573':'#f5b301',
+      prBg:pr.bg,prText:pr.text,prLabel:pr.label,tyBg:ty.bg,tyText:ty.text,tyLabel:ty.label,
+      daysColor:job.daysType==='over'?'#d83a3a':'#16916f',daysIcon:job.daysType==='over'?'warning':'schedule',
+      rowBg:hi?'#eaf7f0':'#ffffff',rowBorder:hi?'#bfe6d3':'#eef0f4',
+      avatarInitial:(job.commander||'?').trim().charAt(0),avatarColor:pickColor(job.commander),
+      onMoveUp:()=>move(kind,job.id,-1),onMoveDown:()=>move(kind,job.id,1),
+      onRemove:()=>remove(kind,job.id),onAddProgress:()=>addProgress(kind,job.id),
+      onDragStart:(e)=>{dragRef.current=job.id;try{e.dataTransfer.effectAllowed='move';}catch(_){}},
+      onDrop:(e)=>{e.preventDefault();dropOn(kind,job.id);}};
+  };
+
+  const isDashboard=view==='dashboard', isManage=view==='manage', isMember=view==='member';
+  const isTeamMode=manageMode==='team', activeKind=isTeamMode?'team':'me';
+  const todayView=todayJobs.map((j,i)=>mapJob(j,i,'me'));
+  const myStats=statsFor(todayJobs);
+  const teamAll=members.reduce((a,m)=>a.concat(m.jobs),[]);
+  const teamStats=statsFor(teamAll);
+  const teamView=members.map((m,i)=>{const st=statsFor(m.jobs);return {...m,idx:i,total:st.total,done:st.done,over:st.over,pending:st.pending,widthStyle:m.progress+'%',onManage:()=>{setSelectedMember(i);setManageMode('team');setView('member');}};});
+  const manageList=getList(activeKind).map((j,i)=>mapJob(j,i,activeKind));
+  const reorderView=getList(reorderKind).map((j,i)=>mapJob(j,i,reorderKind));
+  const sel=selectedMember, mem=members[sel]||{name:'',role:'',jobs:[]};
+  const memberJobsView=(mem.jobs||[]).map((j,i)=>mapJob(j,i,'team'));
+  const memberStats=statsFor(mem.jobs||[]);
+  const mt=memberStats;
+  const memberStatCards=[
+    {label:'งานที่ได้รับ',count:mt.total,unit:'งาน',icon:'call_received',color:'#4f46e5',softBg:'#ecebfb',pct:100},
+    {label:'ปิดงานแล้ว',count:mt.done,unit:'งาน',icon:'task_alt',color:'#22b573',softBg:'#e4f4ec',pct:mt.total?Math.round(mt.done/mt.total*100):0},
+    {label:'เกินกำหนด',count:mt.over,unit:'งาน',icon:'warning',color:'#ef4444',softBg:'#fdeaea',pct:mt.total?Math.round(mt.over/mt.total*100):0},
+    {label:'ความก้าวหน้าเฉลี่ย',count:mt.avg,unit:'%',icon:'trending_up',color:'#0e8c7d',softBg:'#e3f3f0',pct:mt.avg},
+  ].map(s=>({...s,pctStyle:s.pct+'%'}));
+
+  const flt=poolFilter,q=(poolSearch||'').trim();
+  const poolView=pool.filter(p=>(flt==='all'||p.priority===flt)&&(!q||p.title.indexOf(q)>=0)).map(p=>{const pr=prStyle(p.priority);return {...p,prBg:pr.bg,prText:pr.text,prLabel:pr.label,avatarInitial:(p.commander||'?').trim().charAt(0),avatarColor:pickColor(p.commander),daysColor:p.daysType==='over'?'#d83a3a':'#16916f',metaLeft:p.amount||p.count||'',onImport:()=>importJob(p.id)};});
+  const ft=[{key:'all',label:'ทั้งหมด'},{key:'urgent',label:'ด่วนมาก'},{key:'high',label:'ด่วน'},{key:'normal',label:'ปกติ'}];
+  const filterTabs=ft.map(t=>{const a=flt===t.key;return {...t,onClick:()=>setPoolFilter(t.key),bg:a?primary:'#fff',color:a?'#fff':'#5a6473',border:a?primary:'#e3e7ec'};});
+  const memberTabs=members.map((m,i)=>{const a=i===selectedMember;return {name:m.name,onSelect:()=>setSelectedMember(i),bg:a?primarySoft:'#fff',color:a?primary:'#5a6473',border:a?primary:'#e3e7ec'};});
+  const statCards=[
+    {label:'คำสั่งที่สั่งไป',pct:30,count:20,unit:'กำลังดำเนินการ',icon:'call_made',color:'#0e8c7d',softBg:'#e3f3f0',base:'daily-job-list.html?fn=sent',
+      statuses:[{label:'คำสั่งการใหม่',count:3,color:'#dd7a16',key:'new'},{label:'กำลังดำเนินการ',count:14,color:'#4f46e5',key:'inprogress'},{label:'ความก้าวหน้าใหม่',count:5,color:'#0e8c7d',key:'progress'},{label:'ขอปิดงาน',count:2,color:'#d98223',key:'closing'},{label:'ข้อความใหม่',count:1,color:'#15a08f',key:'message'}]},
+    {label:'คำสั่งที่ได้รับ',pct:50,count:7,unit:'กำลังดำเนินการ',icon:'call_received',color:'#4f46e5',softBg:'#ecebfb',base:'daily-job-list.html?fn=received',
+      statuses:[{label:'ยังไม่รับทราบ',count:4,color:'#dd7a16',key:'unacknowledged'},{label:'กำลังดำเนินการ',count:31,color:'#4f46e5',key:'inprogress'},{label:'ขอปิดงาน',count:7,color:'#d98223',key:'closing'},{label:'ข้อความใหม่',count:0,color:'#15a08f',key:'message'}]},
+    {label:'เอกสารปฏิบัติงาน',pct:50,count:2,unit:'งานใหม่',icon:'description',color:'#dd7a16',softBg:'#fdeee0',base:'document-list.html?fn=wi',
+      statuses:[{label:'ฉบับร่าง',count:2,color:'#dd7a16',key:'draft'},{label:'รอตรวจสอบ',count:1,color:'#4f46e5',key:'review'},{label:'เผยแพร่แล้ว',count:5,color:'#22b573',key:'published'}]},
+    {label:'อนุมัติเอกสาร',pct:75,count:1,unit:'รออนุมัติ',icon:'fact_check',color:'#0891b2',softBg:'#e0f2f8',base:'approval-list.html?fn=approve',
+      statuses:[{label:'รออนุมัติ',count:1,color:'#dd7a16',key:'pending'},{label:'อนุมัติแล้ว',count:4,color:'#22b573',key:'approved'},{label:'ตีกลับแก้ไข',count:1,color:'#d83a3a',key:'returned'}]},
+    {label:'แผนธุรกิจที่รับผิดชอบ',pct:20,count:12,unit:'รายการ',icon:'monitoring',color:'#7c3aed',softBg:'#f1ebfb',base:'business-plan-list.html?fn=plan',
+      statuses:[]},
+  ].map(s=>({...s,pctStyle:s.pct+'%'}));
+  const vmGroups=[
+    {name:'VM : AAR GiveD5',members:'สมาชิก 18 คน',posts:'5 โพสใหม่'},
+    {name:'เคล็ดลับการเขียน WI',members:'สมาชิก 29 คน',posts:'8 โพสใหม่'},
+    {name:'AI วันละ 5 นาที',members:'สมาชิก 17 คน',posts:'15 โพสใหม่'},
+    {name:'SA-Developer',members:'สมาชิก 4 คน',posts:'2 โพสใหม่'},
+    {name:'VM : EDR วท.อุดรธานี',members:'สมาชิก 17 คน',posts:'9 โพสใหม่'},
+  ];
+  const openReorder=()=>{ setReorderKind(view==='manage'?activeKind:view==='member'?'team':'me'); setReorderOpen(true); };
+
+  const ms=(name,size,color)=>{var k=(ICON[name]||'bi-record-circle');return (<i className={'bi '+(/^bi-/.test(k)?k:'bi-'+k)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
+
+  return (
+   <GD5AppShell active="dashboard">
+
+      {/* MAIN */}
+      <div style={{flex:1,padding:22,minWidth:0}}>
+
+      {isDashboard && (
+       <div style={{maxWidth:1480,margin:'0 auto',display:'grid',gridTemplateColumns:'1.62fr 1fr',gap:18,alignItems:'start'}}>
+        {/* LEFT */}
+        <div style={{display:'flex',flexDirection:'column',gap:18,minWidth:0}}>
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16,display:'flex',alignItems:'center',gap:15}}>
+            <div style={{width:62,height:62,borderRadius:'50%',background:'#15a08f',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:24,flex:'none'}}>P</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontWeight:700,fontSize:17}}>Piyawat Takaew</div>
+              <div style={{fontSize:13,color:'#8a93a3',marginBottom:6}}>SA Staff</div>
+              <div style={{display:'flex',alignItems:'center',gap:14,fontSize:12,color:'#8a93a3'}}>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}>{ms('visibility',15)}กำลังติดตาม 12</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}>{ms('group',15)}ผู้ติดตาม 34</span>
+              </div>
+            </div>
+            <div style={{display:'flex',gap:6}}><span style={{width:11,height:11,borderRadius:'50%',background:'#f5b301'}}></span><span style={{width:11,height:11,borderRadius:'50%',background:'#ef4444'}}></span><span style={{width:11,height:11,borderRadius:'50%',background:'#22b573'}}></span></div>
+          </div>
+
+          {/* Today's Job */}
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
+              {ms('checklist',22,primary)}
+              <div style={{fontWeight:700,fontSize:16}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
+              <div style={{flex:1}}></div>
+              <button onClick={openReorder} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'7px 11px',fontSize:12.5,fontWeight:600}}>{ms('swap_vert',17)}เรียงลำดับ</button>
+              <button onClick={()=>{setManageMode('me');setView('manage');}} style={{display:'inline-flex',alignItems:'center',gap:5,background:primary,border:'none',color:'#fff',borderRadius:9,padding:'7px 12px',fontSize:12.5,fontWeight:600}}>{ms('tune',17)}จัดการ Daily Job</button>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',border:'1px solid #eef1f5',borderRadius:10,padding:'9px 12px',marginBottom:13}}>
+              <div style={{display:'flex',alignItems:'center',gap:13,fontSize:12,color:'#5a6473',flexWrap:'wrap'}}>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#f5b301'}}></span>{myStats.pending} รอดำเนินการ</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#22b573'}}></span>{myStats.done} ปิดงานแล้ว</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#ef4444'}}></span>{myStats.over} เกินกำหนด</span>
+              </div>
+              <div style={{flex:1}}></div>
+              <div style={{display:'flex',alignItems:'center',gap:9,minWidth:170}}><div style={{flex:1,height:7,background:'#e7ebf1',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:primary,width:myStats.avgStyle}}></div></div><span style={{fontWeight:700,fontSize:13,color:primary}}>{myStats.avgStyle}</span></div>
+            </div>
+            {todayView.map(job=>(
+              <div key={job.id} onClick={() => window.location.href = job.progress >= 100 ? 'assignee-action-close.html' : 'assignee-action-inprogress.html'} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 12px',border:'1px solid '+job.rowBorder,borderRadius:11,background:job.rowBg,marginBottom:8,animation:'popIn .2s ease',cursor:'pointer'}}>
+                <div style={{width:26,textAlign:'center',fontWeight:700,fontSize:20,color:'#4338ca',flex:'none'}}>{job.rank}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:600,fontSize:13.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
+                  <div style={{display:'flex',alignItems:'center',gap:9,marginTop:5,flexWrap:'wrap',fontSize:11.5,color:'#8a93a3'}}>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:18,height:18,borderRadius:'50%',background:job.avatarColor,color:'#fff',fontSize:10,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{job.avatarInitial}</span>{job.commander}</span>
+                    <span style={{padding:'2px 8px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:3}}>{ms('event',14)}{job.due}</span>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:3,color:job.daysColor,fontWeight:600}}>{ms(job.daysIcon,14)}{job.days}</span>
+                    <span style={{padding:'2px 8px',borderRadius:99,fontWeight:600,background:job.tyBg,color:job.tyText}}>{job.tyLabel}</span>
+                  </div>
+                  <div style={{marginTop:7,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden',maxWidth:440}}><div style={{height:'100%',borderRadius:99,background:job.barColor,width:job.widthStyle}}></div></div>
+                </div>
+                <button onClick={(e) => { e.stopPropagation(); job.onAddProgress(); }} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff',border:'1px solid '+primary,color:primary,borderRadius:8,padding:'6px 10px',fontSize:11.5,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{ms('add',15)}เพิ่มความก้าวหน้า</button>
+                <span style={{width:12,height:12,borderRadius:'50%',background:job.statusColor,flex:'none'}}></span>
+              </div>
+            ))}
+          </div>
+
+          {/* Team */}
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:14}}>
+              {ms('groups',22,primary)}
+              <div style={{fontWeight:700,fontSize:16}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>ของลูกทีม</span></div>
+              <div style={{flex:1}}></div>
+              <span style={{fontSize:11.5,color:'#9aa3af'}}>แตะที่สมาชิกเพื่อตรวจสอบ / จัดลำดับงานของลูกทีม</span>
+            </div>
+            <div style={{background:'#eef0f3',borderRadius:13,padding:'14px 16px',marginBottom:13}}>
+              <div style={{display:'flex',alignItems:'center',gap:18}}>
+                <div style={{display:'inline-flex',alignItems:'center',gap:6,color:'#5a6473',fontSize:13,fontWeight:600,whiteSpace:'nowrap'}}>{ms('monitoring',18,primary)}ความก้าวหน้า</div>
+                <div style={{flex:1,height:15,background:'#fff',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:'#3730dc',width:teamStats.avgStyle}}></div></div>
+                <div style={{fontWeight:800,fontSize:19,color:'#3730dc',whiteSpace:'nowrap'}}>{teamStats.avg} %</div>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:9,marginTop:11,flexWrap:'wrap'}}>
+                <span style={{fontSize:12,color:'#8a93a3',fontWeight:500}}>{teamStats.pending} รอดำเนินการ</span>
+                <span style={{background:'#e4f4ec',color:'#1f9d57',fontSize:12,fontWeight:600,borderRadius:99,padding:'3px 11px'}}>{teamStats.done} ดำเนินการแล้ว</span>
+                <span style={{background:'#fdeaea',color:'#d83a3a',fontSize:12,fontWeight:600,borderRadius:99,padding:'3px 11px'}}>{teamStats.over} งานค้าง</span>
+              </div>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:11}}>
+              {teamView.map(m=>(
+                <div key={m.id} onClick={m.onManage} style={{display:'flex',alignItems:'center',gap:13,background:'#f3f4f7',borderRadius:13,padding:'12px 15px',cursor:'pointer'}}>
+                  <div style={{width:42,height:42,borderRadius:'50%',border:'1.5px solid #cfd6e0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:'#9aa3af'}}>{ms('person',26)}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:700,fontSize:14,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',marginBottom:5}}>{m.name}</div>
+                    <div style={{display:'flex',alignItems:'center',gap:14,flexWrap:'wrap',fontSize:12,color:'#7b8595'}}>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:8,height:8,borderRadius:'50%',background:'#f5b301'}}></span>{m.pending} รอดำเนินการ</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:8,height:8,borderRadius:'50%',background:'#22b573'}}></span>{m.done} ปิดงานแล้ว</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:8,height:8,borderRadius:'50%',background:'#ef4444'}}></span>{m.over} เกินกำหนด</span>
+                    </div>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:10,flex:'none'}}>
+                    <div style={{width:118,height:7,background:'#e3e7ee',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:primary,width:m.widthStyle}}></div></div>
+                    <span style={{fontWeight:700,fontSize:14,color:primary,minWidth:38,textAlign:'right'}}>{m.progress}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div style={{display:'flex',flexDirection:'column',gap:18,minWidth:0}}>
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:13}}>{ms('bolt',21,primary)}<div style={{fontWeight:700,fontSize:15}}>ทางลัด</div></div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10}}>
+              <button onClick={()=>{setManageMode('me');setView('manage');}} style={{background:primarySoft,border:'1px solid '+primarySoftBorder,borderRadius:11,padding:'13px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:7,color:primary}}>{ms('add_task',24)}<span style={{fontSize:11.5,fontWeight:600}}>สั่งการใหม่</span></button>
+              <button style={{background:'#f6f8fa',border:'1px solid #eef1f5',borderRadius:11,padding:'13px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:7,color:'#5a6473'}}>{ms('note_add',24)}<span style={{fontSize:11.5,fontWeight:600}}>เอกสารใหม่</span></button>
+              <button style={{background:'#f6f8fa',border:'1px solid #eef1f5',borderRadius:11,padding:'13px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:7,color:'#5a6473'}}>{ms('insights',24)}<span style={{fontSize:11.5,fontWeight:600}}>วิเคราะห์ข้อมูล</span></button>
+              <button style={{background:'#f6f8fa',border:'1px solid #eef1f5',borderRadius:11,padding:'13px 6px',display:'flex',flexDirection:'column',alignItems:'center',gap:7,color:'#5a6473'}}>{ms('leaderboard',24)}<span style={{fontSize:11.5,fontWeight:600}}>คะแนนของฉัน</span></button>
+            </div>
+          </div>
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'10px 16px'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,padding:'6px 0 10px'}}>{ms('donut_small',20,primary)}<div style={{fontWeight:700,fontSize:15}}>ภาพรวมงานแต่ละฟังก์ชัน</div><div style={{flex:1}}></div><span style={{fontSize:11,color:'#9aa3af'}}>แตะเพื่อดูตามสถานะ</span></div>
+            {statCards.map((s,i)=>{const hasSub=s.statuses&&s.statuses.length>0;return (
+              <div key={i} style={{padding:'13px 0',borderBottom:'1px solid #f1f3f6'}}>
+                <div style={{display:'flex',alignItems:'center',gap:13}}>
+                  <div style={{width:40,height:40,borderRadius:11,background:s.softBg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms(s.icon,22,s.color)}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}><span style={{fontWeight:600,fontSize:13}}>{s.label}</span><span style={{fontSize:11.5,color:s.color,fontWeight:700}}>{s.pctStyle}</span></div>
+                    <div style={{height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:s.color,width:s.pctStyle}}></div></div>
+                  </div>
+                  <div style={{textAlign:'right',flex:'none'}}><div style={{fontWeight:700,fontSize:21,color:s.color}}>{s.count}</div><div style={{fontSize:10.5,color:'#9aa3af'}}>{s.unit}</div></div>
+                </div>
+                {hasSub && <ChipScroller statuses={s.statuses} base={s.base}/>}
+              </div>
+            );})}
+          </div>
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:13}}>{ms('forum',21,primary)}<div style={{fontWeight:700,fontSize:15}}>กลุ่มที่มีโพสต์ใหม่</div></div>
+            {vmGroups.map((g,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:11,padding:'9px 0',borderBottom:'1px solid #f1f3f6'}}>
+                <div style={{width:40,height:40,borderRadius:10,background:'repeating-linear-gradient(135deg,#e9edf2,#e9edf2 6px,#eff2f6 6px,#eff2f6 12px)',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',color:'#aeb6c2'}}>{ms('groups',20)}</div>
+                <div style={{flex:1,minWidth:0}}><div style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{g.name}</div><div style={{fontSize:11,color:'#9aa3af'}}>{g.members}</div></div>
+                <span style={{background:primarySoft,color:primary,fontSize:11,fontWeight:700,borderRadius:99,padding:'3px 9px',whiteSpace:'nowrap'}}>{g.posts}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+       </div>
+      )}
+
+      {/* MEMBER */}
+      {isMember && (
+       <div style={{maxWidth:1480,margin:'0 auto',animation:'fadeIn .2s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:16}}>
+          <button onClick={()=>setView('dashboard')} style={{width:36,height:36,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('arrow_back',22)}</button>
+          {ms('groups',22,primary)}
+          <div style={{fontWeight:700,fontSize:17}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>ของลูกทีม — {mem.name}</span></div>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1.62fr 1fr',gap:18,alignItems:'start'}}>
+          <div style={{display:'flex',flexDirection:'column',gap:18,minWidth:0}}>
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16,display:'flex',alignItems:'center',gap:15}}>
+              <div style={{width:62,height:62,borderRadius:'50%',background:pickColor(mem.name),color:'#fff',fontWeight:700,fontSize:24,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{(mem.name||'?').charAt(0)}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:700,fontSize:17}}>{mem.name}</div>
+                <div style={{fontSize:13,color:'#8a93a3',marginBottom:7}}>{mem.role}</div>
+                <div style={{display:'flex',alignItems:'center',gap:9,maxWidth:280}}><div style={{flex:1,height:7,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:primary,width:memberStats.avgStyle}}></div></div><span style={{fontWeight:700,fontSize:13,color:primary}}>{memberStats.avgStyle}</span></div>
+              </div>
+              <div style={{background:primarySoft,color:primary,fontSize:11.5,fontWeight:700,borderRadius:99,padding:'5px 12px',display:'inline-flex',alignItems:'center',gap:5}}>{ms('edit',15)}โหมดผู้จัดการ</div>
+            </div>
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
+              <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
+                {ms('checklist',22,primary)}
+                <div style={{fontWeight:700,fontSize:16}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
+                <div style={{flex:1}}></div>
+                <button onClick={openReorder} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'7px 11px',fontSize:12.5,fontWeight:600}}>{ms('swap_vert',17)}เรียงลำดับ</button>
+                <button onClick={()=>{setManageMode('team');setView('manage');}} style={{display:'inline-flex',alignItems:'center',gap:5,background:primary,border:'none',color:'#fff',borderRadius:9,padding:'7px 12px',fontSize:12.5,fontWeight:600}}>{ms('tune',17)}จัดการ Daily Job</button>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:13,background:'#f7f9fb',border:'1px solid #eef1f5',borderRadius:10,padding:'9px 12px',marginBottom:13,fontSize:12,color:'#5a6473'}}>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#f5b301'}}></span>{memberStats.pending} รอดำเนินการ</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#22b573'}}></span>{memberStats.done} ปิดงานแล้ว</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#ef4444'}}></span>{memberStats.over} เกินกำหนด</span>
+              </div>
+              {memberJobsView.map(job=>(
+                <div key={job.id} onClick={() => window.location.href = job.progress >= 100 ? 'assignee-action-close.html' : 'assignee-action-inprogress.html'} style={{display:'flex',alignItems:'center',gap:12,padding:'11px 12px',border:'1px solid '+job.rowBorder,borderRadius:11,background:job.rowBg,marginBottom:8,animation:'popIn .2s ease',cursor:'pointer'}}>
+                  <div style={{width:26,textAlign:'center',fontWeight:700,fontSize:20,color:'#4338ca',flex:'none'}}>{job.rank}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:600,fontSize:13.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
+                    <div style={{display:'flex',alignItems:'center',gap:9,marginTop:5,flexWrap:'wrap',fontSize:11.5,color:'#8a93a3'}}>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:5}}><span style={{width:18,height:18,borderRadius:'50%',background:job.avatarColor,color:'#fff',fontSize:10,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{job.avatarInitial}</span>{job.commander}</span>
+                      <span style={{padding:'2px 8px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3}}>{ms('event',14)}{job.due}</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3,color:job.daysColor,fontWeight:600}}>{ms(job.daysIcon,14)}{job.days}</span>
+                      <span style={{padding:'2px 8px',borderRadius:99,fontWeight:600,background:job.tyBg,color:job.tyText}}>{job.tyLabel}</span>
+                    </div>
+                    <div style={{marginTop:7,height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden',maxWidth:440}}><div style={{height:'100%',borderRadius:99,background:job.barColor,width:job.widthStyle}}></div></div>
+                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); job.onAddProgress(); }} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff',border:'1px solid '+primary,color:primary,borderRadius:8,padding:'6px 10px',fontSize:11.5,fontWeight:600,whiteSpace:'nowrap',flex:'none'}}>{ms('add',15)}เพิ่มความก้าวหน้า</button>
+                  <span style={{width:12,height:12,borderRadius:'50%',background:job.statusColor,flex:'none'}}></span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:18,minWidth:0}}>
+            <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:'6px 16px'}}>
+              {memberStatCards.map((s,i)=>(
+                <div key={i} style={{display:'flex',alignItems:'center',gap:13,padding:'13px 0',borderBottom:'1px solid #f1f3f6'}}>
+                  <div style={{width:40,height:40,borderRadius:11,background:s.softBg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms(s.icon,22,s.color)}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}><span style={{fontWeight:600,fontSize:13}}>{s.label}</span><span style={{fontSize:11.5,color:s.color,fontWeight:700}}>{s.pctStyle}</span></div>
+                    <div style={{height:6,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:s.color,width:s.pctStyle}}></div></div>
+                  </div>
+                  <div style={{textAlign:'right',flex:'none'}}><div style={{fontWeight:700,fontSize:21,color:s.color}}>{s.count}</div><div style={{fontSize:10.5,color:'#9aa3af'}}>{s.unit}</div></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+       </div>
+      )}
+
+      {/* MANAGE */}
+      {isManage && (
+       <div style={{maxWidth:1480,margin:'0 auto',background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:18,animation:'fadeIn .2s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:16}}>
+          <button onClick={()=>setView(manageMode==='team'?'member':'dashboard')} style={{width:36,height:36,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('arrow_back',22)}</button>
+          {ms('tune',22,primary)}
+          <div style={{fontWeight:700,fontSize:17}}>จัดการข้อมูล Daily Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
+          <div style={{flex:1}}></div>
+          <button onClick={openReorder} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'8px 12px',fontSize:12.5,fontWeight:600}}>{ms('drag_indicator',18)}เรียงลำดับแบบลาก</button>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16,flexWrap:'wrap'}}>
+          <div style={{display:'flex',background:'#f1f3f7',borderRadius:10,padding:3}}>
+            <button onClick={()=>setManageMode('me')} style={{border:'none',borderRadius:8,padding:'7px 16px',fontSize:13,fontWeight:600,background:!isTeamMode?'#fff':'transparent',color:!isTeamMode?primary:'#8a93a3'}}>งานของฉัน</button>
+            <button onClick={()=>setManageMode('team')} style={{border:'none',borderRadius:8,padding:'7px 16px',fontSize:13,fontWeight:600,background:isTeamMode?'#fff':'transparent',color:isTeamMode?primary:'#8a93a3'}}>งานของลูกทีม</button>
+          </div>
+          {isTeamMode && (
+            <div style={{display:'flex',alignItems:'center',gap:7,flexWrap:'wrap'}}>
+              <span style={{fontSize:12,color:'#9aa3af'}}>เลือกสมาชิก:</span>
+              {memberTabs.map((mt,i)=>(<button key={i} onClick={mt.onSelect} style={{border:'1px solid '+mt.border,borderRadius:99,padding:'5px 13px',fontSize:12.5,fontWeight:600,background:mt.bg,color:mt.color}}>{mt.name}</button>))}
+            </div>
+          )}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'0.92fr 1.08fr',gap:18,alignItems:'start'}}>
+          <div style={{border:'1px solid #eef0f4',borderRadius:12,padding:13,background:'#fcfdfe'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>{ms('checklist',19,primary)}<div style={{fontWeight:700,fontSize:14}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:12.5}}>(คำสั่งที่ได้รับ)</span></div><div style={{flex:1}}></div><span style={{fontSize:11.5,color:'#9aa3af'}}>{manageList.length} งาน</span></div>
+            {manageList.map(job=>(
+              <div key={job.id} draggable onDragStart={job.onDragStart} onDragOver={(e)=>e.preventDefault()} onDrop={job.onDrop} style={{display:'flex',alignItems:'center',gap:10,padding:10,border:'1px solid '+job.rowBorder,borderRadius:10,background:job.rowBg,marginBottom:8}}>
+                <div style={{width:24,textAlign:'center',fontWeight:700,fontSize:18,color:'#4338ca',flex:'none'}}>{job.rank}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
+                  <div style={{display:'flex',alignItems:'center',gap:8,marginTop:4,fontSize:11,color:'#8a93a3',flexWrap:'wrap'}}>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:16,height:16,borderRadius:'50%',background:job.avatarColor,color:'#fff',fontSize:9,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{job.avatarInitial}</span>{job.commander}</span>
+                    <span style={{padding:'1px 7px',borderRadius:99,fontWeight:600,background:job.prBg,color:job.prText}}>{job.prLabel}</span>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:3}}>{ms('event',13)}{job.due}</span>
+                    <span style={{color:job.daysColor,fontWeight:600}}>{job.days}</span>
+                  </div>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',border:'1px solid #dde2e8',borderRadius:8,overflow:'hidden',flex:'none'}}>
+                  <button onClick={job.onMoveUp} style={{border:'none',background:'#fff',padding:'2px 6px',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('keyboard_arrow_up',18)}</button>
+                  <button onClick={job.onMoveDown} style={{border:'none',borderTop:'1px solid #eef0f4',background:'#fff',padding:'2px 6px',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('keyboard_arrow_down',18)}</button>
+                </div>
+                <button onClick={job.onRemove} style={{width:32,height:32,borderRadius:8,border:'none',background:'#fdeaea',color:'#d83a3a',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('delete',18)}</button>
+              </div>
+            ))}
+            {manageList.length===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:13,padding:'30px 0'}}>ยังไม่มีงานในรายการ — นำเข้าจากผู้สั่งการทางขวา</div>}
+          </div>
+          <div style={{border:'1px solid #eef0f4',borderRadius:12,padding:13,background:'#fff'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:11}}>{ms('inbox',19,primary)}<div style={{fontWeight:700,fontSize:14}}>ผู้สั่งการ <span style={{color:'#8a93a3',fontWeight:500,fontSize:12.5}}>— เลือกนำเข้างาน</span></div></div>
+            <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:11,flexWrap:'wrap'}}>
+              <div style={{display:'flex',alignItems:'center',gap:7,background:'#f4f6f9',border:'1px solid #e7eaef',borderRadius:9,padding:'7px 11px',flex:1,minWidth:160}}>
+                {ms('search',17,'#9aa3af')}
+                <input value={poolSearch} onChange={(e)=>setPoolSearch(e.target.value)} placeholder="ค้นหาคำสั่งการ" style={{border:'none',background:'transparent',outline:'none',fontSize:13,width:'100%',color:'#1f2733'}}/>
+              </div>
+              <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
+                {filterTabs.map((f,i)=>(<button key={i} onClick={f.onClick} style={{border:'1px solid '+f.border,borderRadius:99,padding:'6px 12px',fontSize:12,fontWeight:600,background:f.bg,color:f.color}}>{f.label}</button>))}
+              </div>
+              <button onClick={()=>{setPoolFilter('all');setPoolSearch('');}} style={{display:'inline-flex',alignItems:'center',gap:4,border:'1px solid #e7eaef',background:'#fff',borderRadius:9,padding:'6px 11px',fontSize:12,color:'#8a93a3',fontWeight:600}}>{ms('filter_alt_off',16)}เคลียร์</button>
+            </div>
+            <div style={{maxHeight:560,overflowY:'auto',paddingRight:3}}>
+              {poolView.map(p=>(
+                <div key={p.id} style={{display:'flex',alignItems:'center',gap:11,padding:10,border:'1px solid #eef0f4',borderRadius:10,marginBottom:8}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:'flex',alignItems:'flex-start',gap:7}}>
+                      <span style={{width:18,height:18,borderRadius:'50%',background:p.avatarColor,color:'#fff',fontSize:10,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',flex:'none',marginTop:1}}>{p.avatarInitial}</span>
+                      <div style={{fontWeight:600,fontSize:13,lineHeight:1.35}}>{p.title}</div>
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',gap:9,marginTop:6,flexWrap:'wrap',fontSize:11,color:'#8a93a3',paddingLeft:25}}>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3,color:primary,fontWeight:600}}>{p.metaLeft}</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3}}>{ms('event',13)}{p.due}</span>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:3,color:p.daysColor,fontWeight:600}}>{p.days}</span>
+                      <span style={{padding:'1px 8px',borderRadius:99,fontWeight:600,background:p.prBg,color:p.prText}}>{p.prLabel}</span>
+                    </div>
+                  </div>
+                  <button onClick={p.onImport} style={{width:38,height:38,borderRadius:'50%',border:'none',background:primary,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('add',22)}</button>
+                </div>
+              ))}
+              {poolView.length===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:13,padding:'30px 0'}}>ไม่พบคำสั่งการตามตัวกรอง</div>}
+            </div>
+          </div>
+        </div>
+       </div>
+      )}
+      </div>
+    </GD5AppShell>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(async function(){
+  var shellSrc='';
+  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
+  var pageSrc=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

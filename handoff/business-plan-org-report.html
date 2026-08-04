@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>รายงานแผนธุรกิจทั้งหมดขององค์กร — GiveD5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#f3f5f9;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:none;border:none;padding:0}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+.nav-item:hover{background:#f3f5f8}
+.mission-card:hover{box-shadow:0 2px 8px rgba(16,24,40,.07)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState,useMemo} = React;
+const primary='#15a08f', primarySoft='#e3f3f0';
+const RED='#ef4444', YEL='#f5b301', GRN='#22b96a', GRAY='#c7ccd4';
+const dotC=(s)=>s==='r'?RED:s==='y'?YEL:s==='g'?GRN:GRAY;
+const STLABEL={g:'บรรลุ / ปกติ',y:'เฝ้าระวัง',r:'ต่ำกว่าเกณฑ์','':'ยังไม่เริ่ม'};
+const AV_COLORS=['#15a08f','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
+
+function StatusDot({s,size,title:t}){
+  const d=size||10;
+  return <span title={t||STLABEL[s]||STLABEL['']} style={{width:d,height:d,borderRadius:'50%',background:dotC(s),display:'inline-block',flex:'none'}}></span>;
+}
+function Avatar({name,size}){
+  const d=size||26;
+  let h=0; for(let i=0;i<name.length;i++) h=name.charCodeAt(i)+((h<<5)-h);
+  const bg=AV_COLORS[Math.abs(h)%AV_COLORS.length];
+  return <div style={{width:d,height:d,borderRadius:'50%',background:bg,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:Math.round(d*0.42),flex:'none'}}>{name.charAt(0)}</div>;
+}
+
+/* ─── NAV (same convention as other business-plan-*.html pages) ─── */
+const NAVLINKS=[
+  {label:'รายงานแผนธุรกิจที่รับผิดชอบ',active:false,href:'business-plan-responsible-list.html'},
+  {label:'Cockpit ความก้าวหน้าของตัวชี้วัด',active:false,href:'business-plan-cockpit.html'},
+  {label:'ประเมินผลงานแผนธุรกิจ',active:false,href:null,count:1},
+  null,
+  {label:'รายงานแผนธุรกิจทั้งหมดขององค์กร',active:true,href:'business-plan-org-report.html'},
+  {label:'สถานะของแผนธุรกิจทั้งหมด',active:false,href:null},
+  {label:'สรุปผลการประเมินแผนธุรกิจ',active:false,href:null},
+];
+
+function LeftNav(){
+  return (
+    <div style={{width:220,background:'#fff',borderRight:'1px solid #e7eaef',padding:'16px 0',position:'sticky',top:58,height:'calc(100vh - 58px)',overflowY:'auto',flex:'none'}}>
+      {NAVLINKS.map((n,i)=> n===null ? (
+        <div key={i} style={{height:1,background:'#f0f2f5',margin:'8px 0'}}></div>
+      ) : (
+        <a key={i} href={n.href||'#'} className="nav-item" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 18px',cursor:'pointer',fontSize:13.5,fontWeight:n.active?700:400,color:n.active?primary:'#5a6473',background:n.active?primarySoft:'transparent',borderLeft:'3px solid '+(n.active?primary:'transparent'),textDecoration:'none'}}>
+          <span>{n.label}</span>
+          {n.count&&(
+            <span style={{minWidth:19,height:19,borderRadius:99,background:'#ef4444',color:'#fff',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px',flex:'none'}}>{n.count}</span>
+          )}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+/* ─── DATA: องค์กร → พันธกิจ → เป้าหมาย → กลยุทธ์ → แผนงาน (ลำดับชั้น 4 ระดับ) ───
+   หน้านี้แสดงเฉพาะระดับพันธกิจเป็นการ์ดหลัก + จุดสถานะของเป้าหมายแต่ละอันแบบย่อ
+   (ไม่ drilldown ลึกลงไปทีละชั้นเหมือนดีไซน์เดิม) แต่ยังคงโครงสร้างข้อมูลครบ 4 ชั้นไว้
+   เผื่อใช้กับหน้าอื่น/การค้นหาที่ต้องอ้างอิงถึงกลยุทธ์-แผนงานย่อย */
+const ROUNDS=[
+  {id:'r1',label:'เป้าหมายปี 2569 (ครึ่งปีแรก)'},
+  {id:'r2',label:'เป้าหมายปี 2569 (ครึ่งปีหลัง)'},
+  {id:'r3',label:'เป้าหมายปี 2568 (ทั้งปี)'},
+  {id:'r4',label:'เป้าหมายปี 2567 (ทั้งปี)'},
+];
+
+const MISSIONS_BASE=[
+  {id:'m1',title:'พันธกิจที่ 1: EDR',owner:'Pinij Ningunha',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g11',title:'เป้าหมายที่ 1.1 รักษาฐานลูกค้าสถานศึกษาเดิมไม่ให้มีการยกเลิกสัญญาบริการ EDR',owner:'Jarunya Thaiprayoon',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g12',title:'เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบ 3 แห่ง ต่อเนื่องจากปี 2568 และขยายผลอีก 6 แห่ง',owner:'Thaniya Tongprasert',period:'01/01/2026 – 31/12/2026',achieved:0,target:6,unit:'แห่ง',status:'y',children:[
+      {id:'s121',title:'กลยุทธ์ 1.2.1 จัดกิจกรรมการประกวด MOU ระดับภาค',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:1,target:1,unit:'กิจกรรม',status:'g',children:[
+        {id:'p1211',title:'แผนงาน 1.2.1.1 จัดเตรียมสถานที่และวัสดุการประกวด',owner:'Thaniya Tongprasert',period:'01/02/2026 – 28/02/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
+        {id:'p1212',title:'แผนงาน 1.2.1.2 ดำเนินการประกวดและตัดสินผล MOU',owner:'Thaniya Tongprasert',period:'01/03/2026 – 31/03/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
+      ]},
+      {id:'s122',title:'กลยุทธ์ 1.2.2 สนับสนุนทีมงานประกวด MOU วิทยาลัย',owner:'Thaniya Tongprasert',period:'01/02/2026 – 30/06/2026',achieved:3,target:3,unit:'แห่ง',status:'g',children:[]},
+    ]},
+    {id:'g13',title:'เป้าหมายที่ 1.3 เป็นผู้นำด้านซอฟต์แวร์บริหารจัดการด้านอาชีวศึกษา ให้มีจำนวนผู้เรียนในระบบ EDR ไม่น้อยกว่า 50,000 คน',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:50000,unit:'คน',status:'r',children:[]},
+    {id:'g14',title:'เป้าหมายที่ 1.4 นำ AI มาใช้ร่วม (Synergy) กับระบบ EDR',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[]},
+  ]},
+  {id:'m2',title:'พันธกิจที่ 2: GiveD5',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g21',title:'เป้าหมายที่ 2.1 พัฒนาโปรแกรม GiveD5 ในแต่ละเวอร์ชัน (Version) ให้แล้วเสร็จตามกรอบเวลาที่กำหนด',owner:'Piyawat Takaew',period:'01/01/2026 – 31/12/2026',achieved:2,target:4,unit:'เวอร์ชัน',status:'y',children:[
+      {id:'s211',title:'กลยุทธ์ 2.1.1 วางแผนและออกแบบฟีเจอร์ตาม Roadmap',owner:'Piyawat Takaew',period:'01/01/2026 – 31/03/2026',achieved:1,target:1,unit:'ฉบับ',status:'g',children:[
+        {id:'p2111',title:'แผนงาน 2.1.1.1 สำรวจความต้องการผู้ใช้งาน GiveD5',owner:'Piyawat Takaew',period:'01/01/2026 – 31/01/2026',achieved:1,target:1,unit:'ครั้ง',status:'g',children:[]},
+      ]},
+      {id:'s212',title:'กลยุทธ์ 2.1.2 พัฒนาคุณภาพระบบ GiveD5 ให้ตรงตามความต้องการผู้ใช้',owner:'Narate Boonmee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    ]},
+    {id:'g22',title:'เป้าหมายที่ 2.2 สถานศึกษาที่ใช้ GiveD5 ทดแทนไลน์กลุ่มในการสนับสนุนการใช้ EDR',owner:'Piyawat Takaew',period:'01/04/2026 – 30/09/2026',achieved:7,target:26,unit:'แห่ง',status:'y',children:[]},
+  ]},
+  {id:'m3',title:'พันธกิจที่ 3 : ครุภัณฑ์',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g31',title:'เป้าหมายที่ 3.1 ยอดขายทั้งหมดจากครุภัณฑ์และสิ่งก่อสร้างไม่น้อยกว่า 150 ล้านบาทต่อปี และมีผลกำไรไม่ต่ำกว่า 32 ล้านบาท ในปี 2569',owner:'สรัญญู ตรีคุณา (เพชร)',period:'01/01/2026 – 31/12/2026',achieved:0,target:150000000,unit:'บาท',status:'r',children:[]},
+    {id:'g32',title:'เป้าหมายที่ 3.2 จัดส่งมอบงานให้เป็นไปตามกำหนดส่งมอบตามสัญญา',owner:'ปอนด์',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g33',title:'เป้าหมายที่ 3.3 สร้างโครงสร้างพื้นฐาน เพื่อขยายการตลาดการขายสินค้าวัตกรรม ที่เน้นด้านครุภัณฑ์',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+  ]},
+  {id:'m4',title:'พันธกิจที่ 4: ใช้เทคโนโลยีดิจิทัล GD5 และ AI',owner:'Siramet',period:'01/01/2026 – 31/12/2026',achieved:0,target:100,unit:'%',status:'r',children:[
+    {id:'g41',title:'เป้าหมายที่ 4.1 สร้างวัฒนธรรมการทำงานอย่างมืออาชีพ และสร้างความผูกพัน ทั่วทั้งองค์กร',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g42',title:'เป้าหมายที่ 4.2 พัฒนาระบบงานภายในองค์กรให้เป็นไปตาม (Comply) ขบวนการตรวจสอบของผู้ตรวจสอบภายนอกเพื่อเตรียมพร้อมในการยื่น Filing กับ ก.ล.ต. ในทุกไตรมาส',owner:'Anusorn Suksri',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+    {id:'g43',title:'เป้าหมายที่ 4.3 ขับเคลื่อนนโยบายด้านเทคโนโลยีสารสนเทศเพื่อให้แผนธุรกิจบรรลุผลสำเร็จ',owner:'Idsara Wungdee',period:'01/01/2026 – 31/12/2026',achieved:0,target:0,unit:'',status:'r',children:[]},
+  ]},
+];
+
+function scaleTree(nodes,mode){
+  return nodes.map(n=>{
+    let achieved=n.achieved, status=n.status;
+    if(mode==='future'){ achieved=0; status=''; }
+    if(mode==='done'){ achieved=n.target; status=n.target>0?'g':(n.status||''); }
+    return {...n,achieved,status,children:n.children?scaleTree(n.children,mode):[]};
+  });
+}
+const DATA_BY_ROUND={ r1:MISSIONS_BASE, r2:scaleTree(MISSIONS_BASE,'future'), r3:scaleTree(MISSIONS_BASE,'done'), r4:scaleTree(MISSIONS_BASE,'done') };
+
+const flattenTree=(nodes)=>nodes.reduce((acc,n)=>acc.concat([n],flattenTree(n.children||[])),[]);
+
+/* คำสั่งการ (work orders) สรุปทั้งองค์กร แยกตามรอบ */
+const CMD_SUMMARY_BY_ROUND={
+  r1:{total:180,plan:{g:60,y:35,r:20},support:{g:30,y:20,r:15}},
+  r2:{total:0,plan:{g:0,y:0,r:0},support:{g:0,y:0,r:0}},
+  r3:{total:230,plan:{g:150,y:20,r:5},support:{g:45,y:8,r:2}},
+  r4:{total:210,plan:{g:140,y:15,r:5},support:{g:40,y:6,r:2}},
+};
+
+function StackedBar({g,y,r}){
+  return (
+    <div>
+      <div style={{display:'flex',height:14,borderRadius:99,overflow:'hidden',background:'#f0f2f5'}}>
+        {g>0&&<div style={{flexGrow:g,background:GRN}} title={g+' คำสั่งการ'}></div>}
+        {y>0&&<div style={{flexGrow:y,background:YEL}} title={y+' คำสั่งการ'}></div>}
+        {r>0&&<div style={{flexGrow:r,background:RED}} title={r+' คำสั่งการ'}></div>}
+      </div>
+      <div style={{display:'flex',gap:16,marginTop:9,fontSize:12,color:'#3c4350',flexWrap:'wrap'}}>
+        <span style={{display:'inline-flex',alignItems:'center',gap:6}}><StatusDot s="g" size={10}/>{g.toLocaleString()} คำสั่งการ</span>
+        <span style={{display:'inline-flex',alignItems:'center',gap:6}}><StatusDot s="y" size={10}/>{y.toLocaleString()} คำสั่งการ</span>
+        <span style={{display:'inline-flex',alignItems:'center',gap:6}}><StatusDot s="r" size={10}/>{r.toLocaleString()} คำสั่งการ</span>
+      </div>
+    </div>
+  );
+}
+
+function CmdSummarySection({data}){
+  return (
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',marginTop:18}}>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:20,flexWrap:'wrap'}}>
+        <span style={{fontWeight:700,fontSize:14.5}}>ข้อมูลสรุปจากคำสั่งการ</span>
+        <div style={{flex:1}}></div>
+        <span style={{fontSize:12.5,color:'#8a93a3',fontWeight:600}}>ทั้งหมด {data.total.toLocaleString()} คำสั่งการ</span>
+      </div>
+      {data.total===0?(
+        <div style={{color:'#b3bac4',fontSize:13,textAlign:'center',padding:'20px 0'}}>ยังไม่มีข้อมูลคำสั่งการในรอบนี้</div>
+      ):(
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:26}}>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,marginBottom:11,color:'#1a2332'}}>งานตามแผนธุรกิจ</div>
+            <StackedBar {...data.plan}/>
+            <div style={{fontSize:11.5,color:'#b3bac4',marginTop:11,display:'flex',alignItems:'flex-start',gap:6}}>
+              <i className="bi bi-question-circle" style={{fontSize:13}}></i>
+              นับคำสั่งการทั้งหมดที่เชื่อมโยงกับแผนธุรกิจทุกระดับ
+            </div>
+          </div>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,marginBottom:11,color:'#1a2332'}}>งานสนับสนุนองค์กร</div>
+            <StackedBar {...data.support}/>
+            <div style={{fontSize:11.5,color:'#b3bac4',marginTop:11,display:'flex',alignItems:'flex-start',gap:6}}>
+              <i className="bi bi-question-circle" style={{fontSize:13}}></i>
+              นับคำสั่งการทั้งหมดที่ไม่ได้เชื่อมโยงกับแผนธุรกิจ
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PlanCard({node,childLabel,onClick}){
+  const showQty=node.target>0;
+  const kids=node.children||[];
+  const clickable=!!onClick&&kids.length>0;
+  return (
+    <div className="mission-card" onClick={clickable?onClick:undefined} style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'17px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',display:'flex',alignItems:'center',gap:18,flexWrap:'wrap',transition:'box-shadow .12s',cursor:clickable?'pointer':'default'}}>
+      <div style={{flex:1,minWidth:260}}>
+        <div style={{fontWeight:700,fontSize:15,color:'#1a2332',marginBottom:8}}>{node.title}</div>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
+          <Avatar name={node.owner} size={24}/>
+          <span style={{fontSize:12.5,color:'#5a6473'}}>{node.owner}</span>
+        </div>
+        {showQty?(
+          <div style={{fontSize:12,color:'#9aa3af'}}>จำนวนที่ทำได้สะสม <strong style={{color:'#5a6473',fontWeight:700}}>{node.achieved.toLocaleString()}/{node.target.toLocaleString()}</strong>{node.unit?' '+node.unit:''}</div>
+        ):(
+          <div style={{fontSize:12,color:'#c7ccd4'}}>ไม่มีตัวชี้วัด</div>
+        )}
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:11,alignItems:'flex-end',flex:'none'}}>
+        <div style={{display:'flex',alignItems:'center',gap:9}}>
+          <span style={{fontSize:12,color:'#8a93a3'}}>สถานะล่าสุด</span>
+          <StatusDot s={node.status} size={20}/>
+        </div>
+        {childLabel&&(
+          <div style={{display:'flex',alignItems:'center',gap:9}}>
+            <span style={{fontSize:12,color:'#8a93a3'}}>สถานะแต่ละ{childLabel}</span>
+            <div style={{display:'flex',gap:6}}>
+              {kids.length>0?kids.map(c=>(
+                <StatusDot key={c.id} s={c.status} size={13} title={c.title+' — '+(STLABEL[c.status]||STLABEL[''])}/>
+              )):<span style={{fontSize:11,color:'#c7ccd4'}}>—</span>}
+            </div>
+          </div>
+        )}
+      </div>
+      {clickable&&<i className="bi bi-chevron-right" style={{fontSize:14,color:'#c4ccd4',flex:'none'}}></i>}
+    </div>
+  );
+}
+
+const LEVEL_CHILD_LABEL=['เป้าหมาย','กลยุทธ์','แผนงาน']; // ระดับที่ 0=พันธกิจ (ลูกคือเป้าหมาย), 1=เป้าหมาย (ลูกคือกลยุทธ์), 2=กลยุทธ์ (ลูกคือแผนงาน)
+
+function ReportContent(){
+  const [round,setRound]=useState(ROUNDS[0].id);
+  const [roundOpen,setRoundOpen]=useState(false);
+  const [query,setQuery]=useState('');
+  const [pathIds,setPathIds]=useState([]); // drill path: [missionId, goalId, strategyId]
+
+  const missions=DATA_BY_ROUND[round];
+  const cmdData=CMD_SUMMARY_BY_ROUND[round];
+  const q=query.trim().toLowerCase();
+
+  // resolve current drill chain against the selected round's data (ids are stable across rounds)
+  const chain=[];
+  let levelNodes=missions;
+  for(const id of pathIds){
+    const found=levelNodes.find(n=>n.id===id);
+    if(!found) break;
+    chain.push(found);
+    levelNodes=found.children||[];
+  }
+  const atRoot=chain.length===0;
+  const childLabel=LEVEL_CHILD_LABEL[chain.length]||null;
+
+  const visible=useMemo(()=>{
+    if(!q) return levelNodes;
+    return levelNodes.filter(n=>flattenTree([n]).some(x=>x.title.toLowerCase().includes(q)||x.owner.toLowerCase().includes(q)));
+  },[levelNodes,q]);
+
+  const goTo=(depth)=>setPathIds(pathIds.slice(0,depth));
+
+  return (
+    <div style={{flex:1,padding:'24px 28px',overflowY:'auto',height:'calc(100vh - 58px)'}}>
+
+      {/* header */}
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:atRoot?20:12,flexWrap:'wrap'}}>
+        <i className="bi bi-diagram-3" style={{fontSize:20,color:primary}}></i>
+        <span style={{fontWeight:700,fontSize:16}}>รายงานแผนธุรกิจทั้งหมดขององค์กร</span>
+        <div style={{flex:1}}></div>
+        <div style={{display:'flex',alignItems:'center',gap:8,background:'#fff',border:'1px solid #e3e7ec',borderRadius:9,padding:'8px 12px',width:280}}>
+          <i className="bi bi-search" style={{fontSize:14,color:'#9aa3af'}}></i>
+          <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="ค้นหาแผนธุรกิจหรือผู้รับผิดชอบ" style={{border:'none',outline:'none',fontSize:13,width:'100%',fontFamily:'inherit',color:'#1f2733'}}/>
+        </div>
+        <div style={{position:'relative'}}>
+          <button onClick={()=>setRoundOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:8,border:'1px solid #e3e7ec',borderRadius:11,padding:'10px 16px',background:'#fff',cursor:'pointer'}}>
+            <span style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{ROUNDS.find(r=>r.id===round).label}</span>
+            <i className="bi bi-chevron-down" style={{fontSize:11,color:'#9aa3af'}}></i>
+          </button>
+          {roundOpen&&(
+            <div style={{position:'absolute',right:0,top:58,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:240,overflow:'hidden'}}>
+              {ROUNDS.map(r=>(
+                <div key={r.id} onClick={()=>{setRound(r.id);setRoundOpen(false);}} style={{padding:'11px 18px',fontSize:13,cursor:'pointer',fontWeight:r.id===round?700:400,color:r.id===round?primary:'#1f2733',background:r.id===round?primarySoft:'#fff'}}>
+                  {r.label}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* breadcrumb — path to view the next level down (เป้าหมาย → กลยุทธ์ → แผนงาน) */}
+      {!atRoot&&(
+        <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap',fontSize:12.5,marginBottom:16}}>
+          <span onClick={()=>goTo(0)} style={{color:primary,fontWeight:600,cursor:'pointer'}}>แผนธุรกิจทั้งหมด</span>
+          {chain.map((n,i)=>(
+            <React.Fragment key={n.id}>
+              <i className="bi bi-chevron-right" style={{fontSize:10,color:'#c4ccd4'}}></i>
+              <span onClick={()=>goTo(i+1)} style={{color:i===chain.length-1?'#1a2332':primary,fontWeight:i===chain.length-1?700:600,cursor:i===chain.length-1?'default':'pointer'}}>{n.title}</span>
+            </React.Fragment>
+          ))}
+        </div>
+      )}
+
+      {/* plan cards — current hierarchy level only; click a card to view the next level down */}
+      <div style={{display:'flex',flexDirection:'column',gap:12}}>
+        {visible.length===0?(
+          <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'40px 20px',textAlign:'center',color:'#b3bac4',fontSize:13}}>ไม่พบแผนธุรกิจที่ตรงกับคำค้นหา</div>
+        ):visible.map(n=>(
+          <PlanCard key={n.id} node={n} childLabel={childLabel} onClick={()=>setPathIds([...pathIds,n.id])}/>
+        ))}
+      </div>
+
+      {atRoot&&<CmdSummarySection data={cmdData}/>}
+    </div>
+  );
+}
+
+function App(){
+  return (
+    <GD5AppShell active="business">
+      <LeftNav/>
+      <ReportContent/>
+    </GD5AppShell>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(async function(){
+  var shellSrc='';
+  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
+  var pageSrc=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>

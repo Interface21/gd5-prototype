@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เทียบโทนสีสถานะ (เขียว/เหลือง/แดง) — GiveD5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#eef1f5;-webkit-font-smoothing:antialiased;padding:32px 40px 80px}
+h1{font-size:20px;margin:0 0 4px}
+.sub{color:#6b7482;font-size:13.5px;margin:0 0 28px}
+.section-title{font-size:15px;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:40px}
+.col{background:#fff;border-radius:16px;padding:20px;border:1px solid #e5e9ef;box-shadow:0 4px 16px rgba(16,24,40,.06)}
+.col h2{font-size:14px;margin:0 0 3px}
+.col .hexes{font-size:11px;color:#8a93a3;margin:0 0 16px;line-height:1.7}
+.col .hexes b{color:#4b5563}
+.circles{display:flex;gap:10px;margin-bottom:18px}
+.circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px rgba(16,24,40,.18)}
+.dots{display:flex;gap:6px;margin-bottom:18px}
+.dot{width:12px;height:12px;border-radius:50%}
+.bar{display:flex;height:18px;border-radius:99px;overflow:hidden;margin-bottom:8px}
+.legend{display:flex;gap:14px;font-size:11.5px;color:#3c4350;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.badgewrap{display:flex;gap:6px;margin-top:14px}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:4px 11px;font-size:11.5px;font-weight:700}
+.note{font-size:12px;color:#6b7482;line-height:1.7;margin:16px 0 0}
+.gaugewrap{background:#fff;border:1px solid #e5e9ef;border-radius:16px;padding:22px 26px;margin-bottom:36px;box-shadow:0 4px 16px rgba(16,24,40,.06)}
+.gauges{display:flex;gap:34px;flex-wrap:wrap;align-items:flex-start}
+.gauge-item{text-align:center;width:180px}
+.gauge-item .lbl{font-size:12px;color:#5a6473;margin-top:8px;font-weight:600}
+</style>
+</head>
+<body>
+<h1>เปรียบเทียบโทนสีสถานะ: ปัจจุบัน vs ตัวเลือกที่แนะนำ</h1>
+<p class="sub">มุมมองเดียวกับหน้า Cockpit — วงกลมพันธกิจ, จุดสถานะ, แท่งสรุปคำสั่งการ, badge</p>
+
+<div class="section-title"><i class="bi bi-palette"></i>1) สีทึบ (flat) — ของเดิม vs ลดความอิ่มตัว vs โทนอ่อน (tint)</div>
+<div class="row" id="rowsFlat"></div>
+
+<div class="section-title"><i class="bi bi-droplet-half"></i>2) ไล่สี (gradient) และ 3D / Glossy</div>
+<div class="row" id="rowsFancy"></div>
+
+<div class="section-title"><i class="bi bi-brush"></i>3) แนวทางเพิ่มเติม — โทนสีชุดใหม่ทั้งชุด</div>
+<div class="row" id="rowsMore"></div>
+
+<div class="section-title"><i class="bi bi-square-fill"></i>4) ตามที่ระบุ — ใช้เป็นพื้นหลังเต็ม (ไม่ใช่แค่จุด/วงกลมเล็ก)</div>
+<div class="row" id="rowsBg" style="grid-template-columns:repeat(3,1fr)"></div>
+
+<div class="section-title"><i class="bi bi-speedometer2"></i>5) แนวคิดเสริม: เกจ/แถบสถานะแบบไล่สีต่อเนื่อง (แทนโซนสีแยก 3 ก้อน)</div>
+<div class="gaugewrap">
+  <div class="gauges" id="gaugeRow"></div>
+  <p class="note" style="margin-top:18px">แทนที่จะแบ่งโซนสีแดง/เหลือง/เขียวเป็นก้อนชัดเจนแบบทุกวันนี้ ใช้ไล่สีต่อเนื่องจากแดง→เหลือง→เขียวตลอดแนวเกจ — ให้ความรู้สึกนุ่มนวลขึ้นมาก และยังสื่อความหมาย "ยิ่งเข้าใกล้เขียวยิ่งดี" ได้ชัดเจน เหมาะกับเกจ KPI ที่มีอยู่แล้วในหน้า Cockpit</p>
+</div>
+
+<script>
+const flatSets = [
+  { name:'ปัจจุบัน', hexes:{R:'#ef4444', Y:'#f5b301', G:'#22b96a'}, mode:'flat',
+    note:'อิ่มตัวเต็มที่ — เติมพื้นที่ใหญ่แล้วรู้สึก "แจ้งเตือนฉุกเฉิน" เกินจริง' },
+  { name:'Option A — ลดความอิ่มตัว', hexes:{R:'#e2574c', Y:'#e8a33d', G:'#2fae66'}, mode:'flat',
+    note:'คงโทนเดิมแต่ลด saturation ลง นุ่มขึ้นแม้เติมพื้นที่ใหญ่' },
+  { name:'Option B — โทนอ่อน (tint) พื้นที่ใหญ่', mode:'tint',
+    hexes:{R:'#f8d7d3 / #c0392b', Y:'#fbe8c6 / #b8860b', G:'#d7f3e3 / #1f9d57'},
+    note:'พื้นที่ใหญ่ = พื้นอ่อน + ไอคอน/ตัวอักษรสีเข้ม (แบบเดียวกับ badge อนุมัติที่มีอยู่แล้ว) จุด/badge เล็กยังใช้สีเข้มปกติ' },
+];
+
+const fancySets = [
+  { name:'Option D — ไล่สี (gradient)', mode:'gradient',
+    hexes:{R:'#f47063 → #c0392b', Y:'#ffce6b → #d98c1f', G:'#5ecf94 → #1f9d57'},
+    note:'แต่ละสีไล่จากอ่อน→เข้มในตัวเอง ให้ความรู้สึกทันสมัย มีมิติ โดยไม่เพิ่มความอิ่มตัวรวม' },
+  { name:'Option E — 3D / Glossy', mode:'glossy',
+    hexes:{R:'#e2574c', Y:'#e8a33d', G:'#2fae66'},
+    note:'ใช้ไฮไลต์มุมบนซ้าย + เงาสีเดียวกันด้านล่าง ให้ทรงกลมดูนูนเป็นปุ่มจริง ความหมายสถานะเหมือนเดิมแต่ดูพรีเมียมขึ้น' },
+  { name:'Option F — ไล่สี + โทนอ่อน (ผสม)', mode:'gradient-tint',
+    hexes:{R:'bg #fbe4e1 → ring #e2574c', Y:'bg #fdf1dc → ring #e8a33d', G:'bg #e3f7ec → ring #2fae66'},
+    note:'พื้นบัตร/แถบไล่สีอ่อนมาก แล้วใช้ขอบ/ไอคอนไล่สีเข้มขึ้นนิดเดียว — นุ่มที่สุดในทุกตัวเลือก' },
+];
+
+function renderCircle(mode, hex, icon){
+  if(mode==='flat'){
+    return `<div class="circle" style="background:${hex}"></div>`;
+  }
+  return '';
+}
+function renderTintCircle(bg,fg,icon){
+  return `<div class="circle" style="background:${bg};border:1px solid ${fg}33"></div>`;
+}
+function renderGradientCircle(from,to,icon){
+  return `<div class="circle" style="background:linear-gradient(135deg,${from},${to})"></div>`;
+}
+function renderGlossyCircle(hex,icon){
+  return `<div class="circle" style="background:radial-gradient(circle at 30% 28%, ${lighten(hex)} 0%, ${hex} 55%, ${darken(hex)} 100%);box-shadow:0 6px 14px ${hex}55, inset 0 -3px 5px rgba(0,0,0,.15), inset 0 2px 3px rgba(255,255,255,.5)"></div>`;
+}
+function lighten(hex){ return shade(hex, 45); }
+function darken(hex){ return shade(hex, -25); }
+function shade(hex, pct){
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+  const amt = Math.round(2.55*pct);
+  r=Math.min(255,Math.max(0,r+amt)); g=Math.min(255,Math.max(0,g+amt)); b=Math.min(255,Math.max(0,b+amt));
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+
+// ── FLAT ROW ──
+const rowsFlat = document.getElementById('rowsFlat');
+flatSets.forEach(s=>{
+  const col = document.createElement('div'); col.className='col';
+  let circlesHtml, dotColors, badgeHtml;
+  if(s.mode==='flat'){
+    circlesHtml = renderCircle('flat',s.hexes.R.replace(' / #c0392b',''),'bi-x-lg')+renderCircle('flat',s.hexes.Y,'bi-dash-lg')+renderCircle('flat',s.hexes.G,'bi-check-lg');
+    dotColors = {R:s.hexes.R,Y:s.hexes.Y,G:s.hexes.G};
+    badgeHtml = `<span class="badge" style="background:${dotColors.G}22;color:${dotColors.G}">อนุมัติ</span><span class="badge" style="background:${dotColors.R}22;color:${dotColors.R}">ไม่อนุมัติ</span>`;
+  } else { // tint
+    const R={bg:'#f8d7d3',fg:'#c0392b'}, Y={bg:'#fbe8c6',fg:'#b8860b'}, G={bg:'#d7f3e3',fg:'#1f9d57'};
+    circlesHtml = renderTintCircle(R.bg,R.fg,'bi-x-lg')+renderTintCircle(Y.bg,Y.fg,'bi-dash-lg')+renderTintCircle(G.bg,G.fg,'bi-check-lg');
+    dotColors = {R:R.fg,Y:Y.fg,G:G.fg}; // small elements keep solid dark tone
+    badgeHtml = `<span class="badge" style="background:${R.bg};color:${R.fg}">ไม่อนุมัติ</span><span class="badge" style="background:${G.bg};color:${G.fg}">อนุมัติ</span>`;
+  }
+  col.innerHTML = `
+    <h2>${s.name}</h2>
+    <div class="hexes"><b>R</b> ${s.hexes.R}<br><b>Y</b> ${s.hexes.Y}<br><b>G</b> ${s.hexes.G}</div>
+    <div class="circles">${circlesHtml}</div>
+    <div class="dots">
+      <span class="dot" style="background:${dotColors.G}"></span>
+      <span class="dot" style="background:${dotColors.Y}"></span>
+      <span class="dot" style="background:${dotColors.R}"></span>
+      <span class="dot" style="background:${dotColors.R}"></span>
+      <span class="dot" style="background:${dotColors.R}"></span>
+    </div>
+    <div class="bar">
+      <div style="flex-grow:70;background:${dotColors.G}"></div>
+      <div style="flex-grow:36;background:${dotColors.Y}"></div>
+      <div style="flex-grow:486;background:${dotColors.R}"></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:${dotColors.G}"></i>เขียว</span>
+      <span><i style="background:${dotColors.Y}"></i>เหลือง</span>
+      <span><i style="background:${dotColors.R}"></i>แดง</span>
+    </div>
+    <div class="badgewrap">${badgeHtml}</div>
+    <p class="note">${s.note}</p>
+  `;
+  rowsFlat.appendChild(col);
+});
+
+// ── FANCY ROW ──
+const rowsFancy = document.getElementById('rowsFancy');
+fancySets.forEach(s=>{
+  const col = document.createElement('div'); col.className='col';
+  let circlesHtml, dotColors, badgeHtml, barHtml;
+  if(s.mode==='gradient'){
+    const R=['#f47063','#c0392b'], Y=['#ffce6b','#d98c1f'], G=['#5ecf94','#1f9d57'];
+    circlesHtml = renderGradientCircle(R[0],R[1],'bi-x-lg')+renderGradientCircle(Y[0],Y[1],'bi-dash-lg')+renderGradientCircle(G[0],G[1],'bi-check-lg');
+    dotColors = {R:R[1],Y:Y[1],G:G[1]};
+    badgeHtml = `<span class="badge" style="background:linear-gradient(135deg,${G[0]},${G[1]});color:#fff">อนุมัติ</span><span class="badge" style="background:linear-gradient(135deg,${R[0]},${R[1]});color:#fff">ไม่อนุมัติ</span>`;
+    barHtml = `<div style="flex-grow:70;background:linear-gradient(90deg,${G[0]},${G[1]})"></div><div style="flex-grow:36;background:linear-gradient(90deg,${Y[0]},${Y[1]})"></div><div style="flex-grow:486;background:linear-gradient(90deg,${R[0]},${R[1]})"></div>`;
+  } else if(s.mode==='glossy'){
+    circlesHtml = renderGlossyCircle(s.hexes.R,'bi-x-lg')+renderGlossyCircle(s.hexes.Y,'bi-dash-lg')+renderGlossyCircle(s.hexes.G,'bi-check-lg');
+    dotColors = s.hexes;
+    badgeHtml = `<span class="badge" style="background:${dotColors.G}22;color:${dotColors.G}">อนุมัติ</span><span class="badge" style="background:${dotColors.R}22;color:${dotColors.R}">ไม่อนุมัติ</span>`;
+    barHtml = `<div style="flex-grow:70;background:${dotColors.G}"></div><div style="flex-grow:36;background:${dotColors.Y}"></div><div style="flex-grow:486;background:${dotColors.R}"></div>`;
+  } else { // gradient-tint
+    const R={bg0:'#fdeceb',bg1:'#fbe4e1',ring:'#e2574c'}, Y={bg0:'#fef7ec',bg1:'#fdf1dc',ring:'#e8a33d'}, G={bg0:'#e9f9f0',bg1:'#e3f7ec',ring:'#2fae66'};
+    const mkCircle=(o,icon)=>`<div class="circle" style="background:linear-gradient(135deg,${o.bg0},${o.bg1});border:1.5px solid ${o.ring}55"></div>`;
+    circlesHtml = mkCircle(R,'bi-x-lg')+mkCircle(Y,'bi-dash-lg')+mkCircle(G,'bi-check-lg');
+    dotColors = {R:R.ring,Y:Y.ring,G:G.ring};
+    badgeHtml = `<span class="badge" style="background:${G.bg1};color:${G.ring}">อนุมัติ</span><span class="badge" style="background:${R.bg1};color:${R.ring}">ไม่อนุมัติ</span>`;
+    barHtml = `<div style="flex-grow:70;background:${G.ring}"></div><div style="flex-grow:36;background:${Y.ring}"></div><div style="flex-grow:486;background:${R.ring}"></div>`;
+  }
+  col.innerHTML = `
+    <h2>${s.name}</h2>
+    <div class="hexes"><b>R</b> ${s.hexes.R}<br><b>Y</b> ${s.hexes.Y}<br><b>G</b> ${s.hexes.G}</div>
+    <div class="circles">${circlesHtml}</div>
+    <div class="dots">
+      <span class="dot" style="background:${dotColors.G}"></span>
+      <span class="dot" style="background:${dotColors.Y}"></span>
+      <span class="dot" style="background:${dotColors.R}"></span>
+      <span class="dot" style="background:${dotColors.R}"></span>
+      <span class="dot" style="background:${dotColors.R}"></span>
+    </div>
+    <div class="bar">${barHtml}</div>
+    <div class="legend">
+      <span><i style="background:${dotColors.G}"></i>เขียว</span>
+      <span><i style="background:${dotColors.Y}"></i>เหลือง</span>
+      <span><i style="background:${dotColors.R}"></i>แดง</span>
+    </div>
+    <div class="badgewrap">${badgeHtml}</div>
+    <p class="note">${s.note}</p>
+  `;
+  rowsFancy.appendChild(col);
+});
+
+// ── MORE PALETTE DIRECTIONS ──
+const moreSets = [
+  { name:'Option G — พาสเทลโทนดิน (Earthy)', hexes:{R:'#d98a76', Y:'#dcb15c', G:'#7fa679'},
+    note:'แดง→อิฐอมส้ม, เหลือง→มัสตาร์ดอ่อน, เขียว→เขียวเสจ ให้ความรู้สึกอบอุ่น เป็นธรรมชาติ ไม่ก้าวร้าวเลย เหมาะกับองค์กรที่อยากดูนุ่มนวล friendly' },
+  { name:'Option H — อิงสีแบรนด์ teal', hexes:{R:'#d97757', Y:'#dba847', G:'#178a78'},
+    note:'เขียวขยับเข้าใกล้ teal ของแบรนด์ (#15a08f) ให้รู้สึกเป็นเนื้อเดียวกับระบบ แดง/เหลืองเป็นสีอบอุ่นที่ balance กับ teal ได้ดี ไม่แข่งกันเอง' },
+  { name:'Option I — โทนเข้มหรู (Muted Jewel)', hexes:{R:'#b3543f', Y:'#b8923a', G:'#3f7d5c'},
+    note:'เข้มขึ้นอีกระดับแต่ไม่จัดจ้าน ดูมีน้ำหนัก sophisticated เหมาะกับ dashboard ผู้บริหารที่อยากให้ดูเป็นทางการ หนักแน่น' },
+];
+const rowsMore = document.getElementById('rowsMore');
+moreSets.forEach(s=>{
+  const col = document.createElement('div'); col.className='col';
+  const circlesHtml = `<div class="circle" style="background:${s.hexes.R}"></div><div class="circle" style="background:${s.hexes.Y}"></div><div class="circle" style="background:${s.hexes.G}"></div>`;
+  const badgeHtml = `<span class="badge" style="background:${s.hexes.G}22;color:${s.hexes.G}">อนุมัติ</span><span class="badge" style="background:${s.hexes.R}22;color:${s.hexes.R}">ไม่อนุมัติ</span>`;
+  col.innerHTML = `
+    <h2>${s.name}</h2>
+    <div class="hexes"><b>R</b> ${s.hexes.R}<br><b>Y</b> ${s.hexes.Y}<br><b>G</b> ${s.hexes.G}</div>
+    <div class="circles">${circlesHtml}</div>
+    <div class="dots">
+      <span class="dot" style="background:${s.hexes.G}"></span>
+      <span class="dot" style="background:${s.hexes.Y}"></span>
+      <span class="dot" style="background:${s.hexes.R}"></span>
+      <span class="dot" style="background:${s.hexes.R}"></span>
+      <span class="dot" style="background:${s.hexes.R}"></span>
+    </div>
+    <div class="bar">
+      <div style="flex-grow:70;background:${s.hexes.G}"></div>
+      <div style="flex-grow:36;background:${s.hexes.Y}"></div>
+      <div style="flex-grow:486;background:${s.hexes.R}"></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:${s.hexes.G}"></i>เขียว</span>
+      <span><i style="background:${s.hexes.Y}"></i>เหลือง</span>
+      <span><i style="background:${s.hexes.R}"></i>แดง</span>
+    </div>
+    <div class="badgewrap">${badgeHtml}</div>
+    <p class="note">${s.note}</p>
+  `;
+  rowsMore.appendChild(col);
+});
+
+// ── FULL-BACKGROUND MOCKUP (as user specified: R/Y/G as bg colors) ──
+const bgSpec = {R:'#e2574c', Y:'#e8a33d', G:'#2fae66'};
+const rowsBg = document.getElementById('rowsBg');
+[
+  {key:'G', label:'เขียว — ปกติ', icon:'bi-check-lg'},
+  {key:'Y', label:'เหลือง — ต้องติดตาม', icon:'bi-dash-lg'},
+  {key:'R', label:'แดง — ต้องเร่งแก้ไข', icon:'bi-exclamation-lg'},
+].forEach(item=>{
+  const bg = bgSpec[item.key];
+  const col = document.createElement('div');
+  col.style.cssText = `background:${bg};border-radius:16px;padding:22px 20px;color:#fff;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 18px ${bg}55`;
+  col.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px">
+      <i class="bi ${item.icon}" style="font-size:22px"></i>
+      <span style="font-weight:700;font-size:14.5px">${item.label}</span>
+    </div>
+    <div>
+      <div style="font-size:11px;opacity:.85;margin-bottom:4px">bg</div>
+      <div style="font-size:13px;font-weight:700;font-family:monospace">${bg}</div>
+    </div>
+  `;
+  rowsBg.appendChild(col);
+});
+
+// ── GAUGE CONCEPT ──
+const gaugeRow = document.getElementById('gaugeRow');
+function gaugeSvg(mode){
+  const id = 'g'+Math.random().toString(36).slice(2);
+  let defs, strokeAttr;
+  if(mode==='current'){
+    defs = '';
+    // 3 discrete arcs (approximate current zone look)
+    return `
+    <svg viewBox="0 0 120 68" width="160" height="90">
+      <path d="M10,60 A50,50 0 0,1 46,12" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round"/>
+      <path d="M46,12 A50,50 0 0,1 78,12" fill="none" stroke="#f5b301" stroke-width="10" stroke-linecap="round"/>
+      <path d="M78,12 A50,50 0 0,1 110,60" fill="none" stroke="#22b96a" stroke-width="10" stroke-linecap="round"/>
+    </svg>`;
+  }
+  defs = `<defs><linearGradient id="${id}" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#e2574c"/>
+    <stop offset="50%" stop-color="#e8a33d"/>
+    <stop offset="100%" stop-color="#2fae66"/>
+  </linearGradient></defs>`;
+  return `
+    <svg viewBox="0 0 120 68" width="160" height="90">
+      ${defs}
+      <path d="M10,60 A50,50 0 0,1 110,60" fill="none" stroke="url(#${id})" stroke-width="10" stroke-linecap="round"/>
+    </svg>`;
+}
+[
+  {lbl:'ปัจจุบัน — โซนสีแยกก้อน', svg:gaugeSvg('current')},
+  {lbl:'ไล่สีต่อเนื่อง แดง→เหลือง→เขียว', svg:gaugeSvg('gradient')},
+].forEach(g=>{
+  const d = document.createElement('div'); d.className='gauge-item';
+  d.innerHTML = g.svg + `<div class="lbl">${g.lbl}</div>`;
+  gaugeRow.appendChild(d);
+});
+</script>
+</body>
+</html>
