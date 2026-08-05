@@ -489,8 +489,31 @@ function DailyPlanReadOnly({plans,vmGroups}){
   );
 }
 
+/* ── ปุ่ม Snapshot Manual รายแผน — แสดงเฉพาะเดือนที่อยู่ในช่วงกดได้เท่านั้น ── */
+function PlanSnapshotButtons({node,fyStartMonth,fy,delayDays,store,onSaveMonth}){
+  const [saved,setSaved]=useState({});
+  let curAbs=-1;
+  for(let a=0;a<12;a++){const md=monthDef(fyStartMonth,fy,a); if(NOW>=md.start&&NOW<=md.end){curAbs=a;break;}}
+  const recMonths=[];
+  for(let a=0;a<12;a++){ if(curAbs>=0&&a<curAbs-1) continue; const mo=resolveMonth(store,fyStartMonth,fy,a,delayDays,'-'+node.id); if(mo.canRecord) recMonths.push(mo); }
+  if(recMonths.length===0) return null;
+  const rec=(mo)=>{
+    const nextV=(mo.versions.reduce((m,v)=>Math.max(m,v.v),0))+1;
+    const vers=[...mo.versions.map(v=>v.status==='ACTIVE'?{...v,status:'SUPERSEDED'}:v),{v:nextV,type:'MANUAL',date:new Date(),by:CURRENT_USER,status:'ACTIVE',remark:''}];
+    onSaveMonth(mo.key,vers); setSaved(s=>({...s,[mo.key]:nextV}));
+  };
+  return (
+    <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+      {recMonths.map(mo=>{
+        const done=saved[mo.key];
+        return <button key={mo.key} onClick={()=>rec(mo)} title={'บันทึก Manual ได้ถึง '+fmtDate(mo.deadline)+' (ก่อน Auto เดือนถัดไป)'} style={{height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,borderRadius:8,padding:'0 12px',border:'none',background:done?'#e6f6f2':primarySoft,color:done?'#0e7c6d':primary,fontSize:11.5,fontWeight:700,cursor:'pointer'}}><i className={'bi '+(done?'bi-check-circle-fill':'bi-camera')} style={{fontSize:12}}></i>{done?('บันทึกแล้ว '+mo.monthName+' v'+done):('Snapshot '+mo.monthName)}</button>;
+      })}
+    </div>
+  );
+}
+
 /* หน้ารายละเอียด "ข้อมูลและสถานะ" ของแผนแต่ละรายการ — เปิดจากการคลิกการ์ด (ทุกชั้น รวมถึงแผนงานที่ไม่มีลูก) */
-function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
+function PlanDetail({node,level,onBack,onOpenChild,onDrill,snapCfg,snapFY,snapStore,onSaveMonth}){
   const kids=node.children||[];
   const [logsOpen,setLogsOpen]=useState(false); // รายการงบลงทุน
   const [logsOpenOp,setLogsOpenOp]=useState(false); // รายการงบดำเนินการ
@@ -528,6 +551,7 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
           <i className="bi bi-arrow-left" style={{fontSize:14}}></i></button>
         <div style={{flex:1,fontWeight:700,fontSize:15,color:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{node.title}</div>
         <div style={{display:'flex',alignItems:'center',gap:8,flex:'none'}}>
+          {snapCfg&&node.id&&<PlanSnapshotButtons node={node} fyStartMonth={snapCfg.fyStartMonth} fy={snapFY} delayDays={snapCfg.delayDays} store={snapStore} onSaveMonth={onSaveMonth}/>}
           <span style={{fontSize:12.5,color:'#8a93a3'}}>สถานะล่าสุด</span>
           <StatusDot s={node.status} size={18}/>
         </div>
@@ -716,12 +740,417 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill}){
   );
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   SNAPSHOT — Business Logic (Automatic + Manual)
+   • คำนวณไตรมาสตามปีงบประมาณ (fiscalStartMonth) — ไม่ผูกกับปีปฏิทินตายตัว
+   • Automatic Snapshot: วันครบกำหนด = วันสิ้นไตรมาส + delayDays
+   • Manual Snapshot: ผู้มีสิทธิ์กดเอง, มี Priority สูงกว่า Auto → เขียนทับได้ (versioning)
+   • Dashboard เลือกแสดง: Manual ล่าสุด → Auto → UPCOMING/PENDING
+   หมายเหตุ: หน้านี้เป็น prototype — การควบคุมสิทธิ์/idempotency/transaction
+   ต้องบังคับจากฝั่ง Backend จริง (ดู DEV note ในแต่ละโมดัล)
+   ════════════════════════════════════════════════════════════════════════ */
+const TH_MONTHS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const TH_MONTHS_FULL=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const NOW=new Date(2026,7,5,10,30); // มุมมองปัจจุบันของ prototype: 5 ส.ค. 2026
+const CURRENT_USER='สรัญญู ตรีคุณา (เพชร)';
+const SNAP_ROLES=['Administrator','Executive','Strategy Officer','ผู้รับผิดชอบที่ได้รับมอบหมาย'];
+const SNAP_PERIOD_TYPES=[{v:'MONTHLY',label:'รายเดือน'},{v:'QUARTERLY',label:'รายไตรมาส'},{v:'YEARLY',label:'รายปี'},{v:'AD_HOC',label:'เฉพาะกิจ'}];
+
+const fmtDate=(d)=>d.getDate()+' '+TH_MONTHS[d.getMonth()]+' '+(d.getFullYear()+543);
+const fmtDateTime=(d)=>fmtDate(d)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+const quarterDef=(fyStartMonth,fy,i)=>{
+  const sm=(fyStartMonth-1+i*3), sy=fy+Math.floor(sm/12);
+  const start=new Date(sy,sm%12,1), end=new Date(sy,sm%12+3,0);
+  return {start,end};
+};
+const qMonthsLabel=(fyStartMonth,i)=>{ const s=(fyStartMonth-1+i*3)%12, e=(fyStartMonth-1+i*3+2)%12; return TH_MONTHS[s]+'–'+TH_MONTHS[e]; };
+
+// สถานะที่ส่งให้ Frontend แสดงผล (ตาม requirement ข้อ 7)
+const SNAP_STATE={
+  UPCOMING:{label:'ยังไม่ถึงกำหนด',icon:'bi-hourglass',color:'#8a93a3',bg:'#f1f3f6',bd:'#e3e7ec'},
+  PENDING:{label:'รอบันทึก Snapshot',icon:'bi-clock-history',color:'#b06200',bg:'#fff4df',bd:'#f6dca8'},
+  AUTO_SNAPSHOT:{label:'Snapshot อัตโนมัติ',icon:'bi-robot',color:'#0e7c6d',bg:'#e2f3f0',bd:'#bfe6df'},
+  MANUAL_SNAPSHOT:{label:'Snapshot โดยผู้ใช้',icon:'bi-person-check',color:'#2f66d0',bg:'#eaf1fe',bd:'#c9dbfb'},
+  CLOSED:{label:'ปิดหน้าต่างบันทึก',icon:'bi-lock',color:'#8a93a3',bg:'#f1f3f6',bd:'#e3e7ec'},
+  FAILED:{label:'บันทึกล้มเหลว',icon:'bi-exclamation-triangle',color:'#c0392b',bg:'#fdeaea',bd:'#f5c6c6'},
+};
+const SNAP_VSTATUS={
+  ACTIVE:{label:'ใช้งานอยู่',color:'#0e7c6d',bg:'#e2f3f0',bd:'#bfe6df'},
+  SUPERSEDED:{label:'ถูกแทนที่',color:'#8a93a3',bg:'#f1f3f6',bd:'#e3e7ec'},
+  FAILED:{label:'ล้มเหลว',color:'#c0392b',bg:'#fdeaea',bd:'#f5c6c6'},
+};
+const SNAP_TYPE_LABEL={AUTO:'Automatic',MANUAL:'Manual'};
+
+// mock Snapshot store — key: 'FY-Q' (FY = ค.ศ. ของเดือนเริ่มปีงบ)
+const SNAP_SEED={
+  '2026-1':[
+    {v:1,type:'AUTO',date:new Date(2026,3,7,3,0),by:'ระบบอัตโนมัติ',status:'SUPERSEDED',remark:''},
+    {v:2,type:'MANUAL',date:new Date(2026,3,18,10,30),by:CURRENT_USER,status:'ACTIVE',remark:'รับรองข้อมูลหลังการประชุมผู้บริหารประจำไตรมาส'},
+  ],
+  '2026-2':[
+    {v:1,type:'AUTO',date:new Date(2026,6,7,3,0),by:'ระบบอัตโนมัติ',status:'ACTIVE',remark:''},
+  ],
+  // Snapshot รายเดือน — key: 'FY-M<absIdx>' (absIdx 0..11 = เดือนที่ในปีงบ). เดือนที่ผ่านมามี Auto อัตโนมัติ
+  '2026-M0':[{v:1,type:'AUTO',date:new Date(2026,1,7,3,0),by:'ระบบอัตโนมัติ',status:'ACTIVE',remark:''}],
+  '2026-M1':[{v:1,type:'AUTO',date:new Date(2026,2,7,3,0),by:'ระบบอัตโนมัติ',status:'ACTIVE',remark:''}],
+  '2026-M2':[{v:1,type:'AUTO',date:new Date(2026,3,7,3,0),by:'ระบบอัตโนมัติ',status:'ACTIVE',remark:''}],
+  '2026-M3':[{v:1,type:'AUTO',date:new Date(2026,4,7,3,0),by:'ระบบอัตโนมัติ',status:'ACTIVE',remark:''}],
+  '2026-M4':[{v:1,type:'AUTO',date:new Date(2026,5,7,3,0),by:'ระบบอัตโนมัติ',status:'ACTIVE',remark:''}],
+  '2026-M5':[{v:1,type:'AUTO',date:new Date(2026,6,7,3,0),by:'ระบบอัตโนมัติ',status:'ACTIVE',remark:''}],
+};
+
+function resolveQuarter(store,fyStartMonth,fy,i,delayDays){
+  const q=quarterDef(fyStartMonth,fy,i);
+  const autoDate=new Date(q.end); autoDate.setDate(autoDate.getDate()+delayDays);
+  const key=fy+'-'+(i+1);
+  const versions=store[key]||[];
+  const active=versions.filter(v=>v.status==='ACTIVE').slice(-1)[0]||null;
+  let state;
+  if(active) state=active.type==='MANUAL'?'MANUAL_SNAPSHOT':'AUTO_SNAPSHOT';
+  else if(NOW<q.end) state='UPCOMING';
+  else state='PENDING';
+  return {i,qNum:i+1,start:q.start,end:q.end,autoDate,versions,active,state,key};
+}
+
+// รายเดือน: หน้าต่างบันทึก Manual ของเดือน = เปิดตั้งแต่เริ่มเดือน จนถึง "ก่อน Auto ของเดือนถัดไป" (= autoDate ของเดือนถัดไป) หากเลยแล้วบันทึกไม่ได้ (CLOSED)
+function monthDef(fyStartMonth,fy,absIdx){
+  const sm=(fyStartMonth-1+absIdx), sy=fy+Math.floor(sm/12), m0=sm%12;
+  return {start:new Date(sy,m0,1),end:new Date(sy,m0+1,0),m0,year:sy};
+}
+function resolveMonth(store,fyStartMonth,fy,absIdx,delayDays,keySuffix){
+  const md=monthDef(fyStartMonth,fy,absIdx);
+  const autoDate=new Date(md.end); autoDate.setDate(autoDate.getDate()+delayDays);
+  const next=monthDef(fyStartMonth,fy,absIdx+1);
+  const deadline=new Date(next.end); deadline.setDate(deadline.getDate()+delayDays); // = Auto ของเดือนถัดไป
+  const key=fy+'-M'+absIdx+(keySuffix||'');
+  const versions=store[key]||[];
+  const active=versions.filter(v=>v.status==='ACTIVE').slice(-1)[0]||null;
+  const started=md.start<=NOW, closed=NOW>=deadline, canRecord=started&&!closed;
+  let state;
+  if(active) state=active.type==='MANUAL'?'MANUAL_SNAPSHOT':'AUTO_SNAPSHOT';
+  else if(!started) state='UPCOMING';
+  else if(closed) state='CLOSED';
+  else state='PENDING';
+  return {absIdx,md,autoDate,deadline,key,versions,active,state,started,closed,canRecord,monthName:TH_MONTHS_FULL[md.m0],year:md.year};
+}
+
+/* ── controls กลาง (ยึดมาตรฐาน CLAUDE.md: badge/switch radius 8px) ── */
+function SnapField({label,children,hint}){
+  return <div style={{marginBottom:16}}><div style={{fontSize:12.5,fontWeight:700,color:'#3a4452',marginBottom:8}}>{label}</div>{children}{hint&&<div style={{fontSize:11.5,color:'#9aa3af',marginTop:6,lineHeight:1.6}}>{hint}</div>}</div>;
+}
+function SnapSeg({options,value,onChange}){
+  return <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>{options.map(o=>{
+    const active=value===o.v, dis=o.disabled;
+    return <button key={o.v} onClick={()=>!dis&&onChange(o.v)} style={{height:34,padding:'0 14px',borderRadius:8,border:'1px solid '+(active?primary:'#e3e7ec'),background:active?primarySoft:'#fff',color:dis?'#c4ccd4':active?primary:'#5a6473',fontSize:12.5,fontWeight:active?700:500,cursor:dis?'not-allowed':'pointer',display:'inline-flex',alignItems:'center',gap:6}}>{o.label}</button>;
+  })}</div>;
+}
+function SnapOnOff({value,onChange}){
+  const seg=(on,label,icon)=>{
+    const active=value===on;
+    const t=on?{c:'#0e7c6d',bg:'#e6f6f2',bd:'#bfe6df'}:{c:'#c0563a',bg:'#fdeee9',bd:'#f3cdbf'};
+    return <button onClick={()=>onChange(on)} style={{flex:1,height:38,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,border:'1px solid '+(active?t.bd:'#e3e7ec'),background:active?t.bg:'#fff',color:active?t.c:'#9aa3af',fontSize:13,fontWeight:700,cursor:'pointer',borderRadius:8}}><i className={'bi '+icon} style={{fontSize:14}}></i>{label}</button>;
+  };
+  return <div style={{display:'flex',gap:8}}>{seg(true,'เปิดใช้งาน','bi-check-circle')}{seg(false,'ปิดใช้งาน','bi-slash-circle')}</div>;
+}
+function SnapDevNote({children}){
+  return <div style={{display:'flex',gap:9,alignItems:'flex-start',background:'#fffbeb',border:'1px dashed #e6c65a',borderRadius:10,padding:'11px 13px',fontSize:11.5,color:'#8a6d1f',lineHeight:1.65}}><i className="bi bi-braces" style={{fontSize:14,flex:'none',marginTop:1}}></i><div>{children}</div></div>;
+}
+const SNAP_BTN_MAIN={height:40,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,borderRadius:11,fontSize:13,fontWeight:700,cursor:'pointer'};
+const SnapModalShell=({title,icon,width,onClose,children,footer})=>(
+  <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'flex-start',justifyContent:'center',zIndex:99998,padding:'40px 16px',overflowY:'auto'}}>
+    <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,width:width||520,maxWidth:'100%',boxShadow:'0 24px 64px rgba(16,24,40,.28)',animation:'fadeIn .15s ease'}}>
+      <div style={{display:'flex',alignItems:'center',gap:11,padding:'16px 20px',borderBottom:'1px solid #f1f3f6'}}>
+        <div style={{width:32,height:32,borderRadius:9,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className={'bi '+icon} style={{fontSize:16,color:primary}}></i></div>
+        <span style={{fontWeight:700,fontSize:15,flex:1}}>{title}</span>
+        <button onClick={onClose} style={{width:32,height:32,borderRadius:8,border:'1px solid #e3e7ec',background:'#fff',display:'inline-flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-x-lg" style={{fontSize:13,color:'#8a93a3'}}></i></button>
+      </div>
+      <div style={{padding:'18px 20px',maxHeight:'66vh',overflowY:'auto'}}>{children}</div>
+      {footer&&<div style={{display:'flex',alignItems:'center',gap:10,padding:'14px 20px',borderTop:'1px solid #f1f3f6'}}>{footer}</div>}
+    </div>
+  </div>
+);
+
+/* ── แถบ Snapshot รายไตรมาส (แสดงที่หน้ารวม) ── */
+function SnapshotBar({fyStartMonth,fy,delayDays,autoEnabled,store,onFYChange,onConfig,onCreate,onHistory}){
+  const [fyOpen,setFyOpen]=useState(false);
+  const quarters=[0,1,2,3].map(i=>resolveQuarter(store,fyStartMonth,fy,i,delayDays));
+  const FYS=[2025,2026,2027];
+  return (
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',marginBottom:16}}>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16,flexWrap:'wrap'}}>
+        <div style={{width:34,height:34,borderRadius:9,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-camera" style={{fontSize:17,color:primary}}></i></div>
+        <div style={{minWidth:180}}>
+          <div style={{fontWeight:700,fontSize:14.5}}>Snapshot รายไตรมาส</div>
+          <div style={{fontSize:11.5,color:'#9aa3af',marginTop:1}}>ภาพสถานะข้อมูล ณ สิ้นไตรมาส เพื่อเปรียบเทียบผลย้อนหลัง</div>
+        </div>
+        <div style={{flex:1}}></div>
+        <span style={{display:'inline-flex',alignItems:'center',gap:6,height:28,padding:'0 12px',borderRadius:8,fontSize:11.5,fontWeight:700,background:autoEnabled?'#e6f6f2':'#f1f3f6',color:autoEnabled?'#0e7c6d':'#8a93a3',border:'1px solid '+(autoEnabled?'#bfe6df':'#e3e7ec')}}>
+          <i className={'bi '+(autoEnabled?'bi-robot':'bi-slash-circle')} style={{fontSize:13}}></i>อัตโนมัติ: {autoEnabled?'เปิด':'ปิด'} · หน่วง {delayDays} วัน
+        </span>
+        <div style={{position:'relative'}}>
+          <button onClick={()=>setFyOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:8,height:40,padding:'0 16px',border:'1px solid #e3e7ec',borderRadius:11,background:'#fff',cursor:'pointer'}}>
+            <i className="bi bi-calendar3" style={{fontSize:13,color:'#9aa3af'}}></i>
+            <span style={{fontSize:13,fontWeight:600}}>ปีงบ {fy+543}</span>
+            <i className="bi bi-chevron-down" style={{fontSize:11,color:'#9aa3af'}}></i>
+          </button>
+          {fyOpen&&<div style={{position:'absolute',right:0,top:46,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:150,overflow:'hidden'}}>
+            {FYS.map(y=><div key={y} onClick={()=>{onFYChange(y);setFyOpen(false);}} style={{padding:'10px 16px',fontSize:13,cursor:'pointer',fontWeight:y===fy?700:400,color:y===fy?primary:'#1f2733',background:y===fy?primarySoft:'#fff'}}>ปีงบ {y+543}</div>)}
+          </div>}
+        </div>
+        <button onClick={onConfig} style={{...SNAP_BTN_MAIN,padding:'0 16px',border:'1px solid #e3e7ec',background:'#fff',color:'#3a4452'}}><i className="bi bi-gear" style={{fontSize:14}}></i>ตั้งค่า</button>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12}}>
+        {quarters.map(qq=>{
+          const m=SNAP_STATE[qq.state], canManual=qq.start<=NOW;
+          return (
+            <div key={qq.i} onClick={()=>onHistory(qq)} style={{border:'1px solid #eceef2',borderRadius:12,padding:'13px 14px',cursor:'pointer',background:'#fff',display:'flex',flexDirection:'column',gap:10}}>
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <span style={{fontSize:13.5,fontWeight:700,color:'#1a2332'}}>ไตรมาส {qq.qNum}</span>
+                <div style={{flex:1}}></div>
+                <span style={{fontSize:11,color:'#9aa3af',fontWeight:600}}>{qMonthsLabel(fyStartMonth,qq.i)}</span>
+              </div>
+              <span style={{display:'inline-flex',alignItems:'center',gap:6,alignSelf:'flex-start',height:26,padding:'0 10px',borderRadius:8,fontSize:11,fontWeight:700,background:m.bg,color:m.color,border:'1px solid '+m.bd}}><i className={'bi '+m.icon} style={{fontSize:12}}></i>{m.label}</span>
+              <div style={{fontSize:11.5,color:'#5a6473',lineHeight:1.6,minHeight:34}}>
+                {qq.active?(<React.Fragment>
+                  <div><i className="bi bi-clock" style={{fontSize:11,color:'#9aa3af',marginRight:5}}></i>{fmtDate(qq.active.date)}</div>
+                  <div style={{display:'flex',alignItems:'center',gap:5,marginTop:3}}><span style={{fontSize:10,fontWeight:700,color:'#8a93a3',background:'#f1f3f6',borderRadius:6,padding:'1px 6px'}}>v{qq.active.v}</span><span style={{color:'#9aa3af',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{qq.active.by}</span></div>
+                </React.Fragment>):qq.state==='PENDING'?(
+                  <div><i className="bi bi-hourglass-split" style={{fontSize:11,color:'#b06200',marginRight:5}}></i>ครบกำหนดอัตโนมัติ {fmtDate(qq.autoDate)}</div>
+                ):(
+                  <div><i className="bi bi-calendar-check" style={{fontSize:11,color:'#9aa3af',marginRight:5}}></i>สิ้นไตรมาส {fmtDate(qq.end)}</div>
+                )}
+              </div>
+              <div style={{display:'flex',gap:7,marginTop:'auto'}}>
+                {qq.versions.length>0?<button onClick={(e)=>{e.stopPropagation();onHistory(qq);}} style={{flex:1,height:32,borderRadius:8,border:'1px solid #e3e7ec',background:'#fff',color:'#5a6473',fontSize:11.5,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5}}><i className="bi bi-clock-history" style={{fontSize:12}}></i>ประวัติ ({qq.versions.length})</button>:<button onClick={(e)=>{e.stopPropagation();onHistory(qq);}} style={{flex:1,height:32,borderRadius:8,border:'1px solid #e3e7ec',background:'#fff',color:'#5a6473',fontSize:11.5,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5}}><i className="bi bi-calendar2-week" style={{fontSize:12}}></i>รายเดือน</button>}
+                <button onClick={(e)=>{e.stopPropagation();canManual&&onCreate(qq.i);}} style={{flex:'none',height:32,padding:'0 12px',borderRadius:8,border:'none',background:canManual?primarySoft:'#f1f3f6',color:canManual?primary:'#c4ccd4',fontSize:11.5,fontWeight:700,cursor:canManual?'pointer':'not-allowed',display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5}}><i className="bi bi-camera" style={{fontSize:12}}></i>สิ้นไตรมาส</button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:11.5,color:'#9aa3af',marginTop:14,lineHeight:1.65}}>
+        <i className="bi bi-info-circle" style={{fontSize:13,flex:'none',marginTop:1}}></i>
+        <span>Dashboard เลือกแสดงตามลำดับ: <b style={{color:'#5a6473'}}>Manual ล่าสุด → Automatic → ยังไม่มี Snapshot</b> — Manual Snapshot มีสิทธิ์เขียนทับ Automatic ของไตรมาสเดียวกันเสมอ และหากมี Manual แล้ว ระบบจะข้ามการสร้าง Automatic ซ้ำในไตรมาสนั้น</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── โมดัลบันทึก Manual Snapshot ── */
+function SnapshotCreateModal({fyStartMonth,fy,delayDays,store,initQ,onClose,onSave}){
+  const opts=[0,1,2,3].map(i=>({v:i,started:quarterDef(fyStartMonth,fy,i).start<=NOW}));
+  const lastStarted=opts.filter(o=>o.started).slice(-1)[0];
+  const first=(initQ!=null&&opts[initQ].started)?initQ:(lastStarted?lastStarted.v:0);
+  const [qi,setQi]=useState(first);
+  const [remark,setRemark]=useState('');
+  const qq=resolveQuarter(store,fyStartMonth,fy,qi,delayDays);
+  const canSave=qq.start<=NOW, overwrite=qq.active;
+  const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:9,padding:'10px 12px',fontSize:13.5,outline:'none',color:'#1f2733',fontFamily:'inherit',boxSizing:'border-box',resize:'vertical'};
+  const save=()=>{
+    if(!canSave) return;
+    const nextV=(qq.versions.reduce((m,v)=>Math.max(m,v.v),0))+1;
+    const versions=[...qq.versions.map(v=>v.status==='ACTIVE'?{...v,status:'SUPERSEDED'}:v),
+      {v:nextV,type:'MANUAL',date:new Date(),by:CURRENT_USER,status:'ACTIVE',remark:remark.trim()}];
+    onSave(qq.key,versions);
+  };
+  const m=SNAP_STATE[qq.state];
+  const meta=(k,val)=>(<div style={{display:'flex',justifyContent:'space-between',gap:10,fontSize:12.5,padding:'6px 0'}}><span style={{color:'#8a93a3'}}>{k}</span><span style={{fontWeight:600,color:'#1a2332',textAlign:'right'}}>{val}</span></div>);
+  return (
+    <SnapModalShell title="บันทึก Manual Snapshot" icon="bi-camera-fill" width={540} onClose={onClose}
+      footer={<React.Fragment>
+        <button onClick={onClose} style={{...SNAP_BTN_MAIN,padding:'0 18px',border:'1px solid #e3e7ec',background:'#fff',color:'#5a6473'}}><i className="bi bi-x-lg" style={{fontSize:13}}></i>ยกเลิก</button>
+        <div style={{flex:1}}></div>
+        <button onClick={save} disabled={!canSave} style={{...SNAP_BTN_MAIN,padding:'0 20px',border:'none',background:canSave?primary:'#cfd6e0',color:'#fff',cursor:canSave?'pointer':'not-allowed'}}><i className="bi bi-check-lg" style={{fontSize:15}}></i>บันทึก Snapshot</button>
+      </React.Fragment>}>
+      <SnapField label="ปีงบประมาณ">
+        <div style={{display:'inline-flex',alignItems:'center',gap:7,height:34,padding:'0 14px',borderRadius:8,background:'#f1f3f6',color:'#3a4452',fontSize:13,fontWeight:700}}><i className="bi bi-calendar3" style={{fontSize:13}}></i>ปีงบ {fy+543} (เริ่ม {TH_MONTHS_FULL[fyStartMonth-1]})</div>
+      </SnapField>
+      <SnapField label="เลือกไตรมาส" hint="ไตรมาสที่ยังไม่เริ่มจะเลือกไม่ได้ (อยู่นอกช่วงเวลาที่อนุญาต)">
+        <SnapSeg value={qi} onChange={setQi} options={opts.map(o=>({v:o.v,label:'ไตรมาส '+(o.v+1),disabled:!o.started}))}/>
+      </SnapField>
+      <div style={{background:'#fafbfc',border:'1px solid #eef0f3',borderRadius:11,padding:'12px 15px',marginBottom:16}}>
+        {meta('ช่วงไตรมาส',qMonthsLabel(fyStartMonth,qi)+' '+(fy+543))}
+        {meta('วันสิ้นไตรมาส',fmtDate(qq.end))}
+        {meta('กำหนด Auto Snapshot',fmtDate(qq.autoDate)+' (สิ้นไตรมาส + '+delayDays+' วัน)')}
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,padding:'6px 0'}}><span style={{fontSize:12.5,color:'#8a93a3'}}>สถานะปัจจุบัน</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6,height:24,padding:'0 10px',borderRadius:8,fontSize:11,fontWeight:700,background:m.bg,color:m.color,border:'1px solid '+m.bd}}><i className={'bi '+m.icon} style={{fontSize:11}}></i>{m.label}</span>
+        </div>
+      </div>
+      {overwrite&&(
+        <div style={{display:'flex',gap:9,alignItems:'flex-start',background:overwrite.type==='MANUAL'?'#fff4df':'#eaf1fe',border:'1px solid '+(overwrite.type==='MANUAL'?'#f6dca8':'#c9dbfb'),borderRadius:10,padding:'11px 13px',fontSize:12,lineHeight:1.6,marginBottom:16,color:overwrite.type==='MANUAL'?'#8a5a00':'#2f66d0'}}>
+          <i className={'bi '+(overwrite.type==='MANUAL'?'bi-exclamation-triangle-fill':'bi-arrow-repeat')} style={{fontSize:15,flex:'none',marginTop:1}}></i>
+          <div>ไตรมาสนี้มี <b>{SNAP_TYPE_LABEL[overwrite.type]} Snapshot (v{overwrite.v})</b> อยู่แล้ว — การบันทึกจะสร้างเวอร์ชันใหม่และแทนที่ข้อมูลที่ใช้แสดงผล เวอร์ชันเดิมจะถูกเก็บเป็นสถานะ "ถูกแทนที่" (ตรวจสอบย้อนหลังได้)</div>
+        </div>
+      )}
+      <SnapField label="เหตุผล / หมายเหตุ (Remark)" hint="เช่น รับรองหลังการประชุมผู้บริหาร / หลัง Internal Audit">
+        <textarea value={remark} onChange={e=>setRemark(e.target.value)} rows={2} placeholder="ระบุเหตุผลในการบันทึก Snapshot ครั้งนี้" style={inp}/>
+      </SnapField>
+      <div style={{background:'#fafbfc',border:'1px solid #eef0f3',borderRadius:11,padding:'6px 15px',marginBottom:16}}>
+        {meta('Snapshot Type','Manual')}
+        {meta('บันทึกโดย (Created By)',CURRENT_USER)}
+        {meta('วันเวลาที่บันทึก',fmtDateTime(NOW))}
+      </div>
+      <SnapDevNote>สิทธิ์การบันทึก Manual Snapshot ต้องตรวจสอบจาก Backend (roles: {SNAP_ROLES.join(', ')}) — ห้ามอาศัยการซ่อนปุ่มฝั่ง Frontend เท่านั้น. Backend ต้องรัน validation + transaction และเปลี่ยนสถานะเป็น COMPLETED ก็ต่อเมื่อบันทึกครบทุกส่วน</SnapDevNote>
+    </SnapModalShell>
+  );
+}
+
+/* ── โมดัลตั้งค่า Snapshot ── */
+function SnapshotConfigModal({cfg,onClose,onSave}){
+  const [fyStartMonth,setFyStartMonth]=useState(cfg.fyStartMonth);
+  const [autoEnabled,setAutoEnabled]=useState(cfg.autoEnabled);
+  const [delayMode,setDelayMode]=useState([7,10].includes(cfg.delayDays)?cfg.delayDays:'custom');
+  const [customDelay,setCustomDelay]=useState(cfg.delayDays);
+  const [periodType,setPeriodType]=useState(cfg.periodType);
+  const delayDays=delayMode==='custom'?Math.max(0,parseInt(customDelay||0,10)):delayMode;
+  const inp={width:90,border:'1px solid #e3e7ec',borderRadius:9,padding:'8px 10px',fontSize:13.5,outline:'none',color:'#1f2733',fontFamily:'inherit'};
+  return (
+    <SnapModalShell title="ตั้งค่า Snapshot" icon="bi-gear" width={520} onClose={onClose}
+      footer={<React.Fragment>
+        <button onClick={onClose} style={{...SNAP_BTN_MAIN,padding:'0 18px',border:'1px solid #e3e7ec',background:'#fff',color:'#5a6473'}}><i className="bi bi-x-lg" style={{fontSize:13}}></i>ยกเลิก</button>
+        <div style={{flex:1}}></div>
+        <button onClick={()=>onSave({fyStartMonth,autoEnabled,delayDays,periodType})} style={{...SNAP_BTN_MAIN,padding:'0 20px',border:'none',background:primary,color:'#fff'}}><i className="bi bi-check-lg" style={{fontSize:15}}></i>บันทึกการตั้งค่า</button>
+      </React.Fragment>}>
+      <SnapField label="Automatic Snapshot" hint="เมื่อเปิด ระบบจะสร้าง Snapshot อัตโนมัติหลังสิ้นไตรมาสตามระยะเวลาหน่วงที่กำหนด">
+        <SnapOnOff value={autoEnabled} onChange={setAutoEnabled}/>
+      </SnapField>
+      <SnapField label="เดือนเริ่มปีงบประมาณ (Fiscal Year)" hint="ใช้คำนวณ Q1–Q4 ตามรอบบัญชี ไม่ผูกกับปีปฏิทิน (เอกชน = ม.ค., ราชการไทย = ต.ค., ญี่ปุ่น = เม.ย.)">
+        <select value={fyStartMonth} onChange={e=>setFyStartMonth(parseInt(e.target.value,10))} style={{width:'100%',border:'1px solid #e3e7ec',borderRadius:9,padding:'10px 12px',fontSize:13.5,outline:'none',color:'#1f2733',fontFamily:'inherit',background:'#fff',cursor:'pointer'}}>
+          {TH_MONTHS_FULL.map((mn,i)=><option key={i} value={i+1}>{mn}{i===0?' (ปีปฏิทิน)':i===9?' (ราชการไทย)':i===3?' (ญี่ปุ่น)':''}</option>)}
+        </select>
+      </SnapField>
+      <SnapField label="ระยะเวลาหน่วงหลังสิ้นไตรมาส (Snapshot Delay)" hint="เผื่อเวลาให้ผู้ปฏิบัติงานอัปเดตข้อมูลให้ครบก่อนระบบบันทึก Auto Snapshot">
+        <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+          <SnapSeg value={delayMode} onChange={setDelayMode} options={[{v:7,label:'7 วัน'},{v:10,label:'10 วัน'},{v:'custom',label:'กำหนดเอง'}]}/>
+          {delayMode==='custom'&&<div style={{display:'inline-flex',alignItems:'center',gap:7}}><input type="number" min="0" value={customDelay} onChange={e=>setCustomDelay(e.target.value)} style={inp}/><span style={{fontSize:12.5,color:'#5a6473'}}>วัน</span></div>}
+        </div>
+      </SnapField>
+      <SnapField label="ประเภทรอบ Snapshot (Period Type)" hint="โครงสร้างรองรับรายเดือนในอนาคต — ปัจจุบันแสดงผลรายไตรมาส">
+        <SnapSeg value={periodType} onChange={setPeriodType} options={SNAP_PERIOD_TYPES}/>
+      </SnapField>
+      <SnapDevNote>Backend ต้องรองรับ idempotency: ก่อนสร้าง Auto Snapshot ให้ตรวจว่าไตรมาสนั้นมี Snapshot หรือยัง — พบ Manual ให้ข้ามทันที, พบ Auto ให้กัน job ซ้ำ/retry สร้างข้อมูลซ้ำ</SnapDevNote>
+    </SnapModalShell>
+  );
+}
+
+/* ── โมดัลรายละเอียดไตรมาส: Snapshot สิ้นไตรมาส + รายเดือน + ประวัติ/Audit ── */
+function SnapshotHistoryModal({q,fyStartMonth,fy,delayDays,store,onClose,onSaveMonth}){
+  const versions=[...q.versions].reverse();
+  const [recMonth,setRecMonth]=useState(null);
+  const [remark,setRemark]=useState('');
+  const months=[0,1,2].map(j=>resolveMonth(store,fyStartMonth,fy,q.i*3+j,delayDays));
+  const inp={width:'100%',border:'1px solid #e3e7ec',borderRadius:9,padding:'9px 11px',fontSize:13,outline:'none',color:'#1f2733',fontFamily:'inherit',boxSizing:'border-box',resize:'vertical'};
+  const saveMonth=(mo)=>{
+    const nextV=(mo.versions.reduce((m,v)=>Math.max(m,v.v),0))+1;
+    const vers=[...mo.versions.map(v=>v.status==='ACTIVE'?{...v,status:'SUPERSEDED'}:v),
+      {v:nextV,type:'MANUAL',date:new Date(),by:CURRENT_USER,status:'ACTIVE',remark:remark.trim()}];
+    onSaveMonth(mo.key,vers); setRecMonth(null); setRemark('');
+  };
+  const meta=(k,val)=>(<div style={{display:'flex',justifyContent:'space-between',gap:10,fontSize:12.5,padding:'6px 0'}}><span style={{color:'#8a93a3'}}>{k}</span><span style={{fontWeight:600,color:'#1a2332',textAlign:'right'}}>{val}</span></div>);
+  return (
+    <SnapModalShell title={'Snapshot ไตรมาส '+q.qNum+' — รายละเอียดและ Audit'} icon="bi-clock-history" width={580} onClose={onClose}
+      footer={<button onClick={onClose} style={{...SNAP_BTN_MAIN,padding:'0 18px',border:'1px solid #e3e7ec',background:'#fff',color:'#5a6473',marginLeft:'auto'}}><i className="bi bi-x-lg" style={{fontSize:13}}></i>ปิด</button>}>
+      <div style={{background:'#fafbfc',border:'1px solid #eef0f3',borderRadius:11,padding:'6px 15px',marginBottom:16}}>
+        {meta('Business Key','ORG-01 · ปีงบ '+(fy+543)+' · ไตรมาส '+q.qNum)}
+        {meta('ช่วงไตรมาส',qMonthsLabel(fyStartMonth,q.i)+' — สิ้นสุด '+fmtDate(q.end))}
+        {meta('ใช้แสดงบน Dashboard',q.active?SNAP_TYPE_LABEL[q.active.type]+' v'+q.active.v:'—')}
+      </div>
+
+      {/* Snapshot รายเดือน */}
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+        <i className="bi bi-calendar2-week" style={{fontSize:14,color:primary}}></i>
+        <span style={{fontSize:12.5,fontWeight:700,color:'#3a4452'}}>Snapshot รายเดือน</span>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8,marginBottom:8}}>
+        {months.map(mo=>{
+          const m=SNAP_STATE[mo.state];
+          return (
+            <div key={mo.absIdx} style={{border:'1px solid #eef0f3',borderRadius:10,padding:'11px 13px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+                <span style={{fontSize:13,fontWeight:700,color:'#1a2332'}}>{mo.monthName} {mo.year+543}</span>
+                <span style={{display:'inline-flex',alignItems:'center',gap:5,height:24,padding:'0 9px',borderRadius:8,fontSize:10.5,fontWeight:700,background:m.bg,color:m.color,border:'1px solid '+m.bd}}><i className={'bi '+m.icon} style={{fontSize:11}}></i>{m.label}</span>
+                <div style={{flex:1}}></div>
+                {mo.active&&<span style={{fontSize:11,color:'#9aa3af'}}><span style={{fontSize:10,fontWeight:700,color:'#8a93a3',background:'#f1f3f6',borderRadius:6,padding:'1px 6px',marginRight:5}}>v{mo.active.v}</span>{fmtDate(mo.active.date)}</span>}
+                <button disabled={!mo.canRecord} onClick={()=>{setRecMonth(mo.absIdx);setRemark('');}} style={{height:32,padding:'0 12px',borderRadius:8,border:'none',background:mo.canRecord?primarySoft:'#f1f3f6',color:mo.canRecord?primary:'#c4ccd4',fontSize:11.5,fontWeight:700,cursor:mo.canRecord?'pointer':'not-allowed',display:'inline-flex',alignItems:'center',gap:5}}><i className="bi bi-camera" style={{fontSize:12}}></i>บันทึก</button>
+              </div>
+              <div style={{fontSize:11,color:mo.closed?'#c0563a':'#9aa3af',marginTop:7,display:'flex',alignItems:'center',gap:6}}>
+                <i className={'bi '+(mo.canRecord?'bi-unlock':mo.closed?'bi-lock-fill':'bi-hourglass')} style={{fontSize:11}}></i>
+                {mo.canRecord?('บันทึก Manual ได้ถึง '+fmtDate(mo.deadline)+' (ก่อน Auto ของเดือนถัดไป)')
+                  :mo.closed?('ปิดหน้าต่างบันทึกแล้ว — เลยกำหนด '+fmtDate(mo.deadline)+' (Auto เดือนถัดไปทำงานแล้ว)')
+                  :('ยังไม่ถึงเดือนนี้ — เริ่ม '+fmtDate(mo.md.start))}
+              </div>
+              {recMonth===mo.absIdx&&(
+                <div style={{marginTop:10,paddingTop:10,borderTop:'1px dashed #e6e9ee'}}>
+                  {mo.active&&<div style={{fontSize:11,color:'#8a5a00',background:'#fff4df',border:'1px solid #f6dca8',borderRadius:8,padding:'7px 10px',marginBottom:8,lineHeight:1.5}}><i className="bi bi-exclamation-triangle-fill" style={{fontSize:11,marginRight:5}}></i>มี {SNAP_TYPE_LABEL[mo.active.type]} v{mo.active.v} อยู่แล้ว — จะสร้างเวอร์ชันใหม่แทนที่</div>}
+                  <textarea value={remark} onChange={e=>setRemark(e.target.value)} rows={2} placeholder="เหตุผล / หมายเหตุ (ถ้ามี)" style={inp}/>
+                  <div style={{display:'flex',gap:8,marginTop:8}}>
+                    <button onClick={()=>{setRecMonth(null);setRemark('');}} style={{height:32,padding:'0 14px',borderRadius:8,border:'1px solid #e3e7ec',background:'#fff',color:'#5a6473',fontSize:12,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:5}}><i className="bi bi-x-lg" style={{fontSize:12}}></i>ยกเลิก</button>
+                    <div style={{flex:1}}></div>
+                    <button onClick={()=>saveMonth(mo)} style={{height:32,padding:'0 16px',borderRadius:8,border:'none',background:primary,color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:5}}><i className="bi bi-check-lg" style={{fontSize:13}}></i>บันทึก Snapshot เดือนนี้</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{fontSize:11,color:'#9aa3af',display:'flex',alignItems:'flex-start',gap:6,marginBottom:16,lineHeight:1.55}}>
+        <i className="bi bi-info-circle" style={{fontSize:12,flex:'none',marginTop:1}}></i>
+        <span>แต่ละเดือนบันทึก Manual ได้จนถึงก่อน Auto Snapshot ของเดือนถัดไปทำงาน — พ้นกำหนดแล้วเดือนนั้นจะล็อก บันทึกเพิ่มไม่ได้</span>
+      </div>
+
+      <div style={{borderTop:'1px solid #f0f2f5',paddingTop:14,fontSize:12.5,fontWeight:700,color:'#3a4452',marginBottom:10}}>Snapshot สิ้นไตรมาส — เวอร์ชันทั้งหมด ({q.versions.length})</div>
+      {q.versions.length===0?(
+        <div style={{color:'#b3bac4',fontSize:12.5,textAlign:'center',padding:'14px 0'}}>ยังไม่มี Snapshot สิ้นไตรมาส</div>
+      ):(<div style={{display:'flex',flexDirection:'column',gap:0}}>
+        {versions.map((v,idx)=>{
+          const st=SNAP_VSTATUS[v.status], isAuto=v.type==='AUTO';
+          return (
+            <div key={v.v} style={{display:'flex',gap:12,paddingBottom:idx<versions.length-1?16:0}}>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',flex:'none'}}>
+                <div style={{width:30,height:30,borderRadius:'50%',background:isAuto?'#e2f3f0':'#eaf1fe',display:'flex',alignItems:'center',justifyContent:'center'}}><i className={'bi '+(isAuto?'bi-robot':'bi-person-check')} style={{fontSize:14,color:isAuto?'#0e7c6d':'#2f66d0'}}></i></div>
+                {idx<versions.length-1&&<div style={{flex:1,width:2,background:'#eef0f3',marginTop:4}}></div>}
+              </div>
+              <div style={{flex:1,paddingBottom:8}}>
+                <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',marginBottom:4}}>
+                  <span style={{fontSize:13,fontWeight:700,color:'#1a2332'}}>v{v.v} · {SNAP_TYPE_LABEL[v.type]} Snapshot</span>
+                  <span style={{display:'inline-flex',alignItems:'center',height:22,padding:'0 9px',borderRadius:8,fontSize:10.5,fontWeight:700,background:st.bg,color:st.color,border:'1px solid '+st.bd}}>{st.label}</span>
+                </div>
+                <div style={{fontSize:11.5,color:'#9aa3af'}}>{fmtDateTime(v.date)} · {v.by}</div>
+                {v.remark&&<div style={{fontSize:12,color:'#5a6473',marginTop:5,background:'#f7f8fa',borderRadius:8,padding:'7px 10px',lineHeight:1.55}}>{v.remark}</div>}
+              </div>
+            </div>
+          );
+        })}
+      </div>)}
+      <div style={{borderTop:'1px solid #f0f2f5',marginTop:14,paddingTop:14}}>
+        <div style={{fontSize:12.5,fontWeight:700,color:'#3a4452',marginBottom:8}}>Audit Log</div>
+        {versions.length===0?(
+          <div style={{fontSize:11.5,color:'#c4ccd4'}}>ยังไม่มีเหตุการณ์</div>
+        ):versions.map((v)=>(
+          <div key={v.v} style={{display:'flex',gap:8,fontSize:11.5,color:'#5a6473',padding:'5px 0',lineHeight:1.5}}>
+            <i className="bi bi-dot" style={{fontSize:16,color:'#c4ccd4',flex:'none',marginTop:-1}}></i>
+            <span><b style={{color:'#1a2332'}}>{v.type==='AUTO'?'AUTO_SNAPSHOT_CREATED':'MANUAL_SNAPSHOT_CREATED'}</b> — v{v.v} โดย {v.by} เมื่อ {fmtDateTime(v.date)}{v.status==='SUPERSEDED'?' · ต่อมาถูกแทนที่ (SUPERSEDED)':''}</span>
+          </div>
+        ))}
+      </div>
+    </SnapModalShell>
+  );
+}
+
 function ReportContent(){
   const [round,setRound]=useState(ROUNDS[0].id);
   const [roundOpen,setRoundOpen]=useState(false);
   const [query,setQuery]=useState('');
   const [pathIds,setPathIds]=useState([]); // drill path: [missionId, goalId, strategyId]
   const [viewStack,setViewStack]=useState([]); // เปิดดู "ข้อมูลและสถานะ" ของแผนรายการเดียว (ซ้อนกันได้เมื่อคลิกแผนลูกจากหน้ารายละเอียด)
+  // ── Snapshot state ──
+  const [snapCfg,setSnapCfg]=useState({fyStartMonth:1,delayDays:7,autoEnabled:true,periodType:'QUARTERLY'});
+  const [snapFY,setSnapFY]=useState(2026);
+  const [snapStore,setSnapStore]=useState(SNAP_SEED);
+  const [snapCfgOpen,setSnapCfgOpen]=useState(false);
+  const [snapCreate,setSnapCreate]=useState(null); // {q} | null
+  const [snapHist,setSnapHist]=useState(null); // quarter obj | null
 
   const missions=DATA_BY_ROUND[round];
   const cmdData=CMD_SUMMARY_BY_ROUND[round];
@@ -809,9 +1238,12 @@ function ReportContent(){
           onBack={()=>setViewStack(viewStack.slice(0,-1))}
           onOpenChild={(c)=>setViewStack([...viewStack,c])}
           onDrill={()=>{setPathIds([...pathIds,...viewStack.map(n=>n.id)]);setViewStack([]);}}
+          snapCfg={snapCfg} snapFY={snapFY} snapStore={snapStore}
+          onSaveMonth={(key,versions)=>setSnapStore(s=>({...s,[key]:versions}))}
         />
       ):(
         <React.Fragment>
+          {atRoot&&!q&&<SnapshotBar fyStartMonth={snapCfg.fyStartMonth} fy={snapFY} delayDays={snapCfg.delayDays} autoEnabled={snapCfg.autoEnabled} store={snapStore} onFYChange={setSnapFY} onConfig={()=>setSnapCfgOpen(true)} onCreate={(qi)=>setSnapCreate({q:qi})} onHistory={(qq)=>setSnapHist(qq)}/>}
           {/* plan cards — คลิกการ์ดเพื่อดูข้อมูลและสถานะ, ปุ่ม "ดู...รายการ" เพื่อ drill ลงชั้นถัดไป */}
           <div style={{display:'flex',flexDirection:'column',gap:12}}>
             {visible.length===0?(
@@ -823,6 +1255,10 @@ function ReportContent(){
           {atRoot&&<CmdSummarySection data={cmdData}/>}
         </React.Fragment>
       )}
+
+      {snapCfgOpen&&<SnapshotConfigModal cfg={snapCfg} onClose={()=>setSnapCfgOpen(false)} onSave={(c)=>{setSnapCfg(c);setSnapCfgOpen(false);}}/>}
+      {snapCreate!==null&&<SnapshotCreateModal fyStartMonth={snapCfg.fyStartMonth} fy={snapFY} delayDays={snapCfg.delayDays} store={snapStore} initQ={snapCreate.q} onClose={()=>setSnapCreate(null)} onSave={(key,versions)=>{setSnapStore(s=>({...s,[key]:versions}));setSnapCreate(null);}}/>}
+      {snapHist&&<SnapshotHistoryModal q={resolveQuarter(snapStore,snapCfg.fyStartMonth,snapFY,snapHist.i,snapCfg.delayDays)} fyStartMonth={snapCfg.fyStartMonth} fy={snapFY} delayDays={snapCfg.delayDays} store={snapStore} onSaveMonth={(key,versions)=>setSnapStore(s=>({...s,[key]:versions}))} onClose={()=>setSnapHist(null)}/>}
     </div>
   );
 }

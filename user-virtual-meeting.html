@@ -23,6 +23,9 @@ a{color:inherit;text-decoration:none}
 .grp-card{transition:box-shadow .15s}
 .grp-card:hover{box-shadow:0 4px 14px rgba(16,24,40,.07)}
 .grp-row:hover{background:#fafbfc}
+.feat-slide::-webkit-scrollbar{height:7px}
+.feat-slide::-webkit-scrollbar-thumb{background:#d5dae1;border-radius:99px}
+.feat-slide::-webkit-scrollbar-track{background:transparent}
 .join-btn:hover{background:#119184}
 .ghost-btn:hover{background:#f3f5f8}
 </style>
@@ -42,9 +45,10 @@ const ms=(name,size,color,fill)=>{var c=(fill&&ICONF[name])||ICON[name]||'bi-rec
 const AV=['#0e8c7d','#4f46e5','#dd7a16','#d83a3a','#0891b2','#7c3aed','#1f9d57','#e8920c'];
 const AVB=['b6e3f4','c0aede','d1d4f9','ffd5dc','ffdfbf','c7f0d8','f7d9c4','d3e4f5'];
 const cartoon=(s)=>'https://api.dicebear.com/9.x/avataaars/svg?seed='+encodeURIComponent(s)+'&backgroundColor='+AVB[(String(s).charCodeAt(0)+String(s).length)%AVB.length];
-function Avatars({n,extra}){
+function Avatars({n,extra,count}){
   return (
     <div style={{display:'flex',alignItems:'center'}}>
+      {count!=null && <span title="สมาชิก" style={{display:'inline-flex',alignItems:'center',gap:4,marginRight:9,fontSize:12,color:'#5a6473',fontWeight:600}}><i className="bi bi-people-fill" style={{fontSize:13,color:'#8a93a3'}}></i>{count}</span>}
       {Array.from({length:n}).map((_,i)=>(<div key={i} style={{width:24,height:24,borderRadius:'50%',background:AV[i%AV.length],border:'2px solid #fff',marginLeft:i?-8:0}}></div>))}
       {extra!=null && <span style={{marginLeft:7,fontSize:12,color:'#8a93a3',fontWeight:600}}>+{extra}</span>}
     </div>
@@ -86,9 +90,9 @@ const TodoBar=({todo})=>{
   if(!todo||!todo.total) return null;
   const pct=Math.round(todo.done/todo.total*100);
   return (
-    <div style={{marginTop:11}}>
-      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:5}}>
-        {ms('checklist',15,'#8a93a3')}
+    <div style={{marginTop:9}}>
+      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:4}}>
+        {ms('checklist',14,'#8a93a3')}
         <span style={{fontSize:11.5,color:'#8a93a3',fontWeight:600}}>สิ่งที่ต้องทำ</span>
         <div style={{flex:1}}></div>
         <span style={{fontSize:11.5,color:'#5a6473'}}><b style={{color:primary,fontWeight:700}}>{pct}%</b> · {todo.done}/{todo.total}</span>
@@ -112,6 +116,9 @@ const FEATURED=[
   {banner:'teal',title:'VM : AAR GiveD5',desc:'ใช้สำหรับพูดคุยเกี่ยวกับ GiveD5',members:18,unread:20,posts:136,av:5,extra:13},
   {banner:'teal',title:'เคล็ดลับการเขียนแผนธุรกิจ',desc:'เพื่อรวบรวมองค์ความรู้ในการเขียนแผนธุรกิจ ข...',members:29,unread:0,posts:2,av:5,extra:24},
   {banner:'teal',title:'AI วันละ 5 นาที',desc:'ศึกษาและทดลองนำ AI เริ่มจาก Automated ...',members:17,unread:7,posts:22,av:5,extra:12},
+  {banner:'violet',title:'VM : ทีมออกแบบ UX/UI',desc:'รวมแนวทางออกแบบและรีวิวงาน UI ของทีม...',members:12,unread:3,posts:41,av:5,extra:7,todo:{done:8,total:15}},
+  {banner:'teal',title:'คลังความรู้ EDR',desc:'รวมคู่มือและเอกสารการใช้งานระบบ EDR ทั้ง...',members:33,unread:0,posts:58,av:5,extra:28},
+  {banner:'green',title:'VM : กิจกรรมจิตอาสา GiveD5',desc:'ประสานงานและวางแผนกิจกรรมอาสาสมัคร...',members:26,unread:5,posts:19,av:5,extra:21,todo:{done:12,total:20}},
 ];
 const GROUPS=[
   {thumb:'teal',title:'EDR วิทยาลัยเทคนิคอยุธยา',members:18,unread:2,posts:36,av:4,extra:14,href:'vm-example-college-data.html',todo:{done:14,total:34}},
@@ -367,10 +374,9 @@ function PMCard({d}){
 
 function MetaLine({m,unread,posts,muted}){
   return (
-    <div style={{fontSize:12.5,color:'#8a93a3',display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
-      <span>สมาชิก {m} คน</span>
-      {unread>0 && <span style={{color:'#d8513a',fontWeight:600}}>· {unread} ยังไม่ได้อ่าน</span>}
-      <span>· โพสต์ {posts}</span>
+    <div style={{fontSize:12.5,color:'#8a93a3',display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+      {unread>0 && <span title="ยังไม่ได้อ่าน" style={{color:'#d8513a',fontWeight:600,display:'inline-flex',alignItems:'center',gap:5}}><i className="bi bi-envelope-fill" style={{fontSize:12.5}}></i>{unread}</span>}
+      <span title="โพสต์" style={{display:'inline-flex',alignItems:'center',gap:5}}><i className="bi bi-chat-square-text-fill" style={{fontSize:12.5,color:'#a6afbc'}}></i>{posts}</span>
     </div>
   );
 }
@@ -460,30 +466,34 @@ function App(){
               <div style={{display:'inline-flex',alignItems:'center',gap:6,color:'#9aa3af',fontSize:13}}>{ms('swap_vert',18,'#9aa3af')}ทั้งหมด ({total})</div>
             </div>
 
-            {/* FEATURED GRID */}
-            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(232px,1fr))',gap:16,marginBottom:22}}>
+            {/* FEATURED GRID / SLIDER */}
+            {(()=>{ const slide=featured.length>5; return (
+            <div className={slide?'feat-slide':''} style={slide?{display:'flex',gap:13,marginBottom:20,overflowX:'auto',paddingBottom:6,scrollSnapType:'x mandatory'}:{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(204px,1fr))',gap:13,marginBottom:20}}>
               {featured.map((g,i)=>(
-                <div key={i} className="grp-card" style={{background:'#fff',border:'1px solid #eceef2',borderRadius:13,overflow:'hidden',display:'flex',flexDirection:'column',position:'relative'}}>
-                  <div style={{position:'absolute',top:9,left:9,zIndex:2,width:24,height:24,borderRadius:'50%',background:'#fff',boxShadow:'0 1px 3px rgba(16,24,40,.14)',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('push_pin',15,primary,true)}</div>
-                  <Banner kind={g.banner}/>
-                  <div style={{padding:'14px 15px 16px',display:'flex',flexDirection:'column',flex:1}}>
-                    <div style={{fontWeight:700,fontSize:15,textAlign:'center',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{g.title}</div>
-                    <div style={{fontSize:12.5,color:'#9aa3af',textAlign:'center',marginTop:5,lineHeight:1.5,minHeight:36}}>{g.desc}</div>
-                    <div style={{fontSize:12,color:'#9aa3af',textAlign:'center',marginTop:8}}>สมาชิก {g.members} คน{g.unread>0 && <span style={{color:'#d8513a',fontWeight:600}}> · {g.unread} ยังไม่ได้อ่าน</span>} · โพสต์ {g.posts}</div>
-                    <div style={{display:'flex',justifyContent:'center',marginTop:12}}><Avatars n={g.av} extra={g.extra>0?g.extra:null}/></div>
+                <div key={i} className="grp-card" style={{background:'#fff',border:'1px solid #eceef2',borderRadius:13,overflow:'hidden',display:'flex',flexDirection:'column',position:'relative',...(slide?{width:216,flex:'none',scrollSnapAlign:'start'}:{})}}>
+                  <div style={{position:'absolute',top:7,left:7,zIndex:2,width:22,height:22,borderRadius:'50%',background:'#fff',boxShadow:'0 1px 3px rgba(16,24,40,.14)',display:'flex',alignItems:'center',justifyContent:'center'}}>{ms('push_pin',13,primary,true)}</div>
+                  <Banner kind={g.banner} h={68}/>
+                  <div style={{padding:'11px 13px 13px',display:'flex',flexDirection:'column',flex:1}}>
+                    <div style={{fontWeight:700,fontSize:14,textAlign:'center',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{g.title}</div>
+                    <div style={{fontSize:12,color:'#9aa3af',textAlign:'center',marginTop:3,lineHeight:1.45,minHeight:34,overflow:'hidden'}}>{g.desc}</div>
+                    <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:12,fontSize:12,color:'#8a93a3',marginTop:5}}>
+                      {g.unread>0 && <span title="ยังไม่ได้อ่าน" style={{color:'#d8513a',fontWeight:600,display:'inline-flex',alignItems:'center',gap:5}}><i className="bi bi-envelope-fill" style={{fontSize:12.5}}></i>{g.unread}</span>}
+                      <span title="โพสต์" style={{display:'inline-flex',alignItems:'center',gap:5}}><i className="bi bi-chat-square-text-fill" style={{fontSize:12.5,color:'#a6afbc'}}></i>{g.posts}</span>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'center',marginTop:9}}><Avatars n={g.av} extra={g.extra>0?g.extra:null} count={g.members}/></div>
                     <TodoBar todo={g.todo}/>
                     <div style={{flex:1}}></div>
-                    <div style={{display:'flex',alignItems:'center',gap:8,marginTop:14}}>
-                      <a href={g.href||"user-virtual-meeting-group.html"} className="ghost-btn" style={{flex:1,textAlign:'center',border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'8px 0',fontSize:13,fontWeight:600,color:'#3a4452'}}>ดูกลุ่ม</a>
-                      <button title="ปักหมุดอยู่" style={{width:36,height:36,borderRadius:9,border:'1px solid '+primarySoft,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('push_pin',18,primary,true)}</button>
+                    <div style={{display:'flex',alignItems:'center',gap:7,marginTop:11}}>
+                      <a href={g.href||"user-virtual-meeting-group.html"} className="ghost-btn" style={{flex:1,textAlign:'center',border:'1px solid #e3e7ec',background:'#fff',borderRadius:9,padding:'6px 0',fontSize:12.5,fontWeight:600,color:'#3a4452'}}>ดูกลุ่ม</a>
+                      <button title="ปักหมุดอยู่" style={{width:32,height:32,borderRadius:9,border:'1px solid '+primarySoft,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('push_pin',16,primary,true)}</button>
                       <IconBtn icon="chat_bubble_outline"/>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+            ); })()}
 
-            {/* LIST ROWS (2 per row) */}
             <div style={{display:'flex',alignItems:'center',gap:8,margin:'4px 0 13px',color:'#5a6473'}}>
               <span style={{fontWeight:700,fontSize:13.5,color:'#3a4452'}}>กลุ่มอื่น ๆ</span>
               <span style={{fontSize:12.5,color:'#9aa3af'}}>· {groups.length} กลุ่ม</span>
@@ -495,7 +505,7 @@ function App(){
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontWeight:700,fontSize:14.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{g.title}</div>
                     <div style={{marginTop:4}}><MetaLine m={g.members} unread={g.unread} posts={g.posts}/></div>
-                    <div style={{marginTop:8}}><Avatars n={g.av} extra={g.extra}/></div>
+                    <div style={{marginTop:8}}><Avatars n={g.av} extra={g.extra} count={g.members}/></div>
                   </div>
                   <div style={{display:'flex',flexDirection:'column',gap:0,flex:'none',minWidth:g.todo?200:0}}>
                     <div style={{display:'flex',alignItems:'center',gap:8,justifyContent:'flex-end'}}>
