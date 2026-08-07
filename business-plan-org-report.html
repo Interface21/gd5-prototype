@@ -54,6 +54,8 @@ const NAVLINKS=[
   null,
   {label:'แผนธุรกิจทั้งหมดขององค์กร',active:true,href:'business-plan-org-report.html'},
   {label:'สถานะของแผนธุรกิจทั้งหมด',active:false,href:null},
+  {label:'ตรวจสอบแผนประจำ',active:false,href:'business-plan-routine-audit.html'},
+  {label:'ตรวจสอบการใช้จ่ายงบประมาณ',active:false,href:'business-plan-budget-audit.html'},
   {label:'สรุปผลการประเมินแผนธุรกิจ',active:false,href:null},
 ];
 
@@ -383,7 +385,7 @@ function DailyPlanReadOnly({plans,vmGroups}){
         <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
           <div style={{width:34,height:34,borderRadius:9,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-journal-check" style={{fontSize:18,color:primary}}></i></div>
           <div style={{flex:1,minWidth:220}}>
-            <div style={{fontWeight:700,fontSize:15}}>แผนงานประจำวัน</div>
+            <div style={{fontWeight:700,fontSize:15}}>แผนงานประจำ</div>
             <div style={{fontSize:12,color:'#9aa3af',marginTop:1}}>{plans.length} ชุด{groups.length>0?' · เชื่อมกับ '+groups.length+' กลุ่ม VM':''} · กำหนดโดยผู้ดูแลระบบ/งานแผน</div>
           </div>
           <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,height:24,boxSizing:'border-box',background:'#f1f3f6',color:'#5a6473',borderRadius:8,padding:'0 13px',fontSize:12,fontWeight:600}}><i className="bi bi-lock" style={{fontSize:13,color:'#9aa3af'}}></i>ดูอย่างเดียว</span>
@@ -394,7 +396,7 @@ function DailyPlanReadOnly({plans,vmGroups}){
         <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
           <div style={{textAlign:'center',padding:'32px 10px',color:'#b3bac4'}}>
             <i className="bi bi-checklist" style={{fontSize:28,color:'#d7dce3'}}></i>
-            <div style={{fontSize:13,fontWeight:600,color:'#8a93a3',marginTop:10}}>ยังไม่มีแผนงานประจำวันสำหรับแผนนี้</div>
+            <div style={{fontSize:13,fontWeight:600,color:'#8a93a3',marginTop:10}}>ยังไม่มีแผนงานประจำสำหรับแผนนี้</div>
           </div>
         </div>
       ):(
@@ -584,7 +586,7 @@ function PlanDetail({node,level,onBack,onOpenChild,onDrill,snapCfg,snapFY,snapSt
 
       {/* page tabs */}
       <div style={{display:'flex',gap:6,background:'#fff',border:'1px solid #eceef2',borderRadius:12,padding:5,width:'fit-content',marginBottom:14}}>
-        {[['detail','รายละเอียด','bi-info-circle'],['daily','แผนงานประจำวัน','bi-journal-check']].map(([k,label,ic])=>(
+        {[['detail','รายละเอียด','bi-info-circle'],['daily','แผนงานประจำ','bi-journal-check']].map(([k,label,ic])=>(
           <button key={k} onClick={()=>setPageTab(k)} style={{display:'inline-flex',alignItems:'center',gap:7,padding:'9px 16px',borderRadius:9,border:'none',background:pageTab===k?primary:'transparent',color:pageTab===k?'#fff':'#5a6473',fontSize:13.5,fontWeight:700,cursor:'pointer'}}>
             <i className={'bi '+ic} style={{fontSize:14}}></i>{label}
             {k==='daily'&&dailyPlans.length>0&&(

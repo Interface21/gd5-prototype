@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ตรวจสอบการใช้จ่ายงบประมาณ — GiveD5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+.bi{vertical-align:-2px}
+body{margin:0;font-family:'IBM Plex Sans Thai',sans-serif;color:#1f2733;background:#f3f5f9;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:none;border:none;padding:0}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e0;border-radius:9px}
+.nav-item:hover{background:#f3f5f8}
+.brow:hover{background:#fafbfc}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/plain" id="jsx-src">
+const {useState,useMemo} = React;
+const primary='#15a08f', primarySoft='#e3f3f0';
+const RED='#ef4444';
+/* งบ 2 ประเภท — โทนเดียวกับหน้าแผนธุรกิจทั้งหมดขององค์กร */
+const INV={key:'invest',label:'งบลงทุน',icon:'bi-buildings',color:'#2f66d0',bar:'#3b6fd4',bg:'#eaf1fe',bd:'#d3e2fb',soft:'#f4f8ff'};
+const OPR={key:'operate',label:'งบดำเนินการ',icon:'bi-gear',color:'#b06200',bar:'#e59500',bg:'#fff4df',bd:'#f5dcab',soft:'#fffaf0'};
+
+/* ─── NAV (same convention as other business-plan-*.html pages) ─── */
+const NAVLINKS=[
+  {label:'แผนธุรกิจที่รับผิดชอบ',active:false,href:'business-plan-responsible-list.html'},
+  {label:'Cockpit ความก้าวหน้าของตัวชี้วัด',active:false,href:'business-plan-cockpit.html'},
+  {label:'ประเมินผลงานแผนธุรกิจ',active:false,href:null,count:1},
+  null,
+  {label:'แผนธุรกิจทั้งหมดขององค์กร',active:false,href:'business-plan-org-report.html'},
+  {label:'สถานะของแผนธุรกิจทั้งหมด',active:false,href:null},
+  {label:'ตรวจสอบแผนประจำ',active:false,href:'business-plan-routine-audit.html'},
+  {label:'ตรวจสอบการใช้จ่ายงบประมาณ',active:true,href:'business-plan-budget-audit.html'},
+  {label:'สรุปผลการประเมินแผนธุรกิจ',active:false,href:null},
+];
+
+function LeftNav(){
+  return (
+    <div style={{width:220,background:'#fff',borderRight:'1px solid #e7eaef',padding:'16px 0',position:'sticky',top:58,height:'calc(100vh - 58px)',overflowY:'auto',flex:'none'}}>
+      {NAVLINKS.map((n,i)=> n===null ? (
+        <div key={i} style={{height:1,background:'#f0f2f5',margin:'8px 0'}}></div>
+      ) : (
+        <a key={i} href={n.href||'#'} className="nav-item" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 18px',cursor:'pointer',fontSize:13.5,fontWeight:n.active?700:400,color:n.active?primary:'#5a6473',background:n.active?primarySoft:'transparent',borderLeft:'3px solid '+(n.active?primary:'transparent'),textDecoration:'none'}}>
+          <span>{n.label}</span>
+          {n.count&&(
+            <span style={{minWidth:19,height:19,borderRadius:99,background:'#ef4444',color:'#fff',fontSize:11,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px',flex:'none'}}>{n.count}</span>
+          )}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+/* ─── รอบการวัดผล (ชุดเดียว/หน้าตาเดียวกับหน้าแผนธุรกิจอื่น) ─── */
+const ROUNDS=[
+  {id:'r1',label:'เป้าหมายปี 2569 (ครึ่งปีแรก)'},
+  {id:'r2',label:'เป้าหมายปี 2569 (ครึ่งปีหลัง)'},
+  {id:'r3',label:'เป้าหมายปี 2568 (ทั้งปี)'},
+  {id:'r4',label:'เป้าหมายปี 2567 (ทั้งปี)'},
+];
+
+/* ─── ข้อมูลลำดับชั้น 4 ระดับ: พันธกิจ → เป้าหมาย → กลยุทธ์ → แผนงาน
+   investBudget/operateBudget = งบที่ตั้งไว้ของแผนนั้น (pool ของชั้นนั้น)
+   spentSelf = ยอดใช้จ่ายที่บันทึกที่แผนนั้นโดยตรง (เข้างบลงทุน)
+   ยอดใช้จ่ายงบดำเนินการที่แผนนั้นโดยตรง = round(spentSelf*0.4) (mock) ─── */
+const MISSIONS_BASE=[
+  {id:'m1',investBudget:1500000,operateBudget:1000000,spentSelf:100000,title:'พันธกิจที่ 1: EDR',owner:'Pinij Ningunha',children:[
+    {id:'g11',investBudget:180000,operateBudget:120000,spentSelf:120000,title:'เป้าหมายที่ 1.1 รักษาฐานลูกค้าสถานศึกษาเดิม EDR',owner:'Jarunya Thaiprayoon',children:[]},
+    {id:'g12',investBudget:360000,operateBudget:240000,spentSelf:50000,title:'เป้าหมายที่ 1.2 ประเมินสถานศึกษาต้นแบบและขยายผล',owner:'Thaniya Tongprasert',children:[
+      {id:'s121',investBudget:150000,operateBudget:100000,spentSelf:40000,title:'กลยุทธ์ 1.2.1 จัดกิจกรรมการประกวด MOU ระดับภาค',owner:'Thaniya Tongprasert',children:[
+        {id:'p1211',investBudget:60000,operateBudget:40000,spentSelf:80000,title:'แผนงาน 1.2.1.1 จัดเตรียมสถานที่และวัสดุการประกวด',owner:'Thaniya Tongprasert',children:[]},
+        {id:'p1212',investBudget:72000,operateBudget:48000,spentSelf:95000,title:'แผนงาน 1.2.1.2 ดำเนินการประกวดและตัดสินผล MOU',owner:'Thaniya Tongprasert',children:[]},
+      ]},
+      {id:'s122',investBudget:120000,operateBudget:80000,spentSelf:150000,title:'กลยุทธ์ 1.2.2 สนับสนุนทีมงานประกวด MOU วิทยาลัย',owner:'Thaniya Tongprasert',children:[]},
+    ]},
+    {id:'g13',investBudget:480000,operateBudget:320000,spentSelf:210000,title:'เป้าหมายที่ 1.3 ผู้เรียนในระบบ EDR ไม่น้อยกว่า 50,000 คน',owner:'สรัญญู ตรีคุณา (เพชร)',children:[]},
+    {id:'g14',investBudget:240000,operateBudget:160000,spentSelf:0,title:'เป้าหมายที่ 1.4 นำ AI มาใช้ร่วม (Synergy) กับระบบ EDR',owner:'Siramet',children:[]},
+  ]},
+  {id:'m2',investBudget:1080000,operateBudget:null,spentSelf:60000,title:'พันธกิจที่ 2: GiveD5',owner:'Siramet',children:[
+    {id:'g21',investBudget:540000,operateBudget:360000,spentSelf:80000,title:'เป้าหมายที่ 2.1 พัฒนาโปรแกรม GiveD5 แต่ละเวอร์ชันตามกรอบเวลา',owner:'Piyawat Takaew',children:[
+      {id:'s211',investBudget:180000,operateBudget:120000,spentSelf:120000,title:'กลยุทธ์ 2.1.1 วางแผนและออกแบบฟีเจอร์ตาม Roadmap',owner:'Piyawat Takaew',children:[
+        {id:'p2111',investBudget:48000,operateBudget:32000,spentSelf:65000,title:'แผนงาน 2.1.1.1 สำรวจความต้องการผู้ใช้งาน GiveD5',owner:'Piyawat Takaew',children:[]},
+      ]},
+      {id:'s212',investBudget:150000,operateBudget:100000,spentSelf:30000,title:'กลยุทธ์ 2.1.2 พัฒนาคุณภาพระบบ GiveD5 ให้ตรงตามความต้องการผู้ใช้',owner:'Narate Boonmee',children:[]},
+    ]},
+    {id:'g22',investBudget:300000,operateBudget:200000,spentSelf:175000,title:'เป้าหมายที่ 2.2 สถานศึกษาที่ใช้ GiveD5 ทดแทนไลน์กลุ่ม',owner:'Piyawat Takaew',children:[]},
+  ]},
+  {id:'m3',investBudget:null,operateBudget:1280000,spentSelf:0,title:'พันธกิจที่ 3: ครุภัณฑ์',owner:'Anusorn Suksri',children:[
+    {id:'g31',investBudget:900000,operateBudget:600000,spentSelf:480000,title:'เป้าหมายที่ 3.1 ยอดขายครุภัณฑ์และสิ่งก่อสร้างไม่น้อยกว่า 150 ล้านบาท',owner:'สรัญญู ตรีคุณา (เพชร)',children:[]},
+    {id:'g32',investBudget:420000,operateBudget:280000,spentSelf:260000,title:'เป้าหมายที่ 3.2 จัดส่งมอบงานให้เป็นไปตามกำหนดส่งมอบตามสัญญา',owner:'ปอนด์',children:[]},
+    {id:'g33',investBudget:360000,operateBudget:240000,spentSelf:90000,title:'เป้าหมายที่ 3.3 สร้างโครงสร้างพื้นฐานเพื่อขยายการตลาดครุภัณฑ์',owner:'Siramet',children:[]},
+  ]},
+  {id:'m4',investBudget:null,operateBudget:null,spentSelf:45000,title:'พันธกิจที่ 4: ดิจิทัล GD5 และ AI',owner:'Siramet',children:[
+    {id:'g41',investBudget:240000,operateBudget:160000,spentSelf:110000,title:'เป้าหมายที่ 4.1 สร้างวัฒนธรรมการทำงานอย่างมืออาชีพและความผูกพัน',owner:'Anusorn Suksri',children:[]},
+    {id:'g42',investBudget:210000,operateBudget:140000,spentSelf:95000,title:'เป้าหมายที่ 4.2 เตรียมพร้อมยื่น Filing กับ ก.ล.ต. ทุกไตรมาส',owner:'Anusorn Suksri',children:[]},
+    {id:'g43',investBudget:180000,operateBudget:120000,spentSelf:70000,title:'เป้าหมายที่ 4.3 ขับเคลื่อนนโยบายด้านเทคโนโลยีสารสนเทศ',owner:'Idsara Wungdee',children:[]},
+  ]},
+];
+
+/* คำนวณยอดใช้จ่ายตามรอบการวัดผล: อนาคต = ยังไม่ใช้จ่าย, อดีตที่ปิดรอบ = ใช้จ่ายเต็ม (mock) */
+function scaleSpent(nodes,factor){
+  return nodes.map(n=>({...n,spentSelf:Math.round((n.spentSelf||0)*factor),children:scaleSpent(n.children||[],factor)}));
+}
+const DATA_BY_ROUND={
+  r1:MISSIONS_BASE,
+  r2:scaleSpent(MISSIONS_BASE,0),
+  r3:scaleSpent(MISSIONS_BASE,1.18),
+  r4:scaleSpent(MISSIONS_BASE,1.05),
+};
+
+const dailyOf=(n)=>Math.round((n.spentSelf||0)*0.4);
+const investSelf=(n)=>(n.spentSelf||0);                        // ใช้จ่ายงบลงทุนที่แผนนี้โดยตรง
+const operateSelf=(n)=>dailyOf(n);                             // ใช้จ่ายงบดำเนินการที่แผนนี้โดยตรง
+const investUsed=(n)=>investSelf(n)+(n.children||[]).reduce((s,c)=>s+investUsed(c),0);   // รวมแผนใต้ทั้งหมด
+const operateUsed=(n)=>operateSelf(n)+(n.children||[]).reduce((s,c)=>s+operateUsed(c),0);
+const LEVEL_NAME=['พันธกิจ','เป้าหมาย','กลยุทธ์','แผนงาน'];
+const LEVEL_STYLE=[
+  {color:'#0e8c7d',bg:'#e2f3f0',bd:'#bfe6df'},
+  {color:'#2f66d0',bg:'#eaf1fe',bd:'#c9dbfb'},
+  {color:'#b06200',bg:'#fff4df',bd:'#f6dca8'},
+  {color:'#7c3aed',bg:'#f1eafe',bd:'#ddc9fb'},
+];
+const baht=(n)=>Math.round(n).toLocaleString();
+/* ย่อจำนวนเงินสำหรับพื้นที่แคบ: 1,250,000 → 1.25 ล้าน */
+const bahtShort=(n)=>{
+  n=Math.round(n);
+  if(n>=1000000) return (n/1000000).toLocaleString(undefined,{maximumFractionDigits:2})+' ล้าน';
+  if(n>=1000) return (n/1000).toLocaleString(undefined,{maximumFractionDigits:0})+'k';
+  return n.toLocaleString();
+};
+
+/* แผ่ต้นไม้เป็น flat list พร้อม depth + parent id (เพื่อทำตาราง/สรุปตามระดับ) */
+function flatten(nodes,depth,acc){
+  acc=acc||[];
+  (nodes||[]).forEach(n=>{ acc.push({node:n,depth:depth}); flatten(n.children,depth+1,acc); });
+  return acc;
+}
+
+/* ══════════════ ROUND SELECTOR ══════════════ */
+function RoundSelect({round,setRound}){
+  const [open,setOpen]=useState(false);
+  return (
+    <div style={{position:'relative'}}>
+      <button onClick={()=>setOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:8,border:'1px solid #e3e7ec',borderRadius:11,padding:'10px 16px',background:'#fff',cursor:'pointer'}}>
+        <span style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{ROUNDS.find(r=>r.id===round).label}</span>
+        <i className="bi bi-chevron-down" style={{fontSize:11,color:'#9aa3af'}}></i>
+      </button>
+      {open&&(
+        <div style={{position:'absolute',right:0,top:52,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:240,overflow:'hidden'}}>
+          {ROUNDS.map(r=>(
+            <div key={r.id} onClick={()=>{setRound(r.id);setOpen(false);}} style={{padding:'11px 18px',fontSize:13,cursor:'pointer',fontWeight:r.id===round?700:400,color:r.id===round?primary:'#1f2733',background:r.id===round?primarySoft:'#fff'}}>{r.label}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════ การ์ดสรุปงบภาพรวม (ต่อ 1 ประเภทงบ) ══════════════ */
+function OverviewBudgetCard({def,budget,used}){
+  const remain=budget-used;
+  const pct=budget>0?used/budget*100:0;
+  const over=used>budget;
+  return (
+    <div style={{flex:1,minWidth:280,background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'18px 22px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+        <div style={{width:34,height:34,borderRadius:9,background:def.bg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className={'bi '+def.icon} style={{fontSize:17,color:def.color}}></i></div>
+        <span style={{fontWeight:700,fontSize:15,color:'#1a2332'}}>{def.label}</span>
+        <div style={{flex:1}}></div>
+        <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',height:26,padding:'0 11px',borderRadius:8,fontSize:12.5,fontWeight:800,background:over?'#fdeaea':def.bg,color:over?RED:def.color,border:'1px solid '+(over?'#f5c6c6':def.bd)}}>{pct.toFixed(1)}%</span>
+      </div>
+      <div style={{display:'flex',alignItems:'baseline',gap:8,marginBottom:12,flexWrap:'wrap'}}>
+        <span style={{fontSize:12.5,color:'#8a93a3'}}>ใช้ไป</span>
+        <span style={{fontSize:26,fontWeight:700,color:over?RED:def.color,lineHeight:1}}>{baht(used)}</span>
+        <span style={{fontSize:12.5,color:'#8a93a3'}}>จาก {baht(budget)} บาท</span>
+      </div>
+      <div style={{height:12,background:'#eef0f3',borderRadius:99,overflow:'hidden',marginBottom:14}}>
+        <div style={{width:Math.min(100,pct)+'%',height:'100%',background:over?RED:def.bar,borderRadius:99}}></div>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+        <div style={{background:def.soft,border:'1px solid '+def.bd,borderRadius:10,padding:'10px 12px'}}>
+          <div style={{fontSize:11,color:'#8a93a3',marginBottom:3}}>งบที่ตั้งไว้</div>
+          <div style={{fontSize:15,fontWeight:700,color:'#1a2332'}}>{baht(budget)}</div>
+        </div>
+        <div style={{background:remain<0?'#fdeaea':'#f7f9f8',border:'1px solid '+(remain<0?'#f5c6c6':'#e6ecea'),borderRadius:10,padding:'10px 12px'}}>
+          <div style={{fontSize:11,color:'#8a93a3',marginBottom:3}}>{remain<0?'ใช้เกินงบ':'คงเหลือ'}</div>
+          <div style={{fontSize:15,fontWeight:700,color:remain<0?RED:'#0e7c6d'}}>{baht(Math.abs(remain))}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════ การ์ดรวมทั้งสองงบ ══════════════ */
+function GrandTotalCard({invBudget,invUsed,opBudget,opUsed}){
+  const budget=invBudget+opBudget, used=invUsed+opUsed, remain=budget-used;
+  const pct=budget>0?used/budget*100:0, over=used>budget;
+  const seg=(amt,color)=>budget>0?(amt/budget*100)+'%':'0%';
+  return (
+    <div style={{background:'linear-gradient(180deg,#12332f 0%,#15413a 100%)',borderRadius:14,padding:'20px 24px',boxShadow:'0 2px 10px rgba(16,40,36,.22)',color:'#fff'}}>
+      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16,flexWrap:'wrap'}}>
+        <div style={{width:34,height:34,borderRadius:9,background:'rgba(255,255,255,.14)',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-wallet2" style={{fontSize:17,color:'#8fe3d4'}}></i></div>
+        <span style={{fontWeight:700,fontSize:15}}>งบประมาณรวมทั้งองค์กร</span>
+        <div style={{flex:1}}></div>
+        <span style={{display:'inline-flex',alignItems:'center',height:26,padding:'0 12px',borderRadius:8,fontSize:12.5,fontWeight:800,background:'rgba(255,255,255,.16)',color:over?'#ffb4b4':'#8fe3d4'}}>ใช้ไป {pct.toFixed(1)}%</span>
+      </div>
+      <div style={{display:'flex',gap:26,flexWrap:'wrap',marginBottom:16}}>
+        <div><div style={{fontSize:11.5,color:'rgba(255,255,255,.6)',marginBottom:4}}>งบที่ตั้งไว้</div><div style={{fontSize:23,fontWeight:700}}>{baht(budget)}</div></div>
+        <div><div style={{fontSize:11.5,color:'rgba(255,255,255,.6)',marginBottom:4}}>ใช้ไปแล้ว</div><div style={{fontSize:23,fontWeight:700,color:'#8fe3d4'}}>{baht(used)}</div></div>
+        <div><div style={{fontSize:11.5,color:'rgba(255,255,255,.6)',marginBottom:4}}>{remain<0?'ใช้เกินงบ':'คงเหลือ'}</div><div style={{fontSize:23,fontWeight:700,color:remain<0?'#ffb4b4':'#fff'}}>{baht(Math.abs(remain))}</div></div>
+      </div>
+      <div style={{display:'flex',height:12,borderRadius:99,overflow:'hidden',background:'rgba(255,255,255,.14)',marginBottom:11}}>
+        <div style={{width:seg(invUsed),background:INV.bar}} title="งบลงทุนที่ใช้ไป"></div>
+        <div style={{width:seg(opUsed),background:OPR.bar}} title="งบดำเนินการที่ใช้ไป"></div>
+      </div>
+      <div style={{display:'flex',gap:20,flexWrap:'wrap',fontSize:12}}>
+        <span style={{display:'inline-flex',alignItems:'center',gap:7}}><span style={{width:11,height:11,borderRadius:3,background:INV.bar}}></span>งบลงทุนใช้ไป <b style={{marginLeft:2}}>{baht(invUsed)}</b></span>
+        <span style={{display:'inline-flex',alignItems:'center',gap:7}}><span style={{width:11,height:11,borderRadius:3,background:OPR.bar}}></span>งบดำเนินการใช้ไป <b style={{marginLeft:2}}>{baht(opUsed)}</b></span>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════ มินิแท่งงบในตาราง (budget/used/%) ══════════════ */
+function MiniBudget({def,budget,used,none}){
+  if(none) return <div style={{textAlign:'center',fontSize:12,color:'#c4ccd4'}}>ไม่ได้ตั้งงบ</div>;
+  const pct=budget>0?used/budget*100:0, over=used>budget;
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',gap:6,marginBottom:5}}>
+        <span style={{fontSize:12.5,fontWeight:700,color:over?RED:'#1a2332'}}>{baht(used)}</span>
+        <span style={{fontSize:11,color:'#9aa3af'}}>/ {bahtShort(budget)}</span>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:7}}>
+        <div style={{flex:1,height:7,background:'#eef0f3',borderRadius:99,overflow:'hidden'}}>
+          <div style={{width:Math.min(100,pct)+'%',height:'100%',background:over?RED:def.bar,borderRadius:99}}></div>
+        </div>
+        <span style={{fontSize:11,fontWeight:800,color:over?RED:def.color,width:38,textAlign:'right',flex:'none'}}>{Math.round(pct)}%</span>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════ จุดเฝ้าระวังการใช้จ่าย (ranked watchlist ข้ามทุกระดับ) ══════════════
+   ต่างจากตารางต้นไม้: ตารางต้นไม้ = โครงสร้างครบทุกแผนตามลำดับชั้น (ดูภาพรวม/ไล่ดู)
+   บล็อกนี้ = ดึงเฉพาะแผนที่ "ใช้เกินงบ / ใกล้เต็มงบ" จัดอันดับข้ามทุกระดับ+ทั้ง 2 งบ
+   เพื่อให้ผู้ตรวจเห็นจุดเสี่ยงทันทีโดยไม่ต้องไล่กางตาราง */
+const WATCH_THRESHOLD=80; // % เริ่มเฝ้าระวัง
+function Watchlist({missions}){
+  const [bf,setBf]=useState('all'); // กรองประเภทงบ: all | invest | operate
+  const flat=flatten(missions,0);
+  const entries=[];
+  flat.forEach(f=>{
+    const n=f.node;
+    [[INV,n.investBudget,investUsed(n)],[OPR,n.operateBudget,operateUsed(n)]].forEach(([def,budget,used])=>{
+      if(budget==null||budget<=0) return;
+      if(bf!=='all'&&def.key!==bf) return;
+      const pct=used/budget*100;
+      if(pct>=WATCH_THRESHOLD) entries.push({node:n,depth:f.depth,def,budget,used,pct,over:used>budget});
+    });
+  });
+  entries.sort((a,b)=>b.pct-a.pct);
+  const overCount=entries.filter(e=>e.over).length;
+  const warnCount=entries.length-overCount;
+  const chip=(id,label,def)=>{
+    const on=bf===id;
+    const c=def?def.color:primary, bg=def?def.bg:primarySoft, bd=def?def.bd:primary;
+    return (
+      <button key={id} onClick={()=>setBf(id)} style={{display:'inline-flex',alignItems:'center',gap:6,height:30,padding:'0 12px',borderRadius:8,border:'1px solid '+(on?bd:'#e3e7ec'),background:on?bg:'#fff',color:on?c:'#5a6473',fontSize:12,fontWeight:on?700:500,cursor:'pointer'}}>
+        {def&&<i className={'bi '+def.icon} style={{fontSize:11}}></i>}{label}
+      </button>
+    );
+  };
+  return (
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden'}}>
+      <div style={{display:'flex',alignItems:'center',gap:9,padding:'16px 20px',borderBottom:'1px solid #f0f2f5',flexWrap:'wrap'}}>
+        <i className="bi bi-exclamation-diamond" style={{fontSize:17,color:'#d9822b'}}></i>
+        <span style={{fontWeight:700,fontSize:14.5}}>จุดเฝ้าระวังการใช้จ่ายงบประมาณ</span>
+        <div style={{flex:1}}></div>
+        <span style={{display:'inline-flex',alignItems:'center',gap:6,height:26,padding:'0 11px',borderRadius:8,fontSize:12,fontWeight:700,background:'#fdeaea',color:RED,border:'1px solid #f5c6c6'}}><i className="bi bi-arrow-up-right-circle" style={{fontSize:12}}></i>ใช้เกินงบ {overCount}</span>
+        <span style={{display:'inline-flex',alignItems:'center',gap:6,height:26,padding:'0 11px',borderRadius:8,fontSize:12,fontWeight:700,background:'#fff4df',color:'#b06200',border:'1px solid #f6dca8'}}><i className="bi bi-hourglass-split" style={{fontSize:12}}></i>ใกล้เต็มงบ {warnCount}</span>
+      </div>
+      {/* filter ประเภทงบ */}
+      <div style={{display:'flex',alignItems:'center',gap:8,padding:'12px 20px',borderBottom:'1px solid #f4f6f8',flexWrap:'wrap'}}>
+        <span style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:12,fontWeight:700,color:'#8a93a3',marginRight:2}}><i className="bi bi-funnel" style={{fontSize:12}}></i>ประเภทงบ</span>
+        {chip('all','ทั้งหมด',null)}
+        {chip('invest',INV.label,INV)}
+        {chip('operate',OPR.label,OPR)}
+      </div>
+      {entries.length===0?(
+        <div style={{padding:'34px 20px',textAlign:'center',color:'#8a93a3',fontSize:13}}>
+          <i className="bi bi-shield-check" style={{fontSize:26,color:'#bfe0d9'}}></i>
+          <div style={{marginTop:8,fontWeight:600}}>ไม่มีแผนที่ใช้จ่ายถึงเกณฑ์เฝ้าระวัง ({WATCH_THRESHOLD}% ขึ้นไป) ในรอบนี้</div>
+        </div>
+      ):(
+        <div>
+          {entries.map((e,i)=>{
+            const st=LEVEL_STYLE[e.depth];
+            const c=e.over?RED:'#d9822b';
+            return (
+              <div key={e.node.id+e.def.key} style={{display:'flex',alignItems:'center',gap:13,padding:'12px 20px',borderBottom:i<entries.length-1?'1px solid #f4f6f8':'none'}}>
+                <span style={{fontSize:12.5,fontWeight:800,color:'#b3bac4',width:20,textAlign:'center',flex:'none'}}>{i+1}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:3,flexWrap:'wrap'}}>
+                    <span style={{display:'inline-flex',alignItems:'center',height:22,padding:'0 8px',borderRadius:8,fontSize:10.5,fontWeight:700,background:st.bg,color:st.color,border:'1px solid '+st.bd,flex:'none'}}>{LEVEL_NAME[e.depth]}</span>
+                    <span style={{display:'inline-flex',alignItems:'center',gap:5,height:22,padding:'0 8px',borderRadius:8,fontSize:10.5,fontWeight:700,background:e.def.bg,color:e.def.color,border:'1px solid '+e.def.bd,flex:'none'}}><i className={'bi '+e.def.icon} style={{fontSize:10}}></i>{e.def.label}</span>
+                    <span style={{fontSize:13.5,fontWeight:700,color:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{e.node.title}</span>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:9}}>
+                    <div style={{flex:1,maxWidth:260,height:7,background:'#eef0f3',borderRadius:99,overflow:'hidden'}}>
+                      <div style={{width:Math.min(100,e.pct)+'%',height:'100%',background:c,borderRadius:99}}></div>
+                    </div>
+                    <span style={{fontSize:11.5,color:'#9aa3af',flex:'none'}}>ใช้ <b style={{color:c}}>{baht(e.used)}</b> / {bahtShort(e.budget)}</span>
+                  </div>
+                </div>
+                <div style={{textAlign:'right',flex:'none'}}>
+                  <div style={{fontSize:17,fontWeight:800,color:c,lineHeight:1}}>{Math.round(e.pct)}%</div>
+                  <div style={{fontSize:10.5,fontWeight:700,color:c,marginTop:3}}>{e.over?'เกินงบ '+baht(e.used-e.budget):'เหลือ '+baht(e.budget-e.used)}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <div style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:11.5,color:'#9aa3af',padding:'13px 20px',lineHeight:1.6,borderTop:'1px solid #f4f6f8'}}>
+        <i className="bi bi-info-circle" style={{fontSize:13,flex:'none',marginTop:1}}></i>
+        <span>รวมทุกแผนทุกระดับที่ใช้จ่ายตั้งแต่ {WATCH_THRESHOLD}% ของงบที่ตั้งไว้ขึ้นไป แยกตามงบลงทุน/งบดำเนินการ เรียงจากสัดส่วนการใช้จ่ายมากไปน้อย — ดูโครงสร้างครบทุกแผนได้ที่ตารางด้านล่าง</span>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════ แถวต้นไม้ในตารางรายละเอียด ══════════════ */
+function TreeRow({node,depth,expanded,onToggle}){
+  const kids=node.children||[];
+  const hasKids=kids.length>0;
+  const st=LEVEL_STYLE[depth];
+  const invB=node.investBudget, opB=node.operateBudget;
+  return (
+    <div className="brow" style={{display:'grid',gridTemplateColumns:'minmax(320px,2.4fr) 1fr 1fr',gap:0,alignItems:'center',padding:'11px 18px',borderBottom:'1px solid #f4f6f8',cursor:hasKids?'pointer':'default'}} onClick={()=>hasKids&&onToggle(node.id)}>
+      <div style={{display:'flex',alignItems:'center',gap:9,paddingLeft:depth*22,minWidth:0}}>
+        <span style={{width:22,height:22,borderRadius:6,display:'inline-flex',alignItems:'center',justifyContent:'center',flex:'none',background:hasKids?'#eef1f4':'transparent',color:'#5a6473'}}>
+          {hasKids && <i className={'bi '+(expanded?'bi-chevron-down':'bi-chevron-right')} style={{fontSize:12}}></i>}
+        </span>
+        <span style={{display:'inline-flex',alignItems:'center',height:22,padding:'0 8px',borderRadius:8,fontSize:10.5,fontWeight:700,background:st.bg,color:st.color,border:'1px solid '+st.bd,flex:'none'}}>{LEVEL_NAME[depth]}</span>
+        <div style={{minWidth:0}}>
+          <div style={{fontSize:13.5,fontWeight:depth<2?700:600,color:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{node.title}</div>
+          <div style={{fontSize:11.5,color:'#9aa3af',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{node.owner}</div>
+        </div>
+      </div>
+      <div style={{padding:'0 14px'}}><MiniBudget def={INV} budget={invB} used={investUsed(node)} none={invB==null}/></div>
+      <div style={{padding:'0 14px'}}><MiniBudget def={OPR} budget={opB} used={operateUsed(node)} none={opB==null}/></div>
+    </div>
+  );
+}
+
+function TreeTable({missions,expanded,setExpanded}){
+  // สร้างลำดับแถวตาม expand state
+  const rows=[];
+  const walk=(nodes,depth)=>{
+    nodes.forEach(n=>{
+      rows.push({node:n,depth});
+      if(expanded[n.id]) walk(n.children||[],depth+1);
+    });
+  };
+  walk(missions,0);
+  const allIds=flatten(missions,0).filter(f=>(f.node.children||[]).length>0).map(f=>f.node.id);
+  const allOpen=allIds.every(id=>expanded[id]);
+  return (
+    <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden'}}>
+      <div style={{display:'flex',alignItems:'center',gap:9,padding:'16px 20px',borderBottom:'1px solid #f0f2f5',flexWrap:'wrap'}}>
+        <i className="bi bi-diagram-3" style={{fontSize:17,color:primary}}></i>
+        <span style={{fontWeight:700,fontSize:14.5}}>รายงานการใช้จ่ายตามแผนแต่ละระดับ</span>
+        <div style={{flex:1}}></div>
+        <button onClick={()=>{const nx={};if(!allOpen)allIds.forEach(id=>nx[id]=true);setExpanded(nx);}} style={{height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,padding:'0 14px',borderRadius:8,border:'1px solid #e3e7ec',background:'#fff',color:'#3a4452',fontSize:12,fontWeight:700}}>
+          <i className={'bi '+(allOpen?'bi-arrows-collapse':'bi-arrows-expand')} style={{fontSize:13}}></i>{allOpen?'ยุบทั้งหมด':'ขยายทั้งหมด'}
+        </button>
+      </div>
+      {/* column head */}
+      <div style={{display:'grid',gridTemplateColumns:'minmax(320px,2.4fr) 1fr 1fr',gap:0,padding:'10px 18px',background:'#fafbfc',borderBottom:'1px solid #f0f2f5',fontSize:11.5,fontWeight:700,color:'#8a93a3'}}>
+        <div>แผนธุรกิจ (ทุกระดับ — คลิกเพื่อขยาย/ยุบ)</div>
+        <div style={{padding:'0 14px',display:'flex',alignItems:'center',gap:6,color:INV.color}}><i className={'bi '+INV.icon} style={{fontSize:12}}></i>งบลงทุน (ใช้ / ตั้งไว้)</div>
+        <div style={{padding:'0 14px',display:'flex',alignItems:'center',gap:6,color:OPR.color}}><i className={'bi '+OPR.icon} style={{fontSize:12}}></i>งบดำเนินการ (ใช้ / ตั้งไว้)</div>
+      </div>
+      {rows.length===0?(
+        <div style={{padding:'40px 20px',textAlign:'center',color:'#b3bac4',fontSize:13}}>ไม่พบแผนธุรกิจที่ตรงกับเงื่อนไข</div>
+      ):rows.map(r=>(
+        <TreeRow key={r.node.id} node={r.node} depth={r.depth} expanded={!!expanded[r.node.id]} onToggle={(id)=>setExpanded(e=>({...e,[id]:!e[id]}))}/>
+      ))}
+      <div style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:11.5,color:'#9aa3af',padding:'13px 20px',lineHeight:1.6,borderTop:'1px solid #f4f6f8'}}>
+        <i className="bi bi-info-circle" style={{fontSize:13,flex:'none',marginTop:1}}></i>
+        <span>ยอด "ใช้ไป" ของแต่ละแผน = ยอดใช้จ่ายที่บันทึกในแผนนั้น รวมกับยอดของแผนที่อยู่ใต้ทุกระดับ — เปอร์เซ็นต์เทียบกับงบที่ตั้งไว้ของแผนนั้น (สีแดง = ใช้เกินงบ) ยอดคำนวณตามรอบการวัดผลที่เลือก</span>
+      </div>
+    </div>
+  );
+}
+
+function BudgetAuditContent(){
+  const [round,setRound]=useState(ROUNDS[0].id);
+  const [mission,setMission]=useState('all');
+  const [tab,setTab]=useState('watch');
+  const [expanded,setExpanded]=useState(()=>({m1:true,m2:true,m3:true,m4:true}));
+
+  const allMissions=DATA_BY_ROUND[round];
+  const missions=mission==='all'?allMissions:allMissions.filter(m=>m.id===mission);
+
+  // ยอดรวมภาพรวม = ผลรวมจากระดับพันธกิจ (rolled up)
+  const totals=useMemo(()=>{
+    let invB=0,invU=0,opB=0,opU=0;
+    missions.forEach(m=>{ invB+=m.investBudget||0; invU+=investUsed(m); opB+=m.operateBudget||0; opU+=operateUsed(m); });
+    return {invB,invU,opB,opU};
+  },[missions]);
+
+  // จำนวนแผนที่เข้าเกณฑ์เฝ้าระวัง (สำหรับ badge บนแท็บ)
+  const watchCount=useMemo(()=>flatten(missions,0).reduce((c,f)=>{
+    const n=f.node;
+    [[n.investBudget,investUsed(n)],[n.operateBudget,operateUsed(n)]].forEach(([b,u])=>{ if(b>0&&u/b*100>=WATCH_THRESHOLD) c++; });
+    return c;
+  },0),[missions]);
+  return (
+    <div style={{flex:1,padding:'24px 28px',overflowY:'auto',height:'calc(100vh - 58px)'}}>
+      {/* header */}
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16,flexWrap:'wrap'}}>
+        <i className="bi bi-cash-coin" style={{fontSize:20,color:primary}}></i>
+        <span style={{fontWeight:700,fontSize:16}}>ตรวจสอบการใช้จ่ายงบประมาณ</span>
+        <div style={{flex:1}}></div>
+        <RoundSelect round={round} setRound={setRound}/>
+      </div>
+
+      {/* filter — พันธกิจ (Level 1) */}
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,padding:'13px 18px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',marginBottom:16}}>
+        <div style={{display:'flex',alignItems:'center',gap:9,flexWrap:'wrap'}}>
+          <span style={{display:'inline-flex',alignItems:'center',gap:7,fontSize:12.5,fontWeight:700,color:'#3a4452',marginRight:2}}><i className="bi bi-funnel" style={{fontSize:14,color:primary}}></i>ขอบเขต</span>
+          {[{id:'all',label:'ทั้งองค์กร'},...allMissions.map(m=>({id:m.id,label:m.title}))].map(opt=>{
+            const active=mission===opt.id;
+            return (
+              <button key={opt.id} onClick={()=>setMission(opt.id)} style={{display:'inline-flex',alignItems:'center',gap:7,height:34,padding:'0 14px',borderRadius:8,border:'1px solid '+(active?primary:'#e3e7ec'),background:active?primarySoft:'#fff',color:active?primary:'#5a6473',fontSize:12.5,fontWeight:active?700:500,cursor:'pointer',maxWidth:280,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{opt.label}</button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── ภาพรวมทั้งหมด ── */}
+      <div style={{fontSize:13,fontWeight:700,color:'#8a93a3',margin:'2px 2px 12px'}}>ภาพรวมการใช้จ่าย{mission==='all'?'ทั้งองค์กร':'ของ'+missions[0].title}</div>
+      <div style={{marginBottom:14}}>
+        <GrandTotalCard invBudget={totals.invB} invUsed={totals.invU} opBudget={totals.opB} opUsed={totals.opU}/>
+      </div>
+      <div style={{display:'flex',gap:14,flexWrap:'wrap',marginBottom:22}}>
+        <OverviewBudgetCard def={INV} budget={totals.invB} used={totals.invU}/>
+        <OverviewBudgetCard def={OPR} budget={totals.opB} used={totals.opU}/>
+      </div>
+
+      {/* ── แท็บ: จุดเฝ้าระวัง / รายงานตามแผนแต่ละระดับ (underline style) ── */}
+      <div style={{display:'flex',alignItems:'center',gap:26,borderBottom:'1px solid #e7eaef',marginBottom:16}}>
+        {[['watch','จุดเฝ้าระวังการใช้จ่าย',watchCount],['tree','รายงานตามแผนแต่ละระดับ',null]].map(([k,label,cnt])=>{
+          const on=tab===k;
+          return (
+            <button key={k} onClick={()=>setTab(k)} style={{display:'inline-flex',alignItems:'center',gap:8,padding:'0 2px 11px',border:'none',background:'none',cursor:'pointer',color:on?primary:'#5a6473',fontSize:14,fontWeight:on?700:500,borderBottom:'2px solid '+(on?primary:'transparent'),marginBottom:-1}}>
+              {label}
+              {cnt>0&&(
+                <span style={{minWidth:19,height:19,borderRadius:99,background:on?'#fdeaea':'#f1f3f6',color:on?RED:'#8a93a3',fontSize:11,fontWeight:800,display:'inline-flex',alignItems:'center',justifyContent:'center',padding:'0 5px'}}>{cnt}</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+      {tab==='watch'
+        ? <Watchlist missions={missions}/>
+        : <TreeTable missions={missions} expanded={expanded} setExpanded={setExpanded}/>}
+    </div>
+  );
+}
+
+function App(){
+  return (
+    <GD5AppShell active="business">
+      <LeftNav/>
+      <BudgetAuditContent/>
+    </GD5AppShell>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(async function(){
+  var shellSrc='';
+  try{ shellSrc=await (await fetch('gd5-app-shell.jsx')).text(); }catch(e){}
+  var pageSrc=document.getElementById('jsx-src').textContent;
+  var out=Babel.transform(shellSrc+'\n'+pageSrc,{presets:[['react',{runtime:'classic'}]]}).code;
+  new Function(out)();
+})();
+</script>
+</body>
+</html>
