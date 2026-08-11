@@ -84,7 +84,7 @@ const POSTS=[
   {who:'Piyawat Takaew',role:'SA Staff',date:'18 ธ.ค. 2025, 13:07 น.',title:'5 วิธีง่ายๆ เผาผลาญไขมัน',excerpt:'1.มื้อเช้าอย่าเริ่มด้วยแป้ง ให้เริ่มด้วยโปรตีน จะทำให้เราอิ่มนาน ไม่ทำให้น้ำตาลขึ้นเร็ว...',icon:'restaurant',tone:'amber',views:3,reacts:2,comments:0},
   {who:'Piyawat Takaew',role:'SA Staff',date:'4 พ.ย. 2025, 8:25 น.',title:'Win 11 LDPlayer ตั้งค่า Bypass ติดตั้ง APK',excerpt:'วิธีตั้งค่าให้ติดตั้งไฟล์ APK บน Windows 11 ผ่าน LDPlayer...',icon:'android',tone:'teal',views:5,reacts:1,comments:1},
 ];
-const TABS=[{key:'talk',label:'พูดคุย'},{key:'members',label:'สมาชิกในกลุ่ม'},{key:'invite',label:'รอตอบรับคำเชิญ'},{key:'overview',label:'ภาพรวมกลุ่ม'},{key:'verify',label:'ตรวจสอบโพสต์'},{key:'todo',label:'แผนงานประจำวัน/TO-DO List'},{key:'watch',label:'ต้องติดตาม'}];
+const TABS=[{key:'talk',label:'พูดคุย'},{key:'members',label:'สมาชิกในกลุ่ม'},{key:'invite',label:'รอตอบรับคำเชิญ'},{key:'overview',label:'ภาพรวมกลุ่ม'},{key:'verify',label:'ตรวจสอบโพสต์'},{key:'todo',label:'แผนงานประจำ/TO-DO List'},{key:'watch',label:'ต้องติดตาม'}];
 
 // ===== Watch list (รายการต้องติดตาม) — shared store =====
 const WKEY='gd5_vm_watch';            // watched items
@@ -591,6 +591,165 @@ function BusinessPlanCard({bp,setBp}){
   );
 }
 
+/* บันทึกค่าใช้จ่าย — ผูกกับรายการ TODO (topic/รายการย่อย) หรือบันทึกอิสระ + แนบไฟล์ใบเสร็จหลายไฟล์ */
+function ExpenseModal({topics,expenses,bp,initLink,onClose,onAdd,onEdit,onDelete}){
+  const TODAY='2026-08-10';
+  const isoToDisp=(s)=>{if(!s)return '';const p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];};
+  const dispToIso=(s)=>{if(!s)return TODAY;const p=s.split('/');return p[2]+'-'+p[1]+'-'+p[0];};
+  const [curLink,setCurLink]=React.useState(initLink||null);
+  const [pick,setPick]=React.useState(false);
+  const [form,setForm]=React.useState(initLink?{dateIso:TODAY,note:'',amount:'',files:[]}:null);
+  const [confirmDelId,setConfirmDelId]=React.useState(null);
+  const fileRef=React.useRef(null);
+  const sameLink=(e)=>{const l=e.link;if(!curLink)return !l;if(!l)return false;if(curLink.level!==l.level)return false;if(curLink.level==='topic')return l.topicId===curLink.topicId;return l.subId===curLink.subId;};
+  const list=expenses;
+  const total=list.reduce((s,e)=>s+e.amount,0);
+  const bpBudget=bp?((bpNode(bp.level,bp.id)||{}).budget||0):0;
+  const pctUsed=bpBudget>0?Math.min(100,total/bpBudget*100):0;
+  const pctLabel=bpBudget>0?Math.round(total/bpBudget*100):0;
+  const remain=bpBudget-total;
+  const over=bpBudget>0&&total>bpBudget;
+  const linkLabel=(l)=>!l?'ไม่อ้างอิงรายการ TODO':(l.level==='topic'?'หัวข้อ: ':'รายการ: ')+l.title;
+  const openAdd=()=>{setForm({dateIso:TODAY,note:'',amount:'',files:[]});setConfirmDelId(null);};
+  const openEdit=(e)=>{setForm({id:e.id,dateIso:dispToIso(e.date),note:e.note,amount:String(e.amount),files:e.files||[]});setConfirmDelId(null);};
+  const onFiles=(ev)=>{const fs=Array.from(ev.target.files||[]).map(f=>({name:f.name,type:/pdf$/i.test(f.name)?'pdf':(/\.(png|jpe?g|gif|webp|heic)$/i.test(f.name)?'img':'other')}));setForm(f=>({...f,files:[...(f.files||[]),...fs]}));ev.target.value='';};
+  const rmFile=(i)=>setForm(f=>({...f,files:f.files.filter((_,j)=>j!==i)}));
+  const amt=form?parseFloat(String(form.amount||'').replace(/,/g,'')):0;
+  const noteReq=!(curLink&&curLink.level==='sub');
+  const canSave=!!form&&!!form.dateIso&&!isNaN(amt)&&amt>0&&(!noteReq||form.note.trim()!=='');
+  const submit=()=>{if(!canSave)return;const payload={date:isoToDisp(form.dateIso),amount:amt,note:form.note.trim(),files:form.files||[],link:curLink};if(form.id){onEdit(form.id,payload);}else{onAdd(payload);}setForm(null);};
+  const fileIcon=(t)=>t==='pdf'?{i:'bi-file-earmark-pdf',c:'#d8513a'}:t==='img'?{i:'bi-image',c:'#3b6fd4'}:{i:'bi-paperclip',c:'#8a93a3'};
+  const inp={width:'100%',border:'1px solid #dde1e8',borderRadius:9,padding:'9px 11px',fontSize:13,fontFamily:'inherit',outline:'none',color:'#1f2733',boxSizing:'border-box',background:'#fff'};
+  const actBtn=(bg,color,border)=>({height:40,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:bg,color,border:border||'none',borderRadius:11,padding:'0 18px',fontSize:13.5,fontWeight:700,cursor:'pointer'});
+  const rowBtn=(bg,color,border)=>({height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,background:bg,color,border:border||'none',borderRadius:11,padding:'0 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'});
+  return (
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.48)',display:'flex',alignItems:'flex-start',justifyContent:'center',zIndex:96,padding:'40px 16px',overflowY:'auto'}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:16,width:580,maxWidth:'100%',boxShadow:'0 24px 64px rgba(16,24,40,.28)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:11,padding:'16px 22px',borderBottom:'1px solid #f0f2f5'}}>
+          <div style={{width:36,height:36,borderRadius:9,background:'#fff4df',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-wallet2" style={{fontSize:17,color:'#b06200'}}></i></div>
+          <div style={{minWidth:0,flex:1}}>
+            <div style={{fontWeight:700,fontSize:15}}>บันทึกค่าใช้จ่าย</div>
+            <div style={{fontSize:12,color:'#9aa3af'}}>บันทึกจากรายการ TODO หรือบันทึกอิสระก็ได้</div>
+          </div>
+          <button onClick={onClose} style={{...actBtn('#f1f3f7','#5a6473'),padding:'0 14px'}}><i className="bi bi-x-lg" style={{fontSize:14}}></i>ปิด</button>
+        </div>
+        <div style={{padding:'16px 22px'}}>
+          {!initLink && (<div style={{position:'relative',marginBottom:14}}>
+            <div style={{fontSize:12,fontWeight:600,color:'#5a6473',marginBottom:6}}>ผูกกับรายการ TODO</div>
+            <button onClick={()=>setPick(p=>!p)} style={{width:'100%',display:'flex',alignItems:'center',gap:9,border:'1px solid #dde1e8',borderRadius:9,padding:'9px 12px',background:'#fff',cursor:'pointer',textAlign:'left'}}>
+              <i className={'bi '+(curLink?(curLink.level==='topic'?'bi-folder2':'bi-check2-square'):'bi-slash-circle')} style={{fontSize:15,color:curLink?primary:'#9aa3af',flex:'none'}}></i>
+              <span style={{flex:1,minWidth:0,fontSize:13,color:curLink?'#1f2733':'#8a93a3',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{linkLabel(curLink)}</span>
+              <i className="bi bi-chevron-down" style={{fontSize:12,color:'#9aa3af',flex:'none'}}></i>
+            </button>
+            {pick && (
+              <div style={{position:'absolute',top:'100%',left:0,right:0,marginTop:5,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 12px 32px rgba(16,24,40,.16)',zIndex:5,maxHeight:280,overflowY:'auto',padding:5}}>
+                <button onClick={()=>{setCurLink(null);setPick(false);}} style={{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'9px 10px',border:'none',background:!curLink?primarySoft:'#fff',borderRadius:8,cursor:'pointer',fontSize:13,fontWeight:600,color:!curLink?primary:'#5a6473',textAlign:'left'}}><i className="bi bi-slash-circle" style={{fontSize:14,flex:'none'}}></i>ไม่อ้างอิงรายการ TODO</button>
+                {topics.map(t=>(
+                  <React.Fragment key={t.id}>
+                    <button onClick={()=>{setCurLink({level:'topic',topicId:t.id,title:t.title});setPick(false);}} style={{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'9px 10px',border:'none',background:curLink&&curLink.level==='topic'&&curLink.topicId===t.id?primarySoft:'#fff',borderRadius:8,cursor:'pointer',fontSize:13,fontWeight:600,color:'#2b3440',textAlign:'left'}}><i className="bi bi-folder2" style={{fontSize:14,color:primary,flex:'none'}}></i><span style={{flex:1,minWidth:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{t.title}</span></button>
+                    {t.subs.map(s=>(
+                      <button key={s.id} onClick={()=>{setCurLink({level:'sub',topicId:t.id,subId:s.id,title:s.title});setPick(false);}} style={{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'7px 10px 7px 30px',border:'none',background:curLink&&curLink.level==='sub'&&curLink.subId===s.id?primarySoft:'#fff',borderRadius:8,cursor:'pointer',fontSize:12.5,color:'#5a6473',textAlign:'left'}}><i className="bi bi-dash" style={{fontSize:12,color:'#b3bac4',flex:'none'}}></i><span style={{flex:1,minWidth:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{s.title}</span></button>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+          </div>)}
+          <div style={{position:'relative',overflow:'hidden',background:'#f7f9fb',border:'1px solid '+(over?'#f6d3d0':'#eceef2'),borderRadius:11,marginBottom:14}}>
+            <div style={{position:'absolute',top:0,bottom:0,left:0,width:pctUsed+'%',background:over?'#fbe2df':'#fff0d6',transition:'width .25s ease'}}></div>
+            <div style={{position:'relative',display:'flex',alignItems:'center',gap:8,padding:'10px 14px',flexWrap:'wrap'}}>
+              <span style={{fontSize:12,color:'#8a93a3'}}>ใช้ไปแล้ว</span>
+              <span style={{fontSize:17,fontWeight:700,color:'#b06200'}}>{total.toLocaleString()}</span>
+              <span style={{fontSize:11.5,color:'#9aa3af'}}>บาท · {list.length} รายการ</span>
+              <div style={{flex:1,minWidth:8}}></div>
+              {bpBudget>0
+                ? <span style={{fontSize:11.5,color:over?'#d83a3a':'#5a6473',fontWeight:600,whiteSpace:'nowrap'}}><span style={{fontWeight:700}}>{pctLabel}%</span> ของงบ {bpBudget.toLocaleString()} · {over?'เกิน':'เหลือ'} <span style={{fontWeight:700,color:over?'#d83a3a':'#1f9d57'}}>{Math.abs(remain).toLocaleString()}</span></span>
+                : <span style={{fontSize:11.5,color:'#b3bac4'}}>ยังไม่ได้กำหนดงบ</span>}
+            </div>
+          </div>
+          {form && (
+            <div style={{border:'1px solid #e7eaef',borderRadius:12,padding:'14px 16px',marginTop:12,background:'#fbfcfd'}}>
+              <div style={{display:'flex',gap:11,marginBottom:11,flexWrap:'wrap'}}>
+                <div style={{flex:'1 1 150px'}}>
+                  <div style={{fontSize:11.5,fontWeight:600,color:'#5a6473',marginBottom:5}}>วันที่จ่าย</div>
+                  <input type="date" value={form.dateIso} onChange={e=>setForm(f=>({...f,dateIso:e.target.value}))} style={inp}/>
+                </div>
+                <div style={{flex:'1 1 120px'}}>
+                  <div style={{fontSize:11.5,fontWeight:600,color:'#5a6473',marginBottom:5}}>จำนวนเงิน (บาท)</div>
+                  <input inputMode="decimal" value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} placeholder="0.00" style={inp}/>
+                </div>
+              </div>
+              <div style={{marginBottom:11}}>
+                {curLink && (
+                  <div style={{display:'flex',alignItems:'center',gap:8,background:primarySoft,border:'1px solid #d4ebe6',borderRadius:9,padding:'8px 11px',marginBottom:11}}>
+                    <i className={'bi '+(curLink.level==='topic'?'bi-folder2':'bi-check2-square')} style={{fontSize:15,color:primary,flex:'none'}}></i>
+                    <div style={{minWidth:0,flex:1}}>
+                      <div style={{fontSize:10.5,color:'#5a8f88',fontWeight:600}}>ค่าใช้จ่ายของ{curLink.level==='topic'?'หัวข้อ':'รายการ'}</div>
+                      <div style={{fontSize:12.5,color:'#1f2733',fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{curLink.title}</div>
+                    </div>
+                  </div>
+                )}
+                <div style={{fontSize:11.5,fontWeight:600,color:'#5a6473',marginBottom:5}}>รายการ / จ่ายค่าอะไร {noteReq?<span style={{color:'#d83a3a',fontWeight:700}}>*</span>:<span style={{color:'#9aa3af',fontWeight:500}}>(ไม่บังคับ)</span>}</div>
+                <input value={form.note} onChange={e=>setForm(f=>({...f,note:e.target.value}))} placeholder="เช่น ค่าเดินทางลงพื้นที่ตรวจงาน" style={inp}/>
+              </div>
+              <div style={{marginBottom:13}}>
+                <div style={{fontSize:11.5,fontWeight:600,color:'#5a6473',marginBottom:5}}>ไฟล์ใบเสร็จ (แนบได้หลายไฟล์ · รูปภาพ / PDF)</div>
+                <input ref={fileRef} type="file" multiple accept="image/*,.pdf" onChange={onFiles} style={{display:'none'}}/>
+                <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:(form.files||[]).length?9:0}}>
+                  {(form.files||[]).map((f,i)=>{const ic=fileIcon(f.type);return (
+                    <span key={i} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'1px solid #e3e7ec',borderRadius:8,padding:'5px 8px',fontSize:11.5,color:'#3a4452',maxWidth:190}}>
+                      <i className={'bi '+ic.i} style={{fontSize:13,color:ic.c,flex:'none'}}></i>
+                      <span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.name}</span>
+                      <button onClick={()=>rmFile(i)} style={{border:'none',background:'transparent',cursor:'pointer',display:'flex',padding:0}}><i className="bi bi-x" style={{fontSize:14,color:'#9aa3af'}}></i></button>
+                    </span>
+                  );})}
+                </div>
+                <button onClick={()=>fileRef.current&&fileRef.current.click()} style={{display:'inline-flex',alignItems:'center',gap:7,border:'1.5px dashed #cdd4de',borderRadius:9,background:'#fff',color:primary,height:36,padding:'0 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-paperclip" style={{fontSize:15}}></i>แนบไฟล์ใบเสร็จ</button>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:9}}>
+                <button onClick={()=>setForm(null)} style={actBtn('#f1f3f7','#5a6473')}><i className="bi bi-x-lg" style={{fontSize:13}}></i>ยกเลิก</button>
+                <div style={{flex:1}}></div>
+                <button onClick={submit} disabled={!canSave} style={{...actBtn(canSave?primary:'#d3e6e2',canSave?'#fff':'#8fb7b0'),cursor:canSave?'pointer':'default'}}><i className="bi bi-check-lg" style={{fontSize:15}}></i>{form.id?'บันทึกแก้ไข':'บันทึก'}</button>
+              </div>
+            </div>
+          )}
+          {list.length>0 && <div style={{fontSize:11.5,fontWeight:600,color:'#8a93a3',margin:'2px 0 4px'}}>รายการที่บันทึกไว้ · {list.length}</div>}
+          <div style={{maxHeight:236,overflowY:'auto',margin:'0 -4px',padding:'0 4px'}}>
+          {list.length===0 && !form && (<div style={{textAlign:'center',padding:'18px 0',color:'#b3bac4',fontSize:13}}>ยังไม่มีการบันทึกค่าใช้จ่ายในบริบทนี้</div>)}
+          {list.map((e,i)=>(
+            confirmDelId===e.id ? (
+              <div key={e.id} style={{display:'flex',alignItems:'center',gap:8,background:'#fdeaea',borderRadius:10,padding:'10px 12px',marginBottom:8}}>
+                <span style={{fontSize:12.5,color:'#d83a3a',fontWeight:600,flex:1}}>ลบรายการนี้?</span>
+                <button onClick={()=>{onDelete(e.id);setConfirmDelId(null);}} style={rowBtn('#d83a3a','#fff')}><i className="bi bi-check-lg" style={{fontSize:13}}></i>ยืนยัน</button>
+                <button onClick={()=>setConfirmDelId(null)} style={rowBtn('#fff','#5a6473','1px solid #e3e7ec')}><i className="bi bi-x-lg" style={{fontSize:12}}></i>ยกเลิก</button>
+              </div>
+            ) : (form&&form.id===e.id) ? null : (
+              <div key={e.id} style={{display:'flex',alignItems:'flex-start',gap:11,padding:'9px 2px',borderBottom:i<list.length-1?'1px solid #f4f6f8':'none'}}>
+                <div style={{width:30,height:30,borderRadius:'50%',background:'#fff4df',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-cash-coin" style={{fontSize:14,color:'#b06200'}}></i></div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:12.5,color:'#9aa3af'}}>{e.date}</div>
+                  {e.link&&e.link.level==='sub' && <div style={{display:'inline-flex',alignItems:'center',gap:5,marginTop:3,background:primarySoft,borderRadius:8,padding:'2px 8px',fontSize:10.5,fontWeight:600,color:primary,maxWidth:'100%'}}><i className="bi bi-check2-square" style={{fontSize:11,flex:'none'}}></i><span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{e.link.title}</span></div>}
+                  {e.note ? <div style={{fontSize:13,color:'#1a2332',fontWeight:600,marginTop:2,lineHeight:1.4}}>{e.note}</div> : <div style={{fontSize:12.5,color:'#b3bac4',marginTop:2,fontStyle:'italic'}}>ไม่ระบุรายการ</div>}
+                  {(e.files||[]).length>0 && <div style={{display:'flex',flexWrap:'wrap',gap:5,marginTop:6}}>{e.files.map((f,fi)=>{const ic=fileIcon(f.type);return <span key={fi} style={{display:'inline-flex',alignItems:'center',gap:4,background:'#f1f3f6',borderRadius:8,padding:'3px 8px',fontSize:11,color:'#5a6473',maxWidth:160}}><i className={'bi '+ic.i} style={{fontSize:12,color:ic.c,flex:'none'}}></i><span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.name}</span></span>;})}</div>}
+                </div>
+                <span style={{fontSize:13.5,fontWeight:700,color:'#b06200',flex:'none',whiteSpace:'nowrap'}}>{e.amount.toLocaleString()} บาท</span>
+                <div style={{display:'flex',gap:5,flex:'none'}}>
+                  <button onClick={()=>openEdit(e)} title="แก้ไข" style={{width:28,height:28,borderRadius:8,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-pencil" style={{fontSize:12,color:'#5a6473'}}></i></button>
+                  <button onClick={()=>setConfirmDelId(e.id)} title="ลบ" style={{width:28,height:28,borderRadius:8,border:'1px solid #f6d3d0',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}><i className="bi bi-trash" style={{fontSize:12,color:'#d83a3a'}}></i></button>
+                </div>
+              </div>
+            )
+          ))}
+          </div>
+          {!form && (
+            <button onClick={openAdd} style={{display:'flex',alignItems:'center',justifyContent:'center',gap:7,width:'100%',marginTop:12,border:'1.5px dashed #cdd4de',borderRadius:11,background:'#fafbfc',color:primary,height:44,fontSize:13.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-plus-lg" style={{fontSize:16}}></i>เพิ่มค่าใช้จ่าย</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TodoPanel({bp,setBp}){
   const [mode,setMode]=React.useState('do');   // 'do' | 'edit'
   const [showImport,setShowImport]=React.useState(false);
@@ -601,6 +760,16 @@ function TodoPanel({bp,setBp}){
   const [modal,setModal]=React.useState(null);
   const [hovSubId,setHovSubId]=React.useState(null);
   const [confirmDel,setConfirmDel]=React.useState(null);
+  const [expenses,setExpenses]=React.useState(()=>{
+    const t1=TD_SEED[1], sX=t1.subs[0]; // "ขอใบเสนอราคา..." สาขาย่อยแรก
+    return [{id:uid(),date:'14/05/2026',amount:12000,note:'ค่ามัดจำสั่งซื้อวัสดุตามใบเสนอราคา',files:[{name:'ใบเสร็จ-มัดจำ.pdf',type:'pdf'}],link:{level:'sub',topicId:t1.id,subId:sX.id,title:sX.title}}];
+  });
+  const [expModal,setExpModal]=React.useState(null); // {link}|null
+  const openExp=(link)=>{ if(!bp){setShowPlanPicker(true);return;} setExpModal({link:link||null}); };
+  const expTotalFor=(pred)=>expenses.filter(pred).reduce((s,e)=>s+e.amount,0);
+  const addExp=(p)=>setExpenses(es=>[...es,{id:uid(),...p}]);
+  const editExp=(id,p)=>setExpenses(es=>es.map(e=>e.id===id?{...e,...p}:e));
+  const delExp=(id)=>setExpenses(es=>es.filter(e=>e.id!==id));
 
   const cnt=(t)=>({done:t.subs.filter(s=>s.done).length,total:t.subs.length});
   const complete=(t)=>{const c=cnt(t);return c.total>0&&c.done===c.total;};
@@ -660,7 +829,11 @@ function TodoPanel({bp,setBp}){
               <div onClick={()=>toggleOpen(t.id)} style={{flex:1,minWidth:0,fontWeight:600,fontSize:13.5,color:'#2b3440',cursor:'pointer'}}>{t.title}</div>
               {mode==='do' && c.total>0 && <MiniBar c={c}/>}
               {c.total>0 && <Count c={c}/>}
+              {mode==='do' && (()=>{const tot=expTotalFor(e=>e.link&&e.link.topicId===t.id);return (
+                <button onClick={(ev)=>{ev.stopPropagation();openExp({level:'topic',topicId:t.id,title:t.title});}} title="เพิ่มค่าใช้จ่าย" style={{display:'inline-flex',alignItems:'center',gap:5,height:28,borderRadius:8,border:'1px solid '+(tot>0?'#f5dcab':'#e7eaef'),background:tot>0?'#fff4df':'#fff',padding:'0 10px',fontSize:11.5,fontWeight:700,color:tot>0?'#b06200':'#8a93a3',flex:'none',cursor:'pointer'}}><i className="bi bi-wallet2" style={{fontSize:13}}></i>{tot>0?tot.toLocaleString():'ค่าใช้จ่าย'}</button>
+              );})()}
               {mode==='edit' ? (
+              
                 confirmDel&&confirmDel.type==='topic'&&confirmDel.id===t.id ? (
                   <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fdeaea',borderRadius:9,padding:'4px 10px',flex:'none'}}>
                     <span style={{fontSize:12,color:'#d83a3a',fontWeight:600}}>ลบหัวข้อนี้?</span>
@@ -699,7 +872,7 @@ function TodoPanel({bp,setBp}){
                     {/* checkbox */}
                     <button onClick={()=>mode==='do'&&toggleDone(t.id,s.id)} style={{display:'flex',cursor:mode==='do'?'pointer':'default',flex:'none'}}>{ms(s.done?'check_box':'check_box_outline_blank',20,s.done?'#22b573':'#c2cad4',s.done)}</button>
                     {/* title */}
-                    <div style={{flex:'1 1 180px',minWidth:140,fontSize:13,color:s.done?'#6b7785':'#2b3440',textDecoration:s.done?'line-through':'none'}}>{s.title}</div>
+                    <div style={{flex:'1 1 180px',minWidth:140,fontSize:13,color:s.done?'#6b7785':'#2b3440'}}>{s.title}</div>
                     {/* date / days pill */}
                     {mode==='do' && (
                       s.done ? (
@@ -724,7 +897,8 @@ function TodoPanel({bp,setBp}){
                     <Pill bg={s.inContract?'#eaf1fe':'#f1f3f6'} color={s.inContract?'#3b6fd4':'#8a93a3'}>{s.inContract?'ในสัญญา':'นอกสัญญา'}</Pill>
                     {/* command area */}
                     {mode==='do' ? (
-                      s.done ? (
+                      <React.Fragment>
+                      {s.done ? (
                         <React.Fragment>
                           <span style={{width:9,height:9,borderRadius:'50%',background:'#22b573',flex:'none',display:'inline-block'}}></span>
                           <a href="assignee-action-inprogress.html" style={{display:'inline-flex',alignItems:'center',gap:4,background:'#eaf6f3',color:'#0e8c7d',borderRadius:7,padding:'4px 10px',fontSize:11,fontWeight:600,flex:'none',textDecoration:'none'}}>{ms('play_circle',13,'#0e8c7d')}ดูคำสั่งการ</a>
@@ -738,7 +912,11 @@ function TodoPanel({bp,setBp}){
                         </React.Fragment>
                       ) : (
                         <a href="create-command.html" style={{display:'inline-flex',alignItems:'center',gap:4,background:'#fff3df',color:'#b07012',borderRadius:7,padding:'4px 10px',fontSize:11,fontWeight:600,flex:'none',textDecoration:'none'}}>{ms('bolt',13,'#b07012')}สั่งการ</a>
-                      )
+                      )}
+                      {(()=>{const tot=expTotalFor(e=>e.link&&e.link.level==='sub'&&e.link.subId===s.id);return (
+                        <button onClick={()=>openExp({level:'sub',topicId:t.id,subId:s.id,title:s.title})} title="เพิ่มค่าใช้จ่าย" style={{display:'inline-flex',alignItems:'center',gap:4,height:26,borderRadius:8,border:'1px solid '+(tot>0?'#f5dcab':'#e7eaef'),background:tot>0?'#fff4df':'#fff',padding:'0 9px',fontSize:11,fontWeight:700,color:tot>0?'#b06200':'#8a93a3',flex:'none',cursor:'pointer'}}><i className="bi bi-wallet2" style={{fontSize:12}}></i>{tot>0?tot.toLocaleString():''}</button>
+                      );})()}
+                      </React.Fragment>
                     ) : (
                       confirmDel&&confirmDel.type==='sub'&&confirmDel.id===s.id ? (
                         <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fdeaea',borderRadius:9,padding:'4px 10px',flex:'none'}}>
@@ -774,6 +952,7 @@ function TodoPanel({bp,setBp}){
 
     {showImport && <ImportTodoModal bp={bp} onRequestPlan={()=>setShowPlanPicker(true)} onClose={()=>setShowImport(false)} onImport={(tpcs)=>{setTopics(ts=>[...ts,...tpcs]);setShowImport(false);}}/> }
     {showPlanPicker && <BusinessPlanPickerModal value={bp} onChange={setBp} onClose={()=>setShowPlanPicker(false)}/>}
+    {expModal && <ExpenseModal topics={topics} expenses={expenses} bp={bp} initLink={expModal.link} onClose={()=>setExpModal(null)} onAdd={addExp} onEdit={editExp} onDelete={delExp}/>}
     {modal && (
       <TodoModal
         data={modal}
@@ -1332,7 +1511,7 @@ function WatchPanel(){
 function App(){
   const [tab,setTab]=useState(()=>{const t=new URLSearchParams(location.search).get('tab');return TABS.some(x=>x.key===t)?t:'talk';});
   const [view,setView]=useState('list');
-  const [bp,setBp]=useState(null);
+  const [bp,setBp]=useState({level:'mission',id:'m3'});
 
   const Card=({children,pad})=>(<div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:pad||'16px 18px'}}>{children}</div>);
 

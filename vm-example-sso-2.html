@@ -84,7 +84,7 @@ const POSTS=[
   {who:'Piyawat Takaew',role:'SA Staff',date:'18 ธ.ค. 2025, 13:07 น.',title:'5 วิธีง่ายๆ เผาผลาญไขมัน',excerpt:'1.มื้อเช้าอย่าเริ่มด้วยแป้ง ให้เริ่มด้วยโปรตีน จะทำให้เราอิ่มนาน ไม่ทำให้น้ำตาลขึ้นเร็ว...',icon:'restaurant',tone:'amber',views:3,reacts:2,comments:0},
   {who:'Piyawat Takaew',role:'SA Staff',date:'4 พ.ย. 2025, 8:25 น.',title:'Win 11 LDPlayer ตั้งค่า Bypass ติดตั้ง APK',excerpt:'วิธีตั้งค่าให้ติดตั้งไฟล์ APK บน Windows 11 ผ่าน LDPlayer...',icon:'android',tone:'teal',views:5,reacts:1,comments:1},
 ];
-const TABS=[{key:'talk',label:'พูดคุย'},{key:'members',label:'สมาชิกในกลุ่ม'},{key:'invite',label:'รอตอบรับคำเชิญ'},{key:'overview',label:'ภาพรวมกลุ่ม'},{key:'verify',label:'ตรวจสอบโพสต์'},{key:'todo',label:'แผนงานประจำวัน/TO-DO List'},{key:'watch',label:'ต้องติดตาม'}];
+const TABS=[{key:'talk',label:'พูดคุย'},{key:'members',label:'สมาชิกในกลุ่ม'},{key:'invite',label:'รอตอบรับคำเชิญ'},{key:'overview',label:'ภาพรวมกลุ่ม'},{key:'verify',label:'ตรวจสอบโพสต์'},{key:'todo',label:'แผนงานประจำ/TO-DO List'},{key:'watch',label:'ต้องติดตาม'}];
 
 // ===== Watch list (รายการต้องติดตาม) — shared store =====
 const WKEY='gd5_vm_watch';            // watched items
@@ -691,7 +691,7 @@ function TodoPanel({bp,setBp}){
                     {/* checkbox */}
                     <button onClick={()=>mode==='do'&&toggleDone(t.id,s.id)} style={{display:'flex',cursor:mode==='do'?'pointer':'default',flex:'none'}}>{ms(s.done?'check_box':'check_box_outline_blank',20,s.done?'#22b573':'#c2cad4',s.done)}</button>
                     {/* title */}
-                    <div style={{flex:'1 1 180px',minWidth:140,fontSize:13,color:s.done?'#6b7785':'#2b3440',textDecoration:s.done?'line-through':'none'}}>{s.title}</div>
+                    <div style={{flex:'1 1 180px',minWidth:140,fontSize:13,color:s.done?'#6b7785':'#2b3440'}}>{s.title}</div>
                     {/* date / days pill */}
                     {mode==='do' && (
                       s.done ? (
