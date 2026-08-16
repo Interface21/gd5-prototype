@@ -227,7 +227,9 @@ function ExpenseModal({topics,expenses,bp,initLink,onClose,onAdd,onEdit,onDelete
           <div style={{width:36,height:36,borderRadius:9,background:'#fff4df',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-wallet2" style={{fontSize:17,color:'#b06200'}}></i></div>
           <div style={{minWidth:0,flex:1}}>
             <div style={{fontWeight:700,fontSize:15}}>บันทึกค่าใช้จ่าย</div>
-            <div style={{fontSize:12,color:'#9aa3af'}}>บันทึกจากรายการ TODO หรือบันทึกอิสระก็ได้</div>
+            {curLink
+              ? <div style={{display:'inline-flex',alignItems:'center',gap:5,marginTop:4,maxWidth:'100%',background:primarySoft,border:'1px solid #d4ebe6',borderRadius:8,padding:'3px 9px'}}><i className={'bi '+(curLink.level==='topic'?'bi-folder2':'bi-check2-square')} style={{fontSize:12,color:primary,flex:'none'}}></i><span style={{fontSize:12,color:primary,fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{curLink.title}</span></div>
+              : <div style={{fontSize:12,color:'#9aa3af'}}>บันทึกจากรายการ TODO หรือบันทึกอิสระก็ได้</div>}
           </div>
           <button onClick={onClose} style={{...actBtn('#f1f3f7','#5a6473'),padding:'0 14px'}}><i className="bi bi-x-lg" style={{fontSize:14}}></i>ปิด</button>
         </div>
@@ -278,20 +280,11 @@ function ExpenseModal({topics,expenses,bp,initLink,onClose,onAdd,onEdit,onDelete
                 </div>
               </div>
               <div style={{marginBottom:11}}>
-                {curLink && (
-                  <div style={{display:'flex',alignItems:'center',gap:8,background:primarySoft,border:'1px solid #d4ebe6',borderRadius:9,padding:'8px 11px',marginBottom:11}}>
-                    <i className={'bi '+(curLink.level==='topic'?'bi-folder2':'bi-check2-square')} style={{fontSize:15,color:primary,flex:'none'}}></i>
-                    <div style={{minWidth:0,flex:1}}>
-                      <div style={{fontSize:10.5,color:'#5a8f88',fontWeight:600}}>ค่าใช้จ่ายของ{curLink.level==='topic'?'หัวข้อ':'รายการ'}</div>
-                      <div style={{fontSize:12.5,color:'#1f2733',fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{curLink.title}</div>
-                    </div>
-                  </div>
-                )}
                 <div style={{fontSize:11.5,fontWeight:600,color:'#5a6473',marginBottom:5}}>รายการ / จ่ายค่าอะไร {noteReq?<span style={{color:'#d83a3a',fontWeight:700}}>*</span>:<span style={{color:'#9aa3af',fontWeight:500}}>(ไม่บังคับ)</span>}</div>
                 <input value={form.note} onChange={e=>setForm(f=>({...f,note:e.target.value}))} placeholder="เช่น ค่าจัดพิมพ์เอกสารและแบบฟอร์ม" style={inp}/>
               </div>
               <div style={{marginBottom:13}}>
-                <div style={{fontSize:11.5,fontWeight:600,color:'#5a6473',marginBottom:5}}>ไฟล์ใบเสร็จ (แนบได้หลายไฟล์ · รูปภาพ / PDF)</div>
+                <div style={{fontSize:11.5,fontWeight:600,color:'#5a6473',marginBottom:5}}>ไฟล์แนบ (แนบได้หลายไฟล์ · รูปภาพ / PDF)</div>
                 <input ref={fileRef} type="file" multiple accept="image/*,.pdf" onChange={onFiles} style={{display:'none'}}/>
                 <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:(form.files||[]).length?9:0}}>
                   {(form.files||[]).map((f,k)=>{const ic=fileIcon(f.type);return (
@@ -302,11 +295,10 @@ function ExpenseModal({topics,expenses,bp,initLink,onClose,onAdd,onEdit,onDelete
                     </span>
                   );})}
                 </div>
-                <button onClick={()=>fileRef.current&&fileRef.current.click()} style={{display:'inline-flex',alignItems:'center',gap:7,border:'1.5px dashed #cdd4de',borderRadius:9,background:'#fff',color:primary,height:36,padding:'0 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-paperclip" style={{fontSize:15}}></i>แนบไฟล์ใบเสร็จ</button>
+                <button onClick={()=>fileRef.current&&fileRef.current.click()} style={{display:'inline-flex',alignItems:'center',gap:7,border:'1.5px dashed #cdd4de',borderRadius:9,background:'#fff',color:primary,height:36,padding:'0 14px',fontSize:12.5,fontWeight:700,cursor:'pointer'}}><i className="bi bi-paperclip" style={{fontSize:15}}></i>แนบไฟล์</button>
               </div>
-              <div style={{display:'flex',alignItems:'center',gap:9}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:9}}>
                 <button onClick={()=>setForm(null)} style={actBtn('#f1f3f7','#5a6473')}><i className="bi bi-x-lg" style={{fontSize:13}}></i>ยกเลิก</button>
-                <div style={{flex:1}}></div>
                 <button onClick={submit} disabled={!canSave} style={{...actBtn(canSave?primary:'#d3e6e2',canSave?'#fff':'#8fb7b0'),cursor:canSave?'pointer':'default'}}><i className="bi bi-check-lg" style={{fontSize:15}}></i>{form.id?'บันทึกแก้ไข':'บันทึก'}</button>
               </div>
             </div>
@@ -323,7 +315,6 @@ function ExpenseModal({topics,expenses,bp,initLink,onClose,onAdd,onEdit,onDelete
               </div>
             ) : (form&&form.id===e.id) ? null : (
               <div key={e.id} style={{display:'flex',alignItems:'flex-start',gap:11,padding:'9px 2px',borderBottom:i<list.length-1?'1px solid #f4f6f8':'none'}}>
-                <div style={{width:30,height:30,borderRadius:'50%',background:'#fff4df',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className="bi bi-cash-coin" style={{fontSize:14,color:'#b06200'}}></i></div>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontSize:12.5,color:'#9aa3af'}}>{e.date}</div>
                   {e.link&&e.link.level==='sub' && <div style={{display:'inline-flex',alignItems:'center',gap:5,marginTop:3,background:primarySoft,borderRadius:8,padding:'2px 8px',fontSize:10.5,fontWeight:600,color:primary,maxWidth:'100%'}}><i className="bi bi-check2-square" style={{fontSize:11,flex:'none'}}></i><span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{e.link.title}</span></div>}

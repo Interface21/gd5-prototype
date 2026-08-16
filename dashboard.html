@@ -530,9 +530,26 @@
               <q-linear-progress size="12px" :value="0.47" color="indigo-13" class="q-mb-md" style="border-radius: 6px;"></q-linear-progress>
               <div class="row items-center q-gutter-x-sm" style="font-size: 11px;">
                 <span class="text-grey-7">4 รอดำเนินการ</span>
-                <q-badge color="green-1" text-color="green-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 12px;">1 ดำเนินการแล้ว</q-badge>
-                <q-badge color="red-1" text-color="red-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 12px;">2 งานค้าง</q-badge>
+                <q-badge color="green-1" text-color="green-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 8px;">1 ดำเนินการแล้ว</q-badge>
+                <q-badge color="red-1" text-color="red-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 8px;">2 งานค้าง</q-badge>
               </div>
+
+              <!-- ความก้าวหน้ารวมของลูกทีม (แสดงเฉพาะเมื่อมีลูกทีม) -->
+              <template v-if="hasTeam">
+                <q-separator class="q-my-md"></q-separator>
+                <div class="row items-center q-mb-sm">
+                  <q-icon name="bi-people-fill" color="teal" size="18px" class="q-mr-sm"></q-icon>
+                  <span class="text-teal text-weight-bold" style="font-size: 13px;">ความก้าวหน้ารวมของลูกทีม</span>
+                  <q-space></q-space>
+                  <span class="text-teal text-weight-bold" style="font-size: 16px;">{{ teamPct }} %</span>
+                </div>
+                <q-linear-progress size="12px" :value="teamPct/100" color="teal" class="q-mb-sm" style="border-radius: 6px;"></q-linear-progress>
+                <div class="row items-center q-gutter-x-sm" style="font-size: 11px;">
+                  <span class="text-grey-7">{{ teamCount }} คน</span>
+                  <q-badge color="green-1" text-color="green-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 8px;">{{ teamDone }} ดำเนินการแล้ว</q-badge>
+                  <q-badge color="red-1" text-color="red-9" class="q-px-sm q-py-xs text-weight-bold" style="border-radius: 8px;">{{ teamPending }} งานค้าง</q-badge>
+                </div>
+              </template>
             </div>
             </a>
 
@@ -1219,6 +1236,11 @@
           dutyTab: ref('received'),
           statusText: ref(''),
           showMoreStats: ref(false),
+          hasTeam: ref(true),
+          teamPct: ref(62),
+          teamCount: ref(8),
+          teamDone: ref(19),
+          teamPending: ref(7),
           goToJobs,
           goToSent
         }
