@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Daily Job Dashboard — GiveD5</title>
+<title>Prioritize Daily Job Dashboard — GiveD5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Thai+Looped:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@ input{font-family:inherit}
 <div id="root"></div>
 <script type="text/plain" id="jsx-src">
 const {useState} = React;
-const ICON={"account_balance":"bank","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","add_circle":"plus-circle","add_task":"plus-square","arrow_back":"arrow-left","arrow_forward":"arrow-right","arrow_drop_down":"caret-down-fill","arrow_drop_up":"caret-up-fill","assignment":"clipboard","attach_file":"paperclip","autorenew":"arrow-repeat","back_hand":"hand-index","bar_chart":"bar-chart","battery_full":"battery-full","bolt":"lightning-charge","bookmark":"bookmark","bookmark_add":"bookmark-plus","calendar_month":"calendar3","calendar_today":"calendar","call_made":"arrow-up-right","call_received":"arrow-down-left","campaign":"megaphone","cancel":"x-circle","chat":"chat-dots","chat_bubble":"chat-dots","chat_bubble_outline":"chat","check":"check-lg","check_box":"check-square","check_box_outline_blank":"square","check_circle":"check-circle","checklist":"list-check","chevron_left":"chevron-left","chevron_right":"chevron-right","close":"x-lg","content_copy":"files","delete":"trash","description":"file-text","desktop_windows":"display","domain":"building","done":"check-lg","done_all":"check2-all","donut_small":"pie-chart","download":"download","drag_indicator":"grip-vertical","ecg_heart":"activity","edit":"pencil","edit_note":"pencil-square","engineering":"tools","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","favorite":"heart","filter":"funnel","filter_alt_off":"funnel","filter_list":"funnel","flag":"flag","format_list_bulleted":"list-ul","forum":"chat-square-text","grid_view":"grid","group":"people","group_add":"person-plus","groups":"people","help":"question-circle","home":"house","hourglass":"hourglass","hourglass_bottom":"hourglass-bottom","hourglass_empty":"hourglass","hourglass_top":"hourglass-top","how_to_reg":"person-check","image":"image","inbox":"inbox","ink_eraser":"eraser","insert_chart":"bar-chart","insights":"graph-up","inventory_2":"box-seam","keyboard_arrow_down":"chevron-down","keyboard_arrow_up":"chevron-up","leaderboard":"bar-chart-line","list":"list","lock":"lock","low_priority":"sort-down","mail":"envelope","menu":"list","menu_book":"book","monitor_heart":"activity","monitoring":"graph-up-arrow","more_horiz":"three-dots","more_vert":"three-dots-vertical","move_up":"arrow-up-square","note_add":"file-earmark-plus","notifications":"bell","open_in_full":"arrows-fullscreen","open_in_new":"box-arrow-up-right","outbox":"box-arrow-up","palette":"palette","pending":"hourglass-split","person":"person","pie_chart":"pie-chart","play_arrow":"play-fill","play_circle":"play-circle","playlist_add":"list-task","playlist_add_check":"list-check","power_settings_new":"power","public":"globe","push_pin":"pin-angle","radio_button_unchecked":"circle","redeem":"gift","reply":"reply","schedule":"clock","search":"search","search_off":"search","send":"send","settings":"gear","shield_lock":"shield-lock","shield_person":"shield-check","signal_cellular_alt":"reception-4","signpost":"signpost-2","sort":"sort-down","speed":"speedometer2","star":"star","support":"life-preserver","swap_vert":"arrow-down-up","tag":"hash","task_alt":"check2-circle","title":"type","today":"calendar-check","touch_app":"hand-index","trending_up":"graph-up-arrow","tune":"sliders","unfold_more":"chevron-expand","upload_file":"file-earmark-arrow-up","verified_user":"patch-check","videocam":"camera-video","view_agenda":"card-heading","visibility":"eye","volunteer_activism":"hand-heart","warning":"exclamation-triangle","waving_hand":"emoji-smile","wifi":"wifi"};
+const ICON={"account_balance":"bank","account_circle":"person-circle","account_tree":"diagram-3","add":"plus-lg","remove":"dash-lg","add_circle":"plus-circle","add_task":"plus-square","arrow_back":"arrow-left","arrow_forward":"arrow-right","arrow_drop_down":"caret-down-fill","arrow_drop_up":"caret-up-fill","assignment":"clipboard","attach_file":"paperclip","autorenew":"arrow-repeat","back_hand":"hand-index","bar_chart":"bar-chart","battery_full":"battery-full","bolt":"lightning-charge","bookmark":"bookmark","bookmark_add":"bookmark-plus","calendar_month":"calendar3","calendar_today":"calendar","call_made":"arrow-up-right","call_received":"arrow-down-left","campaign":"megaphone","cancel":"x-circle","chat":"chat-dots","chat_bubble":"chat-dots","chat_bubble_outline":"chat","check":"check-lg","check_box":"check-square","check_box_outline_blank":"square","check_circle":"check-circle","checklist":"list-check","chevron_left":"chevron-left","chevron_right":"chevron-right","close":"x-lg","content_copy":"files","delete":"trash","description":"file-text","desktop_windows":"display","domain":"building","done":"check-lg","done_all":"check2-all","donut_small":"pie-chart","download":"download","drag_indicator":"grip-vertical","ecg_heart":"activity","edit":"pencil","edit_note":"pencil-square","engineering":"tools","event":"calendar-event","expand_less":"chevron-up","expand_more":"chevron-down","fact_check":"ui-checks","favorite":"heart","filter":"funnel","filter_alt_off":"funnel","filter_list":"funnel","flag":"flag","format_list_bulleted":"list-ul","forum":"chat-square-text","grid_view":"grid","group":"people","group_add":"person-plus","groups":"people","help":"question-circle","home":"house","hourglass":"hourglass","hourglass_bottom":"hourglass-bottom","hourglass_empty":"hourglass","hourglass_top":"hourglass-top","how_to_reg":"person-check","image":"image","inbox":"inbox","ink_eraser":"eraser","insert_chart":"bar-chart","insights":"graph-up","inventory_2":"box-seam","keyboard_arrow_down":"chevron-down","keyboard_arrow_up":"chevron-up","leaderboard":"bar-chart-line","list":"list","lock":"lock","low_priority":"sort-down","mail":"envelope","menu":"list","menu_book":"book","monitor_heart":"activity","monitoring":"graph-up-arrow","more_horiz":"three-dots","more_vert":"three-dots-vertical","move_up":"arrow-up-square","note_add":"file-earmark-plus","notifications":"bell","open_in_full":"arrows-fullscreen","open_in_new":"box-arrow-up-right","outbox":"box-arrow-up","palette":"palette","pending":"hourglass-split","person":"person","pie_chart":"pie-chart","play_arrow":"play-fill","play_circle":"play-circle","playlist_add":"list-task","playlist_add_check":"list-check","power_settings_new":"power","public":"globe","push_pin":"pin-angle","radio_button_unchecked":"circle","redeem":"gift","reply":"reply","schedule":"clock","search":"search","search_off":"search","send":"send","settings":"gear","shield_lock":"shield-lock","shield_person":"shield-check","signal_cellular_alt":"reception-4","signpost":"signpost-2","sort":"sort-down","speed":"speedometer2","star":"star","support":"life-preserver","swap_vert":"arrow-down-up","tag":"hash","task_alt":"check2-circle","title":"type","today":"calendar-check","touch_app":"hand-index","trending_up":"graph-up-arrow","tune":"sliders","unfold_more":"chevron-expand","upload_file":"file-earmark-arrow-up","verified_user":"patch-check","videocam":"camera-video","view_agenda":"card-heading","visibility":"eye","volunteer_activism":"hand-heart","warning":"exclamation-triangle","waving_hand":"emoji-smile","wifi":"wifi"};
 const ICONF={"check_circle":"check-circle-fill","favorite":"heart-fill","person":"person-fill","groups":"people-fill","group":"people-fill","play_circle":"play-circle-fill","lock":"lock-fill","send":"send-fill","push_pin":"pin-angle-fill","verified_user":"patch-check-fill","shield_person":"shield-fill-check","inbox":"inbox-fill","waving_hand":"emoji-smile-fill","star":"star-fill","flag":"flag-fill","notifications":"bell-fill","home":"house-fill","pie_chart":"pie-chart-fill"};
 
 const TODAY0 = [
@@ -94,6 +94,49 @@ const POOL0 = [
   {id:'p10',title:'ทดสอบการรายงานความก้าวหน้าเป็น %',commander:'Piyawat',priority:'normal',due:'30/06/2026',days:'อีก 5 วัน',daysType:'left',count:'5 งาน',type:'daily'},
 ];
 
+const OTHERS0 = [
+  {id:'o1',name:'Kittisak Wongchai',role:'Network Engineer',dept:'IT Infrastructure',jobs:[
+    {id:'ko1',title:'ปรับปรุงระบบ Firewall สำนักงานใหญ่',commander:'Nitirud',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:35,status:'yellow',type:'daily'},
+    {id:'ko2',title:'ย้าย VLAN ศูนย์ข้อมูลสำรอง',commander:'Piyawat',priority:'urgent',due:'29/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:20,status:'red',type:'daily'},
+    {id:'ko3',title:'ทดสอบความเร็วเครือข่ายสาขา',commander:'Chanavee',priority:'normal',due:'03/07/2026',days:'เหลือ 6 วัน',daysType:'left',progress:50,status:'green',type:'daily'},
+    {id:'ko4',title:'จัดทำแผนผังเครือข่ายล่าสุด',commander:'Narate',priority:'normal',due:'05/07/2026',days:'เหลือ 8 วัน',daysType:'left',progress:10,status:'yellow',type:'pa'},
+  ]},
+  {id:'o2',name:'Malee Suwannee',role:'Business Analyst',dept:'ฝ่ายธุรกิจ',jobs:[
+    {id:'mo1',title:'วิเคราะห์ความต้องการลูกค้า Grand ATS',commander:'Piyawat',priority:'high',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:45,status:'green',type:'strategic'},
+    {id:'mo2',title:'จัดทำ Requirement Spec ระบบ EDR V.3',commander:'Chanavee',priority:'normal',due:'04/07/2026',days:'เหลือ 7 วัน',daysType:'left',progress:25,status:'yellow',type:'daily'},
+  ]},
+  {id:'o3',name:'Peerapat Chaiyo',role:'Project Manager',dept:'PMO',jobs:[
+    {id:'po1',title:'ติดตามความคืบหน้าโครงการ Grand ATS',commander:'Nitirud',priority:'urgent',due:'30/06/2026',days:'เหลือ 3 วัน',daysType:'left',progress:65,status:'green',type:'daily'},
+    {id:'po2',title:'จัดประชุมสรุปงานประจำสัปดาห์',commander:'Piyawat',priority:'normal',due:'28/06/2026',days:'เกิน 1 วัน',daysType:'over',progress:80,status:'green',type:'daily'},
+    {id:'po3',title:'อัพเดทแผน Gantt โครงการ EDR',commander:'Chanavee',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:30,status:'yellow',type:'daily'},
+    {id:'po4',title:'ทบทวนงบประมาณ Q3',commander:'Anusorn',priority:'normal',due:'06/07/2026',days:'เหลือ 9 วัน',daysType:'left',progress:5,status:'red',type:'pa'},
+    {id:'po5',title:'รายงานความเสี่ยงโครงการต่อผู้บริหาร',commander:'Piyawat',priority:'high',due:'02/07/2026',days:'เหลือ 5 วัน',daysType:'left',progress:15,status:'yellow',type:'strategic'},
+  ]},
+  {id:'o4',name:'Suda Rakphol',role:'UX Designer',dept:'ฝ่ายผลิตภัณฑ์',jobs:[
+    {id:'so1',title:'ออกแบบ Flow หน้าจอ Virtual Meeting',commander:'Chanavee',priority:'normal',due:'03/07/2026',days:'เหลือ 6 วัน',daysType:'left',progress:40,status:'yellow',type:'daily'},
+    {id:'so2',title:'ทำ Prototype รายงาน PA',commander:'Piyawat',priority:'high',due:'01/07/2026',days:'เหลือ 4 วัน',daysType:'left',progress:55,status:'green',type:'daily'},
+    {id:'so3',title:'ทดสอบ Usability กับผู้ใช้จริง',commander:'Narate',priority:'normal',due:'05/07/2026',days:'เหลือ 8 วัน',daysType:'left',progress:0,status:'red',type:'pa'},
+  ]},
+];
+
+const LOGS0 = {
+  'Piyawat Takaew':[
+    {action:'reorder',title:'ศึกษา AI — เปรียบเทียบ 3 ยี่ห้อในตลาด',detail:'เลื่อนขึ้นเป็นลำดับ 1 (จากลำดับ 3)',by:'ตนเอง',time:'วันนี้ 09:12'},
+    {action:'add',title:'ส่งรายงาน PA พัฒนางานประจำ',detail:'นำเข้าจากผู้สั่งการ Sunthan',by:'ตนเอง',time:'เมื่อวาน 16:40'},
+    {action:'reorder',title:'ติดตามการเก็บเงิน ตามสัญญา',detail:'เลื่อนลงเป็นลำดับ 4',by:'ตนเอง',time:'เมื่อวาน 11:05'},
+    {action:'remove',title:'ทดสอบการ Deploy เวอร์ชันเก่า',detail:'นำออกจากรายการ (ยกเลิกงาน)',by:'ตนเอง',time:'23/06/2026 14:20'},
+  ],
+  'Bodin Muanprasat':[
+    {action:'reorder',title:'แก้บั๊ก dashboard EDR ก่อน demo',detail:'เลื่อนขึ้นเป็นลำดับ 1',by:'Piyawat (หัวหน้า)',time:'วันนี้ 08:50'},
+    {action:'add',title:'รีวิวโค้ด Pull Request #214',detail:'นำเข้าจากผู้สั่งการ Chanavee',by:'ตนเอง',time:'เมื่อวาน 15:22'},
+  ],
+  'Chanavee Bekaku':[
+    {action:'reorder',title:'อนุมัติ Pull Request ค้างทั้งหมด',detail:'เลื่อนขึ้นเป็นลำดับ 1',by:'ตนเอง',time:'วันนี้ 10:03'},
+    {action:'add',title:'รีวิวสถาปัตยกรรมระบบ Grand ATS',detail:'นำเข้าจากผู้สั่งการ Piyawat',by:'ตนเอง',time:'เมื่อวาน 13:47'},
+    {action:'remove',title:'จัดทำสไลด์นำเสนอ Sprint',detail:'นำออกจากรายการ',by:'Piyawat (หัวหน้า)',time:'24/06/2026 09:30'},
+  ],
+};
+
 const primary='#15a08f', primarySoft='#e3f3f0', primarySoftBorder='#c4e7df';
 const prStyle=(p)=> p==='urgent'?{bg:'#fdeaea',text:'#d83a3a',label:'ด่วนมาก'}:p==='high'?{bg:'#fff2e2',text:'#dd7a16',label:'ด่วน'}:{bg:'#eef1f5',text:'#6b7280',label:'ปกติ'};
 const tyStyle=(t)=> t==='strategic'?{bg:'#fdeee0',text:'#d98223',label:'งานตามแผนธุรกิจ'}:t==='pa'?{bg:'#fef3d4',text:'#b88407',label:'PA'}:{bg:'#e3f3f0',text:'#0e8c7d',label:'งานประจำวัน'};
@@ -139,6 +182,13 @@ function App(){
   const [todayJobs,setTodayJobs]=useState(TODAY0);
   const [members,setMembers]=useState(MEMBERS0);
   const [pool,setPool]=useState(POOL0);
+  const [addedBoards,setAddedBoards]=useState(['o3']);
+  const [expandedBoards,setExpandedBoards]=useState({});
+  const [addBoardOpen,setAddBoardOpen]=useState(false);
+  const [msgModal,setMsgModal]=useState(null);
+  const [logModal,setLogModal]=useState(null);
+  const [msgText,setMsgText]=useState('');
+  const [msgSent,setMsgSent]=useState(false);
   const dragRef = React.useRef(null);
 
   const getList=(kind)=> kind==='team' ? (members[selectedMember]?members[selectedMember].jobs:[]) : todayJobs;
@@ -163,7 +213,7 @@ function App(){
       onDrop:(e)=>{e.preventDefault();dropOn(kind,job.id);}};
   };
 
-  const isDashboard=view==='dashboard', isManage=view==='manage', isMember=view==='member';
+  const isDashboard=view==='dashboard', isManage=view==='manage', isMember=view==='member', isPriority=view==='priority';
   const isTeamMode=manageMode==='team', activeKind=isTeamMode?'team':'me';
   const todayView=todayJobs.map((j,i)=>mapJob(j,i,'me'));
   const myStats=statsFor(todayJobs);
@@ -209,6 +259,29 @@ function App(){
   ];
   const openReorder=()=>{ setReorderKind(view==='manage'?activeKind:view==='member'?'team':'me'); setReorderOpen(true); };
 
+  // ── Team Priority Work List (รายการงานสำคัญของทีม) ──
+  const toggleBoard=(k)=> setExpandedBoards(m=>({...m,[k]:!m[k]}));
+  const rawBoards=[
+    {key:'me',name:'Piyawat Takaew',role:'SA Staff',badge:'ของฉัน',editable:true,jobs:todayJobs,avatarChar:'P',avatarColor:primary,
+      onEdit:()=>{setManageMode('me');setView('manage');}},
+    ...members.map((m,i)=>({key:'team-'+m.id,name:m.name,role:m.role,badge:'ลูกทีม',editable:true,jobs:m.jobs,avatarChar:(m.name||'?').charAt(0),avatarColor:pickColor(m.name),
+      onEdit:()=>{setSelectedMember(i);setManageMode('team');setView('manage');}})),
+    ...addedBoards.map(id=>{const o=OTHERS0.find(x=>x.id===id)||{};return {key:'other-'+id,name:o.name,role:o.role,badge:'อื่นๆ',editable:false,jobs:o.jobs||[],avatarChar:(o.name||'?').charAt(0),avatarColor:pickColor(o.name),
+      onRemove:()=>setAddedBoards(a=>a.filter(x=>x!==id))};}),
+  ];
+  const priorityBoards=rawBoards.map(b=>{
+    const st=statsFor(b.jobs);
+    const expanded=!!expandedBoards[b.key];
+    const shown=(expanded?b.jobs:b.jobs.slice(0,3)).map((j,i)=>mapJob(j,i,'view'));
+    return {...b,rows:shown,expanded,total:b.jobs.length,hidden:Math.max(0,b.jobs.length-3),avg:st.avg,avgStyle:st.avg+'%',done:st.done,over:st.over,pending:st.pending,
+      badgeBg:b.badge==='ของฉัน'?primarySoft:b.badge==='ลูกทีม'?'#ecebfb':'#eef1f5',
+      badgeText:b.badge==='ของฉัน'?primary:b.badge==='ลูกทีม'?'#4f46e5':'#6b7280',
+      onToggle:()=>toggleBoard(b.key),
+      onMsg:()=>{setMsgText('');setMsgSent(false);setMsgModal({name:b.name,avatarChar:b.avatarChar,avatarColor:b.avatarColor,role:b.role});},
+      onLog:()=>setLogModal({name:b.name,avatarChar:b.avatarChar,avatarColor:b.avatarColor,role:b.role,badge:b.badge,logs:LOGS0[b.name]||[]})};
+  });
+  const addable=OTHERS0.filter(o=>addedBoards.indexOf(o.id)<0).map(o=>({...o,avatarChar:(o.name||'?').charAt(0),avatarColor:pickColor(o.name),count:o.jobs.length,onAdd:()=>{setAddedBoards(a=>[...a,o.id]);}}));
+
   const ms=(name,size,color)=>{var k=(ICON[name]||'bi-record-circle');return (<i className={'bi '+(/^bi-/.test(k)?k:'bi-'+k)} style={{fontSize:size,color:color,lineHeight:1,verticalAlign:'middle',display:'inline-flex'}}></i>);};
 
   return (
@@ -234,14 +307,14 @@ function App(){
             <div style={{display:'flex',gap:6}}><span style={{width:11,height:11,borderRadius:'50%',background:'#f5b301'}}></span><span style={{width:11,height:11,borderRadius:'50%',background:'#ef4444'}}></span><span style={{width:11,height:11,borderRadius:'50%',background:'#22b573'}}></span></div>
           </div>
 
-          {/* Today's Job */}
+          {/* Prioritize Daily Job */}
           <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
               {ms('checklist',22,primary)}
-              <div style={{fontWeight:700,fontSize:16}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
+              <div style={{fontWeight:700,fontSize:16}}>Prioritize Daily Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
               <div style={{flex:1}}></div>
-              <button onClick={openReorder} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'7px 11px',fontSize:12.5,fontWeight:600}}>{ms('swap_vert',17)}เรียงลำดับ</button>
-              <button onClick={()=>{setManageMode('me');setView('manage');}} style={{display:'inline-flex',alignItems:'center',gap:5,background:primary,border:'none',color:'#fff',borderRadius:9,padding:'7px 12px',fontSize:12.5,fontWeight:600}}>{ms('tune',17)}จัดการ Daily Job</button>
+              <button onClick={()=>setView('priority')} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'7px 11px',fontSize:12.5,fontWeight:600}}>{ms('format_list_bulleted',17)}รายการงานสำคัญของทีม</button>
+              <button onClick={()=>{setManageMode('me');setView('manage');}} style={{display:'inline-flex',alignItems:'center',gap:5,background:primary,border:'none',color:'#fff',borderRadius:9,padding:'7px 12px',fontSize:12.5,fontWeight:600}}>{ms('swap_vert',18)}จัดการงาน</button>
             </div>
             <div style={{display:'flex',alignItems:'center',gap:12,background:'#f7f9fb',border:'1px solid #eef1f5',borderRadius:10,padding:'9px 12px',marginBottom:13}}>
               <div style={{display:'flex',alignItems:'center',gap:13,fontSize:12,color:'#5a6473',flexWrap:'wrap'}}>
@@ -276,9 +349,8 @@ function App(){
           <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
             <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:14}}>
               {ms('groups',22,primary)}
-              <div style={{fontWeight:700,fontSize:16}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>ของลูกทีม</span></div>
+              <div style={{fontWeight:700,fontSize:16}}>Prioritize Daily Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>ของลูกทีม</span></div>
               <div style={{flex:1}}></div>
-              <span style={{fontSize:11.5,color:'#9aa3af'}}>แตะที่สมาชิกเพื่อตรวจสอบ / จัดลำดับงานของลูกทีม</span>
             </div>
             <div style={{background:'#eef0f3',borderRadius:13,padding:'14px 16px',marginBottom:13}}>
               <div style={{display:'flex',alignItems:'center',gap:18}}>
@@ -361,7 +433,7 @@ function App(){
         <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:16}}>
           <button onClick={()=>setView('dashboard')} style={{width:36,height:36,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('arrow_back',22)}</button>
           {ms('groups',22,primary)}
-          <div style={{fontWeight:700,fontSize:17}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>ของลูกทีม — {mem.name}</span></div>
+          <div style={{fontWeight:700,fontSize:17}}>Prioritize Daily Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>ของลูกทีม — {mem.name}</span></div>
         </div>
         <div style={{display:'grid',gridTemplateColumns:'1.62fr 1fr',gap:18,alignItems:'start'}}>
           <div style={{display:'flex',flexDirection:'column',gap:18,minWidth:0}}>
@@ -377,10 +449,10 @@ function App(){
             <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',padding:16}}>
               <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
                 {ms('checklist',22,primary)}
-                <div style={{fontWeight:700,fontSize:16}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
+                <div style={{fontWeight:700,fontSize:16}}>Prioritize Daily Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
                 <div style={{flex:1}}></div>
                 <button onClick={openReorder} style={{display:'inline-flex',alignItems:'center',gap:5,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'7px 11px',fontSize:12.5,fontWeight:600}}>{ms('swap_vert',17)}เรียงลำดับ</button>
-                <button onClick={()=>{setManageMode('team');setView('manage');}} style={{display:'inline-flex',alignItems:'center',gap:5,background:primary,border:'none',color:'#fff',borderRadius:9,padding:'7px 12px',fontSize:12.5,fontWeight:600}}>{ms('tune',17)}จัดการ Daily Job</button>
+                <button onClick={()=>{setManageMode('team');setView('manage');}} style={{display:'inline-flex',alignItems:'center',gap:5,background:primary,border:'none',color:'#fff',borderRadius:9,padding:'7px 12px',fontSize:12.5,fontWeight:600}}>{ms('tune',17)}จัดการ Prioritize Daily Job</button>
               </div>
               <div style={{display:'flex',alignItems:'center',gap:13,background:'#f7f9fb',border:'1px solid #eef1f5',borderRadius:10,padding:'9px 12px',marginBottom:13,fontSize:12,color:'#5a6473'}}>
                 <span style={{display:'inline-flex',alignItems:'center',gap:4}}><span style={{width:8,height:8,borderRadius:'50%',background:'#f5b301'}}></span>{memberStats.pending} รอดำเนินการ</span>
@@ -431,7 +503,7 @@ function App(){
         <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:16}}>
           <button onClick={()=>setView(manageMode==='team'?'member':'dashboard')} style={{width:36,height:36,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('arrow_back',22)}</button>
           {ms('tune',22,primary)}
-          <div style={{fontWeight:700,fontSize:17}}>จัดการข้อมูล Daily Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
+          <div style={{fontWeight:700,fontSize:17}}>จัดการข้อมูล Prioritize Daily Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:14}}>(คำสั่งที่ได้รับ)</span></div>
           <div style={{flex:1}}></div>
           <button onClick={openReorder} style={{display:'inline-flex',alignItems:'center',gap:6,background:'#fff',border:'1px solid #d8dde4',color:'#4a5360',borderRadius:9,padding:'8px 12px',fontSize:12.5,fontWeight:600}}>{ms('drag_indicator',18)}เรียงลำดับแบบลาก</button>
         </div>
@@ -449,7 +521,7 @@ function App(){
         </div>
         <div style={{display:'grid',gridTemplateColumns:'0.92fr 1.08fr',gap:18,alignItems:'start'}}>
           <div style={{border:'1px solid #eef0f4',borderRadius:12,padding:13,background:'#fcfdfe'}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>{ms('checklist',19,primary)}<div style={{fontWeight:700,fontSize:14}}>Today's Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:12.5}}>(คำสั่งที่ได้รับ)</span></div><div style={{flex:1}}></div><span style={{fontSize:11.5,color:'#9aa3af'}}>{manageList.length} งาน</span></div>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>{ms('checklist',19,primary)}<div style={{fontWeight:700,fontSize:14}}>Prioritize Daily Job <span style={{color:'#8a93a3',fontWeight:500,fontSize:12.5}}>(คำสั่งที่ได้รับ)</span></div><div style={{flex:1}}></div><span style={{fontSize:11.5,color:'#9aa3af'}}>{manageList.length} งาน</span></div>
             {manageList.map(job=>(
               <div key={job.id} draggable onDragStart={job.onDragStart} onDragOver={(e)=>e.preventDefault()} onDrop={job.onDrop} style={{display:'flex',alignItems:'center',gap:10,padding:10,border:'1px solid '+job.rowBorder,borderRadius:10,background:job.rowBg,marginBottom:8}}>
                 <div style={{width:24,textAlign:'center',fontWeight:700,fontSize:18,color:'#4338ca',flex:'none'}}>{job.rank}</div>
@@ -466,7 +538,7 @@ function App(){
                   <button onClick={job.onMoveUp} style={{border:'none',background:'#fff',padding:'2px 6px',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('keyboard_arrow_up',18)}</button>
                   <button onClick={job.onMoveDown} style={{border:'none',borderTop:'1px solid #eef0f4',background:'#fff',padding:'2px 6px',display:'flex',alignItems:'center',justifyContent:'center',color:'#5a6473'}}>{ms('keyboard_arrow_down',18)}</button>
                 </div>
-                <button onClick={job.onRemove} style={{width:32,height:32,borderRadius:8,border:'none',background:'#fdeaea',color:'#d83a3a',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('delete',18)}</button>
+                <button onClick={job.onRemove} style={{width:34,height:34,borderRadius:'50%',border:'none',background:'#fdeaea',color:'#d83a3a',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms('remove',18)}</button>
               </div>
             ))}
             {manageList.length===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:13,padding:'30px 0'}}>ยังไม่มีงานในรายการ — นำเข้าจากผู้สั่งการทางขวา</div>}
@@ -505,6 +577,198 @@ function App(){
             </div>
           </div>
         </div>
+       </div>
+      )}
+
+      {/* PRIORITY — Team Priority Work List (รายการงานสำคัญของทีม) */}
+      {isPriority && (
+       <div style={{maxWidth:1480,margin:'0 auto',animation:'fadeIn .2s ease'}}>
+        <div style={{display:'flex',alignItems:'center',gap:11,marginBottom:8,flexWrap:'wrap'}}>
+          <button onClick={()=>setView('dashboard')} style={{width:36,height:36,borderRadius:9,border:'1px solid #e3e7ec',background:'#fff',display:'inline-flex',alignItems:'center',justifyContent:'center',color:'#5a6473',flex:'none'}}>{ms('arrow_back',22)}</button>
+          {ms('format_list_bulleted',22,primary)}
+          <div>
+            <div style={{fontWeight:700,fontSize:17,lineHeight:1.2}}>Team Priority Work List</div>
+            <div style={{fontSize:13,color:'#8a93a3'}}>รายการงานสำคัญของทีม — กระดานงานที่จัดลำดับไว้แล้ว</div>
+          </div>
+          <div style={{flex:1}}></div>
+          <button onClick={()=>setAddBoardOpen(true)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,height:40,padding:'0 18px',background:primary,border:'none',color:'#fff',borderRadius:11,fontSize:13,fontWeight:600,flex:'none'}}>{ms('group_add',18)}เพิ่มกระดานของคนอื่น</button>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:16,background:'#eef0f3',borderRadius:12,padding:'10px 15px',marginBottom:16,fontSize:12,color:'#5a6473',flexWrap:'wrap'}}>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6,fontWeight:600}}>{ms('groups',17,primary)}{priorityBoards.length} กระดาน</span>
+          <span style={{width:1,height:14,background:'#d4dae2'}}></span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><span style={{padding:'2px 8px',borderRadius:8,fontWeight:600,background:primarySoft,color:primary}}>ของฉัน</span><span style={{padding:'2px 8px',borderRadius:8,fontWeight:600,background:'#ecebfb',color:'#4f46e5'}}>ลูกทีม</span><span style={{padding:'2px 8px',borderRadius:8,fontWeight:600,background:'#eef1f5',color:'#6b7280'}}>อื่นๆ</span></span>
+          <div style={{flex:1}}></div>
+          <span style={{display:'inline-flex',alignItems:'center',gap:5}}>{ms('swap_vert',15,primary)}กระดานของฉันและลูกทีม กดปุ่มเพื่อแก้ไขลำดับงานได้ทันที</span>
+        </div>
+
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(540px,1fr))',gap:16,alignItems:'start'}}>
+          {priorityBoards.map(b=>(
+            <div key={b.key} style={{background:'#fff',border:'1px solid #eceef2',borderRadius:14,boxShadow:'0 1px 2px rgba(16,24,40,.04)',overflow:'hidden',minHeight:340,display:'flex',flexDirection:'column'}}>
+              {/* board header */}
+              <div style={{display:'flex',alignItems:'center',gap:12,padding:'14px 16px',borderBottom:'1px solid #f1f3f6'}}>
+                <div style={{width:44,height:44,borderRadius:'50%',background:b.avatarColor,color:'#fff',fontWeight:700,fontSize:18,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{b.avatarChar}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <span style={{fontWeight:700,fontSize:14.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{b.name}</span>
+                    {b.badge!=='อื่นๆ' && <span style={{padding:'2px 8px',borderRadius:8,fontSize:11,fontWeight:700,background:b.badgeBg,color:b.badgeText,flex:'none'}}>{b.badge}</span>}
+                  </div>
+                  <div style={{fontSize:12,color:'#8a93a3',marginTop:2}}>{b.role}</div>
+                </div>
+                <div style={{textAlign:'right',flex:'none'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    <div style={{width:74,height:7,background:'#eef1f5',borderRadius:99,overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:primary,width:b.avgStyle}}></div></div>
+                    <span style={{fontWeight:700,fontSize:13,color:primary,minWidth:34,textAlign:'right'}}>{b.avgStyle}</span>
+                  </div>
+                  <div style={{fontSize:10.5,color:'#9aa3af',marginTop:3}}>{b.total} งาน · {b.done} ปิด · {b.over} เกินกำหนด</div>
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:6,flex:'none'}}>
+                  {b.key!=='me' && <button onClick={b.onMsg} title="ฝากข้อความขอปรับลำดับ" style={{width:32,height:32,borderRadius:9,background:'#fff',border:'1px solid #e7eaef',color:'#5a6473',display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{ms('chat',17)}</button>}
+                  {b.editable && <button onClick={b.onLog} title="ดูประวัติการเปลี่ยนแปลง" style={{width:32,height:32,borderRadius:9,background:'#fff',border:'1px solid #e7eaef',color:'#5a6473',display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{ms('schedule',17)}</button>}
+                  {b.editable ? (
+                    <button onClick={b.onEdit} title="จัดการ Prioritize Daily Job" style={{width:32,height:32,borderRadius:9,background:primarySoft,border:'1px solid '+primarySoftBorder,color:primary,display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{ms('swap_vert',18)}</button>
+                  ) : (
+                    <button onClick={b.onRemove} title="นำกระดานออก" style={{width:32,height:32,borderRadius:9,background:'#fff',border:'1px solid #e7eaef',color:'#8a93a3',display:'inline-flex',alignItems:'center',justifyContent:'center'}}>{ms('close',16)}</button>
+                  )}
+                </div>
+              </div>
+
+              {/* table */}
+              <div style={{padding:'6px 16px 4px',flex:1}}>
+                <div style={{display:'grid',gridTemplateColumns:'28px 1fr 96px 92px 60px',alignItems:'center',gap:8,padding:'8px 4px',fontSize:11,fontWeight:700,color:'#9aa3af',borderBottom:'1px solid #f1f3f6'}}>
+                  <div style={{textAlign:'center'}}>#</div><div>งาน</div><div>ผู้สั่งการ</div><div>กำหนด/เหลือ</div><div style={{textAlign:'right'}}>คืบหน้า</div>
+                </div>
+                {b.rows.map(job=>(
+                  <div key={job.id} style={{display:'grid',gridTemplateColumns:'28px 1fr 96px 92px 60px',alignItems:'center',gap:8,padding:'9px 4px',borderBottom:'1px solid #f5f6f9'}}>
+                    <div style={{textAlign:'center',fontWeight:700,fontSize:15,color:'#4338ca'}}>{job.rank}</div>
+                    <div style={{minWidth:0}}>
+                      <div style={{fontWeight:500,fontSize:12.5,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.title}</div>
+                      <div style={{marginTop:5,height:5,background:'#eef1f5',borderRadius:99,overflow:'hidden',maxWidth:200}}><div style={{height:'100%',borderRadius:99,background:job.barColor,width:job.widthStyle}}></div></div>
+                    </div>
+                    <div style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:11.5,color:'#5a6473',minWidth:0}}>
+                      <span style={{width:18,height:18,borderRadius:'50%',background:job.avatarColor,color:'#fff',fontSize:10,fontWeight:700,display:'inline-flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{job.avatarInitial}</span>
+                      <span style={{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{job.commander}</span>
+                    </div>
+                    <div style={{fontSize:11,lineHeight:1.35}}>
+                      <div style={{color:'#8a93a3'}}>{job.due}</div>
+                      <div style={{color:job.daysColor,fontWeight:600}}>{job.days}</div>
+                    </div>
+                    <div style={{display:'inline-flex',alignItems:'center',justifyContent:'flex-end',gap:6}}>
+                      <span style={{fontWeight:700,fontSize:12,color:job.barColor}}>{job.widthStyle}</span>
+                      <span style={{width:10,height:10,borderRadius:'50%',background:job.statusColor,flex:'none'}}></span>
+                    </div>
+                  </div>
+                ))}
+                {b.total===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:12.5,padding:'22px 0'}}>ยังไม่มีงานในกระดานนี้</div>}
+              </div>
+
+              {/* board footer */}
+              {b.total>3 && (
+              <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:9,padding:'11px 16px 14px'}}>
+                <button onClick={b.onToggle} style={{display:'inline-flex',alignItems:'center',gap:5,height:32,padding:'0 12px',background:'#f4f6f9',border:'1px solid #e7eaef',color:'#5a6473',borderRadius:11,fontSize:12,fontWeight:600}}>{ms(b.expanded?'expand_less':'expand_more',16)}{b.expanded?'ย่อกลับ':'ดูทั้งหมด ('+b.total+' งาน)'}</button>
+              </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* add-board modal */}
+        {addBoardOpen && (
+         <div onClick={()=>setAddBoardOpen(false)} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.4)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:200,animation:'fadeIn .15s ease'}}>
+          <div onClick={(e)=>e.stopPropagation()} style={{width:460,maxWidth:'92vw',maxHeight:'82vh',background:'#fff',borderRadius:14,boxShadow:'0 18px 50px rgba(16,24,40,.24)',display:'flex',flexDirection:'column',overflow:'hidden',animation:'popIn .18s ease'}}>
+            <div style={{display:'flex',alignItems:'center',gap:9,padding:'15px 18px',borderBottom:'1px solid #f1f3f6'}}>
+              {ms('group_add',20,primary)}
+              <div style={{fontWeight:700,fontSize:15,flex:1}}>เพิ่มกระดานของคนอื่น</div>
+              <button onClick={()=>setAddBoardOpen(false)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,height:40,padding:'0 14px',background:'#fff',border:'1px solid #e3e7ec',color:'#5a6473',borderRadius:11,fontSize:12.5,fontWeight:600}}>{ms('close',16)}ปิด</button>
+            </div>
+            <div style={{padding:14,overflowY:'auto'}}>
+              {addable.map(o=>(
+                <div key={o.id} style={{display:'flex',alignItems:'center',gap:11,padding:'10px 11px',border:'1px solid #eef0f4',borderRadius:11,marginBottom:8}}>
+                  <div style={{width:38,height:38,borderRadius:'50%',background:o.avatarColor,color:'#fff',fontWeight:700,fontSize:15,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{o.avatarChar}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{o.name}</div>
+                    <div style={{fontSize:11.5,color:'#8a93a3'}}>{o.role} · {o.dept}</div>
+                  </div>
+                  <span style={{fontSize:11,color:'#9aa3af',flex:'none'}}>{o.count} งาน</span>
+                  <button onClick={o.onAdd} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,height:32,padding:'0 13px',background:primary,border:'none',color:'#fff',borderRadius:11,fontSize:12,fontWeight:600,flex:'none'}}>{ms('add',16)}เพิ่ม</button>
+                </div>
+              ))}
+              {addable.length===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:13,padding:'30px 0'}}>เพิ่มครบทุกกระดานแล้ว</div>}
+            </div>
+          </div>
+         </div>
+        )}
+
+        {/* message modal — ฝากข้อความขอปรับลำดับ */}
+        {msgModal && (
+         <div onClick={()=>setMsgModal(null)} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.4)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:200,animation:'fadeIn .15s ease'}}>
+          <div onClick={(e)=>e.stopPropagation()} style={{width:460,maxWidth:'92vw',background:'#fff',borderRadius:14,boxShadow:'0 18px 50px rgba(16,24,40,.24)',overflow:'hidden',animation:'popIn .18s ease'}}>
+            <div style={{display:'flex',alignItems:'center',gap:9,padding:'15px 18px',borderBottom:'1px solid #f1f3f6'}}>
+              {ms('chat',20,primary)}
+              <div style={{fontWeight:700,fontSize:15,flex:1}}>ฝากข้อความขอปรับลำดับงาน</div>
+              <button onClick={()=>setMsgModal(null)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,height:40,padding:'0 14px',background:'#fff',border:'1px solid #e3e7ec',color:'#5a6473',borderRadius:11,fontSize:12.5,fontWeight:600}}>{ms('close',16)}ปิด</button>
+            </div>
+            <div style={{padding:'16px 18px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14}}>
+                <div style={{width:38,height:38,borderRadius:'50%',background:msgModal.avatarColor,color:'#fff',fontWeight:700,fontSize:15,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{msgModal.avatarChar}</div>
+                <div><div style={{fontSize:11.5,color:'#9aa3af'}}>ส่งถึง</div><div style={{fontWeight:700,fontSize:13.5}}>{msgModal.name} <span style={{color:'#8a93a3',fontWeight:500,fontSize:12}}>· {msgModal.role}</span></div></div>
+              </div>
+              {msgSent ? (
+                <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:8,padding:'24px 0',color:'#22b573'}}>{ms('check_circle',40,'#22b573')}<div style={{fontWeight:700,fontSize:14,color:'#1f2733'}}>ส่งข้อความแล้ว</div><div style={{fontSize:12,color:'#8a93a3'}}>{msgModal.name} จะได้รับการแจ้งเตือนให้ปรับลำดับงาน</div></div>
+              ) : (
+                <div>
+                  <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:11}}>
+                    {['ช่วยดันงานด่วนขึ้นก่อนนะครับ','ขอให้ทบทวนลำดับความสำคัญใหม่','งานตามสัญญาควรอยู่ลำดับต้น ๆ'].map((t,i)=>(
+                      <button key={i} onClick={()=>setMsgText(t)} style={{border:'1px solid #e3e7ec',background:'#f7f9fb',color:'#5a6473',borderRadius:8,padding:'5px 11px',fontSize:11.5,fontWeight:500}}>{t}</button>
+                    ))}
+                  </div>
+                  <textarea value={msgText} onChange={(e)=>setMsgText(e.target.value)} placeholder="พิมพ์ข้อความถึงเจ้าของกระดาน เช่น ระบุงานที่อยากให้ดันขึ้น/ลง และเหตุผล" style={{width:'100%',minHeight:96,resize:'vertical',border:'1px solid #e3e7ec',borderRadius:11,padding:'11px 12px',fontSize:13,fontFamily:'inherit',color:'#1f2733',outline:'none',boxSizing:'border-box'}}></textarea>
+                  <div style={{display:'flex',alignItems:'center',gap:9,marginTop:14}}>
+                    <button onClick={()=>setMsgModal(null)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,height:40,padding:'0 18px',background:'#fff',border:'1px solid #e3e7ec',color:'#5a6473',borderRadius:11,fontSize:13,fontWeight:600}}>{ms('close',16)}ยกเลิก</button>
+                    <div style={{flex:1}}></div>
+                    <button onClick={()=>{if(msgText.trim())setMsgSent(true);}} disabled={!msgText.trim()} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,height:40,padding:'0 18px',background:msgText.trim()?primary:'#cbd5e1',border:'none',color:'#fff',borderRadius:11,fontSize:13,fontWeight:600,cursor:msgText.trim()?'pointer':'default'}}>{ms('send',16)}ส่งข้อความ</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+         </div>
+        )}
+
+        {/* log modal — ประวัติการเปลี่ยนแปลงลำดับงาน */}
+        {logModal && (
+         <div onClick={()=>setLogModal(null)} style={{position:'fixed',inset:0,background:'rgba(16,24,40,.4)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:200,animation:'fadeIn .15s ease'}}>
+          <div onClick={(e)=>e.stopPropagation()} style={{width:520,maxWidth:'92vw',maxHeight:'82vh',background:'#fff',borderRadius:14,boxShadow:'0 18px 50px rgba(16,24,40,.24)',display:'flex',flexDirection:'column',overflow:'hidden',animation:'popIn .18s ease'}}>
+            <div style={{display:'flex',alignItems:'center',gap:9,padding:'15px 18px',borderBottom:'1px solid #f1f3f6'}}>
+              {ms('schedule',20,primary)}
+              <div style={{flex:1}}>
+                <div style={{fontWeight:700,fontSize:15}}>ประวัติการเปลี่ยนแปลงลำดับงาน</div>
+                <div style={{fontSize:12,color:'#8a93a3'}}>{logModal.name} · {logModal.badge==='ของฉัน'?'กระดานของฉัน':'ลูกทีม'}</div>
+              </div>
+              <button onClick={()=>setLogModal(null)} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:5,height:40,padding:'0 14px',background:'#fff',border:'1px solid #e3e7ec',color:'#5a6473',borderRadius:11,fontSize:12.5,fontWeight:600}}>{ms('close',16)}ปิด</button>
+            </div>
+            <div style={{padding:'8px 18px 16px',overflowY:'auto'}}>
+              {logModal.logs.map((e,i)=>{
+                const st=e.action==='add'?{bg:'#e4f4ec',color:'#22b573',icon:'add',label:'เพิ่มงาน'}:e.action==='remove'?{bg:'#fdeaea',color:'#d83a3a',icon:'delete',label:'ลบงาน'}:{bg:primarySoft,color:primary,icon:'swap_vert',label:'เปลี่ยนลำดับ'};
+                return (
+                <div key={i} style={{display:'flex',gap:12,padding:'12px 0',borderBottom:i<logModal.logs.length-1?'1px solid #f5f6f9':'none'}}>
+                  <div style={{width:34,height:34,borderRadius:9,background:st.bg,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>{ms(st.icon,18,st.color)}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:3}}>
+                      <span style={{padding:'2px 8px',borderRadius:8,fontSize:11,fontWeight:700,background:st.bg,color:st.color}}>{st.label}</span>
+                      <span style={{fontSize:11,color:'#9aa3af'}}>{e.time}</span>
+                    </div>
+                    <div style={{fontWeight:600,fontSize:13,marginBottom:2}}>{e.title}</div>
+                    <div style={{fontSize:12,color:'#5a6473'}}>{e.detail}</div>
+                    <div style={{fontSize:11,color:'#9aa3af',marginTop:3}}>โดย {e.by}</div>
+                  </div>
+                </div>
+                );
+              })}
+              {logModal.logs.length===0 && <div style={{textAlign:'center',color:'#aeb6c2',fontSize:13,padding:'30px 0'}}>ยังไม่มีประวัติการเปลี่ยนแปลง</div>}
+            </div>
+          </div>
+         </div>
+        )}
        </div>
       )}
       </div>

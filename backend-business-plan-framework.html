@@ -152,7 +152,7 @@ const DAILY_TASKS_SEED={
 };
 
 /* ═══════════ FRAMEWORK LEVEL PANEL (left) ═══════════ */
-function LevelPanel({level,setLevel,rounds,setRounds}){
+function LevelPanel({level,setLevel,rounds,setRounds,budget,setBudget}){
   return (
     <div style={{width:300,flex:'none',padding:'18px 16px',position:'sticky',top:58,height:'calc(100vh - 58px)',overflowY:'auto'}}>
       <div style={{background:'#fff',border:'1px solid #e7eaef',borderRadius:16,boxShadow:'0 1px 3px rgba(16,24,40,.05)',overflow:'hidden'}}>
@@ -171,9 +171,9 @@ function LevelPanel({level,setLevel,rounds,setRounds}){
         {/* levels */}
         <div style={{padding:'8px 8px'}}>
           {LEVELS.map((l,i)=>{
-            const act=!rounds&&level===l.key;
+            const act=!rounds&&!budget&&level===l.key;
             return (
-              <button key={l.key} className="lv-row" onClick={()=>{setRounds(false);setLevel(l.key);}} style={{display:'flex',alignItems:'center',gap:12,width:'100%',textAlign:'left',padding:'11px 12px',borderRadius:11,border:'none',background:act?primarySoft:'transparent',cursor:'pointer',borderLeft:'3px solid '+(act?primary:'transparent'),marginBottom:2}}>
+              <button key={l.key} className="lv-row" onClick={()=>{setRounds(false);setBudget(false);setLevel(l.key);}} style={{display:'flex',alignItems:'center',gap:12,width:'100%',textAlign:'left',padding:'11px 12px',borderRadius:11,border:'none',background:act?primarySoft:'transparent',cursor:'pointer',marginBottom:2}}>
                 <div style={{width:34,height:34,borderRadius:9,background:act?'#fff':'#f2f4f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',boxShadow:act?'0 1px 3px rgba(16,24,40,.08)':'none'}}>
                   <i className={'bi '+l.icon} style={{fontSize:16,color:act?l.accent:'#9aa3af'}}></i>
                 </div>
@@ -186,13 +186,19 @@ function LevelPanel({level,setLevel,rounds,setRounds}){
           })}
         </div>
         <div style={{height:1,background:'#f0f2f5',margin:'2px 12px'}}></div>
-        {/* rounds row */}
+        {/* rounds + budget rows */}
         <div style={{padding:'8px'}}>
-          <button className="lv-row" onClick={()=>setRounds(true)} style={{display:'flex',alignItems:'center',gap:12,width:'100%',textAlign:'left',padding:'11px 12px',borderRadius:11,border:'none',background:rounds?primarySoft:'transparent',cursor:'pointer',borderLeft:'3px solid '+(rounds?primary:'transparent')}}>
+          <button className="lv-row" onClick={()=>{setBudget(false);setRounds(true);}} style={{display:'flex',alignItems:'center',gap:12,width:'100%',textAlign:'left',padding:'11px 12px',borderRadius:11,border:'none',background:rounds?primarySoft:'transparent',cursor:'pointer'}}>
             <div style={{width:34,height:34,borderRadius:9,background:rounds?'#fff':'#f2f4f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',boxShadow:rounds?'0 1px 3px rgba(16,24,40,.08)':'none'}}>
               <i className="bi bi-calendar2-range" style={{fontSize:16,color:rounds?primary:'#9aa3af'}}></i>
             </div>
             <div style={{flex:1,fontWeight:rounds?700:600,fontSize:13,color:rounds?primary:'#3a4452',lineHeight:1.35}}>กำหนดรอบการวัดเป้าตามกรอบแผนธุรกิจ</div>
+          </button>
+          <button className="lv-row" onClick={()=>{setRounds(false);setBudget(true);}} style={{display:'flex',alignItems:'center',gap:12,width:'100%',textAlign:'left',padding:'11px 12px',borderRadius:11,border:'none',background:budget?primarySoft:'transparent',cursor:'pointer',marginTop:2}}>
+            <div style={{width:34,height:34,borderRadius:9,background:budget?'#fff':'#f2f4f7',display:'flex',alignItems:'center',justifyContent:'center',flex:'none',boxShadow:budget?'0 1px 3px rgba(16,24,40,.08)':'none'}}>
+              <i className="bi bi-cash-stack" style={{fontSize:16,color:budget?primary:'#9aa3af'}}></i>
+            </div>
+            <div style={{flex:1,fontWeight:budget?700:600,fontSize:13,color:budget?primary:'#3a4452',lineHeight:1.35}}>การตั้งแผนงบประมาณ</div>
           </button>
         </div>
       </div>
@@ -1271,8 +1277,371 @@ function RoundsContainer(){
   return <RoundsView rounds={rounds} onAdd={openAdd} onEdit={openEdit} onPlans={openPlans} onDelete={del}/>;
 }
 
+/* ═══════════ BUDGET PLANNING — งบประมาณ CAPEX/OPEX ตามลำดับชั้น ═══════════ */
+const CAPEX_C={main:'#3b6fd4',soft:'#eaf1fe',bd:'#c9dbfb',icon:'bi-buildings-fill'};
+const OPEX_C ={main:'#0e9488',soft:'#e2f3f0',bd:'#bfe6df',icon:'bi-gear-wide-connected'};
+
+/* งบตั้งต้นต่อ node (แม่ตั้งงบ → กระจายให้ลูก) — g3 ตั้งใจให้ลูกเกินงบเพื่อสาธิต validation */
+const BUDGET_SEED={
+  m1:{capex:1500000,opex:800000},
+    g2:{capex:600000,opex:300000},
+      s1:{capex:300000,opex:150000}, p1:{capex:150000,opex:60000},
+      s2:{capex:200000,opex:100000}, p2:{capex:100000,opex:40000},
+    g3:{capex:500000,opex:250000},
+      s3:{capex:300000,opex:130000}, p3:{capex:120000,opex:50000},
+      s4:{capex:250000,opex:150000}, p4:{capex:100000,opex:40000},
+  m2:{capex:420000,opex:200000},
+  m3:{capex:0,opex:250000},
+  m4:{capex:120000,opex:80000},
+};
+function nodeKids(levelKey,id){
+  const L=LV(levelKey); if(L.tier>=4) return [];
+  const ck=tierKey(L.tier+1);
+  return childrenOf(ck,id).map(it=>({levelKey:ck,item:it}));
+}
+const fmtB=(n)=>(n||0).toLocaleString('en-US');
+
+function BudgetInput({value,onChange,over}){
+  return <input value={value?value.toLocaleString('en-US'):''} onChange={e=>onChange(Number(e.target.value.replace(/[^0-9]/g,''))||0)} placeholder="0"
+    style={{width:'100%',border:'1.5px solid '+(over?'#e0473f':'#e1e5ec'),borderRadius:9,padding:'8px 11px',fontSize:12.5,fontWeight:700,textAlign:'right',outline:'none',color:'#1f2733',background:over?'#fdecec':'#fff',fontFamily:'inherit'}}/>;
+}
+function StatChip({label,value,color}){
+  return (
+    <span style={{display:'inline-flex',alignItems:'baseline',gap:5,whiteSpace:'nowrap'}}>
+      <span style={{fontSize:11,color:'#8a93a3',fontWeight:600}}>{label}</span>
+      <b style={{fontSize:13.5,fontWeight:800,color:color||'#3a4452'}}>{value}</b>
+    </span>
+  );
+}
+function SummaryTile({c,label,total,alloc}){
+  const remain=total-alloc, over=alloc>total;
+  return (
+    <div style={{flex:'1 1 340px',minWidth:300,background:'#fff',border:'1px solid '+c.bd,borderRadius:12,padding:'13px 16px',display:'flex',alignItems:'center',gap:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+      <div style={{width:38,height:38,borderRadius:10,background:c.soft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className={'bi '+c.icon} style={{fontSize:17,color:c.main}}></i></div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontSize:12,fontWeight:700,color:c.main,marginBottom:5}}>{label}</div>
+        <div style={{display:'flex',gap:16,alignItems:'baseline',flexWrap:'wrap'}}>
+          <StatChip label="งบรวม" value={fmtB(total)}/>
+          <StatChip label="จัดสรรแล้ว" value={fmtB(alloc)}/>
+          <StatChip label="คงเหลือ" value={fmtB(remain)} color={over?'#e0473f':'#0e7c6d'}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* แถบแสดงการจัดสรร: เขียว=ในงบ / แดง=เกิน — อ่านง่ายกว่าตัวเลข 3 คอลัมน์ */
+function AllocBar({allocated,budget,over}){
+  const pct=budget>0?Math.min(100,Math.round(allocated/budget*100)):(allocated>0?100:0);
+  const remain=budget-allocated;
+  return (
+    <div>
+      <div style={{height:6,borderRadius:99,background:'#eef1f5',overflow:'hidden',marginBottom:5}}>
+        <div style={{height:'100%',width:pct+'%',background:over?'#e0473f':(remain===0?'#9aa3af':'#22b573'),borderRadius:99,transition:'width .15s ease'}}></div>
+      </div>
+      <div style={{fontSize:11,fontWeight:700,color:over?'#e0473f':'#7a8394',display:'flex',justifyContent:'space-between',gap:8}}>
+        <span>จัดสรรลูก {fmtB(allocated)}</span>
+        <span style={{color:over?'#e0473f':(remain>0?'#0e7c6d':'#9aa3af')}}>{over?'เกิน '+fmtB(-remain):'เหลือ '+fmtB(remain)}</span>
+      </div>
+    </div>
+  );
+}
+
+function BudgetPreview({budget}){
+  const val=(id)=>budget[id]||{capex:0,opex:0};
+  const tot=(id)=>{const v=val(id);return v.capex+v.opex;};
+  const allocT=(levelKey,id)=>{const kids=nodeKids(levelKey,id);let capex=0,opex=0;kids.forEach(k=>{const v=val(k.item.id);capex+=v.capex;opex+=v.opex;});return {capex,opex,count:kids.length};};
+  const [path,setPath]=useState([]);
+  const TM=['#3b6fd4','#15a08f','#7338d6','#e0468c','#e5920b'];
+  const missions=DATA.mission;
+
+  const Cell=({color,title,sub,v})=>(
+    <div style={{height:'100%',background:color+'1f',border:'1px solid '+color+'40',borderRadius:8,padding:'7px 9px',overflow:'hidden',display:'flex',flexDirection:'column',justifyContent:'space-between',minHeight:0}}>
+      <div style={{minWidth:0}}>
+        <div style={{fontSize:10.5,fontWeight:800,color:color,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{title}</div>
+        {sub&&<div style={{fontSize:9.5,color:'#7a8394',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{sub}</div>}
+      </div>
+      <div>
+        <div style={{fontSize:12,fontWeight:800,color:'#1a2332'}}>{fmtB(v.capex+v.opex)}</div>
+        <div style={{display:'flex',height:5,borderRadius:99,overflow:'hidden',background:'#fff',marginTop:3}}>
+          <div style={{flexGrow:v.capex||0,background:CAPEX_C.main}}></div>
+          <div style={{flexGrow:v.opex||0,background:OPEX_C.main}}></div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const parent=path.length?path[path.length-1]:null;
+  const levelKey=parent?tierKey(LV(parent.levelKey).tier+1):'mission';
+  const items=parent?childrenOf(levelKey,parent.item.id):missions;
+  const maxTot=Math.max(1,...items.map(it=>tot(it.id)));
+
+  const legend=(
+    <div style={{display:'flex',gap:16,flexWrap:'wrap'}}>
+      <span style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:11.5,color:'#5a6473',fontWeight:600}}><span style={{width:11,height:11,borderRadius:3,background:CAPEX_C.main}}></span>งบลงทุน (CAPEX)</span>
+      <span style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:11.5,color:'#5a6473',fontWeight:600}}><span style={{width:11,height:11,borderRadius:3,background:OPEX_C.main}}></span>งบดำเนินการ (OPEX)</span>
+    </div>
+  );
+
+  return (
+    <React.Fragment>
+      {/* treemap */}
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,padding:'18px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)',marginBottom:16}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:14,flexWrap:'wrap'}}>
+          <span style={{fontSize:14,fontWeight:700,color:'#1a2332'}}>สัดส่วนงบตามพันธกิจ</span>
+          <span style={{fontSize:11.5,color:'#9aa3af'}}>ความยาวแถบแปรผันตามจำนวนงบรวม (CAPEX+OPEX)</span>
+          <div style={{flex:1}}></div>{legend}
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:11}}>
+          {(()=>{const maxM=Math.max(1,...missions.map(m=>tot(m.id)));return missions.map((m,i)=>{
+            const color=TM[i%TM.length], mt=tot(m.id), v=val(m.id), w=Math.max(2,Math.round(mt/maxM*100));
+            return (
+              <div key={m.id} style={{display:'flex',alignItems:'center',gap:14}}>
+                <div style={{width:190,flex:'none',minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:800,color:'#1a2332',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.title}</div>
+                  <div style={{fontSize:11,color:'#9aa3af',fontWeight:600}}>{LV('mission').prefix} {m.no}</div>
+                </div>
+                <div style={{flex:1,minWidth:0,height:24,borderRadius:7,background:'#f1f3f6',overflow:'hidden'}}>
+                  <div style={{width:w+'%',height:'100%',display:'flex',overflow:'hidden',borderRadius:7,minWidth:3}}>
+                    <div style={{flexGrow:v.capex||0,background:CAPEX_C.main}}></div>
+                    <div style={{flexGrow:v.opex||0,background:OPEX_C.main}}></div>
+                  </div>
+                </div>
+                <b style={{fontSize:13.5,fontWeight:800,color:'#1a2332',width:96,textAlign:'right',flex:'none'}}>{fmtB(mt)}</b>
+              </div>
+            );
+          });})()}
+        </div>
+      </div>
+
+      {/* drill-down breakdown */}
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,padding:'18px 20px',boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:12,flexWrap:'wrap'}}>
+          <span style={{fontSize:14,fontWeight:700,color:'#1a2332'}}>เจาะดูงบทีละชั้น</span>
+          <span style={{fontSize:11.5,color:'#9aa3af'}}>คลิกรายการเพื่อดูชั้นถัดไป</span>
+          <div style={{flex:1}}></div>{legend}
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap',marginBottom:14}}>
+          <button onClick={()=>setPath([])} style={{border:'none',background:'none',cursor:'pointer',fontSize:12.5,fontWeight:path.length?600:700,color:path.length?'#8a93a3':primary,padding:0}}>ภาพรวม</button>
+          {path.map((p,i)=>(
+            <React.Fragment key={i}>
+              <i className="bi bi-chevron-right" style={{fontSize:9,color:'#c4ccd4'}}></i>
+              <button onClick={()=>setPath(path.slice(0,i+1))} style={{border:'none',background:'none',cursor:'pointer',fontSize:12.5,fontWeight:i===path.length-1?700:600,color:i===path.length-1?primary:'#8a93a3',padding:0}}>{LV(p.levelKey).prefix} {p.item.no}</button>
+            </React.Fragment>
+          ))}
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          {items.map(it=>{
+            const v=val(it.id), t=v.capex+v.opex, a=allocT(levelKey,it.id), hasKids=a.count>0, over=hasKids&&(a.capex>v.capex||a.opex>v.opex), Lc=LV(levelKey);
+            const barW=Math.max(3,Math.round(t/maxTot*100));
+            return (
+              <div key={it.id} onClick={()=>{if(hasKids)setPath([...path,{levelKey,item:it}]);}} className={hasKids?'bp-card':''} style={{border:'1px solid '+(over?'#f2c9c9':'#eceef2'),borderRadius:12,padding:'12px 15px',background:over?'#fef7f7':'#fff',cursor:hasKids?'pointer':'default'}}>
+                <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:9}}>
+                  <span style={{display:'inline-flex',alignItems:'center',gap:5,background:Lc.accent+'14',color:Lc.accent,borderRadius:7,padding:'3px 9px',fontSize:11,fontWeight:800,whiteSpace:'nowrap',flex:'none'}}><i className={'bi '+Lc.icon} style={{fontSize:11}}></i>{Lc.prefix} {it.no}</span>
+                  <span style={{flex:1,fontSize:13.5,fontWeight:700,color:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',minWidth:0}}>{it.title}</span>
+                  <b style={{fontSize:14,fontWeight:800,color:'#1a2332',flex:'none'}}>{fmtB(t)}</b>
+                  {hasKids&&<i className="bi bi-chevron-right" style={{fontSize:13,color:'#b3bac4',flex:'none'}}></i>}
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
+                  <div style={{width:barW+'%',minWidth:40,height:9,borderRadius:99,background:'#f1f3f6',overflow:'hidden',display:'flex',flex:'none'}}>
+                    <div style={{flexGrow:v.capex||0,background:CAPEX_C.main}}></div>
+                    <div style={{flexGrow:v.opex||0,background:OPEX_C.main}}></div>
+                  </div>
+                  <span style={{fontSize:11.5,color:'#7a8394',whiteSpace:'nowrap'}}>ลงทุน <b style={{color:CAPEX_C.main}}>{fmtB(v.capex)}</b> · ดำเนินการ <b style={{color:OPEX_C.main}}>{fmtB(v.opex)}</b></span>
+                  <div style={{flex:1}}></div>
+                  {hasKids&&<span style={{fontSize:11,color:over?'#e0473f':'#9aa3af',fontWeight:600,whiteSpace:'nowrap'}}>{over?'จัดสรรลูกเกินงบ':'จัดสรรลูก '+fmtB(a.capex+a.opex)}</span>}
+                </div>
+              </div>
+            );
+          })}
+          {items.length===0&&<div style={{fontSize:12.5,color:'#b3bac4',padding:'10px 2px'}}>ไม่มีรายการย่อยในชั้นนี้</div>}
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+function BudgetView(){
+  const [budget,setBudget]=useState(BUDGET_SEED);
+  const [tab,setTab]=useState('both'); // both | capex | opex
+  const [mode,setMode]=useState('edit'); // edit | preview
+  const [expanded,setExpanded]=useState({m1:true,g2:true,g3:true});
+  const [saved,setSaved]=useState(false);
+  const [round,setRound]=useState(ROUND_DATA[0].id);
+  const [roundOpen,setRoundOpen]=useState(false);
+  const curRound=ROUND_DATA.find(r=>r.id===round)||ROUND_DATA[0];
+
+  const val=(id)=>budget[id]||{capex:0,opex:0};
+  const setVal=(id,key,num)=>{setBudget(b=>({...b,[id]:{...(b[id]||{capex:0,opex:0}),[key]:num}}));setSaved(false);};
+  const alloc=(levelKey,id)=>{const kids=nodeKids(levelKey,id);let capex=0,opex=0;kids.forEach(k=>{const v=val(k.item.id);capex+=v.capex;opex+=v.opex;});return {capex,opex,count:kids.length};};
+
+  const roots=DATA.mission.map(m=>({levelKey:'mission',item:m}));
+  const toggle=(id)=>setExpanded(e=>({...e,[id]:!e[id]}));
+
+  // flatten visible rows
+  const flat=[];
+  (function walk(nodes,depth){nodes.forEach(n=>{flat.push({...n,depth});const kids=nodeKids(n.levelKey,n.item.id);if(kids.length&&expanded[n.item.id])walk(kids,depth+1);});})(roots,0);
+
+  // parent id list + validation over all nodes
+  const parentIds=[]; const errors=[];
+  (function allWalk(nodes){nodes.forEach(n=>{const kids=nodeKids(n.levelKey,n.item.id);const a=alloc(n.levelKey,n.item.id);const v=val(n.item.id);if(kids.length){parentIds.push(n.item.id);if(a.capex>v.capex)errors.push({node:n,type:'งบลงทุน',over:a.capex-v.capex});if(a.opex>v.opex)errors.push({node:n,type:'งบดำเนินการ',over:a.opex-v.opex});allWalk(kids);}});})(roots);
+  const overSet={}; errors.forEach(e=>{overSet[e.node.item.id]=true;});
+  const allOpen=parentIds.length>0&&parentIds.every(id=>expanded[id]);
+
+  // aggregates
+  let totCapex=0,totOpex=0,alcCapex=0,alcOpex=0;
+  roots.forEach(r=>{const v=val(r.item.id);totCapex+=v.capex;totOpex+=v.opex;const a=alloc('mission',r.item.id);alcCapex+=a.capex;alcOpex+=a.opex;});
+
+  const showCap=tab!=='opex', showOp=tab!=='capex';
+  let cols=['minmax(240px,1fr)']; if(showCap)cols.push('minmax(230px,270px)'); if(showOp)cols.push('minmax(230px,270px)');
+  const tpl=cols.join(' '); const minW=(showCap&&showOp)?720:520;
+
+  // one compact cell per budget type: editable amount + allocation bar
+  const typeCell=(n,key,c)=>{
+    const v=val(n.item.id), a=alloc(n.levelKey,n.item.id);
+    const own=v[key], hasKids=a.count>0, over=hasKids&&a[key]>own;
+    return (
+      <div style={{padding:'10px 16px',display:'flex',flexDirection:'column',gap:8,borderLeft:'1px solid #f2f4f7'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <BudgetInput value={own} over={over} onChange={num=>setVal(n.item.id,key,num)}/>
+          <span style={{fontSize:11,color:'#9aa3af',flex:'none'}}>บาท</span>
+        </div>
+        {hasKids
+          ? <AllocBar allocated={a[key]} budget={own} over={over}/>
+          : <div style={{fontSize:10.5,color:'#c4ccd4',fontWeight:600,paddingLeft:1}}>รายการปลายทาง · ใช้งบเต็มจำนวน</div>}
+      </div>
+    );
+  };
+  const grpHead=(c)=>({display:'flex',flexDirection:'column',gap:1,padding:'11px 16px',background:c.soft,borderLeft:'2px solid #fff'});
+
+  return (
+    <div style={{maxWidth:1180,margin:'0 auto'}}>
+      {/* header */}
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16,flexWrap:'wrap'}}>
+        <div style={{width:40,height:40,borderRadius:11,background:primarySoft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+          <i className="bi bi-cash-stack" style={{fontSize:19,color:primary}}></i>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:700,fontSize:18,color:'#1a2332'}}>การตั้งแผนงบประมาณ</div>
+          <div style={{fontSize:12.5,color:'#8a93a3',marginTop:1}}>ตั้งงบที่รายการแม่ แล้วกระจายลงรายการลูกตามลำดับชั้นแผนธุรกิจ</div>
+        </div>
+        {/* round selector (shared style) */}
+        <div style={{position:'relative'}}>
+          <button onClick={()=>setRoundOpen(o=>!o)} style={{display:'flex',alignItems:'center',gap:8,border:'1px solid #e3e7ec',borderRadius:11,padding:'0 16px',height:40,background:'#fff',cursor:'pointer'}}>
+            <i className="bi bi-calendar2-range" style={{fontSize:14,color:primary}}></i>
+            <span style={{fontSize:13,fontWeight:600,color:'#1f2733'}}>{curRound.label}</span>
+            <i className="bi bi-chevron-down" style={{fontSize:11,color:'#9aa3af'}}></i>
+          </button>
+          {roundOpen&&(
+            <div style={{position:'absolute',right:0,top:46,background:'#fff',border:'1px solid #e3e7ec',borderRadius:11,boxShadow:'0 8px 24px rgba(16,24,40,.12)',zIndex:20,minWidth:280,overflow:'hidden'}}>
+              {ROUND_DATA.map(r=>(
+                <div key={r.id} onClick={()=>{setRound(r.id);setRoundOpen(false);}} style={{padding:'11px 18px',fontSize:13,cursor:'pointer',fontWeight:r.id===round?700:400,color:r.id===round?primary:'#1f2733',background:r.id===round?primarySoft:'#fff'}}>{r.label}</div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* action bar */}
+      <div style={{display:'flex',justifyContent:'flex-end',gap:10,marginBottom:16}}>
+        <button onClick={()=>setMode(mode==='preview'?'edit':'preview')} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:mode==='preview'?primarySoft:'#fff',color:mode==='preview'?primary:'#5a6473',border:'1px solid '+(mode==='preview'?primary:'#e3e7ec'),borderRadius:11,height:40,padding:'0 15px',fontSize:13,fontWeight:600,cursor:'pointer'}}>
+          <i className={'bi '+(mode==='preview'?'bi-pencil-square':'bi-eye')} style={{fontSize:15}}></i>{mode==='preview'?'กลับไปจัดสรรงบ':'พรีวิวภาพรวม'}
+        </button>
+        {mode==='edit'&&<React.Fragment>
+        <button onClick={()=>setExpanded(allOpen?{}:parentIds.reduce((a,id)=>(a[id]=true,a),{}))} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:'#fff',color:'#5a6473',border:'1px solid #e3e7ec',borderRadius:11,height:40,padding:'0 15px',fontSize:13,fontWeight:600,cursor:'pointer'}}>
+          <i className={'bi '+(allOpen?'bi-chevron-contract':'bi-chevron-expand')} style={{fontSize:15}}></i>{allOpen?'ย่อทั้งหมด':'ขยายทั้งหมด'}
+        </button>
+        <button onClick={()=>!errors.length&&setSaved(true)} disabled={errors.length>0} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,background:errors.length?'#c7ccd4':primary,color:'#fff',border:'none',borderRadius:11,height:40,padding:'0 20px',fontSize:14,fontWeight:700,cursor:errors.length?'default':'pointer',boxShadow:errors.length?'none':'0 2px 8px rgba(21,160,143,.28)'}}>
+          <i className="bi bi-check-lg" style={{fontSize:16}}></i>บันทึก
+        </button>
+        </React.Fragment>}
+      </div>
+
+      {mode==='preview'?<BudgetPreview budget={budget}/>:<React.Fragment>
+      {/* summary strip */}
+      <div style={{display:'flex',gap:12,flexWrap:'wrap',marginBottom:16}}>
+        {showCap&&<SummaryTile c={CAPEX_C} label="งบลงทุน (CAPEX)" total={totCapex} alloc={alcCapex}/>}
+        {showOp&&<SummaryTile c={OPEX_C} label="งบดำเนินการ (OPEX)" total={totOpex} alloc={alcOpex}/>}
+        <div style={{flex:'1 1 220px',minWidth:210,background:'#fff',border:'1px solid '+(errors.length?'#f7c6c6':'#bfe9d6'),borderRadius:12,padding:'13px 16px',display:'flex',alignItems:'center',gap:12,boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
+          <div style={{width:38,height:38,borderRadius:10,background:errors.length?'#fdecec':'#e7f7ee',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
+            <i className={'bi '+(errors.length?'bi-exclamation-triangle-fill':'bi-shield-fill-check')} style={{fontSize:18,color:errors.length?'#e0473f':'#12805e'}}></i>
+          </div>
+          <div style={{minWidth:0}}>
+            <div style={{fontSize:13,fontWeight:800,color:errors.length?'#c0392b':'#12805e'}}>{errors.length?'เกินงบ '+errors.length+' จุด':'จัดสรรถูกต้อง'}</div>
+            <div style={{fontSize:11,color:'#8a93a3',marginTop:1}}>{errors.length?'แก้ก่อนบันทึก':(saved?'บันทึกแล้ว':'พร้อมบันทึก')}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* tabs (underline) — เลือกดูทีละประเภท */}
+      <div style={{display:'flex',gap:26,borderBottom:'1px solid #e7eaef',marginBottom:16}}>
+        {[['both','ทั้งหมด'],['capex','งบลงทุน (CAPEX)'],['opex','งบดำเนินการ (OPEX)']].map(([k,label])=>{
+          const on=tab===k;
+          return <button key={k} onClick={()=>setTab(k)} style={{padding:'0 2px 11px',marginBottom:-1,border:'none',background:'none',cursor:'pointer',fontSize:14,fontWeight:on?700:500,color:on?primary:'#5a6473',borderBottom:'2px solid '+(on?primary:'transparent')}}>{label}</button>;
+        })}
+      </div>
+
+      {/* error banner */}
+      {errors.length>0&&(
+        <div style={{background:'#fdf2f2',border:'1px solid #f5c9c9',borderRadius:12,padding:'13px 16px',marginBottom:16,animation:'fadeIn .18s ease'}}>
+          <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:8}}>
+            <i className="bi bi-exclamation-octagon-fill" style={{fontSize:16,color:'#e0473f'}}></i>
+            <span style={{fontSize:13,fontWeight:800,color:'#c0392b'}}>บันทึกไม่ได้ — ยอดงบของรายการลูกเกินงบที่ตั้งไว้ในรายการแม่</span>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:5,paddingLeft:25}}>
+            {errors.map((e,i)=>(
+              <div key={i} style={{fontSize:12.5,color:'#a5453b'}}>
+                <b style={{color:'#8a2f27'}}>{LV(e.node.levelKey).prefix} {e.node.item.no}</b> {e.node.item.title} — {e.type}เกิน <b>{fmtB(e.over)}</b> บาท
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* tree grid */}
+      <div style={{background:'#fff',border:'1px solid #eceef2',borderRadius:16,boxShadow:'0 1px 3px rgba(16,24,40,.04)',overflow:'hidden'}}>
+        <div style={{overflowX:'auto'}}>
+          <div style={{minWidth:minW}}>
+            {/* header */}
+            <div style={{display:'grid',gridTemplateColumns:tpl,borderBottom:'1.5px solid #e7eaef',alignItems:'stretch'}}>
+              <div style={{padding:'11px 16px',fontSize:11.5,fontWeight:700,color:'#5a6473',display:'flex',alignItems:'center',background:'#fafbfc'}}>รายการตามลำดับชั้นแผนธุรกิจ</div>
+              {showCap&&<div style={grpHead(CAPEX_C)}><div style={{display:'flex',alignItems:'center',gap:6,fontSize:12.5,fontWeight:800,color:CAPEX_C.main}}><i className={'bi '+CAPEX_C.icon} style={{fontSize:13}}></i>งบลงทุน (CAPEX)</div><div style={{fontSize:10.5,color:CAPEX_C.main,opacity:.75}}>งบที่ตั้งไว้ · การจัดสรรลงลูก</div></div>}
+              {showOp&&<div style={grpHead(OPEX_C)}><div style={{display:'flex',alignItems:'center',gap:6,fontSize:12.5,fontWeight:800,color:OPEX_C.main}}><i className={'bi '+OPEX_C.icon} style={{fontSize:13}}></i>งบดำเนินการ (OPEX)</div><div style={{fontSize:10.5,color:OPEX_C.main,opacity:.75}}>งบที่ตั้งไว้ · การจัดสรรลงลูก</div></div>}
+            </div>
+            {/* rows */}
+            {flat.map(n=>{
+              const kids=nodeKids(n.levelKey,n.item.id), hasKids=kids.length>0, over=overSet[n.item.id], Lc=LV(n.levelKey), open=expanded[n.item.id];
+              return (
+                <div key={n.levelKey+n.item.id} style={{display:'grid',gridTemplateColumns:tpl,alignItems:'stretch',borderBottom:'1px solid #f2f4f7',borderLeft:'3px solid '+(over?'#e0473f':'transparent'),background:over?'#fef7f7':(n.depth===0?'#fafbfc':'#fff')}}>
+                  <div style={{display:'flex',alignItems:'center',gap:9,padding:'10px 12px 10px '+(12+n.depth*22)+'px',minWidth:0}}>
+                    {hasKids?(
+                      <button onClick={()=>toggle(n.item.id)} style={{width:20,height:20,borderRadius:6,border:'none',background:'#eef1f5',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flex:'none'}}>
+                        <i className={'bi '+(open?'bi-caret-down-fill':'bi-caret-right-fill')} style={{fontSize:9,color:'#7a8394'}}></i>
+                      </button>
+                    ):<span style={{width:20,flex:'none'}}></span>}
+                    <span style={{display:'inline-flex',alignItems:'center',gap:5,background:Lc.accent+'14',color:Lc.accent,borderRadius:7,padding:'3px 8px',fontSize:11,fontWeight:800,whiteSpace:'nowrap',flex:'none'}}><i className={'bi '+Lc.icon} style={{fontSize:11}}></i>{Lc.prefix} {n.item.no}</span>
+                    <span style={{fontSize:13,fontWeight:n.depth===0?700:600,color:'#1a2332',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{n.item.title}</span>
+                  </div>
+                  {showCap&&typeCell(n,'capex',CAPEX_C)}
+                  {showOp&&typeCell(n,'opex',OPEX_C)}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:11.5,color:'#9aa3af',marginTop:14,maxWidth:820}}>
+        <i className="bi bi-info-circle" style={{fontSize:14,color:'#b3bac4',flex:'none',marginTop:1}}></i>
+        <span>ช่องกรอกคือ <b style={{color:'#7a828f'}}>งบที่ตั้งไว้</b> ของแต่ละรายการ · แถบด้านล่างแสดงยอดที่จัดสรรลงรายการลูก — <b style={{color:'#22883f'}}>เขียว = อยู่ในงบ</b>, <b style={{color:'#c0392b'}}>แดง = เกินงบ</b> (บันทึกไม่ได้จนกว่าจะแก้)</span>
+      </div>
+      </React.Fragment>}
+    </div>
+  );
+}
+
 /* ═══════════ MAIN CONTENT ═══════════ */
-function Content({level,rounds,dailyTasks,setDailyTasks}){
+function Content({level,rounds,budget,dailyTasks,setDailyTasks}){
   const L=LV(level);
   const [view,setView]=useState('list'); // list | form
   const [viewMode,setViewMode]=useState('list'); // list | grid
@@ -1280,7 +1649,13 @@ function Content({level,rounds,dailyTasks,setDailyTasks}){
   const [chain,setChain]=useState(()=>firstChainForLevel(level));
   const [editItem,setEditItem]=useState(null);
 
-  React.useEffect(()=>{setView('list');setEditItem(null);setChain(firstChainForLevel(level));},[level,rounds]);
+  React.useEffect(()=>{setView('list');setEditItem(null);setChain(firstChainForLevel(level));},[level,rounds,budget]);
+
+  if(budget) return (
+    <div style={{flex:1,padding:'22px 26px',overflowY:'auto',height:'calc(100vh - 58px)',minWidth:0}}>
+      <BudgetView/>
+    </div>
+  );
 
   if(rounds) return (
     <div style={{flex:1,padding:'22px 26px',overflowY:'auto',height:'calc(100vh - 58px)',minWidth:0}}>
@@ -1357,11 +1732,12 @@ function Content({level,rounds,dailyTasks,setDailyTasks}){
 function App(){
   const [level,setLevel]=useState('mission');
   const [rounds,setRounds]=useState(false);
+  const [budget,setBudget]=useState(false);
   const [dailyTasks,setDailyTasks]=useState(DAILY_TASKS_SEED);
   return (
-    <GD5AppShell active="business" onGoAdmin={()=>{setRounds(false);setLevel('mission');}}>
-      <LevelPanel level={level} setLevel={setLevel} rounds={rounds} setRounds={setRounds}/>
-      <Content level={level} rounds={rounds} dailyTasks={dailyTasks} setDailyTasks={setDailyTasks}/>
+    <GD5AppShell active="business" onGoAdmin={()=>{setRounds(false);setBudget(false);setLevel('mission');}}>
+      <LevelPanel level={level} setLevel={setLevel} rounds={rounds} setRounds={setRounds} budget={budget} setBudget={setBudget}/>
+      <Content level={level} rounds={rounds} budget={budget} dailyTasks={dailyTasks} setDailyTasks={setDailyTasks}/>
     </GD5AppShell>
   );
 }
