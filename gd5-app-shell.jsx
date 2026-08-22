@@ -94,15 +94,11 @@ function GD5AppShell({active,bg,children,onGoAdmin,onGoPA}){
         <a href="dashboard.html" style={{display:'flex',alignItems:'center'}}>
           <img src="image/logo.png" style={{height:36,objectFit:'contain'}} alt="GiveD5"/>
         </a>
-        <div style={{display:'flex',alignItems:'center',gap:8,background:'#f1f3f7',border:'1px solid #e7eaef',borderRadius:8,padding:'8px 12px',width:280}}>
-          <i className="bi bi-search" style={{fontSize:15,color:'#9aa3af'}}></i>
-          <span style={{color:'#9aa3af',fontSize:13}}>ค้นหา GiveD5</span>
-        </div>
-        <div style={{display:'flex',alignItems:'center',gap:9,padding:'7px 16px 7px 11px',background:'rgba(225,235,242,0.62)',border:'1.5px solid rgba(180,205,220,0.55)',borderRadius:9,userSelect:'none',flex:'none'}}>
-          <span style={{width:8,height:8,borderRadius:4,background:GD5_PRIMARY,flex:'none',animation:'gd5dot 2.4s ease-in-out infinite',boxShadow:'0 0 0 3px rgba(21,160,143,0.2)'}}></span>
-          <span style={{fontSize:12,fontWeight:700,color:'rgba(18,30,44,0.65)',letterSpacing:'.8px',textTransform:'uppercase'}}>Prototype</span>
-          <span style={{width:1,height:13,background:'rgba(18,30,44,0.15)',flex:'none'}}></span>
-          <span style={{fontSize:11.5,fontWeight:500,color:'rgba(18,30,44,0.45)',letterSpacing:'.2px'}}>GiveD5</span>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:9,padding:'8px 12px',background:'#fdecec',border:'1.5px solid #f6cbca',borderRadius:8,userSelect:'none',flex:'none',width:280,boxSizing:'border-box'}}>
+          <span style={{width:8,height:8,borderRadius:4,background:'#e53935',flex:'none',animation:'gd5dot 2.4s ease-in-out infinite',boxShadow:'0 0 0 3px rgba(229,57,53,0.18)'}}></span>
+          <span style={{fontSize:12,fontWeight:700,color:'#d0342c',letterSpacing:'.8px',textTransform:'uppercase'}}>Prototype</span>
+          <span style={{width:1,height:13,background:'rgba(208,52,44,0.28)',flex:'none'}}></span>
+          <span style={{fontSize:11.5,fontWeight:500,color:'rgba(208,52,44,0.7)',letterSpacing:'.2px'}}>GiveD5</span>
         </div>
         <div style={{flex:1}}></div>
         <div style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:36,height:36}}>

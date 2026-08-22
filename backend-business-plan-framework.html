@@ -1283,7 +1283,7 @@ const OPEX_C ={main:'#0e9488',soft:'#e2f3f0',bd:'#bfe6df',icon:'bi-gear-wide-con
 
 /* งบตั้งต้นต่อ node (แม่ตั้งงบ → กระจายให้ลูก) — g3 ตั้งใจให้ลูกเกินงบเพื่อสาธิต validation */
 const BUDGET_SEED={
-  m1:{capex:1500000,opex:800000},
+  m1:{capex:1500000,opex:800000,ownCapex:400000},
     g2:{capex:600000,opex:300000},
       s1:{capex:300000,opex:150000}, p1:{capex:150000,opex:60000},
       s2:{capex:200000,opex:100000}, p2:{capex:100000,opex:40000},
@@ -1301,9 +1301,47 @@ function nodeKids(levelKey,id){
 }
 const fmtB=(n)=>(n||0).toLocaleString('en-US');
 
-function BudgetInput({value,onChange,over}){
+function BudgetInput({value,onChange,over,small}){
   return <input value={value?value.toLocaleString('en-US'):''} onChange={e=>onChange(Number(e.target.value.replace(/[^0-9]/g,''))||0)} placeholder="0"
-    style={{width:'100%',border:'1.5px solid '+(over?'#e0473f':'#e1e5ec'),borderRadius:9,padding:'8px 11px',fontSize:12.5,fontWeight:700,textAlign:'right',outline:'none',color:'#1f2733',background:over?'#fdecec':'#fff',fontFamily:'inherit'}}/>;
+    style={{width:small?96:'100%',border:'1.5px solid '+(over?'#e0473f':'#e1e5ec'),borderRadius:small?8:9,padding:small?'4px 8px':'8px 11px',fontSize:small?11.5:12.5,fontWeight:700,textAlign:'right',outline:'none',color:'#1f2733',background:over?'#fdecec':'#fff',fontFamily:'inherit',flex:'none'}}/>;
+}
+
+/* บรรทัดย่อยในเซลล์งบ: ป้าย + ตัวเลข (หรือ input เมื่อกำหนดเอง) */
+function MiniRow({label,children,note,color,strong}){
+  return (
+    <div style={{display:'flex',alignItems:'center',gap:8,minHeight:22}}>
+      <span style={{fontSize:10.5,fontWeight:600,color:'#8a93a3',whiteSpace:'nowrap'}}>{label}</span>
+      {note}
+      <div style={{flex:1}}></div>
+      {typeof children==='string'
+        ? <b style={{fontSize:12,fontWeight:strong?800:700,color:color||'#3a4452',whiteSpace:'nowrap'}}>{children}</b>
+        : children}
+    </div>
+  );
+}
+
+/* ป้ายเล็ก auto / กำหนดเอง — กดสลับโหมดงบที่ใช้เอง */
+function OwnModeToggle({manual,onClick}){
+  return (
+    <button onClick={onClick} title={manual?'กลับไปให้ระบบคำนวณให้ (งบที่ได้ − จัดสรรลูก)':'กำหนดงบที่ใช้เองด้วยตัวเลข'}
+      style={{display:'inline-flex',alignItems:'center',gap:4,border:'1px solid '+(manual?'#d7c9ef':'#e3e7ec'),background:manual?'#f3eefc':'#f7f8fa',color:manual?'#6b3fc0':'#8a93a3',borderRadius:8,padding:'1px 6px',fontSize:9.5,fontWeight:700,cursor:'pointer',fontFamily:'inherit',flex:'none'}}>
+      <i className={'bi '+(manual?'bi-pencil-fill':'bi-magic')} style={{fontSize:9}}></i>{manual?'กำหนดเอง':'ระบบคำนวณ'}
+    </button>
+  );
+}
+
+/* แถบ 3 ส่วน: จัดสรรลูก | ใช้เอง | ยังไม่จัดสรร */
+function SplitBar({rec,alloc,own,c,over}){
+  const left=Math.max(0,rec-alloc-own);
+  const base=Math.max(1,over?alloc+own:rec);
+  const seg=(v,bg)=>v>0?<div style={{width:(v/base*100)+'%',background:bg}}></div>:null;
+  return (
+    <div style={{display:'flex',height:6,borderRadius:99,background:'#eef1f5',overflow:'hidden'}}>
+      {seg(alloc,over?'#e0473f':c.main)}
+      {seg(own,over?'#f08a83':c.main+'66')}
+      {seg(left,'#dfe3e9')}
+    </div>
+  );
 }
 function StatChip({label,value,color}){
   return (
@@ -1313,16 +1351,17 @@ function StatChip({label,value,color}){
     </span>
   );
 }
-function SummaryTile({c,label,total,alloc}){
-  const remain=total-alloc, over=alloc>total;
+function SummaryTile({c,label,total,alloc,own}){
+  const remain=total-alloc-(own||0), over=remain<0;
   return (
     <div style={{flex:'1 1 340px',minWidth:300,background:'#fff',border:'1px solid '+c.bd,borderRadius:12,padding:'13px 16px',display:'flex',alignItems:'center',gap:14,boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
       <div style={{width:38,height:38,borderRadius:10,background:c.soft,display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}><i className={'bi '+c.icon} style={{fontSize:17,color:c.main}}></i></div>
       <div style={{flex:1,minWidth:0}}>
         <div style={{fontSize:12,fontWeight:700,color:c.main,marginBottom:5}}>{label}</div>
         <div style={{display:'flex',gap:16,alignItems:'baseline',flexWrap:'wrap'}}>
-          <StatChip label="งบรวม" value={fmtB(total)}/>
-          <StatChip label="จัดสรรแล้ว" value={fmtB(alloc)}/>
+          <StatChip label="งบที่ได้" value={fmtB(total)}/>
+          <StatChip label="จัดสรรลูก" value={fmtB(alloc)}/>
+          <StatChip label="ใช้เอง" value={fmtB(own||0)}/>
           <StatChip label="คงเหลือ" value={fmtB(remain)} color={over?'#e0473f':'#0e7c6d'}/>
         </div>
       </div>
@@ -1474,6 +1513,16 @@ function BudgetView(){
   const val=(id)=>budget[id]||{capex:0,opex:0};
   const setVal=(id,key,num)=>{setBudget(b=>({...b,[id]:{...(b[id]||{capex:0,opex:0}),[key]:num}}));setSaved(false);};
   const alloc=(levelKey,id)=>{const kids=nodeKids(levelKey,id);let capex=0,opex=0;kids.forEach(k=>{const v=val(k.item.id);capex+=v.capex;opex+=v.opex;});return {capex,opex,count:kids.length};};
+  const OWNK={capex:'ownCapex',opex:'ownOpex'};
+  /* งบที่ใช้เอง: default = งบที่ได้ − จัดสรรลูก (ระบบคิด) / กำหนดเองได้ → มีคงเหลือเพิ่ม */
+  const cell=(levelKey,id,key)=>{
+    const b=budget[id]||{}, a=alloc(levelKey,id), rec=b[key]||0, mk=OWNK[key];
+    const manual=b[mk]!=null && b[mk]!==undefined;
+    const auto=Math.max(0,rec-a[key]);
+    const own=manual?b[mk]:auto;
+    return {rec,alloc:a[key],count:a.count,manual,own,left:rec-a[key]-own,mk};
+  };
+  const setOwn=(id,mk,num)=>{setBudget(b=>({...b,[id]:{...(b[id]||{capex:0,opex:0}),[mk]:num}}));setSaved(false);};
 
   const roots=DATA.mission.map(m=>({levelKey:'mission',item:m}));
   const toggle=(id)=>setExpanded(e=>({...e,[id]:!e[id]}));
@@ -1484,31 +1533,44 @@ function BudgetView(){
 
   // parent id list + validation over all nodes
   const parentIds=[]; const errors=[];
-  (function allWalk(nodes){nodes.forEach(n=>{const kids=nodeKids(n.levelKey,n.item.id);const a=alloc(n.levelKey,n.item.id);const v=val(n.item.id);if(kids.length){parentIds.push(n.item.id);if(a.capex>v.capex)errors.push({node:n,type:'งบลงทุน',over:a.capex-v.capex});if(a.opex>v.opex)errors.push({node:n,type:'งบดำเนินการ',over:a.opex-v.opex});allWalk(kids);}});})(roots);
+  (function allWalk(nodes){nodes.forEach(n=>{const kids=nodeKids(n.levelKey,n.item.id);if(kids.length){parentIds.push(n.item.id);['capex','opex'].forEach(k=>{const d=cell(n.levelKey,n.item.id,k);if(d.left<0)errors.push({node:n,type:k==='capex'?'งบลงทุน':'งบดำเนินการ',over:-d.left});});allWalk(kids);}});})(roots);
   const overSet={}; errors.forEach(e=>{overSet[e.node.item.id]=true;});
   const allOpen=parentIds.length>0&&parentIds.every(id=>expanded[id]);
 
   // aggregates
-  let totCapex=0,totOpex=0,alcCapex=0,alcOpex=0;
-  roots.forEach(r=>{const v=val(r.item.id);totCapex+=v.capex;totOpex+=v.opex;const a=alloc('mission',r.item.id);alcCapex+=a.capex;alcOpex+=a.opex;});
+  let totCapex=0,totOpex=0,alcCapex=0,alcOpex=0,ownCapex=0,ownOpex=0;
+  roots.forEach(r=>{const v=val(r.item.id);totCapex+=v.capex;totOpex+=v.opex;const a=alloc('mission',r.item.id);alcCapex+=a.capex;alcOpex+=a.opex;
+    ownCapex+=cell('mission',r.item.id,'capex').own;ownOpex+=cell('mission',r.item.id,'opex').own;});
 
   const showCap=tab!=='opex', showOp=tab!=='capex';
-  let cols=['minmax(240px,1fr)']; if(showCap)cols.push('minmax(230px,270px)'); if(showOp)cols.push('minmax(230px,270px)');
-  const tpl=cols.join(' '); const minW=(showCap&&showOp)?720:520;
+  let cols=['minmax(230px,1fr)']; if(showCap)cols.push('minmax(250px,290px)'); if(showOp)cols.push('minmax(250px,290px)');
+  const tpl=cols.join(' '); const minW=(showCap&&showOp)?800:540;
 
   // one compact cell per budget type: editable amount + allocation bar
   const typeCell=(n,key,c)=>{
-    const v=val(n.item.id), a=alloc(n.levelKey,n.item.id);
-    const own=v[key], hasKids=a.count>0, over=hasKids&&a[key]>own;
+    const id=n.item.id, d=cell(n.levelKey,id,key), hasKids=d.count>0, over=d.left<0;
     return (
-      <div style={{padding:'10px 16px',display:'flex',flexDirection:'column',gap:8,borderLeft:'1px solid #f2f4f7'}}>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          <BudgetInput value={own} over={over} onChange={num=>setVal(n.item.id,key,num)}/>
-          <span style={{fontSize:11,color:'#9aa3af',flex:'none'}}>บาท</span>
-        </div>
-        {hasKids
-          ? <AllocBar allocated={a[key]} budget={own} over={over}/>
-          : <div style={{fontSize:10.5,color:'#c4ccd4',fontWeight:600,paddingLeft:1}}>รายการปลายทาง · ใช้งบเต็มจำนวน</div>}
+      <div style={{padding:'10px 16px',display:'flex',flexDirection:'column',gap:7,borderLeft:'1px solid #f2f4f7'}}>
+        <MiniRow label="งบที่ได้">
+          <div style={{display:'flex',alignItems:'center',gap:7}}>
+            <BudgetInput small value={d.rec} over={over} onChange={num=>setVal(id,key,num)}/>
+            <span style={{fontSize:10.5,color:'#9aa3af',flex:'none'}}>บาท</span>
+          </div>
+        </MiniRow>
+        {hasKids?(
+          <React.Fragment>
+            <MiniRow label={'จัดสรรลูก ('+d.count+')'} note={<span style={{fontSize:9.5,color:'#b3bac4',fontWeight:600}}>รวมจากลูก</span>} color={c.main}>{fmtB(d.alloc)}</MiniRow>
+            <MiniRow label="งบที่ใช้เอง" note={<OwnModeToggle manual={d.manual} onClick={()=>setOwn(id,d.mk,d.manual?null:d.own)}/>}>
+              {d.manual
+                ? <BudgetInput small value={d.own} over={over} onChange={num=>setOwn(id,d.mk,num)}/>
+                : <b style={{fontSize:12,fontWeight:700,color:'#3a4452'}}>{fmtB(d.own)}</b>}
+            </MiniRow>
+            <MiniRow label="คงเหลือ" strong color={over?'#e0473f':(d.left>0?'#0e7c6d':'#9aa3af')}>{over?'เกิน '+fmtB(-d.left):fmtB(d.left)}</MiniRow>
+            <SplitBar rec={d.rec} alloc={d.alloc} own={d.own} c={c} over={over}/>
+          </React.Fragment>
+        ):(
+          <div style={{fontSize:10.5,color:'#b3bac4',fontWeight:600,paddingLeft:1}}>รายการปลายทาง · ใช้เองเต็มจำนวน {fmtB(d.rec)}</div>
+        )}
       </div>
     );
   };
@@ -1560,8 +1622,8 @@ function BudgetView(){
       {mode==='preview'?<BudgetPreview budget={budget}/>:<React.Fragment>
       {/* summary strip */}
       <div style={{display:'flex',gap:12,flexWrap:'wrap',marginBottom:16}}>
-        {showCap&&<SummaryTile c={CAPEX_C} label="งบลงทุน (CAPEX)" total={totCapex} alloc={alcCapex}/>}
-        {showOp&&<SummaryTile c={OPEX_C} label="งบดำเนินการ (OPEX)" total={totOpex} alloc={alcOpex}/>}
+        {showCap&&<SummaryTile c={CAPEX_C} label="งบลงทุน (CAPEX)" total={totCapex} alloc={alcCapex} own={ownCapex}/>}
+        {showOp&&<SummaryTile c={OPEX_C} label="งบดำเนินการ (OPEX)" total={totOpex} alloc={alcOpex} own={ownOpex}/>}
         <div style={{flex:'1 1 220px',minWidth:210,background:'#fff',border:'1px solid '+(errors.length?'#f7c6c6':'#bfe9d6'),borderRadius:12,padding:'13px 16px',display:'flex',alignItems:'center',gap:12,boxShadow:'0 1px 3px rgba(16,24,40,.04)'}}>
           <div style={{width:38,height:38,borderRadius:10,background:errors.length?'#fdecec':'#e7f7ee',display:'flex',alignItems:'center',justifyContent:'center',flex:'none'}}>
             <i className={'bi '+(errors.length?'bi-exclamation-triangle-fill':'bi-shield-fill-check')} style={{fontSize:18,color:errors.length?'#e0473f':'#12805e'}}></i>
@@ -1586,7 +1648,7 @@ function BudgetView(){
         <div style={{background:'#fdf2f2',border:'1px solid #f5c9c9',borderRadius:12,padding:'13px 16px',marginBottom:16,animation:'fadeIn .18s ease'}}>
           <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:8}}>
             <i className="bi bi-exclamation-octagon-fill" style={{fontSize:16,color:'#e0473f'}}></i>
-            <span style={{fontSize:13,fontWeight:800,color:'#c0392b'}}>บันทึกไม่ได้ — ยอดงบของรายการลูกเกินงบที่ตั้งไว้ในรายการแม่</span>
+            <span style={{fontSize:13,fontWeight:800,color:'#c0392b'}}>บันทึกไม่ได้ — จัดสรรลูก + งบที่ใช้เอง เกิน “งบที่ได้” ของรายการแม่</span>
           </div>
           <div style={{display:'flex',flexDirection:'column',gap:5,paddingLeft:25}}>
             {errors.map((e,i)=>(
@@ -1605,8 +1667,8 @@ function BudgetView(){
             {/* header */}
             <div style={{display:'grid',gridTemplateColumns:tpl,borderBottom:'1.5px solid #e7eaef',alignItems:'stretch'}}>
               <div style={{padding:'11px 16px',fontSize:11.5,fontWeight:700,color:'#5a6473',display:'flex',alignItems:'center',background:'#fafbfc'}}>รายการตามลำดับชั้นแผนธุรกิจ</div>
-              {showCap&&<div style={grpHead(CAPEX_C)}><div style={{display:'flex',alignItems:'center',gap:6,fontSize:12.5,fontWeight:800,color:CAPEX_C.main}}><i className={'bi '+CAPEX_C.icon} style={{fontSize:13}}></i>งบลงทุน (CAPEX)</div><div style={{fontSize:10.5,color:CAPEX_C.main,opacity:.75}}>งบที่ตั้งไว้ · การจัดสรรลงลูก</div></div>}
-              {showOp&&<div style={grpHead(OPEX_C)}><div style={{display:'flex',alignItems:'center',gap:6,fontSize:12.5,fontWeight:800,color:OPEX_C.main}}><i className={'bi '+OPEX_C.icon} style={{fontSize:13}}></i>งบดำเนินการ (OPEX)</div><div style={{fontSize:10.5,color:OPEX_C.main,opacity:.75}}>งบที่ตั้งไว้ · การจัดสรรลงลูก</div></div>}
+              {showCap&&<div style={grpHead(CAPEX_C)}><div style={{display:'flex',alignItems:'center',gap:6,fontSize:12.5,fontWeight:800,color:CAPEX_C.main}}><i className={'bi '+CAPEX_C.icon} style={{fontSize:13}}></i>งบลงทุน (CAPEX)</div><div style={{fontSize:10.5,color:CAPEX_C.main,opacity:.75}}>งบที่ได้ · จัดสรรลูก · ใช้เอง · คงเหลือ</div></div>}
+              {showOp&&<div style={grpHead(OPEX_C)}><div style={{display:'flex',alignItems:'center',gap:6,fontSize:12.5,fontWeight:800,color:OPEX_C.main}}><i className={'bi '+OPEX_C.icon} style={{fontSize:13}}></i>งบดำเนินการ (OPEX)</div><div style={{fontSize:10.5,color:OPEX_C.main,opacity:.75}}>งบที่ได้ · จัดสรรลูก · ใช้เอง · คงเหลือ</div></div>}
             </div>
             {/* rows */}
             {flat.map(n=>{
@@ -1633,7 +1695,7 @@ function BudgetView(){
 
       <div style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:11.5,color:'#9aa3af',marginTop:14,maxWidth:820}}>
         <i className="bi bi-info-circle" style={{fontSize:14,color:'#b3bac4',flex:'none',marginTop:1}}></i>
-        <span>ช่องกรอกคือ <b style={{color:'#7a828f'}}>งบที่ตั้งไว้</b> ของแต่ละรายการ · แถบด้านล่างแสดงยอดที่จัดสรรลงรายการลูก — <b style={{color:'#22883f'}}>เขียว = อยู่ในงบ</b>, <b style={{color:'#c0392b'}}>แดง = เกินงบ</b> (บันทึกไม่ได้จนกว่าจะแก้)</span>
+        <span><b style={{color:'#7a828f'}}>งบที่ได้</b> = งบที่รายการนี้ได้รับ (กรอกเอง) · <b style={{color:'#7a828f'}}>จัดสรรลูก</b> = ระบบรวมจากรายการลูกให้อัตโนมัติ · <b style={{color:'#7a828f'}}>งบที่ใช้เอง</b> ค่าเริ่มต้นระบบคำนวณให้ (งบที่ได้ − จัดสรรลูก) กด <b style={{color:'#6b3fc0'}}>กำหนดเอง</b> เพื่อระบุตัวเลขเองแล้วจะเห็น <b style={{color:'#7a828f'}}>คงเหลือ</b> ที่ยังไม่ถูกจัดสรร — ถ้า <b style={{color:'#c0392b'}}>คงเหลือติดลบ (เกินงบ)</b> จะบันทึกไม่ได้จนกว่าจะแก้</span>
       </div>
       </React.Fragment>}
     </div>

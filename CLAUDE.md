@@ -8,6 +8,14 @@
 - สีหลักแบรนด์ teal `#15a08f`, พื้นอ่อน `#e3f3f0`; ฟอนต์ `IBM Plex Sans Thai`
 - บันทึกการเปลี่ยนแปลงหน้าจอลง `changelog.md` ทุกครั้ง
 
+## กฎ Tab / แท็บสลับมุมมอง (บังคับใช้เคร่งครัดทุกครั้งที่สร้าง/แก้ไข)
+- ใช้ **แท็บแบบขีดเส้นใต้ (underline)** เป็นมาตรฐานเดียวทั้งแอปเสมอ — ห้ามใช้แท็บแบบ segmented/pill พื้นทึบ (กล่องมนพื้น teal) กับการสลับมุมมองอีก
+- สเปคมาตรฐาน: แถวแท็บเป็นข้อความล้วนวางเรียงด้วย `gap` (≈26px) มีเส้น `borderBottom:'1px solid #e7eaef'` ใต้ทั้งแถว; แต่ละแท็บ `padding:'0 2px 11px'`, `marginBottom:-1` (ให้เส้น active ทับเส้นฐาน)
+  - active: `color:'#15a08f'` (teal) + `fontWeight:700` + `borderBottom:'2px solid #15a08f'`
+  - inactive: `color:'#5a6473'` + `fontWeight:500` + `borderBottom:'2px solid transparent'`
+- badge นับจำนวนบนแท็บ (ถ้ามี): วงกลม `borderRadius:99`, active = พื้นอ่อนของสีที่สื่อความหมาย (เช่น แดงอ่อน `#fdeaea`/`#ef4444` สำหรับเฝ้าระวัง), inactive = เทาอ่อน `#f1f3f6`/`#8a93a3`
+- ไม่ต้องมีไอคอนนำหน้า label ของแท็บ (ข้อความล้วน) เว้นแต่มีเหตุผลเฉพาะ
+
 ## PA ส่วนตัว (`pa-my.html`) — โครงสร้างพื้นฐาน
 - Employee flow มี 6 views ที่ต้องคงไว้เป็นมาตรฐานเดียวกันเมื่อต่อยอด: **list** (overview + alert banner ช่วงจัดทำ + 3 category pills พร้อม % น้ำหนัก), **items** (approval flow banner 4 ขั้น + รายการแยกตาม category), **item-view** (detail + sidebar ปี/category/weight/วันที่ + KPI รายรอบ + progress notes), **item-edit** (ฟอร์มสร้าง/แก้ไข: ประเภท/weight/detail/ช่วงวันที่/แผนธุรกิจ + KPI section), **kpi-edit** ×2 (เกณฑ์มาตรฐาน 0-5 / เกณฑ์ตามระดับคะแนนมี threshold G2/G3/G4)
 
